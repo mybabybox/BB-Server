@@ -59,6 +59,8 @@ mybox.controller('ProductController',
 		$scope.open = false;
 	}
 	
+	$scope.similarProducts = productService.getSimilarProduct.get();
+	
 	$scope.add_product_to_collection = function(){
 		var data = {
 				"product_id" : $scope.product.id,

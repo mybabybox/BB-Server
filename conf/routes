@@ -114,7 +114,8 @@ GET     /add/story                   				controllers.Application.addStory
 
 POST	/create-product 		             		controllers.ProductController.createProduct
 GET     /get-all-feed-products       				controllers.ProductController.getAllFeedProducts
-GET     /product/:id            		     		controllers.ProductController.product(id: Long)
+GET     /get-all-similar-products       			controllers.ProductController.getAllsimilarProducts
+GET     /product/:id            		     		controllers.ProductController.product(id:Long)
 GET     /like-product/:id          					controllers.ProductController.onLiked(id:Long)
 GET     /unlike-product/:id        					controllers.ProductController.onUnLiked(id:Long)
 POST	/product/comment							controllers.ProductController.onComment

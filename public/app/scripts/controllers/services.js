@@ -13,9 +13,16 @@ mybox.service('feedService',function($resource){
     );
 });
 
-mybox.service('collecctionService',function($resource){
-    this.getFeedProduct = $resource(
-            '/get-collection-by-user',
+mybox.service('productService',function($resource){
+    this.getProductInfo = $resource(
+            '/get-product-info/:id',
+            {alt:'json',callback:'JSON_CALLBACK'},
+            {
+                get: {method:'get', params:{id:'@id'}}
+            }
+    );
+    this.getSimilarProduct = $resource(
+            '/get-all-similar-products',
             {alt:'json',callback:'JSON_CALLBACK'},
             {
                 get: {method:'get' ,isArray:true}
@@ -23,12 +30,12 @@ mybox.service('collecctionService',function($resource){
     );
 });
 
-mybox.service('productService',function($resource){
-    this.getProductInfo = $resource(
-            '/get-product-info/:id',
+mybox.service('collecctionService',function($resource){
+    this.getFeedProduct = $resource(
+            '/get-collection-by-user',
             {alt:'json',callback:'JSON_CALLBACK'},
             {
-                get: {method:'get', params:{id:'@id'}}
+                get: {method:'get' ,isArray:true}
             }
     );
 });

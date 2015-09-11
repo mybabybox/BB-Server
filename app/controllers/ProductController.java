@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
+
 import models.Category;
 import models.Collection;
 import models.Product;
@@ -122,6 +124,17 @@ public class ProductController extends Controller{
 		}
 		return ok(Json.toJson(vms));
 	}
+	
+	@Transactional
+	public static Result getAllsimilarProducts() {
+		List<FeedProductVM> vms = new ArrayList<>();
+		for(Product product : Product.getAllFeedProducts()) {
+			FeedProductVM vm = new FeedProductVM(product);
+			vm.isLiked = product.isLikedBy(Application.getLocalUser(session()));
+			vms.add(vm);
+		}
+		return ok(Json.toJson(vms));
+	}
 
 	@Transactional
 	public static Result getProductImageById(Long id) {
@@ -160,7 +173,7 @@ public class ProductController extends Controller{
 		ProductInfoVM vm = new ProductInfoVM(product, Application.getLocalUser(session()));
 		return vm;
 	}
-	
+
 	@Transactional
 	public static Result onLiked(Long id) {
 		Product.findById(id).onLikedBy(Application.getLocalUser(session()));
