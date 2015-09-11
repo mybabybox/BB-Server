@@ -1,0 +1,180 @@
+ul {
+    list-style: none;
+    padding: 10px 20px;
+}
+#popup-container {
+    z-index: 120;
+    width: 1000px;
+    position: absolute;
+    left: 50%;
+    top: 20%;
+    margin-left: -550px;
+}
+#popup-container div:first-child {
+    position: relative;
+}
+.light-box-mask {
+    background: rgba(0, 0, 0, 0.8);
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: 110;
+}
+#popup-container div div:first-child {
+    position: relative;
+    display: inline-block;
+}
+#popup img[alt=post-photo] {
+    width: 800px;
+    height: auto;
+}
+#popup-discription {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    text-align: left;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px;
+}
+.popup-from:after {
+    content: "中由";
+}
+.popup-photo:after {
+    content: "發佈的相片";
+}
+#popup-discription a {
+    color: white;
+    padding: 0 2px;
+}
+#popup-user-act {
+    float: right;
+}
+#popup-user-act a {
+    padding: 0 10px;
+}
+#popup-message-box {
+    background-color: white;
+    display: inline-block;
+    position: absolute;
+    width: 350px;
+    height: 100%;
+    overflow-y: hidden;
+}
+#popup-user-message {
+    width: 100%;
+    border-bottom: thin solid #bcbcbc;
+    padding-bottom: 10px;
+}
+#popup-user-message div:first-child a {
+    font-weight: bold;
+}
+#popup-user-message div:first-child a img {
+    padding: 0px 3px 10px 10px; 
+    width: 60px;
+}
+#popup-user-message div:first-child div {
+    padding: 10px 0 10px 3px;
+    display: inline-block;
+    max-width: 280px;
+}
+.user-action-to {
+    padding: 3px;
+}
+.user-action-to:after {
+    content: " ";
+    display: inline-block;
+    width: 0px;
+    height: 0px;
+    border-style: solid;
+    border-width: 4px 0 4px 8px;
+    border-color: transparent transparent transparent #bcbcbc;
+}
+#popup-user-message div:first-child p {
+    color: gray;
+    font-size: small;
+    width: 30%;
+}
+#popup-user-message span[title=message-post-month]:after {
+    content: "月";
+}
+#popup-user-message span[title=message-post-day]:after {
+    content: "日";
+}
+#popup-user-message div:first-child+p {
+    padding: 10px 10px;
+    color: black;
+}
+#popup-user-message div:first-child+p+div a{
+    padding: 0 10px 10px 10px;
+}
+#popup-user-reply {
+    width: 100%;
+    height: 100%;
+    background-color: #f2f2ff;
+}
+#popup-user-reply li:first-child {
+    padding: 5px;
+    border-bottom: thin solid #bcbcbc;
+}
+.popup-user-like:after {
+    content: "對此讚好";
+    padding: 0 5px;
+}
+#popup-user-reply li+li a {
+    font-size: small;
+}
+#popup-user-reply li a[title=reply-whose-like] {
+    padding: 10px 0;
+    display: block;
+}
+#popup-user-reply li img {
+    float: left;
+    padding-right: 10px;
+}
+#popup-user-reply li div {
+    padding: 0;
+    width: 80%;
+    float: left;
+    padding-bottom: 15px;
+}
+.user-reply-content {
+    font-size: small;
+}
+.user-reply-content a {
+    display: block;
+}
+#popup-user-reply li div span {
+    font-size: small;
+    color: gray;
+}
+#popup-user-reply li div span[title=message-reply-month]:after {
+    content: "月";
+}
+#popup-user-reply li div span[title=message-reply-day]:after {
+    content: "日 ";
+}
+#popup-user-reply li div span[title=message-reply-time] {
+    padding-right: 10px;
+}
+#popup-user-reply .wall-userpic {
+    display: inline;
+}
+#popup-user-reply li form {
+    position: relative;
+    display: inline-block;
+    width: 80%;
+    float: left;
+}
+#popup-user-reply li form label {
+    position: absolute;
+}
+#popup-user-reply li form .general-textfield {
+    width: 100%;
+}
+#popup-user-reply li form #usercomment-uploadimage {
+    position: absolute;
+    left: 215px;
+    bottom: 5px;
+}

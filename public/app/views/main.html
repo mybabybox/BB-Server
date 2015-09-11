@@ -1,0 +1,32 @@
+<div class="header">
+  <ul class="nav nav-pills pull-right">
+  </ul>
+</div>
+
+
+<div ng-app='htdocsApp' ng-controller='MainCtrl'>
+ <div class="container">
+   <div infinite-scroll='post.nextPage()' infinite-scroll-disabled='post.busy' infinite-scroll-distance='1'>
+     <ul class="list-group" ng-repeat='item in post.items'>
+       <li class="list-group-item">
+       		<div class="row">
+       			<div class="col-md-2">
+       				<img ng-src='{{item.postPicUrl}}' border="0"  hspace="5" vspace="5" width="135" height="135">
+       			</div>
+       
+       			<div class="col-md-10">
+       				<h3>{{item.title}}</h3>
+       				<p>{{item.description}}</p>
+       			</div>		
+       			</div>
+       </li>
+       
+     </ul>
+     <div ng-show='post.busy'>Loading data...</div>
+   </div>
+ </div>
+</div>
+
+<div class="footer">
+  <p></p>
+</div>

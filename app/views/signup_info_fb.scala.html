@@ -1,0 +1,390 @@
+@(user: User)
+
+@import domain._
+@import models._
+@import common.model._
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>miniBean 小萌豆 - 會員登記</title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        
+        <!-- seo -->
+        <meta name="robots" content="index, follow" />
+        <meta name="description" content="「miniBean 小萌豆」 - 每個家長嘅小寶寶就好似可愛「小萌豆」，一日一日茁壯成長。「miniBean 小萌豆」係一個親子社交平台，透過家長互相分享經驗和心得，大家都能夠得到更貼心的育兒親子資訊。">
+        <meta name="keywords" content="小萌豆, miniBean, minibean, mini bean, 親子, 家長, 媽媽, 小寶寶, 育兒資訊, 親子資訊, 分享">
+        
+        <title>Master Template</title>
+        <link rel="stylesheet" href="@routes.Assets.at("components/library/bootstrap/css/bootstrap.min.css")" />
+        <link rel="stylesheet" href="../assets/app/custom-css/bootstrap-override.css">
+        <link rel="stylesheet" href="../assets/app/custom-css/textfield.css">
+        <link rel="stylesheet" href="../assets/app/custom-css/boxSetup.css">
+        <link rel="stylesheet" href="../assets/app/custom-css/login.css">
+        <link rel="stylesheet" href="../assets/app/custom-css/signupInfo.css">
+        <link rel="stylesheet" href="../assets/app/custom-css/themeA.css">
+        
+        <script type="text/javascript" src="@routes.Assets.at("components/library/jquery/jquery.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("components/library/jquery/jquery.validate.min.js")"></script>
+        
+        <script type="text/javascript" src="@routes.Assets.at("app/scripts/signup_info.js")"></script>
+        
+        <style>
+            body {
+                background-image: url(../assets/app/images/login/login-bg.jpg);
+                background-size: cover;
+                background-position: center center;
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+    </head>
+    
+    <body ng-app="minibean-signup-info" ng-controller="SignupInfoController">
+        <div id=login-header>
+            <a class="login-logo pull-left" href="/">
+                <img src="../assets/app/images/logo-2.png" />
+            </a>
+        </div>
+        <div class="signup-info-container">
+            <div class="signup-info-box" id="signup-info-section">
+                <ul>
+                    <li>
+                        <h3>@user.firstName 您好!</h3>
+                        
+                        <form id="signup-info" name="signup-info" method="post" action="/saveSignupInfoFb">
+                            <table class="signup-info-table">
+                                <tbody>
+                                    <tr>
+                                        <td colspan="2">
+                                            <!--div class="signup-info-header">
+                                                請給我們一分鐘來完成登記，我們會按您的資料把最相關的資訊分享給您
+                                            </div>
+                                            <div class="signup-info-header-tips">
+                                                馬年媽媽會♥2014 / 閒聊專區 / 孕媽媽 ... 還有更多!
+                                            </div-->
+                                            <div class="signup-info-header">
+                                                我們希望香港家長能夠有多一個平台、多一個選擇，有共同話題的家長能聚在一起，開心分享資訊和心得!
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="padding10"><td></td></tr>
+                                    @if(flash.get("error")) {
+                                    <tr><td colspan="2">
+                                    <div style="width: 100%;text-align: left;margin-bottom: 5px;">
+                                        <i class="glyphicon glyphicon-exclamation-sign"></i>
+                                        <span class="text-danger">@flash.get("error")</span>
+                                    </div>
+                                    </td></tr>
+                                    }
+                                    <tr>
+                                        <td style="width:80px;">顯示名稱:</td>
+                                        <td>
+                                            <div><input type="text" name="parent_displayname" id="parent_displayname" required="required" placeholder="暱稱" value="" style="padding:3px 10px;"></input></div>
+                                            <div style="color:red;font-size:12px;margin-top:10px;max-width:250px;">註: 其他用戶只會看到您的顯示名稱，請選用一個您喜愛的暱稱。您 facebook 的姓名，電郵或任何其他資料絶對不會對外顯示。</div>
+                                        </td>
+                                    </tr>
+                                    <tr style="display:none;">
+                                        <td style="width:80px;">您的出生年份:</td>
+                                        <td>
+                                            <div><input type="text" name="parent_birth_year" id="parent_birth_year" value="9999"></input></div>
+                                        </td>
+                                    </tr>
+                                    <!--tr>
+                                        <td style="width:80px;">您的出生年份:</td>
+                                        <td>
+                                            <div>
+                                                <span>
+                                                    <select name="parent_birth_year" id="parent_birth_year" required rel="popover">
+                                                        <option value="" selected="1">年</option>
+                                                        @for((key, value) <- DefaultValues.PARENT_BIRTH_YEARS.asScala) {
+                                                            <option value="@value">@key</option>
+                                                        }
+                                                    </select>
+                                                </span> 
+                                            </div>
+                                        </td>
+                                    </tr-->
+                                    <tr>
+                                        <td>居住地區:</td>
+                                        <td>
+                                            <div>
+                                                <span>
+                                                    <select name="parent_location" id="parent_location" required rel="popover">
+                                                        <option value="" selected="1">地區</option>
+                                                        @for(location <- Location.getHongKongDistricts().asScala) {
+                                                            <option value="@location.id">@location.displayName</option>
+                                                        }
+                                                    </select>
+                                                </span>
+                                            </div>
+                                            <div style="color:#777;font-size:12px;margin-top:10px;max-width:280px;">註: 小萌豆會按您的地區推介資訊給您</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>您現在是:</td>
+                                        <td>
+                                            <div></div>
+                                            <div>
+                                                <span>
+                                                    <input type="radio" name="parent_type" value="@UserInfo.ParentType.MOM.name()" id="mom">
+                                                    <label for="parent_type">媽媽</label>
+                                                </span>
+                                                <span>
+                                                    <input type="radio" name="parent_type" value="@UserInfo.ParentType.DAD.name()" id="dad">
+                                                    <label for="parent_type">爸爸</label>
+                                                </span>
+                                                <span id="parent_type-error-holder"></span>
+                                            </div>
+                                            <div>
+                                                <span>
+                                                    <input type="radio" name="parent_type" value="@UserInfo.ParentType.SOON_MOM.name()" id="mom_soon_to_be">
+                                                    <label for="parent_type">準媽媽</label>
+                                                </span>
+                                                <span>
+                                                    <input type="radio" name="parent_type" value="@UserInfo.ParentType.SOON_DAD.name()" id="dad_soon_to_be">
+                                                    <label for="parent_type">準爸爸</label>
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <span>
+                                                    <input type="radio" name="parent_type" value="@UserInfo.ParentType.NA.name()" id="parent_na">
+                                                    <label for="parent_type">沒有小寶寶</label>
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr id="num_children_row">
+                                        <td></td>
+                                        <td>
+                                        您有
+                                        <span>
+                                            <select name="num_children" id="num_children"><option value="0">0</option><option value="1" selected="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="9999">多於5</option></select>
+                                        </span> 
+                                        個小寶寶
+                                        </td>
+                                    </tr>
+                                    <tr id="child1_row">
+                                        <td></td>
+                                        <td>
+                                            <table class="signup-info-sub-table">
+                                                <tr>
+                                                    <td style="text-align:right">1) 小寶寶是:</td>
+                                                    <td>
+                                                        <div>
+                                                            <span>
+                                                                <input type="radio" name="bb_gender1" value="@TargetGender.Male.name()" id="bb_boy1">
+                                                                <label for="bb_gender1">BB仔</label>
+                                                            </span>
+                                                            <span>
+                                                                <input type="radio" name="bb_gender1" value="@TargetGender.Female.name()" id="bb_gal1">
+                                                                <label for="bb_gender1">BB女</label>
+                                                            </span>
+                                                            <span id="bb_gender1-error-holder"></span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="text-align:right">生日:</td>
+                                                    <td>
+                                                        <div>
+                                                            <select name="bb_birth_year1" id="bb_birth_year1">
+                                                                <option value="" selected="1">年</option>
+                                                                @for((key, value) <- DefaultValues.CHILD_BIRTH_YEARS.asScala) {
+                                                                    <option value="@value">@key</option>
+                                                                }
+                                                            </select>
+                                                            <select name="bb_birth_month1" id="bb_birth_month1"><option value="" selected="1">月</option><option value="1">一月</option><option value="2">二月</option><option value="3">三月</option><option value="4">四月</option><option value="5">五月</option><option value="6">六月</option><option value="7">七月</option><option value="8">八月</option><option value="9">九月</option><option value="10">十月</option><option value="11">十一月</option><option value="12">十二月</option></select>
+                                                            <select name="bb_birth_day1" id="bb_birth_day1"><option value="" selected="1">日</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option></select>
+                                                        </div>
+                                                        <span id="bb_birth_year1-error-holder"></span>
+                                                        <span id="bb_birth_month1-error-holder"></span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr id="child2_row">
+                                        <td></td>
+                                        <td>
+                                            <table class="signup-info-sub-table">
+                                                <tr>
+                                                    <td style="text-align:right">2) 小寶寶是:</td>
+                                                    <td>
+                                                        <div>
+                                                            <span>
+                                                                <input type="radio" name="bb_gender2" value="@TargetGender.Male.name()" id="bb_boy2">
+                                                                <label for="bb_gender2">BB仔</label>
+                                                            </span>
+                                                            <span>
+                                                                <input type="radio" name="bb_gender2" value="@TargetGender.Female.name()" id="bb_gal2">
+                                                                <label for="bb_gender2">BB女</label>
+                                                            </span>
+                                                            <span id="bb_gender2-error-holder"></span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="text-align:right">生日:</td>
+                                                    <td>
+                                                        <div>
+                                                            <select name="bb_birth_year2" id="bb_birth_year2">
+                                                                <option value="" selected="1">年</option>
+                                                                @for((key, value) <- DefaultValues.CHILD_BIRTH_YEARS.asScala) {
+                                                                    <option value="@value">@key</option>
+                                                                }
+                                                            </select>
+                                                            <select name="bb_birth_month2" id="bb_birth_month2"><option value="" selected="1">月</option><option value="1">一月</option><option value="2">二月</option><option value="3">三月</option><option value="4">四月</option><option value="5">五月</option><option value="6">六月</option><option value="7">七月</option><option value="8">八月</option><option value="9">九月</option><option value="10">十月</option><option value="11">十一月</option><option value="12">十二月</option></select>
+                                                            <select name="bb_birth_day2" id="bb_birth_day2"><option value="" selected="1">日</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option></select>
+                                                        </div>
+                                                        <span id="bb_birth_year2-error-holder"></span>
+                                                        <span id="bb_birth_month2-error-holder"></span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr id="child3_row">
+                                        <td></td>
+                                        <td>
+                                            <table class="signup-info-sub-table">
+                                                <tr>
+                                                    <td style="text-align:right">3) 小寶寶是:</td>
+                                                    <td>
+                                                        <div>
+                                                            <span>
+                                                                <input type="radio" name="bb_gender3" value="@TargetGender.Male.name()" id="bb_boy3">
+                                                                <label for="bb_gender3">BB仔</label>
+                                                            </span>
+                                                            <span>
+                                                                <input type="radio" name="bb_gender3" value="@TargetGender.Female.name()" id="bb_gal3">
+                                                                <label for="bb_gender3">BB女</label>
+                                                            </span>
+                                                            <span id="bb_gender3-error-holder"></span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="text-align:right">生日:</td>
+                                                    <td>
+                                                        <div>
+                                                            <select name="bb_birth_year3" id="bb_birth_year3">
+                                                                <option value="" selected="1">年</option>
+                                                                @for((key, value) <- DefaultValues.CHILD_BIRTH_YEARS.asScala) {
+                                                                    <option value="@value">@key</option>
+                                                                }
+                                                            </select>
+                                                            <select name="bb_birth_month3" id="bb_birth_month3"><option value="" selected="1">月</option><option value="1">一月</option><option value="2">二月</option><option value="3">三月</option><option value="4">四月</option><option value="5">五月</option><option value="6">六月</option><option value="7">七月</option><option value="8">八月</option><option value="9">九月</option><option value="10">十月</option><option value="11">十一月</option><option value="12">十二月</option></select>
+                                                            <select name="bb_birth_day3" id="bb_birth_day3"><option value="" selected="1">日</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option></select>
+                                                        </div>
+                                                        <span id="bb_birth_year3-error-holder"></span>
+                                                        <span id="bb_birth_month3-error-holder"></span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr id="child4_row">
+                                        <td></td>
+                                        <td>
+                                            <table class="signup-info-sub-table">
+                                                <tr>
+                                                    <td style="text-align:right">4) 小寶寶是:</td>
+                                                    <td>
+                                                        <div>
+                                                            <span>
+                                                                <input type="radio" name="bb_gender4" value="@TargetGender.Male.name()" id="bb_boy4">
+                                                                <label for="bb_gender4">BB仔</label>
+                                                            </span>
+                                                            <span>
+                                                                <input type="radio" name="bb_gender4" value="@TargetGender.Female.name()" id="bb_gal4">
+                                                                <label for="bb_gender4">BB女</label>
+                                                            </span>
+                                                            <span id="bb_gender4-error-holder"></span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="text-align:right">生日:</td>
+                                                    <td>
+                                                        <div>
+                                                            <select name="bb_birth_year4" id="bb_birth_year4">
+                                                                <option value="" selected="1">年</option>
+                                                                @for((key, value) <- DefaultValues.CHILD_BIRTH_YEARS.asScala) {
+                                                                    <option value="@value">@key</option>
+                                                                }
+                                                            </select>
+                                                            <select name="bb_birth_month4" id="bb_birth_month4"><option value="" selected="1">月</option><option value="1">一月</option><option value="2">二月</option><option value="3">三月</option><option value="4">四月</option><option value="5">五月</option><option value="6">六月</option><option value="7">七月</option><option value="8">八月</option><option value="9">九月</option><option value="10">十月</option><option value="11">十一月</option><option value="12">十二月</option></select>
+                                                            <select name="bb_birth_day4" id="bb_birth_day4"><option value="" selected="1">日</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option></select>
+                                                        </div>
+                                                        <span id="bb_birth_year4-error-holder"></span>
+                                                        <span id="bb_birth_month4-error-holder"></span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr id="child5_row">
+                                        <td></td>
+                                        <td>
+                                            <table class="signup-info-sub-table">
+                                                <tr>
+                                                    <td style="text-align:right">5) 小寶寶是:</td>
+                                                    <td>
+                                                        <div>
+                                                            <span>
+                                                                <input type="radio" name="bb_gender5" value="@TargetGender.Male.name()" id="bb_boy5">
+                                                                <label for="bb_gender5">BB仔</label>
+                                                            </span>
+                                                            <span>
+                                                                <input type="radio" name="bb_gender2" value="@TargetGender.Female.name()" id="bb_gal5">
+                                                                <label for="bb_gender5">BB女</label>
+                                                            </span>
+                                                            <span id="bb_gender5-error-holder"></span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="text-align:right">生日:</td>
+                                                    <td>
+                                                        <div>
+                                                            <select name="bb_birth_year5" id="bb_birth_year5">
+                                                                <option value="" selected="1">年</option>
+                                                                @for((key, value) <- DefaultValues.CHILD_BIRTH_YEARS.asScala) {
+                                                                    <option value="@value">@key</option>
+                                                                }
+                                                            </select>
+                                                            <select name="bb_birth_month5" id="bb_birth_month5"><option value="" selected="1">月</option><option value="1">一月</option><option value="2">二月</option><option value="3">三月</option><option value="4">四月</option><option value="5">五月</option><option value="6">六月</option><option value="7">七月</option><option value="8">八月</option><option value="9">九月</option><option value="10">十月</option><option value="11">十一月</option><option value="12">十二月</option></select>
+                                                            <select name="bb_birth_day5" id="bb_birth_day5"><option value="" selected="1">日</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option></select>
+                                                        </div>
+                                                        <span id="bb_birth_year5-error-holder"></span>
+                                                        <span id="bb_birth_month5-error-holder"></span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr class="padding10"><td></td></tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>
+                                            <input type="submit" name="signup-info-btn" id="signup-info-btn" value="完成! 立刻進入 miniBean" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div style="width:100%;float:left;" class="padding20"></div>
+    </body>
+</html>
+
+<script type="text/javascript" src="@routes.Assets.at("app/scripts/tracking.js")"></script>
+<script>
+    ga_send_pv();
+</script>

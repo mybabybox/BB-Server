@@ -1,0 +1,276 @@
+.icon-title-announce {
+    background-image: url(../images/general/icons/w_announce.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-community {
+    background-image: url(../images/general/icons/w_community.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-competition {
+    background-image: url(../images/general/icons/w_competition.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-forum {
+    background-image: url(../images/general/icons/w_forum.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-friends {
+    background-image: url(../images/general/icons/w_friends.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-friendwall {
+    background-image: url(../images/general/icons/w_friendwall.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-gathering {
+    background-image: url(../images/general/icons/w_gathering.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-home {
+    background-image: url(../images/general/icons/w_home.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-hotforum {
+    background-image: url(../images/general/icons/w_hotforum.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-hottopic {
+    background-image: url(../images/general/icons/w_hottopic.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-mayknow {
+    background-image: url(../images/general/icons/w_mayknow.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-message {
+    background-image: url(../images/general/icons/w_message.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-newcommunity {
+    background-image: url(../images/general/icons/w_newcommunity.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-notification {
+    background-image: url(../images/general/icons/w_notification.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-profile {
+    background-image: url(../images/general/icons/w_profile.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-setup {
+    background-image: url(../images/general/icons/w_setup.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-latestPost {
+    background-image: url(../images/general/icons/w_latestPost.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-postCat {
+    background-image: url(../images/general/icons/w_postCat.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-relatePost {
+    background-image: url(../images/general/icons/w_relatePost.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-profile-about {
+    background-image: url(../images/general/icons/w_profile_about.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-search {
+    background-image: url(../images/general/icons/search.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-uploadImage {
+    background-image: url(../images/general/icons/uploadImage.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-liveplace {
+    background-image: url(../images/general/icons/liveplace.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+}
+.icon-title-uploader-upImage {
+    background-image: url(../images/general/icons/uploader_uploadImage.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+.icon-title-uploader-writePost {
+    background-image: url(../images/general/icons/uploader_writePost.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+.icon-title-contentSetup {
+    background-image: url(../images/general/icons/contentSetup.png);
+    background-repeat: no-repeat;
+    background-size: 14px 14px;
+    background-position: center center;
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0;
+}
+.icon-title-about {
+    background-image: url(../images/general/icons/about.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    vertical-align: middle;
+}
+.icon-title-arrow-up {
+    background-image: url(../images/general/icons/w_arrow_up.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    vertical-align: middle;
+}
+.icon-title-edit-photo {
+    background-image: url(../images/general/icons/edit_photo.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: center center;
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+    vertical-align: middle;
+}
+.icon-title-com-temp01 {
+    background-image: url(../images/general/icons/com_temp01.png);
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: center center;
+}
+.icon-title-com-temp02 {
+    background-image: url(../images/general/icons/com_temp02.png);
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: center center;
+}
+.icon-box {
+    border-radius: 25px;
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+.icon-box-2 {
+    border-radius: 5px;
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+.icon-box-red {
+    background-color: #E60012;
+}
+.icon-box-blueLight {
+    background-color: #55C2F1;
+}
+.icon-box-orange {
+    background-color: #F19149;
+}
+.icon-box-blueDark {
+    background-color: #556FB5;
+}
+.icon-box-pink {
+    background-color: #E4007F;
+}
+.icon-box-purpleLight {
+    background-color: #D9A0D3;
+}
+.icon-box-purpleDark {
+    background-color: #AA89BD;
+}
+.icon-box-green {
+    background-color: #8AC733;
+}
+.icon-box-blueSky {
+    background-color: #19CADA;
+}
+.icon-box-white {
+    background-color: white;
+}
+.icon-box-black {
+    background-color: black;
+}
+.icon-box-black-op05 {
+    background-color: black;
+    opacity: 0.5;
+}
+.icon-box-brown {
+    background-color: #996c33;
+}
+.icon-box-border-white {
+    background-color: white;
+    border: black thin solid;
+}
+.icon-box-aboutOnly {
+    background-color: gray;
+}

@@ -1,0 +1,109 @@
+/* Override */
+body {
+    background-image: url(../../images/login/login-bg.jpg);
+    background-size: cover;
+    background-position: center center;
+    margin: 0;
+    padding: 0;
+}
+#login-header {
+    margin-bottom: 20px;
+}
+#community-header {
+    border-radius: 5px;
+}
+#community-header #community-header-name {
+    bottom: 35px;
+}
+#community-header-menu {
+    border-bottom: 1px solid #c0c0c0;
+    margin: 0 5px;
+    padding: 7px 10px;
+    font-size: 16px;
+}
+#community-header-menu a {
+    /*color: #161616;*/
+}
+.newCommunity-info p, .myCommunity-info p {
+    width: auto;
+}
+.post-card a img:hover {
+    cursor: pointer;
+    opacity: 1.0;
+}
+.general-box {
+    margin-bottom: 10px;
+}
+.section-title {
+    font-weight: bold;
+}
+.con-title {
+    padding-left: 15px;
+    font-size: 16px;
+}
+.wall-title {
+    background-color: #6D55EC
+}
+#wall-main .general-box {
+    margin-bottom: 5px;
+}
+.emoticon {
+    margin: 0px 2px;
+    position: static;
+    width: 20px;
+    height: 20px;
+    vertical-align: text-top;
+}
+
+/* Promo */
+.promo-welcome-section {
+    padding: 0px;
+    font-size: 18px;
+    float: left;
+}
+.promo-welcome-section div {
+    padding: 15px;
+}
+.promo-welcome-section .promo-homepage-img {
+    width: 100%;
+    height: auto;
+    border-radius: 0px;
+}
+.promo-welcome-box {
+    background: url(../../images/promo/welcome-bg-thumbnail.jpg) 100% 0% no-repeat;
+    background-size: cover;
+    padding: 10px 0px 50px 30px;
+    font-size: 15px;
+    color: #111111;
+}
+#promo-signup {
+    padding: 10px 15px;
+}
+#promo-signup .promo-signup-text {
+    font-size: 15px;
+    font-weight: bold;
+}
+#promo-signup .promo-signup-fb {
+    margin: 15px 0px;
+    text-align: center;
+}
+#promo-signup .promo-signup-fb h5 {
+    color: gray;
+    font-size: 12px;
+    margin: 10px 30px;
+}
+#promo-signup .promo-signup-native {
+    font-size: 14px;
+    text-align: center;
+    margin: 10px 0px;
+}
+#pn-section {
+    border-radius: 5px;
+}
+#pn-section .pn-box {
+    background-color: white;
+    border-bottom: 1px solid #c0c0c0;
+    margin: 0px;
+    padding: 5px;
+    overflow: hidden;
+}

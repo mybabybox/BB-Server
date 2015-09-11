@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+    <head>
+        <title>miniBean 小萌豆</title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!--meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Cache-Control" content="no-cache">
+        <meta http-equiv="Expires" content="Sat, 01 Dec 2001 00:00:00 GMT"-->
+        
+        <link rel="stylesheet" href="assets/assets/css/module.stylesheet-complete.min.css" />
+      	<link rel="stylesheet" href="@routes.Assets.at("app/bower_components/ng-file-upload/css/file-upload.css")" />
+      	
+      	<link href="@routes.Assets.at("app/bower_components/angular-xeditable/dist/css/xeditable.css")" rel="stylesheet">
+      	<link href="@routes.Assets.at("app/bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css")" rel="stylesheet"/>
+      	
+      	<link rel="icon" type="image/png" href="@routes.Assets.at("app/images/favicon-1.ico")">
+      	<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("app/images/favicon-1.ico")">
+    </head>
+    <body>
+    
+        MB_OTHER_728x90
+        <div class="ads-factor-728x90">
+            <script language='JavaScript' type='text/javascript'>if (!window.af) var af = (function() {return {getcookie:function(n){var m=n+'=';var ca=document.cookie.split(';');for(var i=0;i < ca.length;i++) {var c=ca[i];while (c.charAt(0)==' ') c = c.substring(1,c.length);if (c.indexOf(m) == 0) return c.substring(m.length,c.length);}return null;},existcookie:function(n){var m=af.getcookie(n);if (m!=null&&m!=''){return true;}else{return false;}}};})(); if(af.existcookie('__AF')){afid = af.getcookie('__AF'); } else {afid = 0; } randomstr = new String (Math.random()); randomstr = randomstr.substring(2,8); document.write("<" + "script language='JavaScript' type='text/javascript' src='"); document.write("http://servedby.adsfactor.net/adj.php?ts=" + randomstr + "&amp;sid=477069296823&amp;afid=" + afid);if(document.af_used){document.write("&amp;ex=" + document.af_used);} if(window.location.href){document.write("&amp;location=" + encodeURIComponent(escape(window.location.href)));} if(document.referrer){document.write("&amp;referer=" + encodeURIComponent(escape(document.referrer)));} document.write("'><" + "/script>");</script><noscript><a href='http://servedby.adsfactor.net/adc.php?sid=477069296823' ><img src='http://servedby.adsfactor.net/adv.php?sid=477069296823' border='0'></a></noscript>
+        </div>
+        
+        <div id="announce" class="general-box widget-box ng-scope">
+            <div class="con-title">
+                <span class="icon-box icon-box-red icon-title-announce"></span>通知大家
+                <span class="pull-right">
+                    <a class="btn btn-general tour-btn" href="" ng-click="startHomeTour();">
+                        <img style="width:10px;" src="/assets/app/images/general/icons/pink_question_mark.gif">
+                        小貼士
+                    </a>
+                </span>
+            </div>
+            <div class="content-wrapper">
+                <ul>
+                    <!-- ngRepeat: announcement in announcements --><li data-ng-repeat="announcement in announcements" ng-switch="" on="announcement.url" ng-class-odd="'announcement-general-odd'" ng-class-even="'announcement-general-even'" class="ng-scope announcement-general-odd">
+                        <!-- ngSwitchWhen: url.length > 0 -->
+                        <!-- ngSwitchDefault:  --><span ng-switch-default="" class="ng-scope">
+                            <span><!-- ngIf: announcement.ic.length > 0 --><span ng-bind-html="announcement.t | to_trusted" class="ng-binding">歡迎來到 miniBean小萌豆！喺呢度您地會搵到最啱傾嘅媽媽爸爸社群。 請開心分享！</span></span>
+                        </span>
+                    </li><!-- end ngRepeat: announcement in announcements --><li data-ng-repeat="announcement in announcements" ng-switch="" on="announcement.url" ng-class-odd="'announcement-general-odd'" ng-class-even="'announcement-general-even'" class="ng-scope announcement-general-even">
+                        <!-- ngSwitchWhen: url.length > 0 -->
+                        <!-- ngSwitchDefault:  --><span ng-switch-default="" class="ng-scope">
+                            <span><!-- ngIf: announcement.ic.length > 0 --><span ng-bind-html="announcement.t | to_trusted" class="ng-binding">我地有手機版啦！立即用手機登入 minibean.com.hk 試下啦</span></span>
+                        </span>
+                    </li><!-- end ngRepeat: announcement in announcements -->
+                </ul>
+            </div>
+        </div>
+
+        MB_MAG_300x250
+        <div class="ads-factor-300x250">
+            <script language='JavaScript' type='text/javascript'>if (!window.af) var af = (function() {return {getcookie:function(n){var m=n+'=';var ca=document.cookie.split(';');for(var i=0;i < ca.length;i++) {var c=ca[i];while (c.charAt(0)==' ') c = c.substring(1,c.length);if (c.indexOf(m) == 0) return c.substring(m.length,c.length);}return null;},existcookie:function(n){var m=af.getcookie(n);if (m!=null&&m!=''){return true;}else{return false;}}};})(); if(af.existcookie('__AF')){afid = af.getcookie('__AF'); } else {afid = 0; } randomstr = new String (Math.random()); randomstr = randomstr.substring(2,8); document.write("<" + "script language='JavaScript' type='text/javascript' src='"); document.write("http://servedby.adsfactor.net/adj.php?ts=" + randomstr + "&amp;sid=336814706671&amp;afid=" + afid);if(document.af_used){document.write("&amp;ex=" + document.af_used);} if(window.location.href){document.write("&amp;location=" + encodeURIComponent(escape(window.location.href)));} if(document.referrer){document.write("&amp;referer=" + encodeURIComponent(escape(document.referrer)));} document.write("'><" + "/script>");</script><noscript><a href='http://servedby.adsfactor.net/adc.php?sid=336814706671' ><img src='http://servedby.adsfactor.net/adv.php?sid=336814706671' border='0'></a></noscript>
+        </div>
+        
+        <div id="newCommunity" class="general-box utility-box ng-scope">
+            <ul class="newCommunity-info">
+                <li>
+                    <a href="my#/community/35"><img style="margin-left:5px;width:35px;" src="/assets/app/images/general/icons/community/feedback.png"></a>
+                    <p style="margin:0;width:75%;">
+                        <a href="my#/community/35">miniBean小萌豆意見區</a><br>
+                        <span class="community-member-counter"><font class="ng-binding">請給我們一些意見吧</font></span>
+                    </p>
+                </li>
+            </ul>
+        </div>
+        
+        MB_MAG_1x1
+        <div class="ads-factor-1x1">
+            <script language='JavaScript' type='text/javascript'>if (!window.af) var af = (function() {return {getcookie:function(n){var m=n+'=';var ca=document.cookie.split(';');for(var i=0;i < ca.length;i++) {var c=ca[i];while (c.charAt(0)==' ') c = c.substring(1,c.length);if (c.indexOf(m) == 0) return c.substring(m.length,c.length);}return null;},existcookie:function(n){var m=af.getcookie(n);if (m!=null&&m!=''){return true;}else{return false;}}};})(); if(af.existcookie('__AF')){afid = af.getcookie('__AF'); } else {afid = 0; } randomstr = new String (Math.random()); randomstr = randomstr.substring(2,8); document.write("<" + "script language='JavaScript' type='text/javascript' src='"); document.write("http://servedby.adsfactor.net/adj.php?ts=" + randomstr + "&amp;sid=337876666690&amp;afid=" + afid);if(document.af_used){document.write("&amp;ex=" + document.af_used);} if(window.location.href){document.write("&amp;location=" + encodeURIComponent(escape(window.location.href)));} if(document.referrer){document.write("&amp;referer=" + encodeURIComponent(escape(document.referrer)));} document.write("'><" + "/script>");</script><noscript><a href='http://servedby.adsfactor.net/adc.php?sid=337876666690' ><img src='http://servedby.adsfactor.net/adv.php?sid=337876666690' border='0'></a></noscript>
+        </div>
+            
+        <link rel="stylesheet" href="../assets/app/custom-css/icon.css">
+        <link rel="stylesheet" href="../assets/app/custom-css/boxSetup.css">
+        <link rel="stylesheet" href="../assets/app/custom-css/textfield.css">
+    	<link rel="stylesheet" href="../assets/app/custom-css/bootstrap.css">
+    	<link rel="stylesheet" href="../assets/app/custom-css/mainWall.css">
+    	<link rel="stylesheet" href="../assets/app/custom-css/community.css">
+    	<link rel="stylesheet" href="../assets/app/custom-css/message.css">
+    	<link rel="stylesheet" href="../assets/app/custom-css/business-page.css">
+    	<link rel="stylesheet" href="../assets/app/custom-css/themeA.css">
+    	<link rel="stylesheet" href="../assets/app/custom-css/magazine/magazine.css">
+    </body>
+</html>

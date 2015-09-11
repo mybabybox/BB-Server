@@ -1,0 +1,208 @@
+.general-box {
+    border-radius: 10px;
+    border: 1px solid;
+    border-color: #e5e6e9 #dfe0e4 #d0d1d5;
+    background-color: white;
+    margin-bottom: 10px;
+    overflow: hidden;
+    -webkit-box-shadow: 0px 0px 2px 0px rgba(130, 130, 130, 0.5);
+    -moz-box-shadow: 0px 0px 2px 0px rgba(130, 130, 130, 0.5);
+    box-shadow: 0px 0px 2px 0px rgba(130, 130, 130, 0.5);
+}
+.general-box-footer {
+}
+.general-box-footer img {
+}
+.widget-box {
+    border: 1px solid #FDB2B2;
+    -webkit-box-shadow: 0px 0px 3px 0px rgba(244, 168, 168, 0.5);
+    -moz-box-shadow: 0px 0px 3px 0px rgba(244, 168, 168, 0.5);
+    box-shadow: 0px 0px 3px 0px rgba(244, 168, 168, 0.5);
+}
+.utility-box {
+    position: relative;
+    /*float: left;*/
+    width: 100%;
+    height: auto;
+    border: 1px solid #FDB2B2;
+    -webkit-box-shadow: 0px 0px 3px 0px rgba(244, 168, 168, 0.5);
+    -moz-box-shadow: 0px 0px 3px 0px rgba(244, 168, 168, 0.5);
+    box-shadow: 0px 0px 3px 0px rgba(244, 168, 168, 0.5);
+}
+.utility-box ul, .widget-box ul {
+    margin: 5px 0;
+}
+.tab-box {
+    border-radius: 10px 10px 0 0;
+    width: 100%;
+}
+.shortcut-box {
+    border-radius: 10px;
+    border: 1px solid #C8C8C8;
+    background-color: white;
+    padding: 4px;
+    margin-bottom: 10px;
+    display: block;
+    width:36px; 
+    height:36px;
+}
+.toolsbox a:hover, .toolsbox a:focus {
+    color: #428bca !important;
+    text-decoration: underline !important;
+}
+.toolsbox {
+    color: #428bca !important;
+    text-decoration: none !important;
+    font-size: 13px;
+    font-weight: normal;
+    padding: 5px;
+    display: inline-block;
+    margin: 0;
+    background: rgb(255,255,255); /* Old browsers */
+    background: -moz-linear-gradient(top,  rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(47%,rgba(246,246,246,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(246,246,246,1) 47%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(246,246,246,1) 47%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(246,246,246,1) 47%,rgba(237,237,237,1) 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  rgba(255,255,255,1) 0%,rgba(246,246,246,1) 47%,rgba(237,237,237,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+}
+.toolsbox:active {
+    background: #ededed; /* Old browsers */
+    background: -moz-linear-gradient(top,  #ededed 0%, #f6f6f6 53%, #ffffff 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ededed), color-stop(53%,#f6f6f6), color-stop(100%,#ffffff)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  #ededed 0%,#f6f6f6 53%,#ffffff 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  #ededed 0%,#f6f6f6 53%,#ffffff 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  #ededed 0%,#f6f6f6 53%,#ffffff 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  #ededed 0%,#f6f6f6 53%,#ffffff 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ededed', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
+}
+.toolsbox-start {
+    border: #bcbcbc solid thin;
+    border-bottom-left-radius: 3px; 
+    border-top-left-radius: 3px; 
+}
+.toolsbox-follow {
+    border: #bcbcbc solid thin;
+    border-left: none;
+    border-right: none;
+    position: relative;
+    /*left: -4px;*/
+}
+.toolsbox-end {
+    border: #bcbcbc solid thin;
+    border-left: none;
+    border-bottom-right-radius: 3px; 
+    border-top-right-radius: 3px; 
+    position: relative;
+    /*left: -4px;*/
+}
+.toolsbox-single {
+    border: #bcbcbc solid thin;
+    border-radius: 3px;
+    font-size: 13px; 
+}
+.subtoolsbox {
+    background-color: white;
+    list-style: none;
+    width: 20%;
+    z-index: 20;
+    border: #bcbcbc solid thin;
+    border-radius: 3px;
+}
+.general-input-box {
+    background-color: white;
+    border: #bcbcbc solid thin;
+    color: black;
+    font-size: small;
+}
+#weather {
+    position: relative;
+    top: 7px;
+    width:100%; 
+    height:42px;
+    overflow: visible;
+    border: 1px solid #FFC8C8;
+    margin-bottom: 18px;
+}
+#announce {
+    width:100%; 
+    height:auto;
+}
+#articles-slider {
+    width: 100%; 
+    height: 100%;
+    /*height: 220px;*/
+    /*border-color: #d0d1d5 #dfe0e4 #e5e6e9;
+    border-color: #BCB0E0;
+    box-shadow: 0px 1px 3px rgba(119, 110, 148, 0.5);*/
+    margin-bottom: 10px;
+}
+#wall {
+    width:100%; 
+    height: auto;
+    padding: 0;
+}
+#mayKnowFD {
+    width:100%; 
+    height:186px;
+    position: relative;
+    top: 5px;
+}
+#forum {
+    width:100%; 
+    height:199px;
+}
+#myCommunity {
+    width:100%; 
+    height:199px;
+}
+#myShortcuts {
+    width:100%; 
+    height:199px;
+}
+#hotTopic {
+    width:100%; 
+    height:186px;
+}
+#newCommunity {
+    width:100%; 
+    height:186px;
+}
+#friends {
+    width:100%; 
+    height:186px;
+}
+#competition {
+    width:100%; 
+    height:auto;
+}
+#about {
+    width:100%;
+    height:367px;
+}
+#hotPost {
+    width:100%; 
+    height:370px;
+}
+#latestPost {
+    width:100%; 
+    height:375px;
+}
+#sta-con-slider {
+    width: 100%;
+    height: 230px;
+    background-color: white;
+}
+#postCategory {
+    width:100%; 
+    height:186px;
+}
+#all-post-thumbnail {
+    width: 100%;
+    height: 200px;
+}
+#notification-box {
+    width: 350px;
+    height: auto;
+}

@@ -1,0 +1,49 @@
+# --- Created by Ebean DDL
+# To stop Ebean DDL generation, remove this comment and start using Evolutions
+
+# --- !Ups
+
+create table post (
+  id                        bigint,
+  title                     varchar(255),
+  description               varchar(255),
+  post_pic_url              varchar(255))
+;
+
+create table social_action (
+  actor_id                  bigint,
+  action                    integer,
+  weight                    double,
+  target_id                 bigint,
+  constraint ck_social_action_action check (action in (0,1,2,3,4,5,6,7,8,9,10,11,12,13)))
+;
+
+create table social_object (
+  object_type               integer(31) not null,
+  id                        bigint auto_increment not null,
+  owner_id                  bigint,
+  name                      varchar(255),
+  constraint pk_social_object primary key (id))
+;
+
+alter table social_action add constraint fk_social_action_actor_1 foreign key (actor_id) references social_object (id) on delete restrict on update restrict;
+create index ix_social_action_actor_1 on social_action (actor_id);
+alter table social_action add constraint fk_social_action_target_2 foreign key (target_id) references social_object (id) on delete restrict on update restrict;
+create index ix_social_action_target_2 on social_action (target_id);
+alter table social_object add constraint fk_social_object_owner_3 foreign key (owner_id) references social_user (id) on delete restrict on update restrict;
+create index ix_social_object_owner_3 on social_object (owner_id);
+
+
+
+# --- !Downs
+
+SET FOREIGN_KEY_CHECKS=0;
+
+drop table post;
+
+drop table social_action;
+
+drop table social_object;
+
+SET FOREIGN_KEY_CHECKS=1;
+

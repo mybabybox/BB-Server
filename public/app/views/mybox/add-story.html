@@ -1,0 +1,86 @@
+<header>
+	<div data-ng-include style="width: 100%;"
+		data-src="'/assets/app/views/header-bar.html'"></div>
+</header>
+
+<div class="themeA-container">
+	<div id="content" class="row">
+		<form name="formData"
+			id="formData" ng-submit="submit()" method="post"
+			data-ng-init="formData.productType = 'story'"
+			enctype="multipart/form-data">
+			<div class="control-group col-md-12">
+				<h2>Post a Story</h2>
+			</div>
+			<div class="clearfix"></div>
+			<div class="control-group">
+				<div class="col-md-12">
+					<div class="form-group">
+						<div class="col-md-3">
+							<label> Name: </label>
+						</div>
+						<div class="col-md-8">
+							<input type="text" name="product_tags" id="product_name"
+								style="height: 30px;" class="form-control"
+								placeholder="Hash tags" data-ng-model="formData.name" required>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="control-group">
+				<div class="col-md-12">
+					<div class="form-group">
+						<div class="col-md-3">
+							<label> Description: </label>
+						</div>
+
+						<div class="col-md-8">
+							<textarea name="product_desc" id="product_desc"
+								class="form-control" placeholder="description"
+								data-ng-model="formData.description" required>
+                   		 </textarea>
+							<!-- <label ng-show="formData.description.length < 5" class="error" style="color: #a94442;" >description must be greater than 5</label>
+							<label ng-show="formData.description.length > 1000" class="error"
+								style="color: #a94442;">description exceed the limit</label> -->
+						</div>
+					</div>
+				</div>
+			</div>
+			<div
+				class="stories-new-form-reorder-products stories-product-selector-products"></div>
+			<div class="clearfix"></div>
+			<div class="control-group">
+				<div class="col-md-12">
+					<div class="form-group">
+						<div class="col-md-3">
+							<label> Select Picture: </label>
+						</div>
+						<div class="col-md-8">
+							<input type="file" ng-file-select="onFileSelect($files)">
+							<div ng-file-drop="onFileSelect($files)" class="drop-box"
+								ng-show="dropSupported"></div>
+							<div ng-file-drop-available="dropSupported=true"
+								ng-show="!dropSupported"></div>
+							<br /> <br />
+							<div ng-show="selectedFiles != null">
+								<div class="sel-file" ng-repeat="f in selectedFiles">
+									<button class="button" ng-click="start($index)"
+										ng-show="progress[$index] < 0">wait..</button>
+									<button class="button" ng-click="abort($index)"
+										ng-show="hasUploader($index) && progress[$index] < 100">çµ‚æ­¢</button>
+									{{f.name}} - size: {{f.size}}B - type: {{f.type}}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="control-group centered stories-new-form-submit">
+				<button ng-disabled="formData.$pristine || formData.$dirty && formData.$invalid" type="submit" class="btn btn-primary">
+    			Post
+    		</button>
+			</div>
+		</form>
+	</div>
+</div>

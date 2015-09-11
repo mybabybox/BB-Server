@@ -1,0 +1,84 @@
+/*body {
+    font-family: Helvetica, Arial, 'lucida grande',tahoma,verdana,arial,sans-serif;
+    margin: 0;
+    padding: 0;
+    background-image: url(../../images/general/mag_bg.jpg);
+    background-attachment: fixed;
+}*/
+
+#nav-bar, #nav-subbar {
+    width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #CACACA;
+}
+.nav-menu a.nav-item {
+    padding: 3px 10px 0 10px;
+    border-bottom: 4px solid transparent;
+    /*border-radius: 5px 5px 2px 2px;*/
+    display: inline-block;
+}
+.nav-menu a.nav-item:hover {
+    text-decoration: none;
+}
+.nav-menu .selected-item a {
+    color: white !important;
+    background-color: #AFCCF9;
+    border-radius: 20px;
+    font-weight: bold;
+}
+.nav-menu a.nav-item-green:hover {
+}
+.nav-menu .selected-green a {
+    color: #111;
+    border-bottom: 4px solid transparent;
+    border-bottom-color: #57A857;
+}
+.nav-menu a.nav-item-maroon:hover {
+}
+.nav-menu .selected-maroon a {
+    color: #111;
+    border-bottom: 4px solid transparent;
+    border-bottom-color: #B86B6B;
+}
+
+/* specific styles */
+#nav-bar .selected {
+    background-color: #7272F3;
+}
+#nav-bar {
+    font-size: 15px;
+    background-color: #8B86FF;
+    /*background-color: #FCE27B*/
+    margin-top: -8px;
+}
+#nav-subbar {
+    font-size: 14px;
+    background-color: #f8f8f8;
+    margin-top: -10px;
+}
+#nav-bar .nav-menu a.nav-item {
+    font-weight: bold;
+    color: white;
+    display: inline-block;
+    min-width: 85px;
+    text-align: center;
+}
+#nav-bar .nav-menu a.nav-item:hover {
+    background-color: #7272F3;
+}
+#nav-subbar .nav-menu a.nav-item {
+    color: #333;
+    margin: 0;
+    padding: 5px 10px 3px 10px;
+}
+#nav-subbar .nav-menu a.nav-item:hover {
+    text-decoration: none;
+}
+#nav-subbar .nav-menu .selected-purple a.nav-item:hover, 
+#nav-subbar .nav-menu .selected-green a.nav-item:hover,
+#nav-subbar .nav-menu .selected-maroon a.nav-item:hover,
+#nav-subbar .nav-menu .selected-blue a.nav-item:hover,
+#nav-subbar .nav-menu .selected-yellow a.nav-item:hover {
+    color: #111;
+}

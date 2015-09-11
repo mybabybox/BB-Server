@@ -1,0 +1,55 @@
+#membersDropdownBtn {
+    border: #bcbcbc solid thin;
+    border-bottom-left-radius: 3px;
+    border-top-left-radius: 3px;
+    color: black;
+    font-size: 12px;
+    display: inline-block;
+    margin: 0;
+    background: rgb(255,255,255);
+    background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(47%,rgba(246,246,246,1)), color-stop(100%,rgba(237,237,237,1)));
+    background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(246,246,246,1) 47%,rgba(237,237,237,1) 100%);
+    background: -o-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(246,246,246,1) 47%,rgba(237,237,237,1) 100%);
+    background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(246,246,246,1) 47%,rgba(237,237,237,1) 100%);
+    background: linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(246,246,246,1) 47%,rgba(237,237,237,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ededed',GradientType=0 );
+}
+#membersDropdown {
+    width: 100px;
+    min-width: 100px;
+    font-size: 12px;
+    left: 0px;
+}
+#membersDropdown a {
+    padding: 0px;
+}
+#membersInviteBtn {
+    position: relative;
+    left: 30px;
+}
+#membersSearchwrapper {
+    width: 40%;
+    max-width: 200px;
+    position: relative;
+    top: 0px;
+    right: -40px;
+}
+#membersSearchwrapper:hover {
+    text-decoration: none;
+}
+#membersSearchwrapper .general-textfield {
+    height: 30px;
+    box-shadow: none;
+    border: 1px solid #C8C8C8;
+    border-radius: 2px;
+    font-size:13px;
+}
+#membersSearchwrapper .general-textfield:hover {
+    border: 1px solid #764193;
+    outline: none;
+}
+#membersSearchwrapper .general-textfield:focus {
+    border: 1px solid #764193;
+    outline: none;
+}

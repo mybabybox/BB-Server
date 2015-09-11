@@ -1,0 +1,81 @@
+@(userInfo:String)
+
+<!doctype html>
+<html lang="zh-hk">
+    <head>
+        <title>香港家長社交平台 - 媽媽社群 | mybox 小萌豆</title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        
+        <!--meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Cache-Control" content="no-cache">
+        <meta http-equiv="Expires" content="Sat, 01 Dec 2001 00:00:00 GMT"-->
+        
+        <!-- seo -->
+        <meta name="fragment" content="!">
+        <meta name="robots" content="index, follow" />
+        <meta name="description" content="「mybox 小萌豆」 - 每個家長嘅小寶寶就好似可愛「小萌豆」，一日一日茁壯成長。「mybox 小萌豆」係一個親子社交平台，透過家長互相分享經驗和心得，大家都能夠得到更貼心的育兒親子資訊。">
+        <meta name="keywords" content="小萌豆, mybox, mybox, mini bean, 親子, 家長, 媽媽, 小寶寶, 育兒資訊, 親子資訊, 分享, 文章, 幼稚園, 幼稚園概覧">
+        <link rel="canonical" href="http://www.mybox.hk/my" />
+        
+        <!-- properties for facebook post preview -->
+        <meta property="og:image" content="http://www.mybox.hk/assets/app/images/login/login-main-bg.jpg" />
+        <!--meta property="og:title" content="title" />
+        <meta property="og:description" content="description" /-->
+        
+        <link rel="stylesheet" href="assets/assets/css/module.stylesheet-complete.min.css" />
+        <link rel="stylesheet" href="@routes.Assets.at("components/library/bootstrap/css/bootstrap.min.css")" />
+      	<link rel="stylesheet" href="@routes.Assets.at("app/bower_components/ng-file-upload/css/file-upload.css")" />
+        
+      	<link rel="icon" type="image/png" href="@routes.Assets.at("app/images/favicon-1.ico")">
+      	<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("app/images/favicon-1.ico")">
+    </head>
+    <body id="main-app" class="menu-right-hidden" ng-app="mybox" ng-controller="CreateProductController">
+        <div class="container-fluid menu-hidden">
+            <div id="main-view">
+            	<div data-ng-include data-src="'/assets/app/views/mybox/add-product.html'"></div>
+            </div>
+        </div>
+
+        <script type="text/javascript" src="@routes.Assets.at("app/scripts/pre-angular.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("components/library/jquery/jquery.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("components/library/jquery/jquery.validate.min.js")"></script>
+        <script src="@routes.Assets.at("app/bower_components/angular/angular.min.js")"></script>
+        <script src="@routes.Assets.at("app/bower_components/angular-resource/angular-resource.min.js")"></script>
+        <script src="@routes.Assets.at("app/bower_components/angular-route/angular-route.min.js")"></script>
+        <script src="@routes.Assets.at("app/bower_components/angular-bootstrap/ui-bootstrap.min.js")"></script>
+    	<script src="@routes.Assets.at("app/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js")"></script> 
+    	<script src="@routes.Assets.at("app/bower_components/ng-file-upload/angular-file-upload.min.js")"></script> 
+        <script src="@routes.Assets.at("app/bower_components/moment/min/moment.min.js")"></script>
+        <script src="@routes.Assets.at("app/bower_components/angular-validator/dist/angular-validator.min.js")"></script>
+        <script src="@routes.Assets.at("app/bower_components/angular-validator/dist/angular-validator-rules.min.js")"></script>
+        <script src="@routes.Assets.at("app/bower_components/spin.js/spin.js")"></script>
+    	<script src="@routes.Assets.at("app/bower_components/angular-spinner/angular-spinner.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("app/bower_components/angular-ui-utils/ui-utils.min.js")"></script>
+        
+        <script src="@routes.Assets.at("components/library/bootstrap/js/bootstrap.min.js")"></script>
+    	
+        <script type="text/javascript" src="@routes.Assets.at("app/scripts/mybox/product-app.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("app/scripts/controllers/main.js")"></script>
+        <link rel="stylesheet" href="../assets/app/custom-css/bootstrap-override.css">
+        <link rel="stylesheet" href="../assets/app/custom-css/icon.css">
+        <link rel="stylesheet" href="../assets/app/custom-css/boxSetup.css">
+        <link rel="stylesheet" href="../assets/app/custom-css/textfield.css">
+    	<link rel="stylesheet" href="../assets/app/custom-css/mainWall.css">
+    	<link rel="stylesheet" href="../assets/app/custom-css/community.css">
+    	<link rel="stylesheet" href="../assets/app/custom-css/message.css">
+    	<link rel="stylesheet" href="../assets/app/custom-css/business-page.css">
+    	<link rel="stylesheet" href="../assets/app/custom-css/themeA.css">
+    	<link rel="stylesheet" href="../assets/app/custom-css/frontpage.css">
+    	<link rel="stylesheet" href="../assets/app/custom-css/game.css">
+    	<link rel="stylesheet" href="../assets/app/custom-css/magazine.css">
+    	<link rel="stylesheet" href="../assets/app/custom-css/campaign.css">
+    	<link rel="stylesheet" href="../assets/app/custom-css/pkview.css">
+    </body>
+</html>
+<script>
+		angular.module('mybox').factory('userInfo', function(){
+			return @Html(userInfo);
+		});
+</script>

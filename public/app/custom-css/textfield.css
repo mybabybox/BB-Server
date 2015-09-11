@@ -1,0 +1,54 @@
+.general-textfield {
+    border-radius: 3px;
+    border: #bcbcbc thin solid;
+    padding: 5px;
+    width: 80%;
+    height: 28px;
+}
+.general-textfield:focus {
+    outline: none;
+    box-shadow: 0 0 3px #a37cde !important;
+    border: thin solid #a37cde !important;
+}
+.general-textfield+.icon-box {
+    position: relative;
+    left: -35px;
+    bottom: 2px;
+    border: none;
+    background-color: white;
+    outline: none;
+}
+#main-search {
+    position: fixed;
+    top: 5px;
+    left: 27%;
+    width: 620px; 
+}
+#main-search .general-textfield {
+    height: 30px;
+    box-shadow: none;
+    border: none;
+}
+#contentSearchwrapper {
+    width: 50%;
+    position: relative;
+    top: -2px;
+    right: -40px;
+}
+#contentSearchwrapper .general-textfield {
+    height: 30px;
+    box-shadow: none;
+    border: none;
+}
+#group-addnew-member {
+    vertical-align: middle;
+}
+#group-addnew-member .general-textfield {
+    border: thin solid #bcbcbc;
+    padding: 5px;
+    height: 30px;
+}
+#group-addnew-member .general-textfield:focus {
+    border: thin solid #bcbcbc;
+    box-shadow: none;
+}

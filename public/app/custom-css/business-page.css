@@ -1,0 +1,100 @@
+.pin-brick { 
+    width: 50%;
+    padding: 0 4px;
+}
+.pin-brick img {
+    width: 100%;
+}
+.pin-brick img.emoticon {
+    width: 18px;
+    height: auto;
+}
+.pin-brick #wall-main .general-box {
+    margin-bottom: 10px;
+    /*box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);*/
+    box-shadow: 0 0 3px #D3D5F3;
+    border-radius: 10px;
+}
+.pin-brick .post-comment-box .post-sharing-comment-textfield {
+    width: 60%;
+    padding: 4px;
+    height: 65px;
+}
+.pin-brick .post-body-image img {
+    border-radius: 0px;
+    vertical-align: top;
+    margin: 2px 0px;
+    width: 100%;
+}
+.pin-brick .post-title-user-image {
+    margin-right: 10px;
+    float: left;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+.pin-brick .post-sharing-comment-user-image {
+    margin-right: 5px;
+    float: left;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-top: 0px;
+}
+.pin-brick .post-body-image {
+    padding: 0px;
+}
+.pin-brick .post-date {
+    color: #77737E;
+    font-weight: normal;
+    font-size: 12px;
+}
+.pin-brick .post-intro {
+    padding-bottom: 5px;
+    margin-bottom: 7px;
+    border-bottom: 1px solid #e1e2e3;
+}
+.pin-brick .post-intro img {
+    width: 15px;
+    height: 15px;
+}
+.pin-brick .post-sharing-comments {
+    background-color: #F9FBFF;
+    overflow: visible;
+}
+.pin-brick .post-sharing-body-text-wrapper {
+    position: relative; 
+}
+.pin-brick .post-sharing-body-text-wrapper a:hover {
+    text-decoration: none;
+}
+.pin-brick .post-sharing-body-text-wrapper .post-sharing-body-text {
+    padding: 5px 15px 5px 0;
+}
+.pin-brick .post-favorite, .pin-brick .post-favorited {
+    width: 18px;
+    height: 18px;
+    text-align: right;
+    position: relative;
+    left: 25px;
+    top: 0px;
+}
+.pin-brick .post-dropdown-btn {
+    border-color: transparent;
+    background-color: transparent;
+    padding: 0px 5px;
+    top: -3px;
+    position: relative;
+}
+.pin-brick .dropdown-menu {
+    width: 120px;
+    min-width: 120px;
+    position: absolute;
+    right: 0px;
+    left: auto;
+    top: -75px;
+}
+.pin-brick .dropdown-menu li {
+    border: 0px;
+    margin: 5px 5px;
+}

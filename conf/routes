@@ -1,0 +1,133 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)
+
+GET     /sitemap.xml                controllers.Assets.at(path="/public",file="app/sitemap.xml")
+GET     /robots.txt                 controllers.Assets.at(path="/public",file="app/robots.txt")
+
+# Google Webmaster
+GET     /googlee42c6d2bf91e90b7.html    controllers.Application.googleWebmaster
+
+GET     /favicon.ico                controllers.Assets.at(path="/public", file="app/images/favicon-1.ico")
+GET     /assets/javascript/routes.js    controllers.Application.jsRoutes
+GET     /privacy                    controllers.Application.privacy
+GET     /terms                      controllers.Application.terms
+
+GET     /restricted                 controllers.Application.restricted
+GET     /profile/:id                      controllers.UserController.profile(id: Long)
+GET     /profile                      controllers.Application.profile
+
+# Main
+GET     /                           controllers.Application.index
+GET     /my                         controllers.Application.mainHome
+GET     /login                      controllers.Application.login
+
+# Home
+GET     /signup-promo-code/:promoCode   controllers.Application.signupWithPromoCode(promoCode:String)
+#GET    /signup-code/:promoCode     controllers.Application.signupWithPromoCode(promoCode:String)
+GET     /signup-code/:promoCode     controllers.Application.detailsForPromoCode(promoCode:String)
+
+POST    /login                      controllers.Application.doLogin
+POST    /login-popup                controllers.Application.doLoginPopup
+POST    /saveSignupInfo             controllers.Application.saveSignupInfo
+POST    /saveSignupInfoFb           controllers.Application.saveSignupInfoFb
+GET     /get-application-info       controllers.Application.getApplicationInfo
+GET     /get-user-target-profile    controllers.Application.getUserTargetProfile
+GET     /init-new-user              controllers.Application.initNewUser
+
+
+GET     /logout                     com.feth.play.module.pa.controllers.Authenticate.logout
+GET     /authenticate/:provider     com.feth.play.module.pa.controllers.Authenticate.authenticate(provider: String)
+GET     /authenticatePopup/:provider    com.feth.play.module.pa.controllers.Authenticate.authenticatePopup(provider: String)
+ 
+GET     /signup                     controllers.Application.signup
+POST    /signup                     controllers.Application.doSignup
+
+GET     /accounts/unverified        controllers.Signup.unverified
+GET     /authenticate/:provider/denied     controllers.Signup.oAuthDenied(provider: String)
+
+GET     /accounts/verify/:token     controllers.Signup.verify(token: String)
+GET     /accounts/exists            controllers.Signup.exists
+
+GET     /accounts/password/reset/:token     controllers.Signup.resetPassword(token: String)
+POST    /accounts/password/reset            controllers.Signup.doResetPassword
+
+GET     /accounts/password/change    controllers.Account.changePassword
+POST    /accounts/password/change    controllers.Account.doChangePassword
+
+GET     /accounts/verify            controllers.Account.verifyEmail
+
+GET     /accounts/add               controllers.Account.link
+
+GET     /accounts/link              controllers.Account.askLink
+POST    /accounts/link              controllers.Account.doLink
+
+GET     /accounts/merge             controllers.Account.askMerge
+POST    /accounts/merge             controllers.Account.doMerge
+
+GET     /login/password/forgot      controllers.Signup.forgotPassword(email: String ?= "")
+POST    /login/password/forgot      controllers.Signup.doForgotPassword
+
+
+# User Info Service
+GET     /get-user-info              controllers.UserController.getUserInfo
+GET     /complete-home-tour         controllers.UserController.completeHomeTour
+GET     /about-user                 controllers.UserController.aboutUser
+POST    /updateUserProfileData      controllers.UserController.updateUserProfileData
+POST    /image/upload-profile-photo controllers.UserController.uploadProfilePhoto
+POST    /image/upload-product-photo controllers.UserController.addProduct
+POST    /image/upload-cover-photo   controllers.UserController.uploadCoverPhoto
+
+GET     /image/get-profile-image            controllers.UserController.getProfileImage
+
+GET     /image/get-thumbnail-image-by-id/:id        controllers.UserController.getThumbnailVersionImageByID(id :Long)
+GET     /image/get-thumbnail-cover-image-by-id/:id      controllers.UserController.getThumbnailCoverImageByID(id :Long)
+GET     /image/get-original-image-by-id/:id     controllers.UserController.getOriginalImageByID(id :Long)
+
+# Conversation
+#GET     /get-all-conversations      controllers.UserController.getAllConversations()
+#GET     /get-messages/:id/:offset   controllers.UserController.getMessages(id: Long, offset: Long)
+#GET     /start-conversation/:id     controllers.UserController.startConversation(id: Long)
+#GET     /open-conversation/:id      controllers.UserController.openConversation(id: Long)
+#GET     /delete-conversation/:id    controllers.UserController.deleteConversation(id: Long)
+#POST    /message/sendMsg            controllers.UserController.sendMessage()
+#POST    /image/sendMessagePhoto     controllers.UserController.sendPhotoInMessage()
+#GET     /user-friend-search         controllers.UserController.searchUserFriends(query: String)
+#GET     /image/get-message-image-by-id/:id      controllers.UserController.getMessageImageByID(id :Long)
+#GET     /get-unread-msg-count       controllers.UserController.getUnreadMsgCount()
+#GET     /image/get-original-private-image-by-id/:id     controllers.UserController.getOriginalPrivateImageByID(id :Long)
+#GET     /image/getEmoticons         controllers.UserController.getEmoticons()
+
+# Admin
+GET     /admin/get-campaign-joiners/:id         controllers.AdminController.getCampaignJoiners(id :Long)
+
+# Product
+GET     /add/product            		     		controllers.Application.addProduct
+GET     /add/story                   				controllers.Application.addStory
+
+POST	/create-product 		             		controllers.ProductController.createProduct
+GET     /get-all-feed-products       				controllers.ProductController.getAllFeedProducts
+GET     /product/:id            		     		controllers.ProductController.product(id: Long)
+GET     /like-product/:id          					controllers.ProductController.onLiked(id:Long)
+GET     /unlike-product/:id        					controllers.ProductController.onUnLiked(id:Long)
+POST	/product/comment							controllers.ProductController.onComment
+GET     /view-product/:id        					controllers.ProductController.onView(id:Long)
+POST	/create-collection		             		controllers.ProductController.createCollection
+POST	/product/add-to-collection					controllers.ProductController.addToCollection
+
+# User
+GET     /get-user-products/:id       				controllers.UserController.getUserProducts(id: Long)
+GET     /get-user-collections/:id					controllers.UserController.getUserCollections(id: Long)
+GET     /follow-user/:id          					controllers.UserController.onFollowed(id:Long)
+GET     /unfollow-user/:id        					controllers.UserController.onUnFollowed(id:Long)
+
+# image
+GET     /image/get-product-image-by-id/:id     		controllers.ProductController.getProductImageById(id :Long)
+GET     /image/get-full-product-image-by-id/:id		controllers.ProductController.getFullProductImageById(id :Long)

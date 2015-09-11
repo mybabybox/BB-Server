@@ -1,0 +1,17 @@
+<div class='user-profile-content-inner content-inner'>
+	<div class='collection-preview-strip'
+		data-ng-repeat="collection in collections">
+		<h2 class="collection-name">
+		{{collection.cn}}
+		</h2>
+		<!-- <a data-ng-if="!user.ilu" class="mediumish gray wb-follow btn-follow ">Follow</a>
+		<a class="mediumish gray wb-unfollow btn-unfollow wnl-hidden">Following</a> -->
+		<div class='collection-products-count'>{{collection.products.length}} products</div>
+		<div class='collections-products'>
+			<div data-ng-repeat="product in collection.products">
+				<img alt="Color Watch Circle" class="product-image product-x200"
+					data-ng-src="/image/get-product-image-by-id/{{product}}" />
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,284 @@
+.btn-sign-in, .btn-signed-in {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+.btn-signed-in {
+    opacity: 1;
+}
+.btn-signed-in:hover, .btn-signed-in img:hover {
+    color: black;
+    cursor: default;
+    opacity: 1;
+}
+#game-promo-link {
+    width: 75%;
+    padding: 5px;
+    margin: 10px;
+    font-size: 15px;
+    color: #646464;
+    border-color: #7acff2;
+}
+#game-promo-link:hover {
+    border-color: #A2E7E7;
+}
+#game-info {
+    padding: 5px 10px;
+}
+#game-info div {
+    margin: 3px 0;
+}
+#game-info a {
+    color: #333;
+    text-decoration: none;
+}
+#game-info a:hover {
+    color: #666;
+    text-decoration: none;
+}
+#game-info img {
+    width: 18px;
+    height: auto;
+    margin-bottom: 2px;
+}
+#game-info .points {
+    margin: 0px 3px;
+    color: #FF6600;
+    font-weight: bold;
+}
+#game-box {
+    overflow: hidden; 
+    background-color: white;
+    border: #7acff2 solid 1px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+#game-box .game-box-mascot {
+	height: 50px;
+	width: auto;
+	position: absolute;
+	top: -10px;
+	left: 20px;
+}
+#game-box h1, #game-box h2, #game-box h3, #game-box h4, #game-box h5, #game-box h6 {
+    padding: 10px;
+    margin: 0; 
+}
+#game-box h2 {
+	font-size: 20px;
+	font-weight: bold;
+    color: #556fb5;
+    padding-left: 60px;
+}
+#game-box h3 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #556fb5;
+    text-align: center;
+}
+#game-box h4 {
+    font-size: 15px;
+    font-weight: bold;
+    color: #556fb5;
+    border-bottom: 1px dashed #2EAB66;
+    /*background-color: #b0f0ff;*/
+}
+#game-box h5 {
+    font-size: 14px;
+}
+#game-box h6 {
+    font-size: 13px;
+}
+#game-box .sign-in {
+    padding: 10px;
+    font-size: 14px;
+    color: #000000;
+}
+#game-box .record {
+    font-size: 12px;
+    padding: 10px;
+    color: #666666;
+}
+#game-box .record li {
+    margin-bottom: 10px;
+}
+#game-box .game-details {
+    padding: 5px 10px;
+    font-size: 14px;
+    color: #000000;
+}
+#game-box .game-details .game-details-info {
+    white-space: pre-wrap;
+}
+#game-box .game-details div {
+    margin: 3px 0; 
+}
+#game-box .game-details a {
+    color: #333;
+}
+#game-box .game-details .points {
+    margin: 3px 10px;
+    color: #FF6600;
+    font-weight: bold;
+    font-size: 16px;
+}
+.game-bootbox-prompt .modal-dialog {
+    top: 100px;
+    font-size: 15px;
+    width: 250px;
+}
+.game-bootbox-prompt .modal-content {
+    border-color: #7acff2;
+    width: 350px;
+    height: auto;
+    text-align: center;
+}
+.game-bootbox-prompt .modal-content .bootbox-body {
+	padding: 10px 0;
+}
+.game-bootbox-prompt .modal-dialog .modal-header,
+.game-bootbox-prompt .modal-dialog .modal-footer {
+    border-color: #7acff2;
+    background-image: linear-gradient(to bottom, #F2FDFD, #F5FDFD);
+    background-color: #F2FDFD;
+}
+.game-bootbox-prompt .modal-dialog .modal-footer {
+    margin-top: 0;
+}
+
+#game-rules-box {
+    overflow: hidden; 
+    background-color: white;
+    border: #7acff2 solid 1px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+#game-rules-box div {
+}
+#game-rules-box div p {
+    font-size: 14px;
+}
+#game-rules-box h4, #game-rules-box h5 {
+    padding: 7px 10px 10px 10px;
+    margin: 0; 
+}
+#game-rules-box h4 {
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: #7acff2;
+}
+#game-rules-box h5 {
+    font-size: 14px;
+    font-weight: bold;
+    color: #556fb5;
+    border-bottom: 1px dashed #2EAB66;
+    margin: 5px 0 10px 0;
+    line-height: 1.4;
+}
+#game-rules-box .game-details {
+    padding: 5px 10px;
+    font-size: 14px;
+    color: #333;
+}
+#game-rules-box .game-details div {
+    margin: 5px 0; 
+}
+#game-rules-box .game-details .game-note {
+	font-size: 13px;
+	color: #666;
+	margin-left: 25px;
+	display: inline-block;
+}
+#game-rules-box .game-details .points {
+    margin: 0px 5px;
+    color: #FF6600;
+    font-weight: bold;
+    font-size: 13px;
+}
+#game-rules-box .game-details img {
+    width: 20px;
+    height: auto;
+    margin-bottom: 2px;
+    margin-right: 5px;
+}
+
+#game-box ul {
+	padding: 0;
+	margin: 0;
+}
+#game-box a {
+    text-decoration: none;
+}
+#game-box a.game-rules-url {
+    position: relative;
+    float: right;
+    font-size: 14px;
+    font-weight: normal;
+    margin-top: 3px;
+}
+.game-gift {
+    font-size: 14px;
+    padding: 10px 0;
+    border-bottom: 1px dashed #eee;
+}
+.game-gift .game-gift-thumb {
+	width: 40%;
+    height: auto;
+    display: inline-block;
+}
+.game-gift .game-gift-thumb img {
+	width: 100%;
+    height: auto;
+    border-radius: 3px;
+}
+.game-gift .game-gift-summary span {
+	font-size: 12px;
+	color: #333;
+}
+.game-gift .game-gift-summary {
+	width: 58%;
+	height: auto;
+    display: inline-block;
+    padding-left: 10px;
+    vertical-align: middle;
+}
+.game-gift .game-gift-summary a {
+  font-size: 14px;
+  color: #324fe1;
+  line-height: 1.2;
+}
+.game-gift .game-gift-summary a.game-gift-redeem-btn {
+	font-size: 13px;
+    color: white;
+	background-color: #38A035;
+    border-radius: 5px;
+    display: inline-block;
+    text-align: center;
+    padding: 5px 8px;
+    margin-top: 8px;
+    margin-right: 10px;
+}
+.game-gift a.game-gift-redeem-action-btn, 
+.game-gift a.game-gift-redeem-pending-btn,
+.game-gift a.game-gift-redeem-end-btn {
+	font-weight: bold;
+    font-size: 20px;
+	color: white;
+    border-radius: 5px;
+    display: inline-block;
+    text-align: center;
+    padding: 10px 15px;
+    margin: 10px;
+    width: 65%;
+}
+.game-gift a.game-gift-redeem-action-btn {
+    background-color: #38A035;	
+}
+.game-gift a.game-gift-redeem-pending-btn {
+    background-color: #4B9149;
+}
+.game-gift a.game-gift-redeem-end-btn {
+    background-color: #aaa;
+}

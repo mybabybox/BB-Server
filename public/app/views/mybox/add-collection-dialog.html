@@ -1,0 +1,74 @@
+<div class="modal in" id="save-product-modal" style="display: block;">
+	<div class="modal-body">
+		<button class="close" data-dismiss="modal">×</button>
+		<form action="/p/31137400/saves" class="product-form" data-remote=""
+			id="product-save-form" method="post">
+			<input id="attributed_user_id" name="attributed_user_id"
+				type="hidden" value="12069349"> <input
+				id="attributed_save_id" name="attributed_save_id" type="hidden"
+				value=""> <input id="publish_photo_to_fb"
+				name="publish_photo_to_fb" type="hidden" value="false"> <input
+				id="publish_photo_to_twitter" name="publish_photo_to_twitter"
+				type="hidden" value="false"> <input id="last_view"
+				name="last_view" type="hidden" value="save"> <input
+				id="feed_import" name="feed_import" type="hidden"> <input
+				id="source" name="source" type="hidden">
+			<div class="modal-save-product-button-container">
+				<div class="modal-save-product-header">
+					<span>Saving...</span>
+				</div>
+				<div class="modal-save-product-select-collection-container">
+					<div class="products-select-collection">
+						<input id="collection_id" name="collection_id" type="hidden"
+							value="asad"> <input id="collection_is_new"
+							name="collection_is_new" type="hidden" value="true">
+						<div
+							class="products-selected-collection-name-container button wb-light">
+							<span class="products-selected-collection-name">asad</span> <span
+								class="icon-chevron-down products-selected-collection-caret"></span>
+						</div>
+						<div class="products-collection-dropdown">
+							<div class="dropdown-menu">
+								<ul class="products-collections">
+									<li data-collection_id="65597561" class="gifts-collection">
+										<a href="#" class:="" ""="" class=""> <i class="icon-gift"></i>
+
+											Things I want as gifts
+									</a>
+									</li>
+									<li data-collection_id="65672852" class=""><a href="#"
+										class:="" "products-select-collection-selected"="" class="">
+
+											My Bedroom's Furniture </a></li>
+									<li data-collection_id="65597560" class=""><a href="#"
+										class:="" ""="" class=""> Things I like </a></li>
+									<li><a href="#"
+										class="products-select-collection-selected products-select-collection-highlighted">asad</a></li>
+								</ul>
+								<div class="products-select-collection-add-collection">
+									<button
+										class="button wb-primary products-select-collection-add-collection-button"
+										type="button" disabled="disabled">
+										<i class="icon-white icon-plus"></i>
+									</button>
+									<div
+										class="products-select-collection-add-collection-name-container">
+										<input class="products-select-collection-add-collection-name"
+											maxlength="72" placeholder="New collection name" type="text">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+				<textarea class="modal-save-product-comment" maxlength="750"
+					name="comment" placeholder="Description"></textarea>
+				<input class="product-save-form-submit button wb-primary large"
+					type="submit" value=" Save ">
+			</div>
+			<input name="new_collections[]" type="hidden" value="asad">
+		</form>
+
+	</div>
+</div>

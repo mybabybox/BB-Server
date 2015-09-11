@@ -1,0 +1,223 @@
+<div class="ngdialog-message">
+	<div class='product-modal-content'>
+		<div class="product-container">
+			<div class="product-container-inner product-attribution-show">
+				<div class="products-show-title">
+					<div class="products-show-title-inner-container">
+						<h1 data-attribute="name" data-object="product" data-type="input">
+							<span itemprop="name">{{product.pn}}</span>
+						</h1>
+					</div>
+				</div>
+				<div class="products-show-poster" style="float: left">
+					<div class="products-show-poster-details">
+						From <a href="/profile/{{product.oid}}">{{product.on}}</a>
+					</div>
+				</div>
+				<div class="products-show-poster" style="float: right">
+					<span ng-show="userInfo.isLoggedIn" class="btn-like-wrapper">
+						<a data-ng-show="!product.isLike" class="btn-like" href=""
+						data-ng-click="like_product(product.id)">Like</a> <a
+						data-ng-show="product.isLike" class="btn-like" href=""
+						data-ng-click="unlike_product(product.id)">Unlike</a> <span
+						ng-show="product.nol > 0"><b> <img
+								data-ng-src="/assets/app/images/general/icons/liked_1.png" />{{product.nol}}
+						</b></span>
+					</span> <span ng-show="!userInfo.isLoggedIn" class="btn-like-wrapper">
+						<span ng-show="product.nol > 0"><b><img
+								data-ng-src="/assets/app/images/general/icons/liked_1.png" />{{product.nol}}</b></span>
+					</span>
+				</div>
+				<div class="products-show" data-id="31137400">
+					<div class="products-show-left-pane">
+						<div class="products-show-image">
+							<a class="swap-link-if-user store-approved external-product-url"
+								data-domain="restorationhardware.com"
+								data-source="product image" rel="nofollow" target="_blank"><img
+								alt="Vintage Deluxe Scrabble®"
+								class="product-image product-original" itemprop="image"
+								data-ng-src="/image/get-full-product-image-by-id/{{product.imgs}}"></a>
+						</div>
+						<div class="variant-thumbnails"></div>
+					</div>
+					<div class="products-show-right-pane">
+						<div class="products-show-controls">
+							<div class="products-show-controls-save">
+								<div class="products-show-controls-save-btn"
+									data-attributed-user-id="12069349" data-product-id="31137400"
+									data-store-id="1098">
+									<a href="#" ng-if="userInfo.id == product.oid"
+										class="button wb-save" data-toggle="modal"
+										data-target="#save-product-modal" id="save_product"
+										rel="nofollow">Save</a>
+
+									<!-- <a ng-if="userInfo.id == product.oid" href="#"
+										class="button wb-save" data-toggle="modal" rel="nofollow">Save</a> -->
+								</div>
+							</div>
+							<div class="products-show-controls-buy">
+								<div class="products-show-controls-buy-btn">
+									<a class="button wb-buy store-approved external-product-url"
+										data-domain="restorationhardware.com" data-source="buy button"
+										rel="nofollow" target="_blank">Buy</a>
+								</div>
+
+								<div class="products-show-controls-buy-price-tag"
+									itemprop="offers" style="">
+									<div class="products-show-controls-sale-info"></div>
+									<div class="products-show-controls-buy-price-tag-right">
+										$<span class="products-show-controls-buy-price-tag-text"
+											data-object="product" data-type="input" itemprop="price">{{product.pp}}.00</span><i
+											class="icon-pencil best-in-place-edit-icon edit-price-tag-icon"></i>
+									</div>
+								</div>
+								<div class="price products-show-controls-report-btn">
+									<a href="#" class="product-report-link"
+										data-product-state="active" data-reportable-id="31137400"
+										data-reportable-type="Product"><i
+										class="icon-exclamation-sign"></i> </a>
+								</div>
+							</div>
+
+							<div class="clearfix"></div>
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<div class="product-container">
+			<div class="product-comments-container">
+				<div class="products-show-comments">
+					<div class="comments">
+						<div class="comments-show-more-btn"></div>
+
+					</div>
+					<div class="submit-comment">
+						<!-- <form method="post" class="new_comment"
+							data-ng-submit="comment_on_post()">
+							<div class="submit-comment-form-body">
+								<div class="submit-comment-avatar">
+									<img class="deferred-avatar-image avatar-x45"
+										data-avatar-size="x45">
+								</div>
+								<div class="submit-comment-error"></div>
+								<div class="submit-comment-textarea-container">
+									<textarea class="autocomplete submit-comment-textarea form-control"
+										id="comment" name="comment" cols="40" maxlength="750"
+										data-ng-modal="formData.comment"
+										placeholder="Comment, @mention, #hashtag" rows="20"></textarea>
+								</div>
+							</div>
+							<div class="submit-comment-form-actions">
+								<input class="button wb-primary large" type="submit"
+									value="Post">
+							</div>
+						</form> -->
+
+						<form ng-controller="CommentOnProductController" name="formData"
+							id="formData" ng-submit="submit()" method="post"
+							enctype="multipart/form-data">
+							<div class="control-group">
+								<div class="submit-comment-form-body">
+									<div class="form-group submit-comment-textarea-container">
+										<textarea cols="40" maxlength="750"
+											class="autocomplete submit-comment-textarea form-control"
+											placeholder="Comment, @mention, #hashtag" rows="20"
+											data-ng-model="formData.comment" required></textarea>
+									</div>
+								</div>
+							</div>
+
+							<div class="control-group centered stories-new-form-submit">
+								<button
+									ng-disabled="formData.$pristine || formData.$dirty && formData.$invalid"
+									type="submit" class="button wb-primary large">Post</button>
+							</div>
+						</form>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+
+
+<style>
+.modal-dialog {
+	width: 100%;
+	max-height: 600px;
+	overflow-y: auto;
+}
+
+.ngdialog.ngdialog-theme-plain.custom-width .ngdialog-content {
+	width: 95%;
+}
+
+.ngdialog.ngdialog-theme-plain {
+	padding-bottom: 30px;
+	padding-top: 30px;
+}
+
+.ngdialog-overlay {
+	right: 15px;
+}
+</style>
+
+
+<div class="modal fade in" id="save-product-modal"
+	style="display: none; height: 350px;">
+	<div class="modal-body">
+		<button class="close" data-dismiss="modal">x</button>
+		<form class="product-form" data-remote=""
+			id="product-save-form" method="post">
+			<div class="modal-save-product-button-container">
+				<div class="modal-save-product-header">
+					<span>Saving...</span>
+				</div>
+				<div class="modal-save-product-select-collection-container">
+					<div class='products-select-collection'>
+						<div ng-click="open = !open"
+							class='products-selected-collection-name-container button wb-light'>
+							<span class='products-selected-collection-name'>{{collection.cn}}
+							</span> <span
+								class='icon-chevron-down products-selected-collection-caret'></span>
+						</div>
+						<div ng-class="open ? 'open':''"
+							class='products-collection-dropdown'>
+							<div class='dropdown-menu'>
+								<ul class='products-collections' style="max-height: 75px;">
+									<li data-ng-repeat="collection in collections" data-ng-click="selectValue(collection);"
+										data-collection_id="65597560" class=""><a href="#"
+										class=""> {{collection.cn}} </a></li>
+								</ul>
+								<div class='products-select-collection-add-collection'>
+									<button
+										class='button wb-primary products-select-collection-add-collection-button'
+										type='button' data-ng-click="addCollection(inputname)">
+										<i class='icon-white icon-plus'></i>
+									</button>
+									<div
+										class='products-select-collection-add-collection-name-container'>
+										<input type="text" class="products-select-collection-add-collection-name form-control"
+											id="enter-name" ng-model="inputname"
+											placeholder={{placeholder}}> 
+
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- <textarea class="modal-save-product-comment" maxlength="750"
+					name="comment" placeholder="Description"></textarea> -->
+				<input class="product-save-form-submit button wb-primary large"
+					data-ng-click="add_product_to_collection()" value=" Save ">
+			</div>
+		</form>
+	</div>
+</div>

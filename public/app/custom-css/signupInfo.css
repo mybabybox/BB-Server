@@ -1,0 +1,289 @@
+ul, li {
+    list-style: none;
+    padding: 0;
+}
+.signup-info-table label.error {
+    background-image: url(../images/error.png);
+    background-repeat: no-repeat;
+    background-position: center left;
+    color: #c33;
+    font-size: 13px;
+    line-height: 16px;
+    margin: 0 0 0 15px;
+    padding: 0 0 0 18px;
+    vertical-align: middle; 
+}
+.signup-info-sub-table {
+}
+.signup-info-sub-table tr td {
+    font-size: 14px;
+    font-weight: normal;
+    padding: 5px;
+    vertical-align: top;
+    color: #0A0A0A;
+}
+.signup-info-sub-table tr td label {
+    font-size: 14px;
+    font-weight: normal;
+    padding-right: 15px;
+    vertical-align: top;
+}
+.signup-info-sub-table tr td:first-child {
+    text-align: right;
+    width: 100px;
+}
+.signup-info-table {
+    width: 550px;
+}
+.signup-info-table tr td {
+    font-size: 14px;
+    font-weight: normal;
+    padding: 5px;
+    vertical-align: top;
+    color: #0A0A0A;
+}
+.signup-info-table tr td label {
+    font-size: 14px;
+    font-weight: normal;
+    padding-right: 15px;
+    vertical-align: top;
+}
+.signup-info-table tr td .title {
+    margin-bottom: 5px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #2EAB66;
+    font-weight: bold;
+}
+.signup-info-table tr td input[type='radio'],
+.signup-info-table tr td input[type='checkbox'] {
+    margin: 0 10px;
+}
+.signup-info-header {
+    margin: 3px 0;
+    font-size: 14px;
+    font-weight: bold;
+    color: #44318B;
+    line-height: 1.6;
+}
+.signup-info-header-tips {
+    margin: 3px 20px;
+    font-size: 12px;
+    color: #44318B;
+    line-height: 1.5;
+}
+.signup-info-box {
+    background-color: white;
+    border-radius: 5px;
+    padding: 15px;
+    border: #4135a9 thin solid;
+    height:100%
+}
+.signup-info-box h3 {
+    color: #44318B;
+    border-bottom: 1px solid #B5B3F0;
+    margin-bottom: 5px;
+    padding-bottom: 10px;
+}
+.signup-info-container {
+    margin: 0 auto;
+    padding: 0;
+    position: relative;
+    max-width: 650px;
+    width: 90%;
+    height: auto;
+}
+.signup-info-container div.signup-info-box {
+    float: left;
+    width: 100%;
+    margin-right: 2%;
+    height: 100%;
+    padding: 2% 7%;
+}
+.signup-info-container div.signup-info-box div {
+    float: left;
+    width: 100%;
+}
+.signup-info-container div.signup-info-box h1 {
+    position: absolute;
+    bottom: 45%;
+    left: 10%;
+}
+.signup-info-container div.signup-info-box h5 {
+    line-height: 1.3;
+}
+.signup-info-container div.signup-info-box p {
+    color: gray;
+}
+.signup-info-container div {
+    float: right;
+    width: 28%;
+}
+.signup-info-box img[alt=title-image] {
+    width: 250px;
+    height: auto;
+    float: right;
+    margin-top: -25%;
+}
+
+#signup-info-section ul {
+    position: relative;
+}
+#signup-info-section li img {
+    width: 40%;
+    position: absolute;
+    left: -23px;
+}
+#signup-info-section li h4 {
+    color: white;
+    font-weight: bold;
+    font-size: normal;
+    position: relative;
+    left: -15px;
+    top: 5px;
+    margin-bottom: 25px;
+}
+/*.signup-info-container div.signup-info-box ul h4{
+    background-color: #f13b18;
+    float: left;
+    color: white;
+    font-weight: bold;
+    padding: 10px 30px 10px 10px;
+    position: relative;
+    left: -25px;
+    box-shadow: 2px 2px 3px gray;
+}
+.signup-info-container div.signup-info-box ul h4:before {
+    content: "";
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 10px 10px 0;
+    border-color: transparent #802412 transparent transparent;
+    position: relative;
+    left: -10px;
+    top: 10px;
+}
+.signup-info-container div.signup-info-box ul h4:after {
+    content: "";
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 10px 10px 0;
+    border-color: #f13b18;
+    position: relative;
+    left: -96px;
+    top: -1px;
+}
+.signup-info-container div.signup-info-box ul h4+p {
+    width: 10px;
+    height: 39px; 
+    float: left;
+    position: relative;
+    left: -30px;
+    top: 10px;
+    text-indent: -9999px;
+    background-image: url(../images/login/sawtooth.jpg);
+    background-repeat: repeat-y;
+    background-position: top right;
+}*/
+.signup-info-container div.signup-info-box ul li img[alt=signup-info-via-facebook] {
+    display: block;
+    position: relative;
+    left: 45%;
+    margin-left: -108px;
+    padding: 10px; 
+}
+.signup-info-container div.signup-info-box ul li img[alt=fb-icon] {
+    margin-right: 10px;
+    width: 15px;
+}
+.signup-info-container div.signup-info-box ul li a[title=user-name]:after {
+    content: ",";
+    font-weight: bolder;
+    font-size: larger;
+    color: black;
+}
+.signup-info-container div.signup-info-box ul li span[title=fd-num]:before {
+    content: " 和 ";
+}
+.signup-info-container div.signup-info-box ul li span[title=fd-num]+p {
+    display: inline-block;
+}
+.signup-info-fd-list img{
+    width: 35px;
+    display: inline-block;
+    margin-right: 3px;
+}
+.signup-info-container div.signup-info-box ul hr {
+    border: #c1c1c1 thin dashed;
+}
+#signup-info-info-wrapper {
+    text-align: left;
+}
+#signup-info-info-wrapper .general-textfield {
+    border-radius: 20px;
+    width: 95%;
+    border: thin solid #bcbcbc;
+    padding: 7px 15px 7px 7px;
+    margin-bottom: 15px;
+}
+#signup-info-info-wrapper .general-textfield:focus {
+    border: thin solid #a37cde;
+}
+#signup-info-info-wrapper p {
+    padding: 0 7px;
+    color: gray;
+    font-size: small;
+    float: left;
+}
+#signup-info-password {
+    position: relative;
+    left: 2px;
+}
+#signup-info-state {
+    float: left;
+}
+#signup-info-state + p {
+    padding: 0 7px;
+    color: gray;
+    font-size: small;
+    float: left;
+}
+#signup-info-btn {
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    width: 60%;
+    padding: 5px;
+    background-repeat: no-repeat;
+    border: 1px solid #e1e8ed;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-block;
+    background-color: #ffac33;
+    background-image: linear-gradient(#ffcc4d,#ffac33);
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffcc4d, endColorstr=#ffac33, GradientType=0)";
+    border-color: #f1a02a;
+    color: #292f33;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+}
+#signup-info-newacc {
+    margin-top: 10px;
+}
+#signup-info-newacc p {
+    color: gray;
+    font-size: small;
+}
+#signup-info-footer {
+    width: 950px;
+    position: relative;
+    left: 50%;
+    margin-left: -475px;
+    margin-top: 30px;
+    text-align: center;
+    font-weight: bold;
+}
+#signup-info-footer a {
+    color: white;
+    margin-right: 10px;
+}

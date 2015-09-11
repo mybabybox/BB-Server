@@ -1,0 +1,49 @@
+<div id="header-menu" class="row">
+    <div class="col-md-3 col-sm-3 col-xs-3" id="main-logo"><a href="/"><img src="/assets/app/images/logo-2.png" /></a></div>
+    <div id="main-menu">
+        <ul>
+            <li class="col-md-1 col-sm-1 col-xs-1" ng-class="{selected: selectedNavBar == 'FRONTPAGE'}" ng-click="selectNavBar('FRONTPAGE')">
+                <a href="/"><H3>My Feed</H3></a>
+            </li>
+            <li class="col-md-1 col-sm-1 col-xs-1" ng-class="{selected: selectedNavBar == 'HOME'}" ng-click="selectNavBar('HOME')">
+                <a href="/my#!"><H3>Magic</H3></a>
+            </li>
+            <li class="col-md-1 col-sm-1 col-xs-1" ng-class="{selected: selectedNavBar == 'HOT_ARTICLES'}" ng-click="selectNavBar('HOT_ARTICLES')">
+                <a href="/articles#!/article/show/0"><H3>Trending</H3></a>
+            </li>
+            <li class="col-md-1 col-sm-1 col-xs-1" ng-class="{selected: selectedNavBar == 'SCHOOLS'}" ng-click="selectNavBar('SCHOOLS')">
+                <a  data-toggle="modal" data-target="#createCommunityModal" href=""><H3>Post +</H3></a>
+            </li>
+            <!--li class="col-md-1 col-sm-1 col-xs-1" ng-class="{selected: selectedNavBar == 'SOON_TO_BE_MOMS_ARTICLES'}" ng-click="selectNavBar('SOON_TO_BE_MOMS_ARTICLES')">
+                <a href="/knowledge#!/article/show/{{soonMomsArticleCategories[0].id}}"><img src="/assets/app/images/frontpage/icon_mainMenu_library.png"/></a>
+            </li-->
+            <!--li class="col-md-1 col-sm-1 col-xs-1" ng-class="{selected: selectedNavBar == 'MAGAZINE'}" ng-click="selectNavBar('MAGAZINE')">
+                <a href="/magazine#!"><img src="/assets/app/images/frontpage/icon_mainMenu_magazine.png"/></a>
+            </li-->
+            <!--li class="col-md-1 col-sm-1 col-xs-1">
+                <a href="/#!"><img src="/assets/app/images/frontpage/icon_mainMenu_tools.png"/></a>
+            </li-->
+            <li class="col-md-3 col-sm-3 col-xs-3" style="width:300px;">
+                <div class="pull-right">
+                    <div data-ng-include data-src="'/assets/app/views/widgets/fb-link-like-widget.html'"></div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div data-ng-include data-src="'/assets/app/views/mybox/add-product-modal.html'"></div>
+
+<div id="nav-subbar" ng-show="selectedNavBar == 'MAGAZINE'">
+    <div class="nav-menu">
+        <span ng-class="{'selected-green': selectedNavSubBar == 0}">
+            <a class="nav-item nav-item-green" href="/magazine#!/">
+                æœ€æ–°å‹•å�‘
+            </a>
+        </span>
+        <span ng-class="{'selected-green': selectedNavSubBar == category.id}" ng-repeat="category in businessCommunityCategories">
+            <a class="nav-item nav-item-green" href="/magazine#!/view/{{category.id}}">
+                {{category.name}}
+            </a>
+        </span>
+    </div>
+</div>

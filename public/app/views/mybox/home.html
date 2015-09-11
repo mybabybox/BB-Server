@@ -1,0 +1,35 @@
+<header>
+	<div data-ng-include style="width: 100%;"
+		data-src="'/assets/app/views/header-bar.html'"></div>
+</header>
+
+<div class="themeA-container">
+	<div style="padding-top: 55px;">
+		<div ng-if="!userInfo.isLoggedIn" class='container-fluid'>
+			<div class='products-grid'>
+				<div class='products-thumbnails'>
+					<div data-ng-repeat="product in products"
+						class='product-thumbnail-container product-overlay-container js-paginated-product'>
+						<a class="product-thumbnail" data-toggle="" href="/product/{{product.id}}"><img
+							alt="Alpaca Block Sweater at INDUSTRY OF ALL NATIONS™ in GREY/CHARCOAL in XS, S, M, L, XL"
+							data-ng-src="/image/get-product-image-by-id/{{product.imgs}}" />
+						</a>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+		<div ng-if="userInfo.isLoggedIn" data-ng-include
+			data-src="'/assets/app/views/mybox/product-mouseover-info.html'"></div>
+	</div>
+</div>
+
+
+
+
+
+<div id="back-to-top" style="z-index: 1000">
+	<a data-ng-click="gotoTop()"><span class="icon-title-arrow-up"></span>Top</a>
+</div>
+
