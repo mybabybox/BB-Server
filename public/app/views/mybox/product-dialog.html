@@ -82,6 +82,29 @@
 							<div class="clearfix"></div>
 						</div>
 
+						<div class="products-show-more">
+							<div class="products-show-more-from-user">
+								<div class="products-show-more-text">
+									<span>more from&nbsp;</span><a href="/profile/{{product.oid}}"
+										class="products-show-poster-details-store">{{product.on}}</a><span></span>
+									<div data-ng-if="userInfo.id != product.oid"
+										class="products-show-more-follow-button products-show-more-follow-store-button">
+										<a data-ng-if="!product.ifu" class="largish wb-follow btn-follow"
+											data-ng-click="onFollowUser()">Follow</a> <a
+											data-ng-if="product.ifu"
+											class="largish wb-unfollow btn-unfollow"
+											data-ng-click="onUnFollowUser()">Following</a>
+									</div>
+								</div>
+								<div
+									class="products-show-more-from-user-grid products-show-more-grid">
+									<a  data-ng-repeat="prod in product.relatedProducts" href="/product/{{prod.id}}"><img
+										class="product-image product-x200"
+										data-ng-src="/image/get-product-image-by-id/{{prod.img}}"></a>
+								</div>
+							</div>
+						</div>
+
 					</div>
 				</div>
 

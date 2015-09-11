@@ -21,6 +21,7 @@ import play.mvc.Controller;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
 import viewmodel.FeedProductVM;
+import viewmodel.ProductInfoVM;
 import viewmodel.ProfileVM;
 import viewmodel.UserVM;
 import common.utils.HtmlUtil;
@@ -144,13 +145,22 @@ public class ProductController extends Controller{
 
 	@Transactional
 	public static Result product(Long id) {
-		NanoSecondStopWatch sw = new NanoSecondStopWatch();
-		Product product = Product.findById(id);
-		FeedProductVM vm = new FeedProductVM(product);
-		vm.isLiked = product.isLikedBy(Application.getLocalUser(session()));
-		return ok(views.html.mybox.product.render(Json.stringify(Json.toJson(vm))));
+		final User localUser = Application.getLocalUser(session());
+		return ok(views.html.mybox.product.render(Json.stringify(Json.toJson(getProductInfoVM(id))), Json.stringify(Json.toJson(new UserVM(localUser)))));
 	}
+	
+	@Transactional
+	public static Result getProductInfo(Long id) {
+		return ok(Json.toJson(getProductInfoVM(id)));
+	}
+	
 
+	public static ProductInfoVM getProductInfoVM(Long id) {
+		Product product = Product.findById(id);
+		ProductInfoVM vm = new ProductInfoVM(product, Application.getLocalUser(session()));
+		return vm;
+	}
+	
 	@Transactional
 	public static Result onLiked(Long id) {
 		Product.findById(id).onLikedBy(Application.getLocalUser(session()));

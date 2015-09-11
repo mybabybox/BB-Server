@@ -18,11 +18,18 @@ mybox.controller('FrontPageController',
 	};
 });
 
+mybox.controller('ProductPageController', 
+		function($scope, $route, $http, likeService, userService, productService, product, userInfo) {
+	$scope.product = product;
+	$scope.userInfo = userInfo;
+});
 
 mybox.controller('ProductController', 
-		function($scope, $route, $http, likeService, userService) {
+		function($scope, $route, $http, likeService, userService, productService) {
+	console.log($scope.product);
 	$scope.collections = [];
 	$scope.open = false;
+	$scope.product = productService.getProductInfo.get({id:$scope.product.id});
 	if($scope.product.oid = $scope.userInfo.id){
 		$scope.collections = userService.getUserCollection.get({id:$scope.userInfo.id});
 	}
@@ -62,6 +69,15 @@ mybox.controller('ProductController',
 		.success(function(response) {
 			console.log(response);
 		});
+	}
+	
+	$scope.onFollowUser = function() {
+		followService.followUser.get({id:profileUser.id});
+		$scope.product.ifu = !$scope.product.ifu;
+	}
+	$scope.onUnFollowUser = function() {
+		followService.unFollowUser.get({id:profileUser.id});
+		$scope.product.ifu = !$scope.product.ifu;
 	}
 });
 

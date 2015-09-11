@@ -23,6 +23,16 @@ mybox.service('collecctionService',function($resource){
     );
 });
 
+mybox.service('productService',function($resource){
+    this.getProductInfo = $resource(
+            '/get-product-info/:id',
+            {alt:'json',callback:'JSON_CALLBACK'},
+            {
+                get: {method:'get', params:{id:'@id'}}
+            }
+    );
+});
+
 
 mybox.service('userService',function($resource){
     this.getUserProduct = $resource(

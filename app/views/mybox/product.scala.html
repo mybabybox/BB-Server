@@ -1,4 +1,4 @@
-@(product:String)
+@(product:String, userInfo:String)
 
 <!doctype html>
 <html lang="zh-hk">
@@ -35,8 +35,8 @@
       	<link rel="icon" type="image/png" href="@routes.Assets.at("app/images/favicon-1.ico")">
       	<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("app/images/favicon-1.ico")">
     </head>
-    <body id="main-app" class="menu-right-hidden" ng-app="mybox" ng-controller="ProductController">
-        <div class="container-fluid menu-hidden">
+    <body id="main-app" class="menu-right-hidden" ng-app="mybox" ng-controller="ProductPageController">
+        <div class="container-fluid menu-hidden" ng-controller="ProductController">
             <div id="main-view" >
 	            <header>
 					<div data-ng-include style="width: 100%;"
@@ -128,5 +128,8 @@
 <script>
 		angular.module('mybox').factory('product', function(){
 			return @Html(product);
+		});
+		angular.module('mybox').factory('userInfo', function(){
+			return @Html(userInfo);
 		});
 </script>
