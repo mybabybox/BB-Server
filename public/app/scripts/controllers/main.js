@@ -72,11 +72,11 @@ mybox.controller('ProductController',
 	}
 	
 	$scope.onFollowUser = function() {
-		followService.followUser.get({id:profileUser.id});
+		followService.followUser.get({id:$scope.product.oid});
 		$scope.product.ifu = !$scope.product.ifu;
 	}
 	$scope.onUnFollowUser = function() {
-		followService.unFollowUser.get({id:profileUser.id});
+		followService.unFollowUser.get({id:$scope.product.oid});
 		$scope.product.ifu = !$scope.product.ifu;
 	}
 });
