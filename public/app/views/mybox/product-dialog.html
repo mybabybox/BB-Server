@@ -16,13 +16,13 @@
 				</div>
 				<div class="products-show-poster" style="float: right">
 					<span ng-show="userInfo.isLoggedIn" class="btn-like-wrapper">
-						<a data-ng-show="!product.isLike" class="btn-like" href=""
-						data-ng-click="like_product(product.id)">Like</a> <a
+						<a  data-ng-show="!product.isLike" class="btn-like" href=""
+						data-ng-click="like_product(product.id)"><img src="/assets/app/newImages/like-facebook.jpg" width="60px"/></a> <a
 						data-ng-show="product.isLike" class="btn-like" href=""
 						data-ng-click="unlike_product(product.id)">Unlike</a> <span
-						ng-show="product.nol > 0"><b> <img
+						ng-show="product.nol > 0"><a class="btn-like"> <img
 								data-ng-src="/assets/app/images/general/icons/liked_1.png" />{{product.nol}}
-						</b></span>
+						</a></span>
 					</span> <span ng-show="!userInfo.isLoggedIn" class="btn-like-wrapper">
 						<span ng-show="product.nol > 0"><b><img
 								data-ng-src="/assets/app/images/general/icons/liked_1.png" />{{product.nol}}</b></span>
@@ -66,7 +66,7 @@
 									itemprop="offers" style="">
 									<div class="products-show-controls-sale-info"></div>
 									<div class="products-show-controls-buy-price-tag-right">
-										$<span class="products-show-controls-buy-price-tag-text"
+										&nbsp;&nbsp;$<span class="products-show-controls-buy-price-tag-text"
 											data-object="product" data-type="input" itemprop="price">{{product.pp}}.00</span><i
 											class="icon-pencil best-in-place-edit-icon edit-price-tag-icon"></i>
 									</div>
@@ -119,6 +119,25 @@
 						<form ng-controller="CommentOnProductController" name="formData"
 							id="formData" ng-submit="submit()" method="post"
 							enctype="multipart/form-data">
+<!-- 							<div class="form-group"> -->
+<!-- 									<span>{{comment}}</span> -->
+<!-- 									</div> -->
+
+							<div class="form-group" ng-repeat="c in comArray">
+								
+								<table>
+								<tr>
+									<td>
+										<img data-ng-src="/image/get-thumbnail-image-by-id/{{c.id}}"
+										class="img-circle"	width="50" height="50">
+									</td>
+									<td>
+										<span><b>{{c.name}}</b></span><br>
+										<span>{{c.comment}}</span>
+									</td>
+								</tr>
+								</table>
+								</div>
 							<div class="control-group">
 								<div class="submit-comment-form-body">
 									<div class="form-group submit-comment-textarea-container">

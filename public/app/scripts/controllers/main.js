@@ -68,19 +68,32 @@ mybox.controller('ProductController',
 mybox.controller('CommentOnProductController', 
 		function($scope, $route, $http, likeService) {
 	$scope.formData = {};
+
+	$scope.comArray=[];
+	
 	$scope.submit = function() {
 		var data = {
 				"product_id" : $scope.product.id,
 				"commentText" : $scope.formData.comment,
 		};
+		
 		console.log($scope.formData.comment);
+		console.log($scope.userInfo);
+	
 		$http.post('/product/comment', data) 
 		.success(function(response) {
 			console.log(response);
+			 $scope.comArray.push({
+			        comment:$scope.formData.comment,
+			        name: $scope.userInfo.displayName,
+			        id: $scope.userInfo.id
+			        
+		    });
+			 $scope.formData.comment="";
 		});
 	}
-});
 
+});
 
 
 mybox.controller('ProfileController', 
