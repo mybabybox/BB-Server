@@ -1,7 +1,6 @@
 package models;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -13,12 +12,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-
 import play.db.jpa.JPA;
-import domain.Joinable;
-import domain.Likeable;
-import domain.Postable;
 import domain.SocialObjectType;
 
 @Entity

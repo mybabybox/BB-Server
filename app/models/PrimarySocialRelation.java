@@ -64,11 +64,9 @@ public class PrimarySocialRelation extends domain.Entity implements Serializable
 	@Id @GeneratedValue(strategy=GenerationType.AUTO)
 	public Long id;
 	
-	
 	public Long actor;
 	@Enumerated(EnumType.STRING)
 	public SocialObjectType actorType;
-	
 	
 	@Enumerated(EnumType.STRING)
 	public Action action;
@@ -82,7 +80,6 @@ public class PrimarySocialRelation extends domain.Entity implements Serializable
     		MESSAGE_SEND,
     }
 
-	
 	public Long target;
 	@Enumerated(EnumType.STRING)
 	public SocialObjectType targetType;
@@ -97,19 +94,8 @@ public class PrimarySocialRelation extends domain.Entity implements Serializable
 	@Transient
 	boolean isPostSave = true;
 
-	@Transient
-	public boolean memberJoinedOpenCommunity;
-	
 	static public enum Action {
-		LIKED,
-        WANT_ANS,
-		POSTED, 
-		POSTED_QUESTION, 
-		COMMENTED, 
-		ANSWERED,
-        YES_VOTED,
-        NO_VOTED,
-        FOLLOWED
+		LIKED
 	}
 	
 	public PrimarySocialRelation(){}

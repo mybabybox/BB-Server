@@ -1,11 +1,8 @@
 package processor;
 
-import common.collection.Pair;
 import common.utils.StringUtil;
 import domain.SocialObjectType;
 import models.PrimarySocialRelation;
-import models.SecondarySocialRelation;
-import models.SocialObject;
 import models.User;
 import play.db.jpa.JPA;
 import javax.persistence.Query;
@@ -35,11 +32,10 @@ public class PrimarySocialRelationManager {
 
         String idsForIn = StringUtil.collectionToString(objIds, ",");
 
-        Query q = JPA.em().createQuery("Select sr.target, sr.targetType, sr.action from PrimarySocialRelation sr where sr.action in (?1, ?2) and sr.actor=?3 " +
+        Query q = JPA.em().createQuery("Select sr.target, sr.targetType, sr.action from PrimarySocialRelation sr where sr.action=?1 and sr.actor=?2" +
                 "and sr.target in ("+idsForIn+")");
         q.setParameter(1, PrimarySocialRelation.Action.LIKED);
-        q.setParameter(2, PrimarySocialRelation.Action.WANT_ANS);
-        q.setParameter(3, user.id);
+        q.setParameter(2, user.id);
 
         List<Object[]> qRes = q.getResultList();
         for (Object[] entry : qRes) {

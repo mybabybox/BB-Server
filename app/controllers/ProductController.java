@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
-
 import models.Category;
 import models.Collection;
 import models.Product;
@@ -24,14 +22,12 @@ import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
 import viewmodel.FeedProductVM;
 import viewmodel.ProductInfoVM;
-import viewmodel.ProfileVM;
 import viewmodel.UserVM;
 import common.utils.HtmlUtil;
 import common.utils.ImageFileUtil;
-import common.utils.NanoSecondStopWatch;
 import domain.ProductType;
 
-public class ProductController extends Controller{
+public class ProductController extends Controller {
 	private static play.api.Logger logger = play.api.Logger.apply(ProductController.class);
 
 	@Transactional

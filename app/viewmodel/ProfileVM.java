@@ -1,11 +1,8 @@
 package viewmodel;
 
-import java.util.List;
-
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import models.Location;
-import models.PrivacySettings;
 import models.User;
 
 public class ProfileVM {

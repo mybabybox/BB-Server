@@ -9,8 +9,6 @@ import models.User;
 import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 
-import controllers.Application;
-
 public class ProductInfoVM extends FeedProductVM{
 
 	@JsonProperty("ifu")  public boolean isFollowdByUser = false;

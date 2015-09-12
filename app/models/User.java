@@ -4,14 +4,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,7 +26,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import models.SocialRelation.Action;
 import models.TokenAction.Type;
 import mybox.shopping.social.exception.SocialObjectNotCommentableException;
 import mybox.shopping.social.exception.SocialObjectNotJoinableException;
@@ -57,13 +53,11 @@ import com.feth.play.module.pa.user.EmailIdentity;
 import com.feth.play.module.pa.user.FirstLastNameIdentity;
 import com.google.common.collect.Lists;
 
-import common.cache.FriendCache;
 import common.collection.Pair;
 import common.image.FaceFinder;
 import common.utils.DateTimeUtil;
 import common.utils.ImageFileUtil;
 import common.utils.NanoSecondStopWatch;
-import common.utils.StringUtil;
 import domain.CommentType;
 import domain.DefaultValues;
 import domain.Followable;
@@ -75,11 +69,11 @@ import domain.Socializable;
 public class User extends SocialObject implements Subject, Socializable, Followable {
     private static final play.api.Logger logger = play.api.Logger.apply(User.class);
 
-    private static User MB_ADMIN;
-    private static User MB_EDITOR;
+    private static User BB_ADMIN;
+    private static User BB_EDITOR;
     
-    public static final String MB_ADMIN_NAME = "小萌豆 管理員";
-    public static final String MB_EDITOR_NAME = "小萌豆 編輯";
+    public static final String BB_ADMIN_NAME = "BabyBox 管理員";
+    public static final String BB_EDITOR_NAME = "BabyBox 編輯";
     
     public String firstName;
     public String lastName;
@@ -227,371 +221,10 @@ public class User extends SocialObject implements Subject, Socializable, Followa
             throws SocialObjectNotCommentableException {
         return target.onComment(this, comment, CommentType.SIMPLE);
     }
-
-    public void answeredOn(SocialObject target, String comment)
-            throws SocialObjectNotCommentableException {
-        target.onComment(this, comment, CommentType.ANSWER);
-    }
-
-   /* public void requestedToJoin(SocialObject target)
-            throws SocialObjectNotJoinableException {
-        // (pendingJoin, isMember)
-        Pair<Boolean, Boolean> memStatus = ((Community) target).getMemberStatusForUser(this.id);
-        if (!memStatus.first && !memStatus.second) {
-            target.onJoinRequest(this);
-        } else {
-            logger.underlyingLogger().warn(String.format("[u=%d][c=%d] User already a member of community", this.id, ((Community) target).id));
-        }
-    }*/
-
-    public void joinRequestAccepted(SocialObject target, User toBeMember)
-            throws SocialObjectNotJoinableException {
-        target.onJoinRequestAccepted(toBeMember);
-    }
-
-    public void inviteRequestAccepted(SocialObject target, User toBeMember)
-            throws SocialObjectNotJoinableException {
-        target.onInviteRequestAccepted(toBeMember);
-    }
     
     public void markNotificationRead(Notification notification) {
         notification.changeStatus(1);
     }
-
-    @Override
-    public void sendFriendInviteTo(User invitee)
-            throws SocialObjectNotJoinableException {
-        recordFriendRequest(invitee);
-    }
-
-    @Override
-    @Transactional
-    public void onFriendRequestAccepted(User user)
-            throws SocialObjectNotJoinableException {
-        JPA.em().merge(this);
-        recordFriendRequestAccepted(user);
-    }
-
-    public void onRelationShipRequest(User user, Action relation)
-            throws SocialObjectNotJoinableException {
-        recordRelationshipRequest(user, relation);
-    }
-
-    @Transactional
-    public void onRelationShipRequestAccepted(User user, Action action)
-            throws SocialObjectNotJoinableException {
-        JPA.em().merge(this);
-        recordRelationshipRequestAccepted(user, action);
-    }
-
-    @JsonIgnore
-    public List<User> getFriends() {
-        return  getFriends(-1);
-    }
-    
-    @JsonIgnore
-    public List<User> getFriends(int limit) {
-        CriteriaBuilder cb = JPA.em().getCriteriaBuilder();
-        CriteriaQuery<SocialRelation> q = cb.createQuery(SocialRelation.class);
-        Root<SocialRelation> c = q.from(SocialRelation.class);
-        q.select(c);
-        q.where(cb.and(
-                cb.or(cb.equal(c.get("target"), this.id),
-                        cb.equal(c.get("actor"), this.id)),
-                cb.equal(c.get("action"), SocialRelation.Action.FRIEND)));
-
-        List<SocialRelation> result;
-        if(limit == -1) {
-            result = JPA.em().createQuery(q).getResultList();
-        } else {
-            result = JPA.em().createQuery(q).setMaxResults(limit).getResultList();
-        }
-        List<User> frndList = new ArrayList<>();
-        for (SocialRelation rslt : result) {
-            if (rslt.actor.equals(this.id)) {
-                User user = (User) rslt.getTargetObject(User.class);
-                if (User.isLoggedIn(user)) {
-                    frndList.add(user);
-                }
-            }
-            else if (rslt.target.equals(this.id)) {
-                User user = (User) rslt.getActorObject(User.class);
-                if (User.isLoggedIn(user)) {
-                    frndList.add(user);
-                }
-            }
-        }
-        return frndList;
-    }
-    
-    @JsonIgnore
-    public Long getFriendsSize() {
-        int count = FriendCache.getFriendsIds(this.id).size();
-        return new Long(count);
-    }
-
-    /**
-     * Return 2nd level friends.
-     * @param limit
-     * @return
-     */
-    @JsonIgnore
-    public List<Pair<User, String>> getSuggestedFriends(int limit) {
-        Set<Long> secondLevelFrdIds = new HashSet<>();
-        Map<Long, Long> secondLevelFrdOf = new HashMap<>();
-
-        List<Long> firstLevelFrdIds = FriendCache.getFriendsIds(this.id);
-        for (Long firstLevelFrdId : firstLevelFrdIds) {
-            List<Long> ids = FriendCache.getFriendsIds(firstLevelFrdId);
-            for (Long secondLevelFrdId : ids) {
-                secondLevelFrdIds.add(secondLevelFrdId);
-                secondLevelFrdOf.put(secondLevelFrdId, firstLevelFrdId);
-            }
-        }
-        // remove myself and any 2nd level friends that are already my friends.
-        secondLevelFrdIds.remove(this.id);
-        secondLevelFrdIds.removeAll(firstLevelFrdIds);
-
-        if (secondLevelFrdIds.size() == 0) {
-            return Collections.EMPTY_LIST;
-        }
-        else {
-            final List<Pair<User, String>> result = new ArrayList<>();
-
-            // resolve suggested friends (filter out invited, deleted users, not validated)
-            String idsIn = StringUtil.collectionToString(secondLevelFrdIds, ",");
-            Query q = JPA.em().createNativeQuery(
-                    "Select * from User u where u.id in ("+idsIn+") and "+
-                    "u.id not in (select s.target from SocialRelation s where s.actor = ?1 and s.actionType = 'FRIEND_REQUESTED') and " +
-                    "u.emailValidated = true and u.system = 0 and u.userInfo_id is not NULL and u.deleted = false "+
-                    "order by u.lastLogin desc",
-                    User.class);
-            q.setParameter(1, this.id);
-            List<User> suggestedFrdList = (List<User>)q.setMaxResults(limit).getResultList();
-
-            if (suggestedFrdList.size() > 0) {
-                // resolve friend of whom
-                firstLevelFrdIds.clear();
-                for (User suggestedFrd : suggestedFrdList) {
-                    Long firstLevelFrdId = secondLevelFrdOf.get(suggestedFrd.id);
-                    if (firstLevelFrdId != null) {
-                        firstLevelFrdIds.add(firstLevelFrdId);
-                    }
-                }
-                idsIn = StringUtil.collectionToString(firstLevelFrdIds, ",");
-                q = JPA.em().createNativeQuery("Select u.id, u.displayName from User u where u.id in ("+idsIn+")");
-                List<Object[]> frdOfList = q.getResultList();
-
-                for (User suggestedFrd : suggestedFrdList) {
-                    Long firstLevelFrdId = secondLevelFrdOf.get(suggestedFrd.id);
-                    String frdOf = null;
-                    for (Object[] frd : frdOfList) {
-                        BigInteger uid = (BigInteger) frd[0];
-                        String displayName = (String) frd[1];
-                        if (uid.longValue() == firstLevelFrdId.longValue()) {
-                            frdOf = displayName;
-                            break;
-                        }
-                    }
-                    result.add(new Pair<>(suggestedFrd, frdOf));
-                }
-            }
-            return result;
-        }
-    }
-
-    /**
-     * Return list of communities this use has joined.
-     * @return
-     */
-/*    @JsonIgnore
-    public List<Community> getListOfJoinedCommunities() {
-        Query query = JPA.em().createNativeQuery(
-                "select * from Community c where"+
-                " c.id in (select sr.target from SocialRelation sr where sr.actor = ?1 and sr.action = ?2 and sr.targetType = ?3) and c.deleted = false",
-                Community.class);
-        query.setParameter(1, this.id);
-        query.setParameter(2, Action.MEMBER.name());
-        query.setParameter(3, SocialObjectType.COMMUNITY.name());
-
-        List<Community> communityList = (List<Community>)query.getResultList();
-
-        // sort by name
-        Collections.sort(communityList);
-        return communityList;
-    }
-
-    *//**
-     * Return list of community ids this use has joined - used by Newsfeed.
-     * @return
-     *//*
-    @JsonIgnore
-    public List<Long> getListOfJoinedCommunityIds() {
-        Query query = JPA.em().createNativeQuery(
-                "select c.id from Community c where"+
-                " c.id in (select sr.target from SocialRelation sr where sr.actor = ?1 and sr.action = ?2 and sr.targetType = ?3) and c.deleted = false");
-        query.setParameter(1, this.id);
-        query.setParameter(2, Action.MEMBER.name());
-        query.setParameter(3, SocialObjectType.COMMUNITY.name());
-
-        List<BigInteger> commIds = query.getResultList();
-
-        List<Long> result = new ArrayList<>();
-		for (BigInteger commId : commIds) {
-			result.add(commId.longValue());
-		}
-		return result;
-    }
-    
-    @JsonIgnore
-    public List<Community> getListOfJoinedCommunities(int offset, int limit) {
-        CriteriaBuilder cb = JPA.em().getCriteriaBuilder();
-        CriteriaQuery<SocialRelation> q = cb.createQuery(SocialRelation.class);
-        Root<SocialRelation> c = q.from(SocialRelation.class);
-        q.select(c);
-        q.where(cb.and(cb.equal(c.get("actor"), this.id),
-                cb.equal(c.get("action"), Action.MEMBER)));
-        
-        List<SocialRelation> result = JPA.em().createQuery(q).setFirstResult(offset)
-                    .setMaxResults(limit).getResultList();
-
-        List<Community> communityList = new ArrayList<>();
-        for (SocialRelation rslt : result) {
-            if (rslt.actor.equals(this.id)
-                    && rslt.targetType == SocialObjectType.COMMUNITY) {
-                Community community = (Community) rslt.getTargetObject(Community.class);
-                if (community != null) {
-                    communityList.add(community);
-                }
-            }
-        }
-        return communityList;
-    }
-
-    *//**
-     * Get list of communities which friends have joined, but that this user has not.
-     * @return
-     *//*
-    @JsonIgnore
-    public List<Community> getListOfNotJoinedCommunities() {
-        List<Community> result;
-
-        List<BigInteger> frdCommIds = Collections.EMPTY_LIST;
-
-        List<Long> frdIds = FriendCache.getFriendsIds(this.id);
-        if (frdIds.size() > 0) {
-            String frdIdsIn = StringUtil.collectionToString(frdIds, ",");
-
-            // return the list of comm ids which friends have joined, number of rows based on number of friends.
-            Query commIdListQuery = JPA.em().createNativeQuery(
-                    "select sr2.target from SocialRelation sr2 where sr2.actor in ("+frdIdsIn+") and"+
-                    " sr2.action = ?1 and sr2.targetType = ?2");
-            commIdListQuery.setParameter(1, SocialRelation.Action.MEMBER.name());
-            commIdListQuery.setParameter(2, SocialObjectType.COMMUNITY.name());
-            frdCommIds = commIdListQuery.getResultList();
-        }
-
-        if (frdCommIds.size() > 0) {
-            final Map<Long, AtomicInteger> commFrdsCount = new HashMap<>();
-            for (BigInteger cid : frdCommIds) {
-                Long commId = cid.longValue();
-                AtomicInteger count = commFrdsCount.get(commId);
-                if (count == null) {
-                    count = new AtomicInteger();
-                    commFrdsCount.put(commId, count);
-                }
-                count.incrementAndGet();
-            }
-
-            // return the list of communities which friends belong, but that user doesn't belong to.
-            Query q = JPA.em().createNativeQuery(
-                    "select * from Community c where"+
-                    " not exists (select * from SocialRelation sr where sr.actor = ?1 and target = c.id and sr.action = ?2 and sr.targetType = ?3)"+
-                    " and c.id in ("+ StringUtil.collectionToString(commFrdsCount.keySet(), ",")+")"+
-                    " and c.communityType = ?4 and c.deleted = false"+
-                    " and (c.targetingType is NULL OR c.targetingType in (?5))",
-                    Community.class);
-            q.setParameter(1, this.id);
-            q.setParameter(2, SocialRelation.Action.MEMBER.name());
-            q.setParameter(3, SocialObjectType.COMMUNITY.name());
-            q.setParameter(4, CommunityType.OPEN.ordinal());        // Open only
-            q.setParameter(5, TargetingType.PUBLIC.name());
-
-            result = (List<Community>)q.getResultList();
-
-            // sort by friends count
-            Collections.sort(result, new Comparator<Community>() {
-                @Override
-                public int compare(Community o1, Community o2) {
-                    int ret = 0;
-                    AtomicInteger frdCount1 = commFrdsCount.get(o1.id);
-                    AtomicInteger frdCount2 = commFrdsCount.get(o2.id);
-
-                    if (frdCount1 != null && frdCount2 != null) {
-                        ret = -1 * (frdCount1.intValue() - frdCount2.intValue());
-                    }
-                    return ret;
-                }
-            });
-        }
-        else {
-            // return non system communities that user does not belong
-            Query q = JPA.em().createNativeQuery(
-                    "select * from Community c where"+
-                    " not exists (select * from SocialRelation sr where sr.actor = ?1 and target = c.id and sr.action = ?2 and sr.targetType = ?3)"+
-                    " and c.communityType = ?4 and c.deleted = false"+
-                    " and (c.targetingType is NULL OR c.targetingType in (?5))",
-                    Community.class);
-            q.setParameter(1, this.id);
-            q.setParameter(2, SocialRelation.Action.MEMBER.name());
-            q.setParameter(3, SocialObjectType.COMMUNITY.name());
-            q.setParameter(4, CommunityType.OPEN.ordinal());        // Open only
-            q.setParameter(5, TargetingType.PUBLIC.name());
-
-            result = (List<Community>)q.getResultList();
-        }
-
-        return result;
-    }
-
-    @JsonIgnore
-    public List<Community> getListOfNotJoinedCommunities(int offset, int limit) {
-        
-        Query q = JPA.em().createQuery("Select c from Community c where c.id not in (select sr.target from SocialRelation sr where sr.action = ?2 and sr.actor = ?1) and c.deleted = false");
-        q.setParameter(1, this.id);
-        q.setParameter(2, Action.MEMBER);
-        q.setFirstResult(offset);
-        q.setMaxResults(limit);
-        List<Community> communityList = q.getResultList();
-        return communityList;
-    }
-    
-    public static List<User> searchLike(String q) {
-        CriteriaBuilder builder = JPA.em().getCriteriaBuilder();
-        CriteriaQuery<User> criteria = builder.createQuery(User.class);
-        Root<User> root = criteria.from(User.class);
-        criteria.select(root);
-        Predicate predicate = 
-                builder.and(builder.or(
-                        builder.like(builder.upper(root.<String>get("displayName")), "%" + q.toUpperCase() + "%"),
-                        builder.like(builder.upper(root.<String>get("firstName")), "%" + q.toUpperCase() + "%"),
-                        builder.like(builder.upper(root.<String>get("lastName")), "%" + q.toUpperCase() + "%")),
-                        builder.equal(root.get("deleted"), false));
-        criteria.where(predicate);
-        return JPA.em().createQuery(criteria).getResultList();
-    }
-
-    public static List<Community> searchCommunity(String string) {
-        CriteriaBuilder builder = JPA.em().getCriteriaBuilder();
-        CriteriaQuery<Community> criteria = builder
-                .createQuery(Community.class);
-        Root<Community> root = criteria.from(Community.class);
-        criteria.select(root);
-        Predicate predicate = builder.like(root.<String> get("name"), "%"
-                + string + "%");
-        criteria.where(predicate);
-        return JPA.em().createQuery(criteria).getResultList();
-    }*/
 
     public static User searchEmail(String email) {
         CriteriaBuilder builder = JPA.em().getCriteriaBuilder();
@@ -1064,26 +697,26 @@ public class User extends SocialObject implements Subject, Socializable, Followa
     }
     
     @Transactional
-    public static User getMBAdmin() {
-        if (MB_ADMIN != null)
-            return MB_ADMIN;
-        User superAdmin = getSuperAdmin(MB_ADMIN_NAME);
+    public static User getBBAdmin() {
+        if (BB_ADMIN != null)
+            return BB_ADMIN;
+        User superAdmin = getSuperAdmin(BB_ADMIN_NAME);
         if (superAdmin == null) {
             superAdmin = getSuperAdmin();
         }
-        MB_ADMIN = superAdmin;
+        BB_ADMIN = superAdmin;
         return superAdmin;
     }
     
     @Transactional
-    public static User getMBEditor() {
-        if (MB_EDITOR != null)
-            return MB_EDITOR;
-        User superAdmin = getSuperAdmin(MB_EDITOR_NAME);
+    public static User getBBEditor() {
+        if (BB_EDITOR != null)
+            return BB_EDITOR;
+        User superAdmin = getSuperAdmin(BB_EDITOR_NAME);
         if (superAdmin == null) {
             superAdmin = getSuperAdmin();
         }
-        MB_EDITOR = superAdmin;
+        BB_EDITOR = superAdmin;
         return superAdmin;
     }
     
@@ -1286,67 +919,6 @@ public class User extends SocialObject implements Subject, Socializable, Followa
     public static File getDefaultCoverPhoto() throws FileNotFoundException {
          return new File(Play.application().configuration().getString("storage.user.cover.noimage"));
     }
-
-    @JsonIgnore
-    public boolean isFriendOf(User localUser) {
-        boolean isFriend = FriendCache.areFriends(this.id, localUser.id);
-        return isFriend;
-    }
-
-   /* @JsonIgnore
-    public boolean isMemberOf(Community community) {
-        return isMemberOf(community.id);
-    }*/
-
-    @JsonIgnore
-    public boolean isMemberOf(Long communityId) {
-        Query query = JPA.em().createQuery(
-                "SELECT count(*) from SocialRelation where actor = ?1 and target = ?2 and action = ?3");
-        query.setParameter(1, this.id);
-        query.setParameter(2, communityId);
-        query.setParameter(3, SocialRelation.Action.MEMBER);
-        Long result = (Long) query.getSingleResult();
-        return result == 1;
-    }
-
-    @JsonIgnore
-    public boolean isFriendRequestPendingFor(User user) {
-        Query query = JPA.em().createQuery(
-                "SELECT count(*) from SocialRelation where ((target = ?1 and actor = ?2) or (actor = ?1 and target = ?2)) and actionType = ?3");
-        query.setParameter(1, this.id);
-        query.setParameter(2, user.id);
-        query.setParameter(3, SocialRelation.ActionType.FRIEND_REQUESTED);
-        Long result = (Long) query.getSingleResult();
-        return result == 1;
-    }
-    
-    public int doUnFriend(User toBeUnfriend) {
-        Query query = JPA.em().createQuery(
-                "SELECT sr FROM SocialRelation sr where sr.actionType=?1 and sr.action = ?4 and " +
-                " ((sr.target = ?2 and sr.actor = ?3) or (sr.actor = ?2 and sr.target = ?3))", SocialRelation.class);
-        query.setParameter(1, SocialRelation.ActionType.GRANT);
-        query.setParameter(2, this.id);
-        query.setParameter(3, toBeUnfriend.id);
-        query.setParameter(4, SocialRelation.Action.FRIEND);
-        
-        try {
-	        SocialRelation sr= (SocialRelation) query.getSingleResult();
-	        query = JPA.em().createQuery("DELETE  Notification n where socialActionID =?1");
-	        query.setParameter(1, sr.id);
-	        query.executeUpdate();
-	
-	        // delete SocialRelation
-	        sr.delete();
-	
-	        // update friends cache
-	        FriendCache.onUnFriend(this.id, toBeUnfriend.id);
-        } catch (NoResultException e) {
-        	logger.underlyingLogger().error(String.format("[u=%d][f=%d] Not a friend", this.id, toBeUnfriend.id), e);
-        } catch (Exception e) {
-            logger.underlyingLogger().error("Error in doUnFriend", e);
-        }
-        return 1;
-    }
     
     public int doUnLike(Long id, SocialObjectType type) {
         Query query = JPA.em().createQuery(
@@ -1369,291 +941,6 @@ public class User extends SocialObject implements Subject, Socializable, Followa
         }
         return 1;
     }
-
-    public int doUnwantAnswer(Long id, SocialObjectType type) {
-        Query query = JPA.em().createQuery(
-                "SELECT sr FROM PrimarySocialRelation sr where sr.targetType = ?4 and sr.action = ?3 and " +
-                "(sr.target = ?1 and sr.actor = ?2)", PrimarySocialRelation.class);
-        query.setParameter(1, id);
-        query.setParameter(2, this.id);
-        query.setParameter(3, PrimarySocialRelation.Action.WANT_ANS);
-        query.setParameter(4, type);
-
-        try {
-            PrimarySocialRelation sr = (PrimarySocialRelation) query.getSingleResult();
-            sr.delete();
-        } catch (NoResultException e) {
-        	logger.underlyingLogger().error(String.format("[u=%d][sr.actor=%d][sr.type=%s] unwant answer not found", this.id, id, type.name()), e);
-        } catch (Exception e) {
-            logger.underlyingLogger().error("Error in doUnwantAnswer", e);
-        }
-        return 1;
-    }
-    
-    public int unBookmarkOn(Long id, SocialObjectType type) {
-        Query query = JPA.em().createQuery(
-                "SELECT sr FROM SecondarySocialRelation sr where sr.targetType = ?4 and sr.action = ?3 and " +
-                "(sr.target = ?1 and sr.actor = ?2)", SecondarySocialRelation.class);
-        query.setParameter(1, id);
-        query.setParameter(2, this.id);
-        query.setParameter(3, SecondarySocialRelation.Action.BOOKMARKED);
-        query.setParameter(4, type);
-
-        try {
-	        List<SecondarySocialRelation> srs = (List<SecondarySocialRelation>)query.getResultList();
-	        for (SecondarySocialRelation sr : srs) {
-	            sr.delete();
-	        }
-	        return srs.size();
-        } catch (NoResultException e) {
-        	logger.underlyingLogger().error(String.format("[u=%d][sr.actor=%d][sr.type=%s] bookmark not found", this.id, id, type.name()), e);
-        } catch (Exception e) {
-            logger.underlyingLogger().error("Error in doUnwantAnswer", e);
-        }
-        return 1;
-    }
-    
-    public static int unBookmarkAllUsersOn(Long id, SocialObjectType type) {
-        
-        Query query = JPA.em().createQuery(
-                "DELETE from SecondarySocialRelation sr where sr.targetType = ?1 and sr.action = ?2 and sr.target = ?3");
-        query.setParameter(1, type);
-        query.setParameter(2, SecondarySocialRelation.Action.BOOKMARKED);
-        query.setParameter(3, id);
-        return query.executeUpdate();
-    }
-   /* 
-    public int leaveCommunity(Community community) {
-        Query query = JPA.em().createQuery(
-                "SELECT sr FROM SocialRelation sr where sr.actionType=?1 And  sr.action = ?4 and " +
-                "sr.actor = ?2 and sr.target = ?3", SocialRelation.class);
-        query.setParameter(1, SocialRelation.ActionType.GRANT);
-        query.setParameter(2, this.id);
-        query.setParameter(3, community.id);
-        query.setParameter(4, SocialRelation.Action.MEMBER);
-        
-        try {
-	        SocialRelation sr = (SocialRelation) query.getSingleResult();
-	        query = JPA.em().createQuery("DELETE Notification n where socialActionID =?1");
-	        query.setParameter(1, sr.id);
-	        query.executeUpdate();
-	
-	        // delete SocialRelation
-	        sr.delete();
-	
-	        // remove community affinity
-	        UserCommunityAffinity.onLeftCommunity(this.id, community.id);
-        } catch (NoResultException e) {
-        	logger.underlyingLogger().error(String.format("[u=%d][c=%d] User not a member of community", this.id, community.id), e);
-        } catch (Exception e) {
-        	logger.underlyingLogger().error("Error in doUnwantAnswer", e);
-        }
-        return 1;
-    }
-    
-    public List<Post> getMyUpdates(Long timestamp, int limit) {
-        Query query = JPA.em().createQuery(
-                "SELECT p from Post p where p.community in (select sr.target from SocialRelation sr " + 
-                "where sr.actor=?1 and sr.action = ?2) and p.deleted = false order by p.auditFields.createdDate desc");
-        query.setParameter(1, this.id);
-        query.setParameter(2, SocialRelation.Action.MEMBER);
-        query.setFirstResult(0);
-        query.setMaxResults(limit);
-        return (List<Post>)query.getResultList();
-    }
-    
-    public long getQnABookmarkCount() {
-        return getBookmarkCount(SocialObjectType.QUESTION);
-    }
-    
-    public long getPostBookmarkCount() {
-        return getBookmarkCount(SocialObjectType.POST);
-    }
-
-    public long getArticleBookmarkCount() {
-        return getBookmarkCount(SocialObjectType.ARTICLE);
-    }
-    
-    public long getPKViewBookmarkCount() {
-        return getBookmarkCount(SocialObjectType.PK_VIEW);
-    }
-    
-    private long getBookmarkCount(SocialObjectType socialObjectType) {
-        Query query = JPA.em().createQuery(
-                "select count(sr.target) from SecondarySocialRelation sr where sr.action = ?1 and sr.actor = ?2 and sr.targetType = ?3)");
-        query.setParameter(1, SecondarySocialRelation.Action.BOOKMARKED);
-        query.setParameter(2, this.id);
-        query.setParameter(3, socialObjectType);
-        return (Long) query.getSingleResult();
-    }
-    
-    public List<Post> getBookmarkedPosts(int offset, int limit) {
-        Query query = JPA.em().createQuery(
-                "Select p from Post p where p.id in " + 
-                "(select sr.target from SecondarySocialRelation sr " + 
-                "where sr.action = ?1 and sr.actor = ?2 and sr.targetType in ( ?3, ?4 )) and p.deleted = false order by p.socialUpdatedDate desc");
-        query.setParameter(1, SecondarySocialRelation.Action.BOOKMARKED);
-        query.setParameter(2, this.id);
-        query.setParameter(3, SocialObjectType.POST);
-        query.setParameter(4, SocialObjectType.QUESTION);
-        query.setFirstResult(offset * limit);
-        query.setMaxResults(limit);
-
-        if (logger.underlyingLogger().isDebugEnabled()) {
-            logger.underlyingLogger().debug("[u="+id+"] getBookmarkedPosts(offset="+offset+", limit="+limit+") - ret="+query.getResultList().size());
-        }
-        return (List<Post>)query.getResultList();
-    }
-    
-    public List<Article> getBookmarkedArticles(int offset, int limit) {
-        Query query = JPA.em().createQuery(
-                "Select a from Article a where a.id in " + 
-                "(select sr.target from  SecondarySocialRelation sr " + 
-                "where sr.action = ?1 and sr.actor = ?2 and sr.targetType = ?3) and a.deleted = false order by a.publishedDate,a.id desc");  
-        query.setParameter(1, SecondarySocialRelation.Action.BOOKMARKED);
-        query.setParameter(2, this.id);
-        query.setParameter(3, SocialObjectType.ARTICLE);
-        query.setFirstResult(offset * limit);
-        query.setMaxResults(limit);
-
-        List<Article> result = (List<Article>)query.getResultList();
-        if (logger.underlyingLogger().isDebugEnabled()) {
-            logger.underlyingLogger().debug("[u="+id+"] getBookmarkedArticles(offset="+offset+", limit="+limit+") - ret="+result.size());
-        }
-        return result;
-    }
-    
-    public List<Pair<PKViewMeta, Post>> getBookmarkedPKViews(int offset, int limit) {
-        Query query = JPA.em().createQuery(
-                "select m, p from PKViewMeta m, Post p where m.postId = p.id and " +
-                "p.id in (select sr.target from SecondarySocialRelation sr " +
-                "where sr.action = ?1 and sr.actor = ?2 and sr.targetType = ?3) and p.deleted = false order by p.socialUpdatedDate, p.id desc");
-        query.setParameter(1, SecondarySocialRelation.Action.BOOKMARKED);
-        query.setParameter(2, this.id);
-        query.setParameter(3, SocialObjectType.PK_VIEW);
-        query.setFirstResult(offset * limit);
-        query.setMaxResults(limit);
-
-        List<Pair<PKViewMeta, Post>> result = query.getResultList();
-        if (logger.underlyingLogger().isDebugEnabled()) {
-            logger.underlyingLogger().debug("[u="+id+"] getBookmarkedPKViews(offset="+offset+", limit="+limit+") - ret="+result.size());
-        }
-        return result;
-    }
-
-    public List<Post> getFeedPosts(NewsfeedType feedType, int offset, int limit) {
-        final NanoSecondStopWatch sw = new NanoSecondStopWatch();
-
-        List<String> ids;
-        switch (feedType) {
-            case Social:
-                ids = FeedProcessor.getUserFeedIds(this, offset, limit); break;
-            case Business:
-                ids = FeedProcessor.getBusinessFeedIds(this, offset, limit); break;
-            case PreNursery:
-                ids = FeedProcessor.getPNFeedIds(offset, limit); break;
-            case Kindy:
-                ids = FeedProcessor.getKGFeedIds(offset, limit); break;
-            default:
-                ids = null; break;
-        }
-
-        if (ids == null || ids.size() == 0) {
-            return null;
-        }
-        sw.stop();
-
-        final NanoSecondStopWatch sw2 = new NanoSecondStopWatch();
-
-        String idsStr = ids.toString();
-        String idsForIn = idsStr.substring(1, idsStr.length() - 1);
-
-        Query query = JPA.em().createQuery(
-                "SELECT p from Post p where p.id in (" + idsForIn + ") and p.deleted = false order by FIELD(p.id," + idsForIn + ")");
-        List<Post> results = (List<Post>)query.getResultList();
-        sw2.stop();
-
-        if (logger.underlyingLogger().isDebugEnabled()) {
-            logger.underlyingLogger().debug("[u="+id+"] getFeedPosts(offset="+offset+",limit="+limit+") "+
-                    "Redis took "+sw.getElapsedMS()+"ms, DB took "+sw2.getElapsedMS()+"ms");
-        }
-        return results;
-    }
-
-    public List<Post> getFeedPosts(boolean isSocialFeed, int offset, int limit) {
-        final NanoSecondStopWatch sw = new NanoSecondStopWatch();
-
-        List<String> ids = isSocialFeed ?
-            FeedProcessor.getUserFeedIds(this, offset, limit) : FeedProcessor.getBusinessFeedIds(this, offset, limit);
-
-        if (ids == null || ids.size() == 0) {
-            return null;
-        }
-        sw.stop();
-
-        final NanoSecondStopWatch sw2 = new NanoSecondStopWatch();
-
-        String idsStr = ids.toString();
-        String idsForIn = idsStr.substring(1, idsStr.length() - 1);
-
-        Query query = JPA.em().createQuery(
-                "SELECT p from Post p where p.id in (" + idsForIn + ") and p.deleted = false order by FIELD(p.id," + idsForIn + ")");
-        List<Post> results = (List<Post>)query.getResultList();
-        sw2.stop();
-
-        if (logger.underlyingLogger().isDebugEnabled()) {
-            logger.underlyingLogger().debug("[u="+id+"] getFeedPosts(offset="+offset+",limit="+limit+") "+
-                    "Redis took "+sw.getElapsedMS()+"ms, DB took "+sw2.getElapsedMS()+"ms");
-        }
-        return results;
-    }
-    
-    @JsonIgnore
-    public List<Post> getUserNewsfeeds(int offset, int limit) {
-        Query query = JPA.em().createQuery(
-                "SELECT p from Post p where p.owner = ?1 and p.postType = ?2 and p.deleted = false order by p.socialUpdatedDate desc");
-        query.setParameter(1, this);
-        query.setParameter(2, PostType.QUESTION);
-        query.setFirstResult(offset * limit);
-        query.setMaxResults(limit);
-        return (List<Post>)query.getResultList();
-    }
-
-    @JsonIgnore
-    public List<Post> getUserNewsfeedsComments(int offset, int limit) {
-        Query query = JPA.em().createQuery(
-                "SELECT p from Post p where p.id in "+
-                "(select c.socialObject from Comment c where c.owner = ?1 and c.deleted = false) "+
-                "and p.postType = ?2 and p.deleted = false order by p.socialUpdatedDate desc");
-        query.setParameter(1, this);
-        query.setParameter(2, PostType.QUESTION);
-        query.setFirstResult(offset * limit);
-        query.setMaxResults(limit);
-        return (List<Post>)query.getResultList();
-    }
-    
-    public List<Post> getMyLiveUpdates(Long timestamp, int limit) {
-        Query query = JPA.em().createQuery(
-                "SELECT p from Post p where p.community in (select sr.target " +
-                "from SocialRelation sr where sr.actor=?1 and sr.action = ?2) and " + 
-                (timestamp - 60) + " < UNIX_TIMESTAMP(p.auditFields.createdDate) and  " + 
-                timestamp + " > UNIX_TIMESTAMP(p.auditFields.createdDate) and p.deleted = false order by p.auditFields.createdDate desc");
-        query.setParameter(1, this.id);
-        query.setParameter(2, SocialRelation.Action.MEMBER);
-        query.setMaxResults(limit);
-        return (List<Post>)query.getResultList();
-    }
-
-    public List<Post> getMyNextNewsFeeds(Long timestamp, int limit) {
-        Query query = JPA.em().createQuery(
-                "SELECT p from Post p where p.community in (select sr.target " +
-                "from SocialRelation sr where sr.actor=?1 and sr.action = ?2) and " + 
-                timestamp + " > UNIX_TIMESTAMP(p.auditFields.createdDate) and p.deleted = false order by p.auditFields.createdDate desc");
-        query.setParameter(1, this.id);
-        query.setParameter(2, SocialRelation.Action.MEMBER);
-        query.setMaxResults(limit);
-        return (List<Post>)query.getResultList();
-    }*/
 
     public String getFirstName() {
         return firstName;
@@ -1811,16 +1098,6 @@ public class User extends SocialObject implements Subject, Socializable, Followa
         Conversation.startConversation(this, user2);
     }
     
-    public List<User> searchUserFriends(String q) {
-        Query query = JPA.em().createNativeQuery(
-                "Select * from User u where u.id in " + 
-                "(select sr.target from SocialRelation sr where sr.action = ?2 and sr.actor = ?1 union select sr1.actor from SocialRelation sr1 where sr1.action = ?2 and sr1.target = ?1 ) and u.emailValidated = true and u.system = 0 and u.userInfo_id is not NULL and ( upper(u.displayName) like '%"+q.toUpperCase()+"%' or upper(u.firstName) like '%"+q.toUpperCase()+"%' or upper(u.lastName) like '%"+q.toUpperCase()+"%') and u.deleted = false", User.class);
-        query.setParameter(1, this.id);
-        query.setParameter(2, SocialRelation.Action.FRIEND.name());
-        List<User> frndList = (List<User>)query.getResultList();
-        return frndList;
-    }
-
     public Long getUnreadConversationCount() {
         return Conversation.getUnreadConversationCount(this.id);
     }
@@ -1867,7 +1144,7 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 	@Override
     public void onFollowedBy(User user) {
         if (logger.underlyingLogger().isDebugEnabled()) {
-            logger.underlyingLogger().debug("[u="+user.id+"][cmt="+id+"] Comment onLikedBy");
+            logger.underlyingLogger().debug("[user="+user.id+"][u="+id+"] User onFollowedBy");
         }
 
         recordFollow(user);
@@ -1878,13 +1155,13 @@ public class User extends SocialObject implements Subject, Socializable, Followa
     @Override
     public void onUnFollowedBy(User user) {
         if (logger.underlyingLogger().isDebugEnabled()) {
-            logger.underlyingLogger().debug("[u="+user.id+"][cmt="+id+"] Comment onUnlikedBy");
+            logger.underlyingLogger().debug("[user="+user.id+"][u="+id+"] User onUnFollowedBy");
         }
         user.followersCount--;
         this.followingCount--;
-        Query q = JPA.em().createQuery("Delete from PrimarySocialRelation sa where actor = ?1 and action = ?2 and target = ?3 and actorType = ?4 and targetType = ?5");
+        Query q = JPA.em().createQuery("Delete from SecondarySocialRelation sa where actor = ?1 and action = ?2 and target = ?3 and actorType = ?4 and targetType = ?5");
         q.setParameter(1, user.id);
-		q.setParameter(2, PrimarySocialRelation.Action.FOLLOWED);
+		q.setParameter(2, SecondarySocialRelation.Action.FOLLOWED);
 		q.setParameter(3, this.id);
 		q.setParameter(4, SocialObjectType.USER);
 		q.setParameter(5, SocialObjectType.USER);
@@ -1893,9 +1170,9 @@ public class User extends SocialObject implements Subject, Socializable, Followa
     
     @JsonIgnore
     public boolean isFollowedBy(User user) {
-    	Query q = JPA.em().createQuery("Select sa from PrimarySocialRelation sa where actor = ?1 and action = ?2 and target = ?3 and actorType = ?4 and targetType = ?5");
+    	Query q = JPA.em().createQuery("Select sa from SecondarySocialRelation sa where actor = ?1 and action = ?2 and target = ?3 and actorType = ?4 and targetType = ?5");
 		q.setParameter(1, this.id);
-		q.setParameter(2, PrimarySocialRelation.Action.FOLLOWED);
+		q.setParameter(2, SecondarySocialRelation.Action.FOLLOWED);
 		q.setParameter(3, user.id);
 		q.setParameter(4, SocialObjectType.USER);
 		q.setParameter(5, SocialObjectType.USER);

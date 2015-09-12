@@ -130,28 +130,6 @@ public class Product extends SocialObject implements Likeable, Commentable {
 		q.executeUpdate();
 	}
 
-	public void onWantAnswerBy(User user) {
-
-		// update last socialUpdatedDate in Question
-		this.socialUpdatedBy = user;
-		this.socialUpdatedDate = new Date();
-
-		recordWantAnswer(user);
-		this.noWantAns++;
-
-		// update affinity
-	}
-
-	public void onUnwantAnswerBy(User user) {
-
-		this.noWantAns--;
-	}
-
-	public void onBookmarkedBy(User user) {
-		recordBookmark(user);
-		// update affinity
-	}
-
 	@Override
 	public void save() {
 		super.save();

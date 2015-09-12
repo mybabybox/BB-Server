@@ -37,7 +37,6 @@ import viewmodel.EmoticonVM;
 import viewmodel.FeedProductVM;
 import viewmodel.MessageVM;
 import viewmodel.ProfileVM;
-import viewmodel.SocialObjectVM;
 import viewmodel.UserVM;
 
 import common.utils.HtmlUtil;
@@ -512,8 +511,8 @@ public class UserController extends Controller {
             return status(500);
         }
         
-        User superAdmin = Application.getMBAdmin();
-        String msgText = HtmlUtil.convertTextToHtml("歡迎來到「小萌豆 miniBean」~  立即發掘您喜愛的媽媽社群與話題。 請開心分享！");
+        User superAdmin = Application.getBBAdmin();
+        String msgText = HtmlUtil.convertTextToHtml("歡迎來到「BabyBox」~  立即發掘您喜愛的媽媽社群與話題。 請開心分享！");
         Conversation.sendMessage(superAdmin, localUser, msgText);
         return ok();
     }
@@ -631,26 +630,6 @@ public class UserController extends Controller {
 		
 		return ok(Json.toJson(vms));
     }
-	
-	@Transactional
-	public static Result searchUserFriends(String query) {
-		final User localUser = Application.getLocalUser(session());
-		if (!localUser.isLoggedIn()) {
-            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
-            return status(500);
-        }
-		
-		List<User> users = localUser.searchUserFriends(query);
-		List<SocialObjectVM> socialVMs = new ArrayList<>();
-		for(User user : users) {
-		    if (user.system) {
-		        continue;
-		    }
-		    
-			socialVMs.add(new SocialObjectVM(user.id.toString(), user.displayName, user.objectType.name()));
-		}
-		return ok(Json.toJson(socialVMs));
-	}
 	
 	@Transactional
 	public static Result sendPhotoInMessage() {

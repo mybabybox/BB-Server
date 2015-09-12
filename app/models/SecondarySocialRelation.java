@@ -90,12 +90,9 @@ public class SecondarySocialRelation extends domain.Entity implements Serializab
 	
 	@Transient
 	boolean isPostSave = true;
-
-	@Transient
-	public boolean memberJoinedOpenCommunity;
 	
 	static public enum Action {
-		BOOKMARKED,
+		FOLLOWED
 	}
 
 	public SecondarySocialRelation(){}

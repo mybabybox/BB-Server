@@ -11,11 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 
-import common.cache.FriendCache;
-import models.SocialRelation.Action;
 import mybox.shopping.social.exception.SocialObjectNotCommentableException;
 import mybox.shopping.social.exception.SocialObjectNotFollowableException;
 import mybox.shopping.social.exception.SocialObjectNotJoinableException;
@@ -32,13 +29,8 @@ import com.google.common.base.Objects;
 
 import domain.AuditListener;
 import domain.CommentType;
-import domain.Commentable;
 import domain.Creatable;
-import domain.Followable;
-import domain.Joinable;
-import domain.Likeable;
 import domain.ProductType;
-import domain.Postable;
 import domain.SocialObjectType;
 import domain.Updatable;
 
@@ -100,58 +92,6 @@ public abstract class SocialObject extends domain.Entity implements
         return true;
     }
     
-    public boolean isWantAnswerBy(User user) {
-        Query q = JPA.em().createQuery("Select sr from PrimarySocialRelation sr where sr.action=?1 and sr.actor=?2 " +
-                "and sr.target=?3 and sr.targetType=?4");
-        q.setParameter(1, PrimarySocialRelation.Action.WANT_ANS);
-        q.setParameter(2, user.id);
-        q.setParameter(3, this.id);
-        q.setParameter(4, this.objectType);
-        PrimarySocialRelation sr = null;
-        try {
-            sr = (PrimarySocialRelation)q.getSingleResult();
-        }
-        catch(NoResultException nre) {
-            return false;
-        }
-        return true;
-    }
-    
-    public boolean isBookmarkedBy(User user) {
-        Query q = JPA.em().createQuery("Select sr from SecondarySocialRelation sr where sr.action=?1 and sr.actor=?2 " +
-                "and sr.target=?3 and sr.targetType=?4");
-        q.setParameter(1, SecondarySocialRelation.Action.BOOKMARKED);
-        q.setParameter(2, user.id);
-        q.setParameter(3, this.id);
-        q.setParameter(4, this.objectType);
-        try {
-            SecondarySocialRelation sr = (SecondarySocialRelation)q.getSingleResult();
-        } catch(NoResultException nre) {
-            return false;
-        }
-        return true;
-    }
-
-    public Boolean getYesNoVote(User user) {
-        Query q = JPA.em().createQuery("Select sr from PrimarySocialRelation sr where sr.action in (?1,?2) and sr.actor=?3 " +
-                "and sr.target=?4 and sr.targetType=?5");
-        q.setParameter(1, PrimarySocialRelation.Action.YES_VOTED);
-        q.setParameter(2, PrimarySocialRelation.Action.NO_VOTED);
-        q.setParameter(3, user.id);
-        q.setParameter(4, this.id);
-        q.setParameter(5, this.objectType);
-        PrimarySocialRelation sr;
-        try {
-            sr = (PrimarySocialRelation)q.getSingleResult();
-        } catch(NoResultException nre) {
-            return null;
-        } catch(NonUniqueResultException nure) {
-            sr = (PrimarySocialRelation)(q.getResultList().get(0));
-        }
-        
-        return (sr.action == PrimarySocialRelation.Action.YES_VOTED);
-    }
-    
 	protected final void recordLike(User user) {
 		PrimarySocialRelation action = new PrimarySocialRelation(user, this);
 		action.action = PrimarySocialRelation.Action.LIKED;
@@ -161,118 +101,16 @@ public abstract class SocialObject extends domain.Entity implements
 	}
 	
 	protected final void recordFollow(User user) {
-		PrimarySocialRelation action = new PrimarySocialRelation(user, this);
-		action.action = PrimarySocialRelation.Action.FOLLOWED;
+		SecondarySocialRelation action = new SecondarySocialRelation(user, this);
+		action.action = SecondarySocialRelation.Action.FOLLOWED;
 		action.validateUniquenessAndCreate();
 	}
 	
 	protected void recordCommentOnProduct(SocialObject user, Comment comment) {
-		PrimarySocialRelation action = new PrimarySocialRelation(user, comment);
-		action.action = PrimarySocialRelation.Action.COMMENTED;
+		SocialRelation action = new SocialRelation(user, comment);
+		action.action = SocialRelation.Action.COMMENTED;
         action.save();
 	}
-
-    protected final void recordWantAnswer(User user) {
-		PrimarySocialRelation action = new PrimarySocialRelation(user, this);
-		action.action = PrimarySocialRelation.Action.WANT_ANS;
-		action.validateUniquenessAndCreate();
-	}
-
-    protected final void recordYesVote(User user) {
-		PrimarySocialRelation action = new PrimarySocialRelation(user, this);
-		action.action = PrimarySocialRelation.Action.YES_VOTED;
-		action.validateUniquenessAndCreate();
-    }
-
-    protected final void recordNoVote(User user) {
-		PrimarySocialRelation action = new PrimarySocialRelation(user, this);
-		action.action = PrimarySocialRelation.Action.NO_VOTED;
-		action.validateUniquenessAndCreate();
-    }
-	
-	protected final void recordBookmark(User user) {
-		SecondarySocialRelation action = new SecondarySocialRelation(user, this);
-		action.action = SecondarySocialRelation.Action.BOOKMARKED;
-		action.validateUniquenessAndCreate();
-	}
-	
-	protected final void recordJoinRequest(User user) {
-		SocialRelation action = new SocialRelation(user, this);
-		action.actionType = SocialRelation.ActionType.JOIN_REQUESTED;
-		action.createOrUpdateForTargetAndActorPair();
-	}
-	
-	protected final void ownerMemberOfCommunity(User user) {
-		SocialRelation action = new SocialRelation(user, this);
-		action.action = SocialRelation.Action.MEMBER;
-		action.actionType = SocialRelation.ActionType.GRANT;
-		action.isPostSave = false;
-		action.ensureUniqueAndCreate();
-	}
-
-    /**
-     * Be member of Open Community without join request.
-     */
-	protected final void beMemberOfOpenCommunity(User user, boolean sendNotification) {
-	    // Join community
-	    SocialRelation action = new SocialRelation(user, this);
-        action.action = SocialRelation.Action.MEMBER;
-        action.actionType = SocialRelation.ActionType.GRANT;
-        action.memberJoinedOpenCommunity = true;
-        action.isPostSave = sendNotification;
-
-        // save SocialRelation
-        if (action.ensureUniqueAndCreate()) {
-            // save community affinity
-            //UserCommunityAffinity.onJoinedCommunity(user.id, this.id);
-        }
-        
-        // Clear up invite request if any
-        SocialRelation request = getInviteRequest(user);
-        if (request != null) {
-            request.delete();
-        }
-	}
-
-	protected final void recordJoinRequestAccepted(User user) {
-		// must have a join request to proceed
-        SocialRelation request = getJoinRequest(user);
-        if (request == null) {
-            return;
-        }
-        
-        // use existing join request to capture MEMBER relationship
-        request.action = SocialRelation.Action.MEMBER;
-        request.actionType = SocialRelation.ActionType.GRANT;
-        request.ensureUniqueAndCreate();
-        
-        // save community affinity
-        //UserCommunityAffinity.onJoinedCommunity(user.id, this.id);
-	}
-	
-	protected final void recordInviteRequestAccepted(User user) {
-	    // must have a join request to proceed
-        SocialRelation request = getInviteRequest(user);
-        if (request == null) {
-            return;
-        }
-        
-        // use existing join request to capture MEMBER relationship
-        request.action = SocialRelation.Action.MEMBER;
-        request.actionType = SocialRelation.ActionType.GRANT;
-        request.save();
-
-        // save community affinity
-        //UserCommunityAffinity.onJoinedCommunity(user.id, this.id);
-	}
-
-	protected final SocialRelation getJoinRequest(User user) {
-        return getRequest(user, SocialRelation.ActionType.JOIN_REQUESTED);
-    }
-    
-    protected final SocialRelation getInviteRequest(User user) {
-        return getRequest(user, SocialRelation.ActionType.INVITE_REQUESTED);
-    }
     
     protected final SocialRelation getRequest(User user, SocialRelation.ActionType actionType) {
         Query q = JPA.em().createQuery(
@@ -288,86 +126,21 @@ public abstract class SocialObject extends domain.Entity implements
         }
         return null;
     }
-    
-	protected final void recordFriendRequest(User invitee) {
-		SocialRelation action = new SocialRelation(this, invitee);
-		action.actionType = SocialRelation.ActionType.FRIEND_REQUESTED;
-		action.ensureUniqueAndCreate();
-	}
-
-	protected final void recordFriendRequestAccepted(User user) {
-		Query q = JPA.em().createQuery(
-		        "SELECT sa from SocialRelation sa where actor = ?1 and target = ?2 and actionType =?3");
-		q.setParameter(1, user.id);
-		q.setParameter(2, this.id);
-		q.setParameter(3, SocialRelation.ActionType.FRIEND_REQUESTED);
-
-		SocialRelation action = (SocialRelation) q.getSingleResult();
-		action.actionType = SocialRelation.ActionType.GRANT;
-		action.action = SocialRelation.Action.FRIEND;
-        // update SocialRelation to GRANT
-		action.save();
-
-        // update Friends cache
-        FriendCache.onBecomeFriend(user.id, this.id);
-	}
-
-	protected final void recordRelationshipRequest(User user, Action relation) {
-		SocialRelation action = new SocialRelation(this,user);
-		action.actionType = SocialRelation.ActionType.RELATIONSHIP_REQUESTED;
-		action.action = relation;
-		action.ensureUniqueAndCreate();
-	}
-
-	protected final void recordRelationshipRequestAccepted(User user,
-			Action relation) {
-		Query q = JPA.em().createQuery(
-		        "SELECT sa from SocialRelation sa where actor = ?1 and target = ?2 and actionType =?3");
-		q.setParameter(1, user.id);
-		q.setParameter(2, this.id);
-		q.setParameter(3, SocialRelation.ActionType.RELATIONSHIP_REQUESTED);
-		SocialRelation action = (SocialRelation) q.getSingleResult();
-		action.actionType = SocialRelation.ActionType.GRANT;
-		action.action = relation;
-		action.save();
-	}
-
+	
 	protected final void recordPost(SocialObject user) {
-		PrimarySocialRelation action = new PrimarySocialRelation(user, this);
-		action.action = PrimarySocialRelation.Action.POSTED;
-		action.save();
-        // Game Stats
-        //GameAccountStatistics.recordPost(user.id);
-	}
-
-	protected void recordQnA(SocialObject user) {
-		PrimarySocialRelation action = new PrimarySocialRelation(user, this);
-		action.action = PrimarySocialRelation.Action.POSTED_QUESTION;
-		action.save();
-        // Game Stats
-        //GameAccountStatistics.recordPost(user.id);
-	}
-
-    @Deprecated
-    protected void recordCommentOnArticle(SocialObject user) {
-		PrimarySocialRelation action = new PrimarySocialRelation(user, this);
-		action.action = PrimarySocialRelation.Action.COMMENTED;
-		action.save();
-	}
-
-
-	protected void recordAddedPhoto(SocialObject user) {
 		SocialRelation action = new SocialRelation(user, this);
-		action.action = SocialRelation.Action.ADDED;
+		action.action = SocialRelation.Action.POSTED;
 		action.save();
-	}
-
-	protected final void recordInviteRequestByCommunity(User invitee) {
-		SocialRelation action = new SocialRelation(invitee, this);
-		action.actionType = SocialRelation.ActionType.INVITE_REQUESTED;
-		action.ensureUniqueAndCreate();
+        // Game Stats
+        //GameAccountStatistics.recordPost(user.id);
 	}
 	
+	protected void recordAddedPhoto(SocialObject user) {
+		SocialRelation action = new SocialRelation(user, this);
+		action.action = SocialRelation.Action.PHOTO_ADDED;
+		action.save();
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(name, objectType, id);

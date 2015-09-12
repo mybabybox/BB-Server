@@ -78,20 +78,11 @@ public class ReportedObject {
         case "POST":
             this.objectType = SocialObjectType.PRODUCT;
             break;
-        case "COMMUNITY":
-            this.objectType = SocialObjectType.COMMUNITY;
-            break;
         case "USER":
             this.objectType = SocialObjectType.USER;
             break;
         case "COMMENT":
             this.objectType = SocialObjectType.COMMENT;
-            break;
-        case "QUESTION":
-            this.objectType = SocialObjectType.QUESTION;
-            break;
-        case "ANSWER":
-            this.objectType = SocialObjectType.ANSWER;
             break;
         }
     }

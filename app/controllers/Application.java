@@ -80,8 +80,8 @@ public class Application extends Controller {
         return home();
     }
 	
-	public static User getMBAdmin() {
-	    return User.getMBAdmin();
+	public static User getBBAdmin() {
+	    return User.getBBAdmin();
 	}
 	
 	@Transactional

@@ -78,14 +78,7 @@ public class SocialRelation extends domain.Entity implements Serializable, Creat
     public ActionType actionType;
     
     static public enum ActionType {
-    		MESSAGE_SEND,
-            FRIEND_REQUESTED,
-            JOIN_REQUESTED,
-            RELATIONSHIP_REQUESTED,
-            GRANT,
-            UNFRIEND,
-            LEAVE_COMMUNITY,
-            INVITE_REQUESTED
+		MESSAGE_SEND
     }
 	
 	public Long target;
@@ -102,13 +95,10 @@ public class SocialRelation extends domain.Entity implements Serializable, Creat
 	@Transient
 	boolean isPostSave = true;
 
-	@Transient
-	public boolean memberJoinedOpenCommunity;
-	
 	static public enum Action {
-		ADDED,
-		FRIEND,
-		MEMBER,
+		PHOTO_ADDED,
+		POSTED,
+		COMMENTED
 	}
 
 	public SocialRelation(){}

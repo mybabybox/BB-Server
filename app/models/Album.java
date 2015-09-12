@@ -88,12 +88,7 @@ public class Album extends SocialObject {
 		return addFile(file, description, type);
 	}
 
-	
-
-	
-
 	public Resource setCoverPhoto_TOAlbum(java.io.File file) throws IOException {
-
 		cover_photo = this.addFile(file, SocialObjectType.PHOTO);
 		cover_photo.save();
 		return cover_photo;

@@ -15,8 +15,6 @@ import play.libs.Json;
 public class SocialActivity {
     // play url prefix
     private static final String MY_PREFIX = "/my#!";
-    private static final String MAGAZINE_PREFIX = "/magazine#!";
-    private static final String SCHOOL_PREFIX = "/schools#!";
 
     //////////////////////////////////////////////////
     // Url Helpers
@@ -81,6 +79,7 @@ public class SocialActivity {
 		jsonMap.put("actor", socialAction.actor);
 		jsonMap.put("target", socialAction.target);
 		
+		/*
 		if(socialAction.action != null) {
 			switch (socialAction.action) {
                 case MEMBER: {
@@ -162,6 +161,7 @@ public class SocialActivity {
 				break;
 			}
 		}
+		*/
 	}
 
     /**
