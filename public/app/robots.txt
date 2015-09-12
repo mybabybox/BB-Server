@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: http://www.minibean.hk/seo/sitemap.xml
+Sitemap: http://www.baby-box.hk/seo/sitemap.xml

@@ -38,7 +38,7 @@ public class EDMUtility {
 
 		Body body =  new Body(text, html);
 		
-		sendMail("miniBean Invitation", body, email);
+		sendMail("BabyBox Invitation", body, email);
 	}
 
 //	public void requestRedemptionMail(String userName) {
