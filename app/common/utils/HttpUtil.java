@@ -8,12 +8,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-/**
- * Created by IntelliJ IDEA.
- * Date: 7/25/14
- * Time: 12:21 AM
- */
-public class HTTPUtil {
+public class HttpUtil {
 
     public static String getHTML(String urlToRead) throws Exception {
         StringBuilder result = new StringBuilder();

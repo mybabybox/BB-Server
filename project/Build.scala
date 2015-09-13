@@ -4,7 +4,7 @@ import play.Project._
 
 object ApplicationBuild extends Build {
 
-  val appName         = "MyBox"
+  val appName         = "BabyBox"
 
   val appVersion      = "1.0-SNAPSHOT"
   //val appVersion      = "%s-%s".format("git rev-parse --abbrev-ref HEAD".!!.trim, "git rev-parse --short HEAD".!!.trim)
@@ -30,13 +30,9 @@ object ApplicationBuild extends Build {
     "commons-lang" % "commons-lang" % "2.6",
     "commons-collections" % "commons-collections" % "3.2.1",
     "biz.source_code" % "base64coder" % "2010-12-19",
-    //"com.typesafe" % "play-plugins-util_2.10" % "2.1.1",
-    "redis.clients" % "jedis" % "2.0.0",
+    "redis.clients" % "jedis" % "2.7.3",
     "org.sedis" % "sedis" % "1.0.1",
-    "org.jsoup" % "jsoup" % "1.7.3",
-    //"com.typesafe" %% "play-plugins-redis" % "2.1-1-RC2",
-    //"com.drewnoakes" % "metadata-extractor" % "2.7.2",
-    "com.github.fedy2" % "yahoo-weather-java-api" % "1.1.0"
+    "org.jsoup" % "jsoup" % "1.7.3"
   )
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
