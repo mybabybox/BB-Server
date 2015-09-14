@@ -16,14 +16,17 @@ public class JedisCache {
     private static final String SYS_PREFIX = Play.application().configuration().getString("keyprefix", "prod_");
     
     // All Redis Cache Key Prefix
-    public static final String ARTICLE_SLIDER_PREFIX = SYS_PREFIX + "user_sc_";
-    public static final String USER_FRIENDS_PREFIX = SYS_PREFIX + "user_frd_";
-    public static final String SOCIAL_FEED_PREFIX = SYS_PREFIX + "user_";
-    public static final String BIZ_FEED_PREFIX = SYS_PREFIX + "biz_";
-    public static final String PN_FEED_PREFIX = SYS_PREFIX + "pn_";
-    public static final String KG_FEED_PREFIX = SYS_PREFIX + "kg_";
-    public static final String COMMUNITY_POST_PREFIX = SYS_PREFIX + "comm_";
+    public static final String USER_POSTS_PREFIX = SYS_PREFIX + "user_posts_";
+    public static final String USER_FOLLOWERS_PREFIX = SYS_PREFIX + "user_followers_";
+    public static final String USER_FOLLOWINGS_PREFIX = SYS_PREFIX + "user_followings_";
+    public static final String CATEGORY_POPULAR_PREFIX = SYS_PREFIX + "category_popular_";
+    public static final String CATEGORY_NEWEST_PREFIX = SYS_PREFIX + "category_newest_";
+    public static final String CATEGORY_PRICE_LOW_HIGH_PREFIX = SYS_PREFIX + "category_price_low_high_";
+    public static final String CATEGORY_PRICE_HIGH_LOW_PREFIX = SYS_PREFIX + "category_price_high_low_";
+    
+    // Obsolete...
     public final static String TODAY_WEATHER_KEY = "TODAY_WEATHER";
+    public static final String ARTICLE_SLIDER_PREFIX = SYS_PREFIX + "user_sc_";
     
     private static JedisPool jedisPool = play.Play.application().plugin(RedisPlugin.class).jedisPool();
     

@@ -9,7 +9,6 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 
 import common.cache.JedisCache;
-import common.utils.WeatherUtil;
 
 public class TodayWeatherInfo implements Serializable {
     private static final play.api.Logger logger = play.api.Logger.apply(TodayWeatherInfo.class);
@@ -64,7 +63,7 @@ public class TodayWeatherInfo implements Serializable {
     }
     
     private static TodayWeatherInfo fillInfo(TodayWeatherInfo info) throws JAXBException, IOException {
-        WeatherUtil.fillInfo(info);
+        //WeatherUtil.fillInfo(info);
         
         DateTime now = new DateTime();
         int dayOfWeek = now.getDayOfWeek();
