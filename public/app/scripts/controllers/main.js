@@ -83,8 +83,10 @@ babybox.controller('ProductController',
 				"collectionId":  $scope.collection.id,
 				"collectionName":  $scope.collection.cn,
 		};
+		usSpinnerService.spin('loading...');
 		$http.post('/product/add-to-collection', data) 
 		.success(function(response) {
+			usSpinnerService.stop('loading...');
 			console.log(response);
 		});
 	}
@@ -112,7 +114,7 @@ babybox.controller('CommentOnProductController',
 		};
 		
 		console.log($scope.userInfo);
-	
+		usSpinnerService.spin('loading...');
 		$http.post('/comment/new', newCommentVM) 
 		.success(function(response) {
 			console.log(response);
@@ -123,6 +125,7 @@ babybox.controller('CommentOnProductController',
 			        
 		    });
 			 $scope.formData.comment="";
+			 usSpinnerService.stop('loading...');
 		});
 	}
 
@@ -188,7 +191,7 @@ babybox.controller('CreateProductController',function($scope, $location, $http, 
 		};
 		console.log(newPostVM);
 		
-		
+		usSpinnerService.spin('loading...');
 		$validator.validate($scope, 'formData')
 		.success(function () {
 			usSpinnerService.spin('載入中...');

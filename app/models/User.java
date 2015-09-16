@@ -1129,7 +1129,6 @@ public class User extends SocialObject implements Subject, Socializable, Followa
         noLoginUser.id = NO_LOGIN_ID;
         return noLoginUser;
     }
-    ///////////////////////////////////////////////
 
 	public Collection createCollection(String name, String description,
 			Category category) {
