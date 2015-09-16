@@ -1,7 +1,7 @@
 package domain;
 
+import babybox.shopping.social.exception.SocialObjectNotJoinableException;
 import models.User;
-import mybox.shopping.social.exception.SocialObjectNotJoinableException;
 
 public interface Socializable {
 	//void sendFriendInviteTo(User user) throws SocialObjectNotJoinableException;

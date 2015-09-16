@@ -7,12 +7,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import babybox.shopping.social.exception.SocialObjectNotJoinableException;
+
+
 import models.Category;
 import models.Collection;
 import models.Product;
 import models.Resource;
 import models.User;
-import mybox.shopping.social.exception.SocialObjectNotJoinableException;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.db.jpa.Transactional;
@@ -25,9 +27,8 @@ import viewmodel.ProductInfoVM;
 import viewmodel.UserVM;
 import common.utils.HtmlUtil;
 import common.utils.ImageFileUtil;
-import domain.ProductType;
 
-public class ProductController extends Controller {
+public class ProductController extends Controller{
 	private static play.api.Logger logger = play.api.Logger.apply(ProductController.class);
 
 	@Transactional
@@ -38,26 +39,32 @@ public class ProductController extends Controller {
 			return status(500);
 		}
 
-		Form<Product> form =
-				DynamicForm.form(Product.class).bindFromRequest(
-						"name","description", "productPrize");
-
-		Product product = form.get();
 		DynamicForm dynamicForm = DynamicForm.form().bindFromRequest();
-		switch(dynamicForm.get("productType")){
-		case "Product":
-			product.productType = ProductType.Product;
-			if(!dynamicForm.get("category").equals("")){
-				product.category = Category.findById(Long.parseLong(dynamicForm.get("category")));
-			}
-			break;
-		case "story":
-			product.productType = ProductType.Post;
-			break;
-		}
+		Long catId=Long.parseLong(dynamicForm.get("catId")),
+			prize=Long.parseLong(dynamicForm.get("prize"));
+		
+		String name=dynamicForm.get("title"),
+			   desc=dynamicForm.get("desc");
+		
+//		System.out.println(name +"  "+ desc+"  "/*+catId+"  "+prize*/);
+		
+		Category category = Category.findById(catId);
+		
+//		switch(dynamicForm.get("productType")){
+//		case "Product":
+//			product.productType = ProductType.Product;
+//			if(!dynamicForm.get("category").equals("")){
+//				product.category = Category.findById(Long.parseLong(dynamicForm.get("category")));
+//			}
+//			break;
+//		case "story":
+//			product.productType = ProductType.Post;
+//			break;
+//		}
+		
 		List<FilePart> pictures = request().body().asMultipartFormData().getFiles();
 		try {
-			Product newProduct = localUser.createProduct(product.name, product.description, product.category, product.productPrize, product.productType);
+			Product newProduct = localUser.createProduct(name, desc, category, prize);
 			if (newProduct == null) {
 				return status(505, "Failed to create community. Invalid parameters.");
 			}
@@ -155,7 +162,7 @@ public class ProductController extends Controller {
 	@Transactional
 	public static Result product(Long id) {
 		final User localUser = Application.getLocalUser(session());
-		return ok(views.html.mybox.product.render(Json.stringify(Json.toJson(getProductInfoVM(id))), Json.stringify(Json.toJson(new UserVM(localUser)))));
+		return ok(views.html.babybox.product.render(Json.stringify(Json.toJson(getProductInfoVM(id))), Json.stringify(Json.toJson(new UserVM(localUser)))));
 	}
 	
 	@Transactional
@@ -171,23 +178,25 @@ public class ProductController extends Controller {
 	}
 
 	@Transactional
-	public static Result onLiked(Long id) {
+	public static Result likePost(Long id) {
 		Product.findById(id).onLikedBy(Application.getLocalUser(session()));
 		return ok();
 	}
 
 	@Transactional
-	public static Result onUnLiked(Long id) {
+	public static Result unlikePost(Long id) {
 		Product.findById(id).onUnlikedBy(Application.getLocalUser(session()));
 		return ok();
 	}
 
 	@Transactional
-	public static Result onComment() {
+	public static Result newComment() {
 		DynamicForm form = form().bindFromRequest();
-		Long productId = Long.parseLong(form.get("product_id"));
-		String commentText = HtmlUtil.convertTextToHtml(form.get("commentText"));
-		Product.findById(productId).onComment(Application.getLocalUser(session()), commentText);
+		Long postId = Long.parseLong(form.get("postId"));
+		String desc = HtmlUtil.convertTextToHtml(form.get("desc"));
+		System.out.println(postId+"  "+desc);
+		
+		Product.findById(postId).onComment(Application.getLocalUser(session()), desc);
 		return ok();
 	}
 	

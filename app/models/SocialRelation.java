@@ -14,10 +14,12 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.Transient;
 
-import mybox.shopping.social.SocialActivity;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+
+import babybox.shopping.social.SocialActivity;
+
 
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;

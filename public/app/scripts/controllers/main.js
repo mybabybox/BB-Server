@@ -1,16 +1,22 @@
 'use strict';
 
-var mybox = angular.module('mybox');
+var babybox = angular.module('babybox');
 
-mybox.controller('FrontPageController', 
-		function($scope, $route, feedService, ngDialog, userInfo, viewService) {
+babybox.controller('FrontPageController', 
+		function($scope, $route, feedService, ngDialog, userInfo, viewService, $location, $anchorScroll) {
 	$scope.userInfo = userInfo;
 	$scope.products = feedService.getFeedProduct.get();
+	
+	$scope.gotoTop=function(){
+		$location.hash('');
+	    $anchorScroll();
+	};
+	
 	$scope.open = function (product) {
 		$scope.product = product;
 		viewService.viewProduct.get({id:product.id});
 		ngDialog.open({
-			template: '/assets/app/views/mybox/product-dialog.html',
+			template: '/assets/app/views/babybox/product-dialog.html',
 			className: 'ngdialog-theme-plain custom-width ',
 			controller: 'ProductController',
 			scope: $scope                
@@ -18,18 +24,30 @@ mybox.controller('FrontPageController',
 	};
 });
 
-mybox.controller('ProductPageController', 
+babybox.controller('ProductPageController', 
 		function($scope, $route, $http, likeService, userService, productService, product, userInfo) {
 	$scope.product = product;
 	$scope.userInfo = userInfo;
 });
 
-mybox.controller('ProductController', 
+babybox.controller('ProductController', 
 		function($scope, $route, $http, likeService, userService, productService) {
-	console.log($scope.product);
+	console.log($scope.product.imgs);
+	$scope.ImageUrl = "/image/get-full-product-image-by-id/"+$scope.product.imgs;
 	$scope.collections = [];
+
+	
+	$scope.similarProducts = productService.getSimilarProduct.get();
 	$scope.open = false;
 	$scope.product = productService.getProductInfo.get({id:$scope.product.id});
+	
+	
+	
+	console.log($scope.ImageUrl);
+	$scope.setImgUrl = function(id){
+		$scope.ImageUrl= "/image/get-full-product-image-by-id/"+id;
+	};
+	
 	if($scope.product.oid = $scope.userInfo.id){
 		$scope.collections = userService.getUserCollection.get({id:$scope.userInfo.id});
 	}
@@ -59,8 +77,6 @@ mybox.controller('ProductController',
 		$scope.open = false;
 	}
 	
-	$scope.similarProducts = productService.getSimilarProduct.get();
-	
 	$scope.add_product_to_collection = function(){
 		var data = {
 				"product_id" : $scope.product.id,
@@ -83,22 +99,21 @@ mybox.controller('ProductController',
 	}
 });
 
-mybox.controller('CommentOnProductController', 
+babybox.controller('CommentOnProductController', 
 		function($scope, $route, $http, likeService) {
 	$scope.formData = {};
 
 	$scope.comArray=[];
 	
 	$scope.submit = function() {
-		var data = {
-				"product_id" : $scope.product.id,
-				"commentText" : $scope.formData.comment,
+		var newCommentVM = {
+				"postId" : $scope.product.id,
+				"desc" : $scope.formData.comment,
 		};
 		
-		console.log($scope.formData.comment);
 		console.log($scope.userInfo);
 	
-		$http.post('/product/comment', data) 
+		$http.post('/comment/new', newCommentVM) 
 		.success(function(response) {
 			console.log(response);
 			 $scope.comArray.push({
@@ -114,8 +129,8 @@ mybox.controller('CommentOnProductController',
 });
 
 
-mybox.controller('ProfileController', 
-		function($scope, $route, profileUser, userService, userInfo, followService) {
+babybox.controller('ProfileController', 
+		function($scope, $route, profileUser, userService, userInfo, followService, viewService, ngDialog) {
 	$scope.userInfo = userInfo;
 	$scope.user = profileUser;
 	$scope.products = userService.getUserProduct.get({id:profileUser.id});
@@ -130,11 +145,22 @@ mybox.controller('ProfileController',
 		$scope.user.ifu = !$scope.user.ifu;
 		$scope.user.n_fr--;
 	}
+	
+	$scope.open = function (product) {
+		$scope.product = product;
+		viewService.viewProduct.get({id:product.id});
+		ngDialog.open({
+			template: '/assets/app/views/babybox/product-dialog.html',
+			className: 'ngdialog-theme-plain custom-width ',
+			controller: 'ProductController',
+			scope: $scope                
+		});
+	};
 
 });
 
 
-mybox.controller('CreateCollectionController', 
+babybox.controller('CreateCollectionController', 
 		function($scope, $route, $http, usSpinnerService) {
 	$scope.formData = {};
 	$scope.createCollection = function() {
@@ -147,13 +173,22 @@ mybox.controller('CreateCollectionController',
 	}
 });
 
-mybox.controller('CreateProductController',function($scope, $location, $http, $upload, $validator, usSpinnerService, userInfo){
+babybox.controller('CreateProductController',function($scope, $location, $http, $upload, $validator, usSpinnerService, userInfo){
 	$scope.userInfo = userInfo;
 	$scope.formData = {};
 	$scope.selectedFiles =[];
 	$scope.submitBtn = "建立社群";
 	$scope.submit = function() {
-		console.log($scope.formData);
+		console.log($scope.formData);		
+		var newPostVM = {
+				"catId" : $scope.formData.category,
+				"title" : $scope.formData.name,
+				"desc" : $scope.formData.description,
+				"prize" : $scope.formData.productPrize,
+		};
+		console.log(newPostVM);
+		
+		
 		$validator.validate($scope, 'formData')
 		.success(function () {
 			usSpinnerService.spin('載入中...');
@@ -161,7 +196,7 @@ mybox.controller('CreateProductController',function($scope, $location, $http, $u
 				url: '/create-product',
 				method: 'POST',
 				file: $scope.selectedFiles,
-				data: $scope.formData,
+				data: newPostVM,
 				fileFormDataName: 'photo'
 			}).progress(function(evt) {
 				$scope.submitBtn = "請稍候...";

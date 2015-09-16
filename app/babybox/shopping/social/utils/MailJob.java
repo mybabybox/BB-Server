@@ -1,4 +1,4 @@
-package mybox.shopping.social.utils;
+package babybox.shopping.social.utils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -7,17 +7,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
-import mybox.shopping.social.utils.MailJob.Mail.Body;
 import play.libs.Akka;
 import scala.concurrent.duration.Duration;
 import akka.actor.Cancellable;
+import babybox.shopping.social.utils.MailJob.Mail.Body;
 
 import com.typesafe.plugin.MailerAPI;
 import com.typesafe.plugin.MailerPlugin;
 
 public class MailJob implements Runnable {
 
-    private static final String MAIL_FROM = "info@baby-box.com.hk";
+    private static final String MAIL_FROM = "minibean.app@gmail.com";
 
 	private final Mail mail;
 

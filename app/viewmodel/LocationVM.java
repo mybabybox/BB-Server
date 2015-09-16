@@ -6,10 +6,10 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 public class LocationVM {
 
-    @JsonProperty("id") public long id;
-    @JsonProperty("type") public String type;
-    @JsonProperty("name") public String name;
-    @JsonProperty("displayName") public String displayName;
+    public long id;
+    public String type;
+    public String name;
+    public String displayName;
     
     public LocationVM(Location location) {
         this.id = location.id;

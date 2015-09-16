@@ -139,7 +139,7 @@ public class Application extends Controller {
 	 *     ii. welcome page
 	 */
 	public static Result home(User user) {
-	    return ok(views.html.mybox.home.render( Json.stringify(Json.toJson(new UserVM(user)))));
+	    return ok(views.html.babybox.home.render( Json.stringify(Json.toJson(new UserVM(user)))));
 	}
 	
 	@Transactional
@@ -348,7 +348,7 @@ public class Application extends Controller {
     @Restrict(@Group(SecurityRole.USER))
     public static Result profile() {
        
-        return ok(views.html.mybox.profile.render("",""));
+        return ok(views.html.babybox.profile.render("",""));
     }
     
 	@Transactional
@@ -553,13 +553,13 @@ public class Application extends Controller {
 	@Transactional
 	public static Result addProduct() {
 		User user = Application.getLocalUser(session());
-		return ok(views.html.mybox.add_product.render( Json.stringify(Json.toJson(new UserVM(user)))));
+		return ok(views.html.babybox.add_product.render( Json.stringify(Json.toJson(new UserVM(user)))));
 	}
 	
 	@Transactional
 	public static Result addStory() {
 		User user = Application.getLocalUser(session());
-		return ok(views.html.mybox.add_story.render( Json.stringify(Json.toJson(new UserVM(user)))));
+		return ok(views.html.babybox.add_story.render( Json.stringify(Json.toJson(new UserVM(user)))));
 	}
 	
 	

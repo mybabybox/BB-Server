@@ -1,9 +1,9 @@
 'use strict';
 
-var mybox = angular.module('mybox');
+var babybox = angular.module('babybox');
 
 
-mybox.service('feedService',function($resource){
+babybox.service('feedService',function($resource){
     this.getFeedProduct = $resource(
             '/get-all-feed-products',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -13,7 +13,7 @@ mybox.service('feedService',function($resource){
     );
 });
 
-mybox.service('productService',function($resource){
+babybox.service('productService',function($resource){
     this.getProductInfo = $resource(
             '/get-product-info/:id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -30,7 +30,7 @@ mybox.service('productService',function($resource){
     );
 });
 
-mybox.service('collecctionService',function($resource){
+babybox.service('collecctionService',function($resource){
     this.getFeedProduct = $resource(
             '/get-collection-by-user',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -41,7 +41,7 @@ mybox.service('collecctionService',function($resource){
 });
 
 
-mybox.service('userService',function($resource){
+babybox.service('userService',function($resource){
     this.getUserProduct = $resource(
             '/get-user-products/:id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -59,7 +59,7 @@ mybox.service('userService',function($resource){
     );
 });
 
-mybox.service('followService',function($resource){
+babybox.service('followService',function($resource){
     this.followUser = $resource(
             '/follow-user/:id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -77,9 +77,9 @@ mybox.service('followService',function($resource){
     );
 });
 
-mybox.service('likeService',function($resource){
+babybox.service('likeService',function($resource){
     this.likeProduct = $resource(
-            '/like-product/:id',
+            '/like-post/:id',
             {alt:'json',callback:'JSON_CALLBACK'},
             {
                 get: {method:'get', params:{id:'@id'}}
@@ -87,7 +87,7 @@ mybox.service('likeService',function($resource){
     );
     
     this.unLikeProduct = $resource(
-            '/unlike-product/:id',
+            '/unlike-post/:id',
             {alt:'json',callback:'JSON_CALLBACK'},
             {
                 get: {method:'get', params:{id:'@id'}}
@@ -95,7 +95,7 @@ mybox.service('likeService',function($resource){
     );
 });
 
-mybox.service('viewService',function($resource){
+babybox.service('viewService',function($resource){
     this.viewProduct = $resource(
             '/view-product/:id',
             {alt:'json',callback:'JSON_CALLBACK'},

@@ -1,8 +1,8 @@
 package domain;
 
+import babybox.shopping.social.exception.SocialObjectNotCommentableException;
 import models.SocialObject;
 import models.User;
-import mybox.shopping.social.exception.SocialObjectNotCommentableException;
 
 public interface Commentable {
 	public abstract SocialObject onComment(User user, String body) throws SocialObjectNotCommentableException;

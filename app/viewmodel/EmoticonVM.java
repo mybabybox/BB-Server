@@ -5,9 +5,9 @@ import models.Emoticon;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 public class EmoticonVM {
-	@JsonProperty("name") public String name;
-	@JsonProperty("code") public String code;
-	@JsonProperty("url") public String url;
+	public String name;
+	public String code;
+	public String url;
 	
 	public EmoticonVM(Emoticon emoticon) {
 		this.name = emoticon.name;

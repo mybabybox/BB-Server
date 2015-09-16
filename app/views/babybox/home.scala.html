@@ -35,10 +35,10 @@
       	<link rel="icon" type="image/png" href="@routes.Assets.at("app/images/favicon-1.ico")">
       	<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("app/images/favicon-1.ico")">
     </head>
-    <body id="main-app" class="menu-right-hidden" ng-app="mybox" ng-controller="FrontPageController">
+    <body id="main-app" class="menu-right-hidden" ng-app="babybox" ng-controller="FrontPageController">
         <div class="container-fluid menu-hidden">
             <div id="main-view" >
-            	<div data-ng-include data-src="'/assets/app/views/mybox/home.html'"></div>
+            	<div data-ng-include data-src="'/assets/app/views/babybox/home.html'"></div>
             </div>
         </div>
 
@@ -143,7 +143,7 @@
     		//});
     	</script> -->
     	
-        <script type="text/javascript" src="@routes.Assets.at("app/scripts/mybox/home-app.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("app/scripts/babybox/home-app.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("app/scripts/directives.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("app/scripts/default-values.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("app/scripts/game-constants.js")"></script>
@@ -166,15 +166,15 @@
     	<link rel="stylesheet" href="../assets/app/custom-css/magazine.css">
     	<link rel="stylesheet" href="../assets/app/custom-css/campaign.css">
     	<link rel="stylesheet" href="../assets/app/custom-css/pkview.css">
-        <link rel="stylesheet" href="../assets/app/custom-css/mybox/feedpage.css" />
-		<link rel="stylesheet" href="../assets/app/custom-css/mybox/mybox.css" />    
+        <link rel="stylesheet" href="../assets/app/custom-css/babybox/feedpage.css" />
+		<link rel="stylesheet" href="../assets/app/custom-css/babybox/babybox.css" />    
 		<link rel="stylesheet" href="../assets/app/bower_components/angular-ngdialog/css/ngDialog.min.css" />
 		<link rel="stylesheet" href="../assets/app/bower_components/angular-ngdialog/css/ngDialog-custom-width.css" /> 
 		<link rel="stylesheet" href="../assets/app/bower_components/angular-ngdialog/css/ngDialog-theme-plain.min.css" />        
     </body>
 </html>
 <script>
-		angular.module('mybox').factory('userInfo', function(){
+		angular.module('babybox').factory('userInfo', function(){
 			return @Html(userInfo);
 		});
 </script>

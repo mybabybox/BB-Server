@@ -16,7 +16,9 @@ import javax.persistence.NoResultException;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
 
-import mybox.shopping.social.exception.SocialObjectNotCommentableException;
+import babybox.shopping.social.exception.SocialObjectNotCommentableException;
+
+
 import play.db.jpa.JPA;
 
 import common.thread.ThreadLocalOverride;
@@ -100,13 +102,13 @@ public class Product extends SocialObject implements Likeable, Commentable {
 	}
 
 	public Product(User actor, String title, String description,
-			Category category, Long productPrize, ProductType productType) {
+			Category category, Long productPrize) {
 		this.owner = actor;
 		this.title = title;
 		this.description = description;
 		this.category = category;
 		this.productPrize = productPrize;
-		this.productType = productType;
+//		this.productType = productType;
 	}
 
 	@Override

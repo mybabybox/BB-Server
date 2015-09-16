@@ -1,4 +1,4 @@
-package mybox.shopping.social;
+package babybox.shopping.social;
 
 import java.util.HashMap;
 import java.util.Map;

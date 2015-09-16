@@ -14,29 +14,39 @@
 						From <a href="/profile/{{product.oid}}">{{product.on}}</a>
 					</div>
 				</div>
-				<div class="products-show-poster" style="float: right">
+				<div class="products-show-poster" style="float: right">{{product.nol}}
 					<span ng-show="userInfo.isLoggedIn" class="btn-like-wrapper">
-						<a  data-ng-show="!product.isLike" class="btn-like" href=""
+						<a  data-ng-show="product.isLike" class="btn-like" href=""
 						data-ng-click="like_product(product.id)">Like</a> <a
-						data-ng-show="product.isLike" class="btn-like" href=""
+						data-ng-show="!product.isLike" class="btn-like" href=""
 						data-ng-click="unlike_product(product.id)">Unlike</a> <span
-						ng-show="product.nol > 0"><a class="btn-like"> <img
-								data-ng-src="/assets/app/images/general/icons/liked_1.png" />{{product.nol}}
+						ng-show="product.nol > 0"><a class="btn-like"> 
+						<img data-ng-src="/assets/app/images/general/icons/liked_1.png" />{{product.nol}}
 						</a></span>
-					</span> <span ng-show="!userInfo.isLoggedIn" class="btn-like-wrapper">
-						<span ng-show="product.nol > 0"><b><img
-								data-ng-src="/assets/app/images/general/icons/liked_1.png" />{{product.nol}}</b></span>
-					</span>
+					</span> 
+<!-- 					<span ng-show="!userInfo.isLoggedIn" class="btn-like-wrapper"> -->
+<!-- 						<span ng-show="product.nol > 0"><b><img -->
+<!-- 								data-ng-src="/assets/app/images/general/icons/liked_1.png" />{{product.nol}}</b></span> -->
+<!-- 					</span> -->
 				</div>
 				<div class="products-show" data-id="31137400">
 					<div class="products-show-left-pane">
 						<div class="products-show-image">
-							<a class="swap-link-if-user store-approved external-product-url"
+							<a 
+								class="swap-link-if-user store-approved external-product-url"
 								data-domain="restorationhardware.com"
 								data-source="product image" rel="nofollow" target="_blank"><img
 								alt="Vintage Deluxe Scrabble®"
 								class="product-image product-original" itemprop="image"
-								data-ng-src="/image/get-full-product-image-by-id/{{product.imgs}}"></a>
+								data-ng-src="{{ImageUrl}}"></a>
+						
+						</div>
+						<div
+									class="products-show-more-from-user-grid products-show-more-grid">
+									<a  data-ng-repeat="image in product.imageArray" ><img
+										class="product-image product-x200"
+										ng-click="setImgUrl(image)"
+										data-ng-src="/image/get-product-image-by-id/{{image}}"></a>
 						</div>
 						<div class="variant-thumbnails"></div>
 					</div>
@@ -112,6 +122,7 @@
 		</div>
 		<div class="product-container">
 			<div class="product-comments-container">
+			
 				<div class="products-show-comments">
 					<div class="comments">
 						<div class="comments-show-more-btn"></div>
@@ -181,12 +192,10 @@
 					</div>
 
 				</div>
-			</div>
+			</div>	
 		</div>
-		<div style="padding-left: 120px;">
 		<div ng-if="userInfo.isLoggedIn" data-ng-include
-			data-src="'/assets/app/views/mybox/similar-product-info.html'"></div>
-		</div>
+			data-src="'/assets/app/views/babybox/similar-product-info.html'"></div>
 	</div>
 </div>
 

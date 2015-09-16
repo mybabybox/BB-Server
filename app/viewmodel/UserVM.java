@@ -7,34 +7,34 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import controllers.Application;
 
 public class UserVM {
-    @JsonProperty("id") public Long id;
-    @JsonProperty("firstName") public String firstName;
-    @JsonProperty("lastName") public String lastName;
-    @JsonProperty("displayName") public String displayName;
-    @JsonProperty("email") public String email;
-    @JsonProperty("birthYear") public String birthYear;
-    @JsonProperty("gender") public String gender;
-    @JsonProperty("aboutMe") public String aboutMe;
-    @JsonProperty("noOfFollwers") public Long noOfFollwers;
-    @JsonProperty("noOfFollowing") public int noOfFollowing;
-    @JsonProperty("isLoggedIn") public boolean isLoggedIn = false;
-    @JsonProperty("isSA") public boolean isSuperAdmin = false;
-    @JsonProperty("isBA") public boolean isBusinessAdmin = false;
-    @JsonProperty("isCA") public boolean isCommunityAdmin = false;
-    @JsonProperty("isE") public boolean isEditor = false;
-    @JsonProperty("isAdmin") public boolean isAdmin = false;
-    @JsonProperty("isMobile") public boolean isMobile = false;
-    @JsonProperty("isFbLogin") public boolean isFbLogin = false;
-    @JsonProperty("isHomeTourCompleted") public boolean isHomeTourCompleted = false;
-    @JsonProperty("productCount") public Long productCount;
-    @JsonProperty("collectionCount") public Long collectionCount;
+    public Long id;
+    public String firstName;
+    public String lastName;
+    public String displayName;
+    public String email;
+    public String birthYear;
+    public String gender;
+    public String aboutMe;
+    public Long noOfFollwers;
+    public int noOfFollowing;
+    public boolean isLoggedIn = false;
+    public boolean isSA = false;
+    public boolean isBA = false;
+    public boolean isCA = false;
+    public boolean isE = false;
+    public boolean isAdmin = false;
+    public boolean isMobile = false;
+    public boolean isFbLogin = false;
+    public boolean isHomeTourCompleted = false;
+    public Long productCount;
+    public Long collectionCount;
     
     // signup verification
-    @JsonProperty("emailValidated") public boolean emailValidated = false;
-    @JsonProperty("newUser") public boolean newUser = false;
+    public boolean emailValidated = false;
+    public boolean newUser = false;
     
     // game
-    @JsonProperty("enableSignInForToday") public boolean enableSignInForToday = false;
+    public boolean enableSignInForToday = false;
     
 	public UserVM(User user) {
 		if(user == null){

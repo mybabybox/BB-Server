@@ -13,8 +13,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.Transient;
 
+import babybox.shopping.social.SocialActivity;
 import common.thread.ThreadLocalOverride;
-import mybox.shopping.social.SocialActivity;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 

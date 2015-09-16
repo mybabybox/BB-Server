@@ -1,7 +1,7 @@
 package domain;
 
+import babybox.shopping.social.exception.SocialObjectNotLikableException;
 import models.User;
-import mybox.shopping.social.exception.SocialObjectNotLikableException;
 
 public interface Likeable {
 	public abstract void onLikedBy(User user) throws SocialObjectNotLikableException;

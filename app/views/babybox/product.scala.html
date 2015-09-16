@@ -1,4 +1,4 @@
-@(profileUser:String, userInfo:String)
+@(product:String, userInfo:String)
 
 <!doctype html>
 <html lang="zh-hk">
@@ -35,13 +35,19 @@
       	<link rel="icon" type="image/png" href="@routes.Assets.at("app/images/favicon-1.ico")">
       	<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("app/images/favicon-1.ico")">
     </head>
-    <body id="main-app" class="menu-right-hidden" ng-app="mybox" ng-controller="ProfileController">
-        <div class="container-fluid menu-hidden">
+    <body id="main-app" class="menu-right-hidden" ng-app="babybox" ng-controller="ProductPageController">
+        <div class="container-fluid menu-hidden" ng-controller="ProductController">
             <div id="main-view" >
-            	<div data-ng-include data-src="'/assets/app/views/mybox/profile.html'"></div>
+	            <header>
+					<div data-ng-include style="width: 100%;"
+						data-src="'/assets/app/views/header-bar.html'"></div>
+				</header>
+				
+				<div class="themeA-container">
+	            	<div style="padding-top: 55px;" data-ng-include data-src="'/assets/app/views/babybox/product-dialog.html'"></div>
+	            </div>
             </div>
         </div>
-
         <script type="text/javascript" src="@routes.Assets.at("app/scripts/pre-angular.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("components/library/jquery/jquery.min.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("components/library/jquery/jquery.validate.min.js")"></script>
@@ -82,7 +88,7 @@
     	<script src="@routes.Assets.at("app/scripts/lib/bootbox-4.2.0.min.js")"></script>
     	<script src="@routes.Assets.at("app/bower_components/royal-slider/rs-9.5.4/royalslider/jquery.royalslider.min.js")"></script>
     	<script src="@routes.Assets.at("app/bower_components/angular-ngdialog/js/ngDialog.min.js")"></script>
-        <script type="text/javascript" src="@routes.Assets.at("app/scripts/mybox/home-app.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("app/scripts/babybox/home-app.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("app/scripts/directives.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("app/scripts/default-values.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("app/scripts/game-constants.js")"></script>
@@ -105,19 +111,25 @@
     	<link rel="stylesheet" href="../assets/app/custom-css/magazine.css">
     	<link rel="stylesheet" href="../assets/app/custom-css/campaign.css">
     	<link rel="stylesheet" href="../assets/app/custom-css/pkview.css">
-        <link rel="stylesheet" href="../assets/app/custom-css/mybox/feedpage.css" />
-		<link rel="stylesheet" href="../assets/app/custom-css/mybox/mybox.css" />    
+        <link rel="stylesheet" href="../assets/app/custom-css/babybox/feedpage.css" />
+		<link rel="stylesheet" href="../assets/app/custom-css/babybox/babybox.css" />    
 		<link rel="stylesheet" href="../assets/app/bower_components/angular-ngdialog/css/ngDialog.min.css" />
 		<link rel="stylesheet" href="../assets/app/bower_components/angular-ngdialog/css/ngDialog-custom-width.css" /> 
 		<link rel="stylesheet" href="../assets/app/bower_components/angular-ngdialog/css/ngDialog-theme-plain.min.css" />        
     </body>
 </html>
 
+<style>
+.product-container {
+	width: 100%;
+}
+</style>
+
 <script>
-		angular.module('mybox').factory('profileUser', function(){
-			return @Html(profileUser);
+		angular.module('babybox').factory('product', function(){
+			return @Html(product);
 		});
-		angular.module('mybox').factory('userInfo', function(){
+		angular.module('babybox').factory('userInfo', function(){
 			return @Html(userInfo);
 		});
 </script>

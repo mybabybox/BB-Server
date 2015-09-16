@@ -50,11 +50,11 @@ public class Resource extends SocialObject {
 	}
 
 	public Boolean isImage() {
-		return mybox.shopping.social.utils.FileUtils.isImage(resourceName);
+		return babybox.shopping.social.utils.FileUtils.isImage(resourceName);
 	}
 
 	public Boolean isExternal() {
-		return mybox.shopping.social.utils.FileUtils.isExternal(resourceName);
+		return babybox.shopping.social.utils.FileUtils.isExternal(resourceName);
 	}
 
 	@Override

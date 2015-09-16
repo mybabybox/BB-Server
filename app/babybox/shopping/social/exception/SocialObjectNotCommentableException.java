@@ -1,4 +1,4 @@
-package mybox.shopping.social.exception;
+package babybox.shopping.social.exception;
 
 public class SocialObjectNotCommentableException extends Exception {
 

@@ -13,11 +13,11 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
-import mybox.shopping.social.exception.SocialObjectNotCommentableException;
-import mybox.shopping.social.exception.SocialObjectNotFollowableException;
-import mybox.shopping.social.exception.SocialObjectNotJoinableException;
-import mybox.shopping.social.exception.SocialObjectNotLikableException;
-import mybox.shopping.social.exception.SocialObjectNotPostableException;
+import babybox.shopping.social.exception.SocialObjectNotCommentableException;
+import babybox.shopping.social.exception.SocialObjectNotFollowableException;
+import babybox.shopping.social.exception.SocialObjectNotJoinableException;
+import babybox.shopping.social.exception.SocialObjectNotLikableException;
+import babybox.shopping.social.exception.SocialObjectNotPostableException;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;

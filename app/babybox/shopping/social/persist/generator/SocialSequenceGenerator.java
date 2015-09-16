@@ -1,4 +1,4 @@
-package mybox.shopping.social.persist.generator;
+package babybox.shopping.social.persist.generator;
 
 import java.io.Serializable;
 

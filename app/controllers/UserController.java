@@ -630,9 +630,8 @@ public class UserController extends Controller {
 		
 		return ok(Json.toJson(vms));
     }
-	
-	@Transactional
-	public static Result sendPhotoInMessage() {
+		@Transactional
+		public static Result uploadMessagePhoto() {
 		final User localUser = Application.getLocalUser(session());
 		if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
@@ -657,7 +656,7 @@ public class UserController extends Controller {
     }
 	
 	@Transactional
-	public static Result getUnreadMsgCount() {
+	public static Result getUnreadMessageCount() {
 		final User localUser = Application.getLocalUser(session());
 		Map<String, Long> vm = new HashMap<>();
 		vm.put("count", localUser.getUnreadConversationCount());
@@ -666,7 +665,7 @@ public class UserController extends Controller {
 	
 	
 	@Transactional
-	public static Result getMessageImageByID(Long id) {
+	public static Result getMessageImage(Long id) {
 	    response().setHeader("Cache-Control", "max-age=604800");
 		return ok(Resource.findById(id).getThumbnailFile());
 	}
@@ -725,7 +724,7 @@ public class UserController extends Controller {
 	}
     
     @Transactional
-    public static Result profile(Long id) {
+    public static Result getUserProfile(Long id) {
         	NanoSecondStopWatch sw = new NanoSecondStopWatch();
     	    
         	User user = User.findById(id);
@@ -736,7 +735,7 @@ public class UserController extends Controller {
                 logger.underlyingLogger().debug("[u="+user.getId()+"] getProfile(). Took "+sw.getElapsedMS()+"ms");
             }
 
-        	return ok(views.html.mybox.profile.render(Json.stringify(Json.toJson(ProfileVM.profile(user,localUser))), Json.stringify(Json.toJson(new UserVM(localUser)))));
+        	return ok(views.html.babybox.profile.render(Json.stringify(Json.toJson(ProfileVM.profile(user,localUser))), Json.stringify(Json.toJson(new UserVM(localUser)))));
     }
     
     @Transactional
@@ -760,14 +759,14 @@ public class UserController extends Controller {
     }
     
     @Transactional
-    public static Result onFollowed(Long id) {
+    public static Result followUser(Long id) {
     	User user = Application.getLocalUser(session());
     	user.onFollowedBy(User.findById(id));
 		return ok();
     }
     
     @Transactional
-    public static Result onUnFollowed(Long id) {
+    public static Result unfollowUser(Long id) {
     	User user = Application.getLocalUser(session());
     	user.onUnFollowedBy(User.findById(id));
 		return ok();

@@ -4,11 +4,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,10 +29,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import models.SocialRelation.Action;
 import models.TokenAction.Type;
-import mybox.shopping.social.exception.SocialObjectNotCommentableException;
-import mybox.shopping.social.exception.SocialObjectNotJoinableException;
-import mybox.shopping.social.exception.SocialObjectNotLikableException;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -40,6 +41,9 @@ import play.Play;
 import play.data.format.Formats;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
+import babybox.shopping.social.exception.SocialObjectNotCommentableException;
+import babybox.shopping.social.exception.SocialObjectNotJoinableException;
+import babybox.shopping.social.exception.SocialObjectNotLikableException;
 import be.objectify.deadbolt.core.models.Permission;
 import be.objectify.deadbolt.core.models.Role;
 import be.objectify.deadbolt.core.models.Subject;
@@ -53,11 +57,13 @@ import com.feth.play.module.pa.user.EmailIdentity;
 import com.feth.play.module.pa.user.FirstLastNameIdentity;
 import com.google.common.collect.Lists;
 
+import common.cache.FriendCache;
 import common.collection.Pair;
 import common.image.FaceFinder;
 import common.utils.DateTimeUtil;
 import common.utils.ImageFileUtil;
 import common.utils.NanoSecondStopWatch;
+import common.utils.StringUtil;
 import domain.CommentType;
 import domain.DefaultValues;
 import domain.Followable;
@@ -348,9 +354,9 @@ public class User extends SocialObject implements Subject, Socializable, Followa
     }
     
     @Transactional
-    public Product createProduct(String name, String description, Category category, Long productPrize, ProductType productType) 
+    public Product createProduct(String name, String description, Category category, Long productPrize) 
             throws SocialObjectNotJoinableException {
-        Product product = new Product(this, name, description, category, productPrize, productType );
+        Product product = new Product(this, name, description, category, productPrize);
         product.save();
         this.productCount++;
         return product;

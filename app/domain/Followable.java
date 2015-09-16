@@ -1,7 +1,7 @@
 package domain;
 
+import babybox.shopping.social.exception.SocialObjectNotFollowableException;
 import models.User;
-import mybox.shopping.social.exception.SocialObjectNotFollowableException;
 
 public interface Followable {
 	public abstract void onFollowedBy(User user) throws SocialObjectNotFollowableException;

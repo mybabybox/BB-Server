@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('mybox', [
+angular.module('babybox', [
   'infinite-scroll',
   'ngResource',
   'ngRoute',
@@ -125,7 +125,7 @@ angular.module('mybox', [
 // noCache for browser
 //
 
-var mybox = angular.module('mybox');
+var babybox = angular.module('babybox');
 
 var URL_IGNORE = [
     "tracking",
@@ -136,7 +136,7 @@ var URL_IGNORE = [
     "modal"
 ];
 
-mybox.config(['$httpProvider', function($httpProvider) {
+babybox.config(['$httpProvider', function($httpProvider) {
     $httpProvider.interceptors.push('noCacheInterceptor');
     }]).factory('noCacheInterceptor', function () {
             return {

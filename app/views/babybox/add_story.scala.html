@@ -3,7 +3,7 @@
 <!doctype html>
 <html lang="zh-hk">
     <head>
-        <title>香港家長社交平台 - 媽媽社群 | mybox 小萌豆</title>
+        <title>香港家長社交平台 - 媽媽社群 | babybox 小萌豆</title>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -31,10 +31,10 @@
       	<link rel="icon" type="image/png" href="@routes.Assets.at("app/images/favicon-1.ico")">
       	<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("app/images/favicon-1.ico")">
     </head>
-    <body id="main-app" class="menu-right-hidden" ng-app="mybox" ng-controller="CreateProductController">
+    <body id="main-app" class="menu-right-hidden" ng-app="babybox" ng-controller="CreateProductController">
         <div class="container-fluid menu-hidden">
             <div id="main-view">
-            	<div data-ng-include data-src="'/assets/app/views/mybox/add-product.html'"></div>
+            	<div data-ng-include data-src="'/assets/app/views/babybox/add-story.html'"></div>
             </div>
         </div>
 
@@ -56,7 +56,7 @@
         
         <script src="@routes.Assets.at("components/library/bootstrap/js/bootstrap.min.js")"></script>
     	
-        <script type="text/javascript" src="@routes.Assets.at("app/scripts/mybox/product-app.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("app/scripts/babybox/product-app.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("app/scripts/controllers/main.js")"></script>
         <link rel="stylesheet" href="../assets/app/custom-css/bootstrap-override.css">
         <link rel="stylesheet" href="../assets/app/custom-css/icon.css">
@@ -75,7 +75,7 @@
     </body>
 </html>
 <script>
-		angular.module('mybox').factory('userInfo', function(){
+		angular.module('babybox').factory('userInfo', function(){
 			return @Html(userInfo);
 		});
 </script>

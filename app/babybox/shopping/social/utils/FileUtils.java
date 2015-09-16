@@ -1,4 +1,4 @@
-package mybox.shopping.social.utils;
+package babybox.shopping.social.utils;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;

@@ -1,6 +1,9 @@
 package viewmodel;
 
+import java.util.ArrayList;
+
 import models.Product;
+import models.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -20,6 +23,8 @@ public class FeedProductVM {
 	@JsonProperty("isLike") public Boolean isLiked;
 	@JsonProperty("nol") public Integer noOfLikes;
 	
+	public ArrayList<Long> imageArray = new ArrayList<Long>(20);
+	
 	public FeedProductVM(){
 		
 	}
@@ -32,12 +37,22 @@ public class FeedProductVM {
 		this.productDescription = product.description;
 		this.productPrize = product.productPrize;
 		this.noOfLikes = product.noOfLikes;
+		
 		if(product.folder != null && !CollectionUtils.isEmpty(product.folder.resources)) {
 		    this.hasImage = true;
 			this.images = product.folder.resources.get(0).getId();
+			for (Resource resource : product.folder.resources) {
+				this.imageArray.add(resource.getId());
+			}
+				
 		}
 		
 	}
+
+	public ArrayList<Long> getImageArray() {
+		return imageArray;
+	}
+
 
 	public Long getProductId() {
 		return productId;
