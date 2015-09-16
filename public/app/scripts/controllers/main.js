@@ -3,10 +3,13 @@
 var babybox = angular.module('babybox');
 
 babybox.controller('FrontPageController', 
-		function($scope, $route, feedService, ngDialog, userInfo, viewService, $location, $anchorScroll) {
+		function($scope, $route, feedService, ngDialog, userInfo, viewService, $location, $anchorScroll, usSpinnerService) {
+	usSpinnerService.spin('loading...');
 	$scope.userInfo = userInfo;
-	$scope.products = feedService.getFeedProduct.get();
-	
+	$scope.products = feedService.getFeedProduct.get(
+	        function() {
+	        	usSpinnerService.stop('loading...');
+	        });
 	$scope.gotoTop=function(){
 		$location.hash('');
 	    $anchorScroll();
@@ -31,7 +34,7 @@ babybox.controller('ProductPageController',
 });
 
 babybox.controller('ProductController', 
-		function($scope, $route, $http, likeService, userService, productService) {
+		function($scope, $route, $http, likeService, userService, productService, usSpinnerService) {
 	console.log($scope.product.imgs);
 	$scope.ImageUrl = "/image/get-full-product-image-by-id/"+$scope.product.imgs;
 	$scope.collections = [];
@@ -40,8 +43,6 @@ babybox.controller('ProductController',
 	$scope.similarProducts = productService.getSimilarProduct.get();
 	$scope.open = false;
 	$scope.product = productService.getProductInfo.get({id:$scope.product.id});
-	
-	
 	
 	console.log($scope.ImageUrl);
 	$scope.setImgUrl = function(id){
