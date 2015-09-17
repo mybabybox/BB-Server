@@ -188,7 +188,7 @@ babybox.controller('CreateProductController',function($scope, $location, $http, 
 				"catId" : $scope.formData.category,
 				"title" : $scope.formData.name,
 				"desc" : $scope.formData.description,
-				"prize" : $scope.formData.productPrize,
+				"price" : $scope.formData.productPrice,
 		};
 		console.log(newPostVM);
 		

@@ -17,7 +17,7 @@ import com.typesafe.plugin.MailerPlugin;
 
 public class MailJob implements Runnable {
 
-    private static final String MAIL_FROM = "minibean.app@gmail.com";
+    private static final String MAIL_FROM = "info@baby-box.com.hk";
 
 	private final Mail mail;
 

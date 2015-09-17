@@ -17,7 +17,7 @@ public class FeedProductVM {
 	@JsonProperty("imgs") public Long images;
     @JsonProperty("ptyp") public String productType;
 	@JsonProperty("pn") public String productName;
-	@JsonProperty("pp") public Long productPrize;
+	@JsonProperty("pp") public Long productPrice;
 	@JsonProperty("pd") public String productDescription;
 	@JsonProperty("hasImage") public Boolean hasImage;
 	@JsonProperty("isLike") public Boolean isLiked;
@@ -35,7 +35,7 @@ public class FeedProductVM {
 		this.productId = product.id;
 		this.productName = product.title;
 		this.productDescription = product.description;
-		this.productPrize = product.productPrize;
+		this.productPrice = product.productPrice;
 		this.noOfLikes = product.noOfLikes;
 		
 		if(product.folder != null && !CollectionUtils.isEmpty(product.folder.resources)) {
@@ -110,12 +110,12 @@ public class FeedProductVM {
 		this.productName = productName;
 	}
 
-	public Long getProductPrize() {
-		return productPrize;
+	public Long getProductPrice() {
+		return productPrice;
 	}
 
-	public void setProductPrize(Long productPrize) {
-		this.productPrize = productPrize;
+	public void setProductPrice(Long productPrice) {
+		this.productPrice = productPrice;
 	}
 
 	public String getProductDescription() {

@@ -40,13 +40,11 @@ public class ProductController extends Controller{
 		}
 
 		DynamicForm dynamicForm = DynamicForm.form().bindFromRequest();
-		Long catId=Long.parseLong(dynamicForm.get("catId")),
-			prize=Long.parseLong(dynamicForm.get("prize"));
+		Long catId = Long.parseLong(dynamicForm.get("catId"));
+		Long price = Long.parseLong(dynamicForm.get("price"));
 		
-		String name=dynamicForm.get("title"),
-			   desc=dynamicForm.get("desc");
-		
-//		System.out.println(name +"  "+ desc+"  "/*+catId+"  "+prize*/);
+		String name = dynamicForm.get("title");
+		String desc = dynamicForm.get("desc");
 		
 		Category category = Category.findById(catId);
 		
@@ -64,7 +62,7 @@ public class ProductController extends Controller{
 		
 		List<FilePart> pictures = request().body().asMultipartFormData().getFiles();
 		try {
-			Product newProduct = localUser.createProduct(name, desc, category, prize);
+			Product newProduct = localUser.createProduct(name, desc, category, price);
 			if (newProduct == null) {
 				return status(505, "Failed to create community. Invalid parameters.");
 			}

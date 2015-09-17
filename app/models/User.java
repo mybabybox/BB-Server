@@ -4,14 +4,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,7 +26,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import models.SocialRelation.Action;
 import models.TokenAction.Type;
 
 import org.codehaus.jackson.JsonNode;
@@ -57,17 +53,14 @@ import com.feth.play.module.pa.user.EmailIdentity;
 import com.feth.play.module.pa.user.FirstLastNameIdentity;
 import com.google.common.collect.Lists;
 
-import common.cache.FriendCache;
 import common.collection.Pair;
 import common.image.FaceFinder;
 import common.utils.DateTimeUtil;
 import common.utils.ImageFileUtil;
 import common.utils.NanoSecondStopWatch;
-import common.utils.StringUtil;
 import domain.CommentType;
 import domain.DefaultValues;
 import domain.Followable;
-import domain.ProductType;
 import domain.SocialObjectType;
 import domain.Socializable;
 
@@ -354,9 +347,9 @@ public class User extends SocialObject implements Subject, Socializable, Followa
     }
     
     @Transactional
-    public Product createProduct(String name, String description, Category category, Long productPrize) 
+    public Product createProduct(String name, String description, Category category, Long productPrice) 
             throws SocialObjectNotJoinableException {
-        Product product = new Product(this, name, description, category, productPrize);
+        Product product = new Product(this, name, description, category, productPrice);
         product.save();
         this.productCount++;
         return product;

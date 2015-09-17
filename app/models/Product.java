@@ -54,7 +54,7 @@ public class Product extends SocialObject implements Likeable, Commentable {
 
 	public String tagWords;     // comma separated list
 
-	public Long productPrize = 0L;
+	public Long productPrice = 0L;
 
 	public int noOfComments = 0;
 	public int noOfLikes = 0;
@@ -92,8 +92,7 @@ public class Product extends SocialObject implements Likeable, Commentable {
 		this(actor, null, post);
 	}
 
-	public Product(User actor, String title, String description,
-			Category category) {
+	public Product(User actor, String title, String description, Category category) {
 		this.owner = actor;
 		this.title = title;
 		this.description = description;
@@ -101,13 +100,12 @@ public class Product extends SocialObject implements Likeable, Commentable {
 		this.objectType = SocialObjectType.PRODUCT;
 	}
 
-	public Product(User actor, String title, String description,
-			Category category, Long productPrize) {
+	public Product(User actor, String title, String description, Category category, Long productPrice) {
 		this.owner = actor;
 		this.title = title;
 		this.description = description;
 		this.category = category;
-		this.productPrize = productPrize;
+		this.productPrice = productPrice;
 //		this.productType = productType;
 	}
 
