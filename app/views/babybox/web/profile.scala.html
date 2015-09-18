@@ -1,4 +1,4 @@
-@(userInfo:String)
+@(profileUser:String, userInfo:String)
 
 <!doctype html>
 <html lang="zh-hk">
@@ -35,11 +35,11 @@
       	<link rel="icon" type="image/png" href="@routes.Assets.at("app/images/favicon-1.ico")">
       	<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("app/images/favicon-1.ico")">
     </head>
-    <body id="main-app" class="menu-right-hidden" ng-app="babybox" ng-controller="FrontPageController">
+    <body id="main-app" class="menu-right-hidden" ng-app="babybox" ng-controller="ProfileController">
     <span us-spinner spinner-key="loading..." ></span>
         <div class="container-fluid menu-hidden">
             <div id="main-view" >
-            	<div data-ng-include data-src="'/assets/app/views/babybox/home.html'"></div>
+            	<div data-ng-include data-src="'/assets/app/views/babybox/profile.html'"></div>
             </div>
         </div>
 
@@ -83,68 +83,7 @@
     	<script src="@routes.Assets.at("app/scripts/lib/bootbox-4.2.0.min.js")"></script>
     	<script src="@routes.Assets.at("app/bower_components/royal-slider/rs-9.5.4/royalslider/jquery.royalslider.min.js")"></script>
     	<script src="@routes.Assets.at("app/bower_components/angular-ngdialog/js/ngDialog.min.js")"></script>
-    	<!-- <script>var App = {};</script>
-    	<script data-id="App.Scripts">
-    		App.Scripts = {
-    		
-    			/* CORE scripts always load first; */
-    			core: [
-    				'@routes.Assets.at("components/library/jquery/jquery.min.js?v=v1.0.0&sv=v0.0.1")', 
-    				'@routes.Assets.at("components/library/modernizr/modernizr.js?v=v1.0.0&sv=v0.0.1")'
-    			],
-    		
-    			/* PLUGINS_DEPENDENCY always load after CORE but before PLUGINS; */
-    			plugins_dependency: [
-    				'@routes.Assets.at("components/library/bootstrap/js/bootstrap.min.js?v=v1.0.0&sv=v0.0.1")', 
-    				'@routes.Assets.at("components/library/jquery/jquery-migrate.min.js?v=v1.0.0&sv=v0.0.1")'
-    			],
-    		
-    			/* PLUGINS always load after CORE and PLUGINS_DEPENDENCY, but before the BUNDLE / initialization scripts; */
-    			plugins: [
-    				'@routes.Assets.at("components/plugins/nicescroll/jquery.nicescroll.min.js?v=v1.0.0&sv=v0.0.1")', 
-    				'@routes.Assets.at("components/plugins/breakpoints/breakpoints.js?v=v1.0.0&sv=v0.0.1")', 
-    				//'',
-    				//'@routes.Assets.at("components/plugins/ajaxify/davis.min.js?v=v1.0.0&sv=v0.0.1")', 
-    				//'@routes.Assets.at("components/plugins/ajaxify/jquery.lazyjaxdavis.min.js?v=v1.0.0&sv=v0.0.1")', 
-    				//'@routes.Assets.at("components/plugins/preload/pace/pace.min.js?v=v1.0.0&sv=v0.0.1")', 
-    				'@routes.Assets.at("components/plugins/menus/sidr/jquery.sidr.js?v=v1.0.0")', 
-    				'@routes.Assets.at("components/plugins/holder/holder.js?v=v1.0.0&sv=v0.0.1")', 
-    				'@routes.Assets.at("components/common/forms/elements/bootstrap-select/assets/lib/js/bootstrap-select.js?v=v1.0.0&sv=v0.0.1")', 
-    				'@routes.Assets.at("components/plugins/mixitup/jquery.mixitup.min.js?v=v1.0.0&sv=v0.0.1")', 
-    				'@routes.Assets.at("components/plugins/less-js/less.min.js?v=v1.0.0&sv=v0.0.1")', 
-    				'@routes.Assets.at("components/modules/admin/charts/flot/assets/lib/excanvas.js?v=v1.0.0&sv=v0.0.1")', 
-    				'@routes.Assets.at("components/plugins/browser/ie/ie.prototype.polyfill.js?v=v1.0.0&sv=v0.0.1")'
-    			],
-    		
-    			/* The initialization scripts always load last and are automatically and dynamically loaded when AJAX navigation is enabled; */
-    			bundle: [
-    				//'@routes.Assets.at("components/plugins/ajaxify/ajaxify.init.js?v=v1.0.0&sv=v0.0.1")', 
-    				'@routes.Assets.at("components/core/js/sidebar.main.init.js?v=v1.0.0")', 
-    				'@routes.Assets.at("components/core/js/sidebar.collapse.init.js?v=v1.0.0")', 
-    				'@routes.Assets.at("components/common/forms/elements/bootstrap-select/assets/custom/js/bootstrap-select.init.js?v=v1.0.0&sv=v0.0.1")', 
-    				'@routes.Assets.at("components/modules/admin/menus/menus.sidebar.chat.init.js?v=v1.0.0")', 
-    				'@routes.Assets.at("components/plugins/mixitup/mixitup.init.js?v=v1.0.0&sv=v0.0.1")', 
-    				'@routes.Assets.at("components/core/js/core.init.js?v=v1.0.0")'
-    			]
-    		
-    		};
-    	</script> -->
-    
-        <!-- <script>
-    		//$script(App.Scripts.core, 'core');
-    		
-    		//$script.ready(['core'], function(){
-    		//	$script(App.Scripts.plugins_dependency, 'plugins_dependency');
-    		//});
-    		//$script.ready(['core', 'plugins_dependency'], function(){
-    		//	$script(App.Scripts.plugins, 'plugins');
-    		//});
-    		//$script.ready(['core', 'plugins_dependency', 'plugins'], function(){
-    		//	$script(App.Scripts.bundle, 'bundle');
-    		//});
-    	</script> -->
-    	
-        <script type="text/javascript" src="@routes.Assets.at("app/scripts/babybox/home-app.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("app/scripts/babybox/web/home-app.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("app/scripts/directives.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("app/scripts/default-values.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("app/scripts/game-constants.js")"></script>
@@ -168,7 +107,11 @@
 		<link rel="stylesheet" href="../assets/app/bower_components/angular-ngdialog/css/ngDialog-theme-plain.min.css" />        
     </body>
 </html>
+
 <script>
+		angular.module('babybox').factory('profileUser', function(){
+			return @Html(profileUser);
+		});
 		angular.module('babybox').factory('userInfo', function(){
 			return @Html(userInfo);
 		});
