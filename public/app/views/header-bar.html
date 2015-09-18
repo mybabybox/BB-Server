@@ -1,6 +1,6 @@
 <!-- Top Header Bar -->
-<div id="header-backdrop" class="header-wrapper no-glow navbar hidden-print navbar-default box main navbar-fixed-top" role="navigation" style="top:0px;height:42px;"></div>
-<div id="header" class="header-wrapper no-glow navbar hidden-print navbar-default box main navbar-fixed-top" role="navigation" style="top:0px;height:42px;">
+<div id="header-backdrop" class="header-wrapper no-glow navbar hidden-print navbar-default box main navbar-fixed-top" role="navigation"></div>
+<div id="header" class="header-wrapper no-glow navbar hidden-print navbar-default box main navbar-fixed-top" role="navigation">
     
     <span>
         <a class="header-main-text" ng-href="/my">
@@ -12,111 +12,11 @@
         <a class="header-main-text" ng-href="/my">
         	Trending
         </a>
-        <a  ng-if="userInfo.isLoggedIn" data-toggle="modal" data-target="#post-modal" href="">
+        <a class="header-main-text" ng-if="userInfo.isLoggedIn" data-toggle="modal" data-target="#post-modal" href="">
 			Post +
 		</a>
     </span>
     
-    <!-- <span ng-if="userInfo.isLoggedIn">
-    	
-        <ul class="header-notif-bar pull-left">
-            <li class="dropdown notif pull-left" >
-                <a href="" class="dropdown-toggle dropdown-hover" data-toggle="dropdown" data-ng-click="mark_requests_read()">
-                    <img class="colorChange" src="../assets/app/images/general/icons/w_profile.png" />
-                    <span class="notif-count pull-right" data-ng-show="unread_request_count > 0">{{unread_request_count}}</span>
-                </a>
-                <ul class="dropdown-menu chat media-list" data-ng-show="request_notif.length > 0" style="top: 28px !important;" >
-                    <li data-ng-class="request.sta == 0 ? 'unread':'read'" class="media" data-ng-repeat="request in request_notif" ng-switch="request.tp">
-
-                        <a class="pull-left" ng-href="{{request.url.onClick}}" style="height: 50px;">
-                            <img ng-switch-when="COMM_JOIN_APPROVED" class="media-object thumb" data-ng-src="{{request.url.photo}}" style="height: 35px; width: 50px;">
-                            <img ng-switch-when="COMM_INVITE_REQUEST" class="media-object thumb" data-ng-src="{{request.url.photo}}" style="height: 35px; width: 50px;">
-                            <img ng-switch-default class="media-object thumb" data-ng-src="{{request.url.photo}}" style="height: 50px; width: 50px;">
-                        </a>
-                        <div class="media-body">
-                            <p class="margin-none"><a data-ng-href="{{request.url.onClick}}">{{request.msg}}</a></p>
-                        </div>
-                        <div class="media-body" data-ng-init="request.isLoadingEnable = false">
-
-                            <button data-ng-hide="request.tp == 'COMM_JOIN_APPROVED' || request.tp == 'FRD_ACCEPTED'" style="margin-left:10px;"
-                                data-ng-click="ignoreIt(request.nid);$event.stopPropagation();"
-                                class="btn btn-xs btn-default pull-right ignore">ç•¥é�Ž</button>
-                                
-                            <button ng-switch-when="COMM_JOIN_REQUEST"  data-ng-show="request.isRequestAccepted == false && request.isLoadingEnable == false" data-ng-init="request.isRequestAccepted = false"
-                                data-ng-click="accept_join_request(request.url.actor, request.url.target, request.nid);$event.stopPropagation();"
-                                class="btn btn-xs btn-success pull-right a_{{request.nid}}">æŽ¥å�—</button>
-
-                            <button ng-switch-when="COMM_INVITE_REQUEST" data-ng-show="request.isRequestAccepted == false && request.isLoadingEnable == false" data-ng-init="request.isRequestAccepted = false"
-                                data-ng-click="accept_invite_request(request.url.actor, request.url.target, request.nid);$event.stopPropagation();"
-                                class="btn btn-xs btn-success pull-right a_{{request.nid}}">æŽ¥å�—</button>
-
-                            <button ng-switch-when="FRD_REQUEST" data-ng-init="friend.isFriendAccepted = false"
-                                data-ng-click="accept_friend_request(request.url.actor, request.nid);$event.stopPropagation();"
-                                class="btn btn-xs btn-success pull-right a_{{request.nid}}">æŽ¥å�—</button>
-                        </div>
-                    </li>
-                </ul>
-            </li>
-            <li class="dropdown notif pull-left">
-                <a href="" class="dropdown-toggle dropdown-hover" data-toggle="dropdown" data-ng-click="mark_notif_read();">
-                    <img class="colorChange" src="../assets/app/images/general/icons/w_notification.png" />
-                    <span class="notif-count pull-right" data-ng-show="isNOreaded == true && unread_notify_count > 0">{{unread_notify_count}}</span>
-                </a>
-                <ul class="dropdown-menu chat media-list" data-ng-show="batchup_notif.length > 0" style="top: 28px !important;overflow-y: scroll;max-height: 285px;">
-                    <li data-ng-class="request.sta == 0 ? 'unread':'read' " class="media" data-ng-repeat="request in batchup_notif" >
-                        <a class="pull-left" data-ng-href="{{request.url.onClick}}" style="height: 50px;">
-                            <img class="media-object thumb" data-ng-src="{{request.url.photo}}"  style="height: 50px; width: 50px;">
-                        </a>
-                        <div class="media-body">
-                            <p class="margin-none"><a data-ng-href="{{request.url.onClick}}">{{request.msg}}</a></p>
-                            <span class="post-date" am-time-ago="request.upd"></span>
-                        </div>
-                    </li>
-                </ul>
-            </li>
-            <li class="dropdown notif pull-left">
-                <a href="/my#!/message-list">
-                    <img class="colorChange" src="../assets/app/images/general/icons/w_message.png"/>
-                    <span class="notif-count pull-right" data-ng-show="unread_msg_count > 0">{{unread_msg_count}}</span>
-                </a>
-            </li>
-        </ul>
-        
-        <form method="post" action="" ng-show="userInfo.isSA">
-            <div id="main-search-box" name="main-search-box" class="pull-left" data-ng-controller="SearchController" >
-                <a id="main-search-wrapper" class="ng-pristine ng-valid">
-                    <div class="input-group innerB main-search">
-                        <input type="text" name="searchfield" id="searchfield" class="form-control" ng-model="query" data-ng-keyup="search_result(query)" placeholder="">
-                        <div class="input-group-btn">
-                           <button id="submit-search" name="submit" class="btn btn-default" type="submit">
-                               <i class="fa fa-search"></i>
-                           </button>
-                        </div>
-                    </div>
-                </a>
-                
-                <div class="row">
-                    <ul style="top:23px;left:5px;overflow-y:scroll;max-height:345px;width:260px;" class="dropdown-menu chat media-list hide" ng-class="{show : result.length > 0 && query.length > 0}">
-                        <li class="media" ng-repeat="sr in result" ng-switch="sr.tp">
-                            <a ng-switch-when="USER" class="pull-left" href="/my#!/profile/{{sr.id}}">
-                                <img class="media-object thumb" data-ng-src="/image/get-mini-image-by-id/{{sr.id}}" alt="50x50" width="50"/>
-                            </a>
-                            
-                            <a ng-switch-when="COMMUNITY" class="pull-left" href="/my#!/community/{{sr.id}}">
-                                <img class="media-object thumb" data-ng-src="/image/get-mini-cover-community-image-by-id/{{sr.id}}" alt="50x50" width="50"/>
-                            </a>
-                            
-                            <div class="media-body">
-                                <h5 class="media-heading">{{sr.nm}}</h5>
-                                <p class="margin-none">{{sr.tp}}</p>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </form>
-    </span>
- -->    
     <div class="right-side">
         <span ng-if="userInfo.isLoggedIn">
             <a class="header-main-text" ng-href="/profile/{{userInfo.id}}">
@@ -124,11 +24,10 @@
                 {{userInfo.displayName}}
             </a>
             <a style="position:relative;top:-3px;" class="dropdown-toggle dropdown-hover colorChange" data-toggle="dropdown" href="">
-                <img src="../assets/app/images/general/icons/w_setup.png" />
+                <img src="../assets/app/images/general/icons/w_settings.png" />
             </a>
             <ul class="dropdown-menu settings-dropdown-menu">
                 <li><a href="/logout">logout</a></li>
-                <!--li><a ng-href="">å›žå ±å•�é¡Œ</a></li-->
             </ul>
         </span>
         <span ng-if="!userInfo.isLoggedIn">
@@ -154,7 +53,7 @@
                 <h4 class="modal-title" id="myModalLabel">ç™»å…¥</h4>
             </div>
             <div class="modal-body">
-                <form name="formData" id="loginForm" action="/login-popup"  method="post" >
+                <form name="formData" id="loginForm" action="/login-popup" method="post" >
                     <div class="login-box" id="login-section">
                         <ul>
                             <li style="padding:5px;">

@@ -502,12 +502,12 @@ a:focus {
 .btn-comment {
     margin: 0 10px 0 0;
 }
-.themeA-container{
+.themeA-container {
     margin-left: auto;
     margin-right: auto;
     padding: 0 15px 100px 15px;
-    width: 1150px;
-    min-height: 200px;
+    /* width: 1150px; */
+    min-height: 650px;
     position: relative;
     /* top: 55px; */
     background-color: #F0F0F0;
@@ -1228,24 +1228,17 @@ a:focus {
     z-index: 99;
     position: fixed;
     top: 0px;
-    height: 42px;
+    height: 45px;
     margin: 0 auto;
-    border-bottom: 1px solid #6253AF;
-    background: rgb(150, 103, 221); /* Old browsers */
-    background: -moz-linear-gradient(top,  rgba(150, 103, 221, 1) 0%, rgba(167, 135, 216, 1) 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(150, 103, 221, 1)), color-stop(100%,rgba(167, 135, 216, 1))); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, rgba(150, 103, 221, 1) 0%,rgba(167, 135, 216, 1) 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top,  rgba(150, 103, 221, 1) 0%,rgba(167, 135, 216, 1) 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top,  rgba(150, 103, 221, 1) 0%,rgba(167, 135, 216, 1) 100%); /* IE10+ */
-    background: linear-gradient(to bottom,rgba(150, 103, 221, 1) 0,rgba(167, 135, 216, 1) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ba9ae7', endColorstr='#996fd9',GradientType=0 ); /* IE6-9 */
+    border-bottom: 1px solid #e4e4e4;
+    background: rgb(255, 255, 255);
 }
 #header {
     width: 1050px;
 }
 #header-backdrop {
     width: 100%;
-    border-bottom: 1px solid #6253AF;
+    border-bottom: 1px solid #e4e4e4;
 }
 .header-wrapper {
     padding-top: 9px;
@@ -1256,19 +1249,19 @@ a:focus {
     position: relative;
 }
 .header-wrapper a {
-    color: white;
+    color: #222222;
     font-size: 13px;
     font-weight: normal;
 }
 .header-wrapper a:hover {
     text-decoration: none;
-    color: #E5EDFD;
+    color: #222222;
 }
 .header-main-text {
-    margin-right: 15px;
-    color: white;
-    font-size: 15px !important;
-    font-weight: bold !important;
+    margin-right: 25px;
+    color: #222222;
+    font-size: 16px !important;
+    font-weight: normal !important;
 }
 .header-main-text img {
     margin-right: 7px;
