@@ -553,13 +553,13 @@ public class Application extends Controller {
 	@Transactional
 	public static Result addProduct() {
 		User user = Application.getLocalUser(session());
-		return ok(views.html.babybox.web.add_product.render(Json.stringify(Json.toJson(new UserVM(user)))));
+		return ok(views.html.babybox.web.add_product.render( Json.stringify(Json.toJson(new UserVM(user)))));
 	}
 	
 	@Transactional
 	public static Result addStory() {
 		User user = Application.getLocalUser(session());
-		return ok(views.html.babybox.web.add_story.render(Json.stringify(Json.toJson(new UserVM(user)))));
+		return ok(views.html.babybox.web.add_story.render( Json.stringify(Json.toJson(new UserVM(user)))));
 	}
 	
 	

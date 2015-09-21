@@ -724,7 +724,7 @@ public class UserController extends Controller {
 	}
     
     @Transactional
-    public static Result getUserProfile(Long id) {
+    public static Result profile(Long id) {
         	NanoSecondStopWatch sw = new NanoSecondStopWatch();
     	    
         	User user = User.findById(id);
@@ -735,7 +735,7 @@ public class UserController extends Controller {
                 logger.underlyingLogger().debug("[u="+user.getId()+"] getProfile(). Took "+sw.getElapsedMS()+"ms");
             }
 
-        	return ok(views.html.babybox.profile.render(Json.stringify(Json.toJson(ProfileVM.profile(user,localUser))), Json.stringify(Json.toJson(new UserVM(localUser)))));
+        	return ok(views.html.babybox.web.profile.render(Json.stringify(Json.toJson(ProfileVM.profile(user,localUser))), Json.stringify(Json.toJson(new UserVM(localUser)))));
     }
     
     @Transactional

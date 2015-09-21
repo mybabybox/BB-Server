@@ -127,8 +127,8 @@ GET		/get-product-info/:id						controllers.ProductController.getProductInfo(id:
 # User
 GET     /get-user-products/:id       				controllers.UserController.getUserProducts(id: Long)
 GET     /get-user-collections/:id					controllers.UserController.getUserCollections(id: Long)
-GET     /follow-user/:id          					controllers.UserController.onFollowed(id:Long)
-GET     /unfollow-user/:id        					controllers.UserController.onUnFollowed(id:Long)
+GET     /follow-user/:id          					controllers.UserController.followUser(id:Long)
+GET     /unfollow-user/:id        					controllers.UserController.unfollowUser(id:Long)
 
 # image
 GET     /image/get-product-image-by-id/:id     		controllers.ProductController.getProductImageById(id :Long)

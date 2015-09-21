@@ -157,7 +157,7 @@ public class ProductController extends Controller{
 	@Transactional
 	public static Result product(Long id) {
 		final User localUser = Application.getLocalUser(session());
-		return ok(views.html.babybox.product.render(Json.stringify(Json.toJson(getProductInfoVM(id))), Json.stringify(Json.toJson(new UserVM(localUser)))));
+		return ok(views.html.babybox.web.product.render(Json.stringify(Json.toJson(getProductInfoVM(id))), Json.stringify(Json.toJson(new UserVM(localUser)))));
 	}
 	
 	@Transactional
