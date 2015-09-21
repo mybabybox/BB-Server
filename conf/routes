@@ -116,9 +116,9 @@ POST	/create-product 		             		controllers.ProductController.createProduc
 GET     /get-all-feed-products       				controllers.ProductController.getAllFeedProducts
 GET     /get-all-similar-products       			controllers.ProductController.getAllsimilarProducts
 GET     /product/:id            		     		controllers.ProductController.product(id:Long)
-GET     /like-product/:id          					controllers.ProductController.onLiked(id:Long)
-GET     /unlike-product/:id        					controllers.ProductController.onUnLiked(id:Long)
-POST	/product/comment							controllers.ProductController.onComment
+GET     /like-product/:id          					controllers.ProductController.likePost(id:Long)
+GET     /unlike-product/:id        					controllers.ProductController.unlikePost(id:Long)
+POST	/product/comment							controllers.ProductController.newComment
 GET     /view-product/:id        					controllers.ProductController.onView(id:Long)
 POST	/create-collection		             		controllers.ProductController.createCollection
 POST	/product/add-to-collection					controllers.ProductController.addToCollection
