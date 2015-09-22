@@ -109,6 +109,11 @@ GET     /image/get-original-image-by-id/:id     controllers.UserController.getOr
 GET     /admin/get-campaign-joiners/:id         controllers.AdminController.getCampaignJoiners(id :Long)
 
 # Product
+GET		/get-category-popular-feed/:id/:postType/:offset		controllers.ProductController.getCategoryPopularFeed(id :Long, postType: String, offset: Long)
+GET		/get-category-newest-feed/:id/:postType/:offset			controllers.ProductController.getCategoryNewestFeed(id :Long, postType: String, offset: Long)
+GET		/get-category-price-low-high-feed/:id/:postType/:offset			controllers.ProductController.getCategoryPriceLowHighFeed(id :Long, postType: String, offset: Long)
+GET		/get-category-price-high-low-feed/:id/:postType/:offset			controllers.ProductController.getCategoryPriceHighLowFeed(id :Long, postType: String, offset: Long)
+
 GET     /add/product            		     		controllers.Application.addProduct
 GET     /add/story                   				controllers.Application.addStory
 

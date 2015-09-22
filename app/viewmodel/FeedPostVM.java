@@ -2,46 +2,46 @@ package viewmodel;
 
 import java.util.ArrayList;
 
-import models.Product;
+import models.Post;
 import models.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 
-public class FeedProductVM {
-	@JsonProperty("id") public Long productId;
+public class FeedPostVM {
+	@JsonProperty("id") public Long postId;
 	@JsonProperty("oid") public Long ownerId;
 	@JsonProperty("on") public String ownerName;
 	@JsonProperty("p") public String postedBy;
 	@JsonProperty("t") public long postedOn;
 	@JsonProperty("imgs") public Long images;
-    @JsonProperty("ptyp") public String productType;
-	@JsonProperty("pn") public String productName;
-	@JsonProperty("pp") public Long productPrice;
-	@JsonProperty("pd") public String productDescription;
+    @JsonProperty("ptyp") public String postType;
+	@JsonProperty("pn") public String postName;
+	@JsonProperty("pp") public Long postPrize;
+	@JsonProperty("pd") public String postDescription;
 	@JsonProperty("hasImage") public Boolean hasImage;
 	@JsonProperty("isLike") public Boolean isLiked;
 	@JsonProperty("nol") public Integer noOfLikes;
 	
 	public ArrayList<Long> imageArray = new ArrayList<Long>(20);
 	
-	public FeedProductVM(){
+	public FeedPostVM(){
 		
 	}
 
-	public FeedProductVM(Product product) {
-		this.ownerId = product.owner.id;
-		this.ownerName = product.owner.name;
-		this.productId = product.id;
-		this.productName = product.title;
-		this.productDescription = product.description;
-		this.productPrice = product.productPrice;
-		this.noOfLikes = product.noOfLikes;
+	public FeedPostVM(Post post) {
+		this.ownerId = post.owner.id;
+		this.ownerName = post.owner.name;
+		this.postId = post.id;
+		this.postName = post.title;
+		this.postDescription = post.description;
+		this.postPrize = post.postPrize;
+		this.noOfLikes = post.noOfLikes;
 		
-		if(product.folder != null && !CollectionUtils.isEmpty(product.folder.resources)) {
+		if(post.folder != null && !CollectionUtils.isEmpty(post.folder.resources)) {
 		    this.hasImage = true;
-			this.images = product.folder.resources.get(0).getId();
-			for (Resource resource : product.folder.resources) {
+			this.images = post.folder.resources.get(0).getId();
+			for (Resource resource : post.folder.resources) {
 				this.imageArray.add(resource.getId());
 			}
 				
@@ -55,11 +55,11 @@ public class FeedProductVM {
 
 
 	public Long getProductId() {
-		return productId;
+		return postId;
 	}
 
-	public void setProductId(Long productId) {
-		this.productId = productId;
+	public void setProductId(Long postId) {
+		this.postId = postId;
 	}
 
 	public Long getOwnerId() {
@@ -95,35 +95,35 @@ public class FeedProductVM {
 	}
 
 	public String getProductType() {
-		return productType;
+		return postType;
 	}
 
-	public void setProductType(String productType) {
-		this.productType = productType;
+	public void setProductType(String postType) {
+		this.postType = postType;
 	}
 
 	public String getProductName() {
-		return productName;
+		return postName;
 	}
 
-	public void setProductName(String productName) {
-		this.productName = productName;
+	public void setProductName(String postName) {
+		this.postName = postName;
 	}
 
 	public Long getProductPrice() {
-		return productPrice;
+		return postPrize;
 	}
 
-	public void setProductPrice(Long productPrice) {
-		this.productPrice = productPrice;
+	public void setProductPrice(Long postPrice) {
+		this.postPrize = postPrice;
 	}
 
 	public String getProductDescription() {
-		return productDescription;
+		return postDescription;
 	}
 
-	public void setProductDescription(String productDescription) {
-		this.productDescription = productDescription;
+	public void setProductDescription(String postDescription) {
+		this.postDescription = postDescription;
 	}
 
 	public boolean getIsHasImage() {

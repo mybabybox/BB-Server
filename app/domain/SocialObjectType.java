@@ -3,7 +3,7 @@ package domain;
 public enum SocialObjectType {
      USER,
      COLLECTION,
-     PRODUCT,
+     POST,
      PROFILE_PHOTO,
      COVER_PHOTO,
      POST_PHOTO,

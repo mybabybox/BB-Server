@@ -76,7 +76,7 @@ public class ReportedObject {
     public void setObjectType(String objectType) {
         switch(objectType) {
         case "POST":
-            this.objectType = SocialObjectType.PRODUCT;
+            this.objectType = SocialObjectType.POST;
             break;
         case "USER":
             this.objectType = SocialObjectType.USER;

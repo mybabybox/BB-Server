@@ -30,7 +30,7 @@ import com.google.common.base.Objects;
 import domain.AuditListener;
 import domain.CommentType;
 import domain.Creatable;
-import domain.ProductType;
+import domain.PostType;
 import domain.SocialObjectType;
 import domain.Updatable;
 
@@ -106,7 +106,7 @@ public abstract class SocialObject extends domain.Entity implements
 		action.validateUniquenessAndCreate();
 	}
 	
-	protected void recordCommentOnProduct(SocialObject user, Comment comment) {
+	protected void recordCommentOnPost(SocialObject user, Comment comment) {
 		SocialRelation action = new SocialRelation(user, comment);
 		action.action = SocialRelation.Action.COMMENTED;
         action.save();
@@ -186,7 +186,7 @@ public abstract class SocialObject extends domain.Entity implements
         throw new SocialObjectNotCommentableException("Please make sure Social Object you are deleteing comment is Commentable");
     }
 	
-	public SocialObject onPost(User user, String title, String body, ProductType type)
+	public SocialObject onPost(User user, String title, String body, PostType type)
 			throws SocialObjectNotPostableException {
 		throw new SocialObjectNotPostableException(
 				"Please make sure Social Object you are posting  is Postable");

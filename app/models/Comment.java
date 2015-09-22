@@ -105,7 +105,7 @@ public class Comment extends SocialObject implements Comparable<Comment>, Likeab
     }
     
     public void delete(User deletedBy) {
-        Product post = Product.findById(this.socialObject);
+        Post post = Post.findById(this.socialObject);
         post.noOfComments--;
         this.deleted = true;
         this.deletedBy = deletedBy;
@@ -127,11 +127,11 @@ public class Comment extends SocialObject implements Comparable<Comment>, Likeab
 		}
 	}
 
-    public Product getProduct() {
+    public Post getProduct() {
       	Query q = JPA.em().createNativeQuery("SELECT product_id FROM product_comment where comments_id = "+this.id);
       	BigInteger integer = (BigInteger) q.getSingleResult();
         Long id = integer.longValue();
-        Product product = Product.findById(id);
+        Post product = Post.findById(id);
         return product;
     }
 

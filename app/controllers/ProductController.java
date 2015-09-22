@@ -7,24 +7,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import babybox.shopping.social.exception.SocialObjectNotJoinableException;
-
-
 import models.Category;
 import models.Collection;
-import models.Product;
+import models.Post;
 import models.Resource;
 import models.User;
 import play.data.DynamicForm;
-import play.data.Form;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
-import viewmodel.FeedProductVM;
-import viewmodel.ProductInfoVM;
+import viewmodel.FeedPostVM;
+import viewmodel.PostInfoVM;
 import viewmodel.UserVM;
+import babybox.shopping.social.exception.SocialObjectNotJoinableException;
+
+import common.cache.CalServer;
 import common.utils.HtmlUtil;
 import common.utils.ImageFileUtil;
 
@@ -62,7 +61,7 @@ public class ProductController extends Controller{
 		
 		List<FilePart> pictures = request().body().asMultipartFormData().getFiles();
 		try {
-			Product newProduct = localUser.createProduct(name, desc, category, price);
+			Post newProduct = localUser.createProduct(name, desc, category, price);
 			if (newProduct == null) {
 				return status(505, "Failed to create community. Invalid parameters.");
 			}
@@ -70,7 +69,7 @@ public class ProductController extends Controller{
 				String fileName = picture.getFilename();
 				File file = picture.getFile();
 				File fileTo = ImageFileUtil.copyImageFileToTemp(file, fileName);
-				newProduct.addProductPhoto(fileTo);
+				newProduct.addPostPhoto(fileTo);
 			}
 			return ok(Json.toJson(newProduct.id));
 		} catch (SocialObjectNotJoinableException e) {
@@ -108,30 +107,30 @@ public class ProductController extends Controller{
 		} else {
 			collection = Collection.findById(collectionId);
 		}
-		collection.products.add(Product.findById(productId));
+		collection.products.add(Post.findById(productId));
 		return ok();
 	}
 
 	@Transactional
 	public static Result getAllFeedProducts() {
-		List<FeedProductVM> vms = new ArrayList<>();
-		for(Product product : Product.getAllFeedProducts()) {
-			FeedProductVM vm = new FeedProductVM(product);
+		return ok(Json.toJson(getPostVMsFromPosts(Post.getAllPosts())));
+	}
+
+
+
+	private static List<FeedPostVM> getPostVMsFromPosts(List<Post> posts) {
+		List<FeedPostVM> vms = new ArrayList<>();
+		for(Post product : posts) {
+			FeedPostVM vm = new FeedPostVM(product);
 			vm.isLiked = product.isLikedBy(Application.getLocalUser(session()));
 			vms.add(vm);
 		}
-		return ok(Json.toJson(vms));
+		return vms;
 	}
 	
 	@Transactional
-	public static Result getAllsimilarProducts() {
-		List<FeedProductVM> vms = new ArrayList<>();
-		for(Product product : Product.getAllFeedProducts()) {
-			FeedProductVM vm = new FeedProductVM(product);
-			vm.isLiked = product.isLikedBy(Application.getLocalUser(session()));
-			vms.add(vm);
-		}
-		return ok(Json.toJson(vms));
+	public static Result getAllSimilarProducts() {
+		return ok(Json.toJson(getPostVMsFromPosts(Post.getAllPosts())));
 	}
 
 	@Transactional
@@ -166,21 +165,21 @@ public class ProductController extends Controller{
 	}
 	
 
-	public static ProductInfoVM getProductInfoVM(Long id) {
-		Product product = Product.findById(id);
-		ProductInfoVM vm = new ProductInfoVM(product, Application.getLocalUser(session()));
+	public static PostInfoVM getProductInfoVM(Long id) {
+		Post product = Post.findById(id);
+		PostInfoVM vm = new PostInfoVM(product, Application.getLocalUser(session()));
 		return vm;
 	}
 
 	@Transactional
 	public static Result likePost(Long id) {
-		Product.findById(id).onLikedBy(Application.getLocalUser(session()));
+		Post.findById(id).onLikedBy(Application.getLocalUser(session()));
 		return ok();
 	}
 
 	@Transactional
 	public static Result unlikePost(Long id) {
-		Product.findById(id).onUnlikedBy(Application.getLocalUser(session()));
+		Post.findById(id).onUnlikedBy(Application.getLocalUser(session()));
 		return ok();
 	}
 
@@ -189,16 +188,39 @@ public class ProductController extends Controller{
 		DynamicForm form = form().bindFromRequest();
 		Long postId = Long.parseLong(form.get("postId"));
 		String desc = HtmlUtil.convertTextToHtml(form.get("desc"));
-		System.out.println(postId+"  "+desc);
-		
-		Product.findById(postId).onComment(Application.getLocalUser(session()), desc);
+		Post.findById(postId).onComment(Application.getLocalUser(session()), desc);
 		return ok();
 	}
 	
 	@Transactional
 	public static Result onView(Long id) {
-		Product.findById(id).onView(Application.getLocalUser(session()));
+		Post.findById(id).onView(Application.getLocalUser(session()));
 		return ok();
 	}
 	
+	@Transactional 
+	public static Result getCategoryPopularFeed(Long id, String postType, Long offset){
+		List<Long> postIds = CalServer.getCategoryPopularFeed(id);
+		return ok(Json.toJson(getPostVMsFromPosts(Post.getPosts(postIds))));
+	}
+	
+	@Transactional 
+	public static Result getCategoryNewestFeed(Long id, String postType, Long offset){
+		List<Long> postIds = CalServer.getCategoryNewestFeed(id);		return ok(Json.toJson(getPostVMsFromPosts(Post.getPosts(postIds))));
+	}
+	
+	@Transactional 
+	public static Result getCategoryPriceLowHighFeed(Long id, String postType, Long offset){
+		List<Long> postIds = CalServer.getCategoryPriceLowHighFeed(id);
+		return ok(Json.toJson(getPostVMsFromPosts(Post.getPosts(postIds))));
+	}
+	
+	@Transactional 
+	public static Result getCategoryPriceHighLowFeed(Long id, String postType, Long offset){
+		List<Long> postIds = CalServer.getCategoryPriceHighLowFeed(id);
+		return ok(Json.toJson(getPostVMsFromPosts(Post.getPosts(postIds))));
+	}
+	
+
+
 }

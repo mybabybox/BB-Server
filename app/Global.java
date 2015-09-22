@@ -16,7 +16,7 @@ import com.feth.play.module.pa.PlayAuthenticate;
 import com.feth.play.module.pa.PlayAuthenticate.Resolver;
 import com.feth.play.module.pa.exceptions.AccessDeniedException;
 import com.feth.play.module.pa.exceptions.AuthException;
-
+import common.cache.CalServer;
 import common.schedule.CommandChecker;
 import common.schedule.JobScheduler;
 import controllers.routes;
@@ -110,6 +110,7 @@ public class Global extends GlobalSettings {
                 @Override
                 public void invoke() throws Throwable {
                     //init();
+                	CalServer.warmUpActivity();
                 }
             });
 

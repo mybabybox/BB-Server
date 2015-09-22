@@ -32,7 +32,7 @@ public class ViewMapping {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	public Long id;
 	 
-    public Long productId;
+    public Long postId;
     
     public Long userId;
     
