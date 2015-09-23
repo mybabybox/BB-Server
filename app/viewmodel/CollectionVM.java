@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import models.Collection;
-import models.Product;
+import models.Post;
 import models.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -35,7 +35,7 @@ public class CollectionVM {
 		this.ownerName = collection.owner.name;
 		this.id = collection.id;
 		this.collectionName = collection.name;
-		for(Product product : collection.products){
+		for(Post product : collection.products){
 			if(product.folder != null && !CollectionUtils.isEmpty(product.folder.resources)) {
 				this.productImages.add(product.folder.resources.get(0).getId());
 			}

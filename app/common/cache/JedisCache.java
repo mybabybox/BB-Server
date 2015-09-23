@@ -5,8 +5,10 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import com.typesafe.plugin.RedisPlugin;
+
 import common.serialize.JsonSerializer;
 
+import java.util.Map;
 import java.util.Set;
 
 
@@ -153,7 +155,56 @@ public class JedisCache {
         }
     }
     ////////////////////////////////////////
-
+    
+ // Set operations
+    public Status putToSortedSet(String key, double score, String member) {
+        Jedis j = null;
+        try {
+            j = getResource();
+            j.zadd(key, score, member);
+            return Status.OK;
+        } finally {
+            if (j != null)
+                returnResource(j);
+        }
+    }
+    
+    public Status putMapToSortedSet(String key, Map<String, Double> value) {
+        Jedis j = null;
+        try {
+            j = getResource();
+            //j.zadd(key, value);
+            return Status.OK;
+        } finally {
+            if (j != null)
+                returnResource(j);
+        }
+    }
+    
+    public Set<String> getSortedSetAsc(String key) {
+        Jedis j = null;
+        try {
+            j = getResource();
+            return j.zrange(key, 0, -1);
+        } finally {
+            if (j != null)
+                returnResource(j);
+        }
+    }
+    
+    public Set<String> getSortedSetDsc(String key) {
+        Jedis j = null;
+        try {
+            j = getResource();
+            return j.zrevrange(key, 0, -1);
+        } finally {
+            if (j != null)
+                returnResource(j);
+        }
+    }
+    
+    /////////////
+    
 
     public boolean exists(String key) {
         Jedis j = null;

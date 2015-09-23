@@ -16,20 +16,18 @@ import javax.persistence.NoResultException;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
 
-import babybox.shopping.social.exception.SocialObjectNotCommentableException;
-
-
 import play.db.jpa.JPA;
-
+import babybox.shopping.social.exception.SocialObjectNotCommentableException;
+import common.cache.CalServer;
 import common.thread.ThreadLocalOverride;
-
+import common.utils.StringUtil;
 import domain.Commentable;
 import domain.Likeable;
-import domain.ProductType;
+import domain.PostType;
 import domain.SocialObjectType;
 
 @Entity
-public class Product extends SocialObject implements Likeable, Commentable {
+public class Post extends SocialObject implements Likeable, Commentable {
 
 	public String title;
 
@@ -54,25 +52,27 @@ public class Product extends SocialObject implements Likeable, Commentable {
 
 	public String tagWords;     // comma separated list
 
-	public Long productPrice = 0L;
+	public Long postPrize = 0L;
 
 	public int noOfComments = 0;
 	public int noOfLikes = 0;
-	public int noWantAns = 0;
+	public int noOfBuys = 0;
 	public int noOfViews = 0;
-	public int shortBodyCount = 0;
+	public int noOfChats = 0;
+	public Long baseScore = 0L;
 
 	public boolean mobile = false;
 	public boolean android = false;
 	public boolean ios = false;
 
-	public ProductType productType;
+	public PostType postType;
+
 
 
 	/**
 	 * Ctor
 	 */
-	public Product() {}
+	public Post() {}
 
 	/**
 	 * Ctor
@@ -81,37 +81,38 @@ public class Product extends SocialObject implements Likeable, Commentable {
 	 * @param description
 	 * @param community
 	 */
-	public Product(User actor, String title, String description) {
+	public Post(User actor, String title, String description) {
 		this.owner = actor;
 		this.title = title;
 		this.description = description;
-		this.objectType = SocialObjectType.PRODUCT;
+		this.objectType = SocialObjectType.POST;
 	}
 
-	public Product(User actor, String post) {
+	public Post(User actor, String post) {
 		this(actor, null, post);
 	}
 
-	public Product(User actor, String title, String description, Category category) {
+	public Post(User actor, String title, String description,
+			Category category) {
 		this.owner = actor;
 		this.title = title;
 		this.description = description;
 		this.category = category;
-		this.objectType = SocialObjectType.PRODUCT;
+		this.objectType = SocialObjectType.POST;
 	}
 
-	public Product(User actor, String title, String description, Category category, Long productPrice) {
+	public Post(User actor, String title, String description,
+			Category category, Long postPrize) {
 		this.owner = actor;
 		this.title = title;
 		this.description = description;
 		this.category = category;
-		this.productPrice = productPrice;
+		this.postPrize = postPrize;
 //		this.productType = productType;
 	}
 
 	@Override
 	public void onLikedBy(User user) {
-
 		recordLike(user);
 		this.noOfLikes++;
 		user.likesCount++;
@@ -128,6 +129,11 @@ public class Product extends SocialObject implements Likeable, Commentable {
 		q.setParameter(4, SocialObjectType.USER);
 		q.setParameter(5, SocialObjectType.USER);
 		q.executeUpdate();
+	}
+	
+	@Override
+	public boolean isLikedBy(User user){
+		return CalServer.isLiked(user.id, this.id);
 	}
 
 	@Override
@@ -175,13 +181,13 @@ public class Product extends SocialObject implements Likeable, Commentable {
 	}
 
 
-	public Resource addProductPhoto(File source) throws IOException {
+	public Resource addPostPhoto(File source) throws IOException {
 		ensureAlbumExist();
-		Resource product_photo = this.folder.addFile(source,
+		Resource post_photo = this.folder.addFile(source,
 				SocialObjectType.POST_PHOTO);
-		System.out.println("cover photo :: "+product_photo.resourceName);
-		product_photo.save();
-		return product_photo;
+		System.out.println("cover photo :: "+post_photo.resourceName);
+		post_photo.save();
+		return post_photo;
 	}
 
 	public void ensureAlbumExist() {
@@ -192,30 +198,30 @@ public class Product extends SocialObject implements Likeable, Commentable {
 	}
 
 	///////////////////// Query APIs /////////////////////
-	public static Product findById(Long id) {
+	public static Post findById(Long id) {
 		try {
-			Query q = JPA.em().createQuery("SELECT p FROM Product p where id = ?1 and deleted = false");
+			Query q = JPA.em().createQuery("SELECT p FROM Post p where id = ?1 and deleted = false");
 			q.setParameter(1, id);
-			return (Product) q.getSingleResult();
+			return (Post) q.getSingleResult();
 		} catch (NoResultException nre) {
 			return null;
 		}
 	}
 
-	public static List<Product> getAllFeedProducts() {
+	public static List<Post> getAllPosts() {
 		try {
-			Query q = JPA.em().createQuery("SELECT p FROM Product p where deleted = false");
-			return (List<Product>) q.getResultList();
+			Query q = JPA.em().createQuery("SELECT p FROM Post p where deleted = false");
+			return (List<Post>) q.getResultList();
 		} catch (NoResultException nre) {
 			return null;
 		}
 	}
 
-	public static List<Product> getUserProducts(Long id) {
+	public static List<Post> getUserPosts(Long id) {
 		try {
-			Query q = JPA.em().createQuery("SELECT p FROM Product p where owner = ? and deleted = false");
+			Query q = JPA.em().createQuery("SELECT p FROM Post p where owner = ? and deleted = false");
 			q.setParameter(1, User.findById(id));
-			return (List<Product>) q.getResultList();
+			return (List<Post>) q.getResultList();
 		} catch (NoResultException nre) {
 			return null;
 		}
@@ -254,7 +260,7 @@ public class Product extends SocialObject implements Likeable, Commentable {
 		this.comments.add(comment);
 		this.noOfComments++;
 		JPA.em().merge(this);
-		recordCommentOnProduct(user, comment);
+		recordCommentOnPost(user, comment);
 		return comment;
 	}
 
@@ -267,11 +273,28 @@ public class Product extends SocialObject implements Likeable, Commentable {
 
 	public void onView(User localUser) {
 		ViewMapping mapping = new ViewMapping();
-		mapping.productId = this.id;
+		mapping.postId = this.id;
 		mapping.userId = localUser.id;
 		mapping.viewedDate = new Date();
 		mapping.save();
 	}
 
+	public static List<Post> getPostsByCategory(Category category) {
+		try {
+			Query q = JPA.em().createQuery("SELECT p FROM Post p where category = ? and deleted = false");
+			q.setParameter(1,category);
+			return (List<Post>) q.getResultList();
+		} catch (NoResultException nre) {
+			return null;
+		}
+	}
+
+	public static List<Post> getPosts(List<Long> postIds) {
+		 Query query = JPA.em().createQuery(
+		            "select p from Post p where "+
+		            "p.id in ("+StringUtil.collectionToString(postIds, ",")+") and "+
+		            "p.deleted = false");
+		 return (List<Post>) query.getResultList();
+	}
 
 }

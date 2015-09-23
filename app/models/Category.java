@@ -1,5 +1,7 @@
 package models;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -29,4 +31,13 @@ public class Category {
             return null;
         }
     }
+
+	public static List<Category> getAllCategory() {
+		try {
+            Query q = JPA.em().createQuery("SELECT c FROM Category c ");
+            return (List<Category>) q.getResultList();
+        } catch (NoResultException nre) {
+            return null;
+        }
+	}
 }

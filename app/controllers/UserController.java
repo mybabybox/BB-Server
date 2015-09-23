@@ -17,7 +17,7 @@ import models.Conversation;
 import models.Emoticon;
 import models.Location;
 import models.Message;
-import models.Product;
+import models.Post;
 import models.Resource;
 import models.SiteTour;
 import models.User;
@@ -34,7 +34,7 @@ import play.mvc.Result;
 import viewmodel.CollectionVM;
 import viewmodel.ConversationVM;
 import viewmodel.EmoticonVM;
-import viewmodel.FeedProductVM;
+import viewmodel.FeedPostVM;
 import viewmodel.MessageVM;
 import viewmodel.ProfileVM;
 import viewmodel.UserVM;
@@ -712,9 +712,9 @@ public class UserController extends Controller {
         File file = picture.getFile();
         try {
             File fileTo = ImageFileUtil.copyImageFileToTemp(file, fileName);
-            Product product = new Product();
+            Post product = new Post();
             product.setOwner(user);
-            Long id = product.addProductPhoto(fileTo).id;
+            Long id = product.addPostPhoto(fileTo).id;
             return ok(id.toString());
         } catch (IOException e) {
         	e.printStackTrace();
@@ -740,9 +740,9 @@ public class UserController extends Controller {
     
     @Transactional
     public static Result getUserProducts(Long id) {
-    	List<FeedProductVM> vms = new ArrayList<>();
-		for(Product product : Product.getUserProducts(id)) {
-			FeedProductVM vm = new FeedProductVM(product);
+    	List<FeedPostVM> vms = new ArrayList<>();
+		for(Post product : Post.getUserPosts(id)) {
+			FeedPostVM vm = new FeedPostVM(product);
 			vms.add(vm);
 		}
 		return ok(Json.toJson(vms));

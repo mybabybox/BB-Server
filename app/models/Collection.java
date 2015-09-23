@@ -19,7 +19,7 @@ import domain.SocialObjectType;
 public class Collection extends SocialObject{
 
 	@OneToMany(cascade=CascadeType.REMOVE, fetch = FetchType.LAZY)
-	public List<Product> products = new ArrayList<Product>();
+	public List<Post> products = new ArrayList<Post>();
 
 	@Column(length=2000)
 	public String description;
