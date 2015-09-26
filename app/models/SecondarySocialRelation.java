@@ -1,6 +1,8 @@
 package models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -203,5 +205,39 @@ public class SecondarySocialRelation extends domain.Entity implements Serializab
             logger.underlyingLogger().error(ExceptionUtils.getStackTrace(e));
         }
         return null;
+	}
+	
+	@Transactional
+	public static List<Long> getFollowings(Long id) {
+		Query q = JPA.em().createQuery("Select sa from SecondarySocialRelation sa where target = ?1");
+		q.setParameter(1, id);
+		List<SecondarySocialRelation> sa = new ArrayList<SecondarySocialRelation>();
+		List<Long> follwers = new ArrayList<Long>();
+		try{
+			sa = q.getResultList();
+			for(SecondarySocialRelation ssr: sa) {
+				follwers.add(ssr.actor);
+			}
+			return follwers;
+		}
+		catch (NoResultException nre){
+		}
+		return null;
+	}
+	public static List<Long> getFollowers(Long id) {
+		Query q = JPA.em().createQuery("Select sa from SecondarySocialRelation sa where actor = ?1");
+		q.setParameter(1, id);
+		List<SecondarySocialRelation> sa = new ArrayList<SecondarySocialRelation>();
+		List<Long> follwers = new ArrayList<Long>();
+		try{
+			sa = q.getResultList();
+			for(SecondarySocialRelation ssr: sa) {
+				follwers.add(ssr.target);
+			}
+			return follwers;
+		}
+		catch (NoResultException nre){
+		}
+		return null;
 	}
 }

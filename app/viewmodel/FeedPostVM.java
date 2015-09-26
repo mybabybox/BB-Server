@@ -6,24 +6,30 @@ import models.Post;
 import models.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.codehaus.jackson.annotate.JsonProperty;
 
 public class FeedPostVM {
-	@JsonProperty("id") public Long postId;
-	@JsonProperty("oid") public Long ownerId;
-	@JsonProperty("on") public String ownerName;
-	@JsonProperty("p") public String postedBy;
-	@JsonProperty("t") public long postedOn;
-	@JsonProperty("imgs") public Long images;
-    @JsonProperty("ptyp") public String postType;
-	@JsonProperty("pn") public String postName;
-	@JsonProperty("pp") public Long postPrize;
-	@JsonProperty("pd") public String postDescription;
-	@JsonProperty("hasImage") public Boolean hasImage;
-	@JsonProperty("isLike") public Boolean isLiked;
-	@JsonProperty("nol") public Integer noOfLikes;
+	public Long id;
+	public Long ownerId;
+	public String ownerName;
+	public String postedBy;
+	public long postedOn;
+    public String type;
+    public Long image;
+	public String title;
+	public Long price;
+	public Boolean hasImage;
+	public Boolean isLiked = false;
+	public Integer noOfLikes;
 	
-	public ArrayList<Long> imageArray = new ArrayList<Long>(20);
+    public Boolean sold = false;
+    public int numLikes;
+    public int numChats;
+    public int numBuys;
+    public int numComments;
+    public int numViews;
+    public boolean isOwner = false;
+	
+	public ArrayList<Long> images = new ArrayList<Long>(20);
 	
 	public FeedPostVM(){
 		
@@ -32,34 +38,42 @@ public class FeedPostVM {
 	public FeedPostVM(Post post) {
 		this.ownerId = post.owner.id;
 		this.ownerName = post.owner.name;
-		this.postId = post.id;
-		this.postName = post.title;
-		this.postDescription = post.description;
-		this.postPrize = post.postPrize;
+		this.id = post.id;
+		this.postedBy = post.getCreatedBy();
+		this.postedOn = post.getCreatedDate().getTime();
+		this.type = post.category.name;
+		this.title = post.title;
+		this.price = post.postPrize;
 		this.noOfLikes = post.noOfLikes;
+		this.isLiked = post.isLikedBy(post.owner);
+		
+		this.sold = false; //TODO need to change 
+		
+		this.numLikes = post.noOfLikes;
+		this.numChats = post.noOfChats;
+		this.numBuys = post.noOfBuys;
+		this.numComments = post.noOfComments;
+		this.numViews = post.noOfViews;
+		
+		this.isOwner = false; //TODO need to change
 		
 		if(post.folder != null && !CollectionUtils.isEmpty(post.folder.resources)) {
 		    this.hasImage = true;
-			this.images = post.folder.resources.get(0).getId();
+			this.image = post.folder.resources.get(0).getId();
 			for (Resource resource : post.folder.resources) {
-				this.imageArray.add(resource.getId());
+				this.images.add(resource.getId());
 			}
 				
 		}
 		
 	}
 
-	public ArrayList<Long> getImageArray() {
-		return imageArray;
+	public Long getId() {
+		return id;
 	}
 
-
-	public Long getProductId() {
-		return postId;
-	}
-
-	public void setProductId(Long postId) {
-		this.postId = postId;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public Long getOwnerId() {
@@ -68,6 +82,14 @@ public class FeedPostVM {
 
 	public void setOwnerId(Long ownerId) {
 		this.ownerId = ownerId;
+	}
+
+	public String getOwnerName() {
+		return ownerName;
+	}
+
+	public void setOwnerName(String ownerName) {
+		this.ownerName = ownerName;
 	}
 
 	public String getPostedBy() {
@@ -86,59 +108,124 @@ public class FeedPostVM {
 		this.postedOn = postedOn;
 	}
 
-	public Long getImages() {
-		return images;
+	public String getType() {
+		return type;
 	}
 
-	public void setImages(Long images) {
-		this.images = images;
+	public void setType(String type) {
+		this.type = type;
 	}
 
-	public String getProductType() {
-		return postType;
+	public Long getImage() {
+		return image;
 	}
 
-	public void setProductType(String postType) {
-		this.postType = postType;
+	public void setImage(Long image) {
+		this.image = image;
 	}
 
-	public String getProductName() {
-		return postName;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setProductName(String postName) {
-		this.postName = postName;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
-	public Long getProductPrice() {
-		return postPrize;
+	public Long getPrice() {
+		return price;
 	}
 
-	public void setProductPrice(Long postPrice) {
-		this.postPrize = postPrice;
+	public void setPrice(Long price) {
+		this.price = price;
 	}
 
-	public String getProductDescription() {
-		return postDescription;
-	}
-
-	public void setProductDescription(String postDescription) {
-		this.postDescription = postDescription;
-	}
-
-	public boolean getIsHasImage() {
+	public Boolean getHasImage() {
 		return hasImage;
 	}
 
-	public void setIsHasImage(boolean hasImage) {
+	public void setHasImage(Boolean hasImage) {
 		this.hasImage = hasImage;
 	}
 
-	public String getOwnerName() {
-		return ownerName;
+	public Boolean getIsLiked() {
+		return isLiked;
 	}
 
-	public void setOwnerName(String ownerName) {
-		this.ownerName = ownerName;
+	public void setIsLiked(Boolean isLiked) {
+		this.isLiked = isLiked;
 	}
+
+	public Integer getNoOfLikes() {
+		return noOfLikes;
+	}
+
+	public void setNoOfLikes(Integer noOfLikes) {
+		this.noOfLikes = noOfLikes;
+	}
+
+	public Boolean getSold() {
+		return sold;
+	}
+	
+	public void setSold(Boolean sold) {
+		this.sold = sold;
+	}
+
+	public int getNumLikes() {
+		return numLikes;
+	}
+
+	public void setNumLikes(int numLikes) {
+		this.numLikes = numLikes;
+	}
+
+	public int getNumChats() {
+		return numChats;
+	}
+
+	public void setNumChats(int numChats) {
+		this.numChats = numChats;
+	}
+
+	public int getNumBuys() {
+		return numBuys;
+	}
+
+	public void setNumBuys(int numBuys) {
+		this.numBuys = numBuys;
+	}
+
+	public int getNumComments() {
+		return numComments;
+	}
+
+	public void setNumComments(int numComments) {
+		this.numComments = numComments;
+	}
+
+	public int getNumViews() {
+		return numViews;
+	}
+
+	public void setNumViews(int numViews) {
+		this.numViews = numViews;
+	}
+
+	public boolean isOwner() {
+		return isOwner;
+	}
+
+	public void setOwner(boolean isOwner) {
+		this.isOwner = isOwner;
+	}
+
+	public ArrayList<Long> getImages() {
+		return images;
+	}
+
+	public void setImages(ArrayList<Long> images) {
+		this.images = images;
+	}
+	
 }

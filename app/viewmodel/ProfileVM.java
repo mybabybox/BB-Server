@@ -12,8 +12,9 @@ public class ProfileVM {
     @JsonProperty("gd")  public String gender;
     @JsonProperty("a")   public String aboutMe;
     @JsonProperty("loc") public Location location;
-    @JsonProperty("n_fr") public long nofollowers;
+/*  @JsonProperty("n_fr") public long nofollowers;
     @JsonProperty("n_fn") public long nofollowing;
+*/
     @JsonProperty("n_p") public long noProducts;
     @JsonProperty("n_c") public long noCollection;
     @JsonProperty("id")  public long id;
@@ -26,7 +27,16 @@ public class ProfileVM {
     @JsonProperty("em")  public String email;
     
     @JsonProperty("ilu")  public boolean isLoggedinUser = false;
+    public long numFollowers = 0L;
+    public long numFollowings = 0L;
     @JsonProperty("ifu")  public boolean isFollowdByUser = false;
+    
+    public String sd;
+    public String ll;
+    public Long tl;
+    public Long qc;
+    public Long ac;
+    public Long lc;
     
     public static ProfileVM profile(User user, User localUser) {
         ProfileVM vm = new ProfileVM();
@@ -48,8 +58,8 @@ public class ProfileVM {
         vm.id = user.id;
         vm.noProducts = user.productCount;
         vm.noCollection = user.collectionCount;
-        vm.nofollowers = user.followersCount;
-        vm.nofollowing = user.followingCount;
+        vm.numFollowers = user.followersCount;
+        vm.numFollowings = user.followingCount;
         vm.isFollowdByUser = user.isFollowedBy(localUser);
         return vm;
     }

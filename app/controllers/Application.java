@@ -10,12 +10,16 @@ import java.util.Map.Entry;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
+import models.Category;
 import models.SecurityRole;
 import models.TermsAndConditions;
 import models.User;
 import models.UserChild;
 import models.UserInfo;
 import models.UserInfo.ParentType;
+
+import org.apache.commons.lang.StringUtils;
+
 import play.Play;
 import play.Routes;
 import play.data.DynamicForm;
@@ -27,17 +31,22 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http.Session;
 import play.mvc.Result;
+import providers.MyLoginUsernamePasswordAuthUser;
 import providers.MyUsernamePasswordAuthProvider;
 import providers.MyUsernamePasswordAuthProvider.MyLogin;
 import providers.MyUsernamePasswordAuthProvider.MySignup;
+import sun.misc.BASE64Encoder;
 import viewmodel.ApplicationInfoVM;
+import viewmodel.CategoryVM;
 import viewmodel.UserVM;
 import Decoder.BASE64Decoder;
 import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
 
 import com.feth.play.module.pa.PlayAuthenticate;
+import com.feth.play.module.pa.exceptions.AuthException;
 import com.feth.play.module.pa.providers.password.UsernamePasswordAuthProvider;
+import com.feth.play.module.pa.providers.password.UsernamePasswordAuthUser;
 import com.feth.play.module.pa.user.AuthUser;
 import common.cache.LocationCache;
 import common.model.TargetGender;
@@ -380,6 +389,60 @@ public class Application extends Controller {
 			return r;
 		}
 	}
+	
+    @Transactional
+	public static Result doMobileLogin() throws AuthException {
+		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
+		final Form<MyLogin> filledForm = MyUsernamePasswordAuthProvider.LOGIN_FORM.bindFromRequest();
+		if (filledForm.hasErrors()) {
+			// User did not fill everything properly
+			return badRequest();
+		} else {
+			// Everything was filled
+			Result r = PlayAuthenticate.handleAuthenticationByProvider(ctx(),
+					 com.feth.play.module.pa.providers.password.UsernamePasswordAuthProvider.Case.LOGIN,
+					 new MyUsernamePasswordAuthProvider(Play.application()));
+			
+			// check redirect result and flash for errors
+			String error = ctx().flash().get(controllers.Application.FLASH_ERROR_KEY);
+			if (!StringUtils.isEmpty(error)) {
+				return badRequest(error);
+			}
+			
+			// case where user not verify email yet
+			// for all cases, see MyUsernamePasswordAuthProvider.loginUser() and UsernamePasswordAuthProvider.authenticate()
+			MyLogin login = filledForm.get();
+			UsernamePasswordAuthUser authUser = new MyLoginUsernamePasswordAuthUser(login.getPassword(), login.getEmail());
+			final User user = User.findByUsernamePasswordIdentity(authUser);
+			if (user != null && !user.emailValidated) {
+				return badRequest("電郵尚未認證，請登入電郵並按認證連結 - "+user.email);
+			}
+			
+			// null-null
+			String providerKey = session().get(PlayAuthenticate.PROVIDER_KEY);
+			String userKey = session().get(PlayAuthenticate.USER_KEY);
+			if (StringUtils.isEmpty(providerKey) || "null".equals(providerKey.trim()) || 
+					StringUtils.isEmpty(userKey) || "null".equals(userKey.trim())) {
+				return badRequest("沒有此用戶，請確認電郵或密碼無誤");
+			}
+			
+			String encryptedValue = null;
+			String plainData = session().get(PlayAuthenticate.PROVIDER_KEY)+"-"+session().get(PlayAuthenticate.USER_KEY);
+			try { 
+	    		Key key = generateKey();
+	            Cipher c = Cipher.getInstance("AES");
+	            c.init(Cipher.ENCRYPT_MODE, key);
+	            byte[] encVal = c.doFinal(plainData.getBytes());
+	            encryptedValue = new BASE64Encoder().encode(encVal);
+	    	} catch(Exception e) { 
+	    		return badRequest();
+	    	}
+
+			
+			logger.underlyingLogger().info("[u="+user.id+"] [name="+user.displayName+"] Native mobile login");
+			return ok(encryptedValue.replace("+", "%2b"));
+		}
+	}
 
     @Transactional
     public static Result doLoginPopup() {
@@ -562,6 +625,29 @@ public class Application extends Controller {
 		return ok(views.html.babybox.web.add_story.render( Json.stringify(Json.toJson(new UserVM(user)))));
 	}
 	
+	@Transactional
+	public static Result getCategories(){
+		List<CategoryVM> categoryList = new ArrayList<CategoryVM>();
+		for(Category category : Category.getAllCategory()){
+			CategoryVM cvm = new CategoryVM();
+			cvm.setId(category.id);
+			cvm.setName(category.name);
+			categoryList.add(cvm);
+		}
+		return ok(Json.stringify(Json.toJson(categoryList)));
+	}
 	
+	@Transactional
+	public static Result category(Long id){
+		CategoryVM categoryVm = new CategoryVM();
+		Category category = Category.findById(id);
+		if(category != null){
+			categoryVm.setId(category.id);
+			categoryVm.setName(category.name);
+			return ok(Json.stringify(Json.toJson(categoryVm)));
+		}else{
+			return ok();
+		}
+	}
 	
 }

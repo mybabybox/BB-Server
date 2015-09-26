@@ -1,6 +1,8 @@
 package models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -20,6 +22,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
+import scala.Array;
 import domain.AuditListener;
 import domain.Creatable;
 import domain.SocialObjectType;
@@ -220,5 +223,15 @@ public class PrimarySocialRelation extends domain.Entity implements Serializable
 
     public void setAction(Action action) {
         this.action = action;
+    }
+    public static List<PrimarySocialRelation> getUserLikedPosts(Long id){
+    	Query q = JPA.em().createQuery("Select sa from PrimarySocialRelation sa where actor = ?1 and action = ?2");
+		q.setParameter(1, id);
+		q.setParameter(2, PrimarySocialRelation.Action.LIKED);
+		List<PrimarySocialRelation> l = new ArrayList<PrimarySocialRelation>();
+		if(q.getResultList().size() != 0){
+			return q.getResultList(); 
+		}
+    	return l;
     }
 }

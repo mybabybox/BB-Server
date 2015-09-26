@@ -18,7 +18,9 @@ import models.Emoticon;
 import models.Location;
 import models.Message;
 import models.Post;
+import models.PrimarySocialRelation;
 import models.Resource;
+import models.SecondarySocialRelation;
 import models.SiteTour;
 import models.User;
 
@@ -36,9 +38,11 @@ import viewmodel.ConversationVM;
 import viewmodel.EmoticonVM;
 import viewmodel.FeedPostVM;
 import viewmodel.MessageVM;
+import viewmodel.PostVMLite;
 import viewmodel.ProfileVM;
 import viewmodel.UserVM;
-
+import viewmodel.UserVMLite;
+import common.cache.CalServer;
 import common.utils.HtmlUtil;
 import common.utils.ImageFileUtil;
 import common.utils.NanoSecondStopWatch;
@@ -76,6 +80,24 @@ public class UserController extends Controller {
 	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
 	    
 		final User localUser = Application.getLocalUser(session());
+		if (localUser == null) {
+			return status(500);
+		}
+		
+		UserVM userInfo = new UserVM(localUser);
+		
+		sw.stop();
+        if (logger.underlyingLogger().isDebugEnabled()) {
+            logger.underlyingLogger().debug("[u="+localUser.getId()+"] getUserInfo(). Took "+sw.getElapsedMS()+"ms");
+        }
+		return ok(Json.toJson(userInfo));
+	}
+	
+	@Transactional
+	public static Result getUserInfoById(Long id) {
+	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
+	    
+		final User localUser = User.findById(id);
 		if (localUser == null) {
 			return status(500);
 		}
@@ -734,15 +756,20 @@ public class UserController extends Controller {
             if (logger.underlyingLogger().isDebugEnabled()) {
                 logger.underlyingLogger().debug("[u="+user.getId()+"] getProfile(). Took "+sw.getElapsedMS()+"ms");
             }
-
-        	return ok(views.html.babybox.web.profile.render(Json.stringify(Json.toJson(ProfileVM.profile(user,localUser))), Json.stringify(Json.toJson(new UserVM(localUser)))));
+            return ok(Json.toJson(ProfileVM.profile(user,localUser)));
+        	//return ok(views.html.babybox.web.profile.render(Json.stringify(Json.toJson(ProfileVM.profile(user,localUser))), Json.stringify(Json.toJson(new UserVM(localUser)))));
     }
     
     @Transactional
-    public static Result getUserProducts(Long id) {
-    	List<FeedPostVM> vms = new ArrayList<>();
-		for(Post product : Post.getUserPosts(id)) {
-			FeedPostVM vm = new FeedPostVM(product);
+    public static Result getUserPosts(Long id, Long offset) {
+    	List<Long> postIds = CalServer.getUserPostFeeds(id);
+        
+        if(postIds.size() == 0){
+			return ok(Json.toJson(postIds));
+		}
+    	List<PostVMLite> vms = new ArrayList<>();
+		for(Post product : Post.getPosts(postIds)) {
+			PostVMLite vm = new PostVMLite(product);
 			vms.add(vm);
 		}
 		return ok(Json.toJson(vms));
@@ -772,4 +799,46 @@ public class UserController extends Controller {
 		return ok();
     }
     
+    @Transactional
+    public static Result getFollowings(Long id, Long offset){
+    	List<Long> followings = SecondarySocialRelation.getFollowings(id);
+    	List<UserVMLite> userFollowings = new ArrayList<UserVMLite>();
+    	
+    	for(Long f : followings){
+    		User user = User.findById(f);
+    		UserVMLite uservm = new UserVMLite(user);
+    		userFollowings.add(uservm);
+    	}
+    	return ok(Json.toJson(userFollowings));
+    }
+    
+    @Transactional
+    public static Result getFollowers(Long id, Long offset){
+    	List<Long> followings = SecondarySocialRelation.getFollowers(id);
+    	List<UserVMLite> userFollowers = new ArrayList<UserVMLite>();
+    	
+    	for(Long f : followings){
+    		User user = User.findById(f);
+    		UserVMLite uservm = new UserVMLite(user);
+    		userFollowers.add(uservm);
+    	}
+    	return ok(Json.toJson(userFollowers));
+    }
+    @Transactional
+    public static Result getUserLikedPosts(Long id, Long offset){
+    	
+    	List<Long> postIds = CalServer.getUserLikeFeeds(id);
+        
+        if(postIds.size() == 0){
+			return ok(Json.toJson(postIds));
+		}
+    	List<PostVMLite> vms = new ArrayList<>();
+		for(Post product : Post.getPosts(postIds)) {
+			PostVMLite vm = new PostVMLite(product);
+			vms.add(vm);
+		}
+		return ok(Json.toJson(vms));
+    	
+    }
+
 }
