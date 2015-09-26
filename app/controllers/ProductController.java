@@ -9,8 +9,10 @@ import java.util.List;
 
 import models.Category;
 import models.Collection;
+import models.Comment;
 import models.Post;
 import models.Resource;
+import models.SocialObject;
 import models.User;
 import play.data.DynamicForm;
 import play.db.jpa.Transactional;
@@ -18,11 +20,14 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
+import viewmodel.CommentVM;
 import viewmodel.FeedPostVM;
 import viewmodel.PostInfoVM;
+import viewmodel.PostVM;
+import viewmodel.PostVMLite;
+import viewmodel.ResponseStatusVM;
 import viewmodel.UserVM;
 import babybox.shopping.social.exception.SocialObjectNotJoinableException;
-
 import common.cache.CalServer;
 import common.utils.HtmlUtil;
 import common.utils.ImageFileUtil;
@@ -71,7 +76,8 @@ public class ProductController extends Controller{
 				File fileTo = ImageFileUtil.copyImageFileToTemp(file, fileName);
 				newProduct.addPostPhoto(fileTo);
 			}
-			return ok(Json.toJson(newProduct.id));
+			ResponseStatusVM response = new ResponseStatusVM("post", newProduct.id, localUser.id, true);
+			return ok(Json.toJson(response));
 		} catch (SocialObjectNotJoinableException e) {
 			logger.underlyingLogger().error("Error in createCommunity", e);
 		} catch (IOException e) {
@@ -118,10 +124,10 @@ public class ProductController extends Controller{
 
 
 
-	private static List<FeedPostVM> getPostVMsFromPosts(List<Post> posts) {
-		List<FeedPostVM> vms = new ArrayList<>();
+	private static List<PostVMLite> getPostVMsFromPosts(List<Post> posts) {
+		List<PostVMLite> vms = new ArrayList<>();
 		for(Post product : posts) {
-			FeedPostVM vm = new FeedPostVM(product);
+			PostVMLite vm = new PostVMLite(product);
 			vm.isLiked = product.isLikedBy(Application.getLocalUser(session()));
 			vms.add(vm);
 		}
@@ -165,9 +171,9 @@ public class ProductController extends Controller{
 	}
 	
 
-	public static PostInfoVM getProductInfoVM(Long id) {
-		Post product = Post.findById(id);
-		PostInfoVM vm = new PostInfoVM(product, Application.getLocalUser(session()));
+	public static PostVM getProductInfoVM(Long id) {
+		Post post = Post.findById(id);
+		PostVM vm = new PostVM(post);
 		return vm;
 	}
 
@@ -188,8 +194,11 @@ public class ProductController extends Controller{
 		DynamicForm form = form().bindFromRequest();
 		Long postId = Long.parseLong(form.get("postId"));
 		String desc = HtmlUtil.convertTextToHtml(form.get("desc"));
-		Post.findById(postId).onComment(Application.getLocalUser(session()), desc);
-		return ok();
+		//Boolean android = Boolean.parseBoolean(form.get("android"));
+		//Boolean withphotos;
+		SocialObject comment = Post.findById(postId).onComment(Application.getLocalUser(session()), desc);
+		ResponseStatusVM response = new ResponseStatusVM("comment", comment.id, comment.owner.id, true);
+		return ok(Json.toJson(response));
 	}
 	
 	@Transactional
@@ -201,26 +210,49 @@ public class ProductController extends Controller{
 	@Transactional 
 	public static Result getCategoryPopularFeed(Long id, String postType, Long offset){
 		List<Long> postIds = CalServer.getCategoryPopularFeed(id);
+		if(postIds.size() == 0){
+			return ok(Json.toJson(postIds));
+		}		
 		return ok(Json.toJson(getPostVMsFromPosts(Post.getPosts(postIds))));
+
 	}
 	
 	@Transactional 
 	public static Result getCategoryNewestFeed(Long id, String postType, Long offset){
-		List<Long> postIds = CalServer.getCategoryNewestFeed(id);		return ok(Json.toJson(getPostVMsFromPosts(Post.getPosts(postIds))));
+		List<Long> postIds = CalServer.getCategoryNewestFeed(id);	
+		if(postIds.size() == 0){
+			return ok(Json.toJson(postIds));
+		}
+		return ok(Json.toJson(getPostVMsFromPosts(Post.getPosts(postIds))));
 	}
 	
 	@Transactional 
 	public static Result getCategoryPriceLowHighFeed(Long id, String postType, Long offset){
 		List<Long> postIds = CalServer.getCategoryPriceLowHighFeed(id);
-		return ok(Json.toJson(getPostVMsFromPosts(Post.getPosts(postIds))));
+        
+        if(postIds.size() == 0){
+			return ok(Json.toJson(postIds));
+		}
+        return ok(Json.toJson(getPostVMsFromPosts(Post.getPosts(postIds))));
 	}
 	
 	@Transactional 
 	public static Result getCategoryPriceHighLowFeed(Long id, String postType, Long offset){
 		List<Long> postIds = CalServer.getCategoryPriceHighLowFeed(id);
+		if(postIds.size() == 0){
+			return ok(Json.toJson(postIds));
+		}
 		return ok(Json.toJson(getPostVMsFromPosts(Post.getPosts(postIds))));
 	}
 	
-
+	@Transactional
+	public static Result getPostComments(Long id, Long offset){
+		List <CommentVM> comments = new ArrayList<CommentVM>();
+		for(Comment c : Post.findById(id).getComments()){
+			CommentVM commentvm = new CommentVM(c);
+			comments.add(commentvm);
+		}
+		return ok(Json.toJson(comments));
+	}
 
 }

@@ -174,6 +174,14 @@ public class Post extends SocialObject implements Likeable, Commentable {
         }*/
 	}
 
+	public Set<Comment> getComments() {
+		return comments;
+	}
+
+	public void setComments(Set<Comment> comments) {
+		this.comments = comments;
+	}
+
 	public void delete(User deletedBy) {
 		this.deleted = true;
 		this.deletedBy = deletedBy;
@@ -290,11 +298,15 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	}
 
 	public static List<Post> getPosts(List<Long> postIds) {
-		 Query query = JPA.em().createQuery(
-		            "select p from Post p where "+
-		            "p.id in ("+StringUtil.collectionToString(postIds, ",")+") and "+
-		            "p.deleted = false");
-		 return (List<Post>) query.getResultList();
+		try {
+			 Query query = JPA.em().createQuery(
+			            "select p from Post p where "+
+			            "p.id in ("+StringUtil.collectionToString(postIds, ",")+") and "+
+			            "p.deleted = false ORDER BY FIELD(p.id,"+StringUtil.collectionToString(postIds, ",")+")");
+			 return (List<Post>) query.getResultList();
+		} catch (NoResultException nre) {
+			return null;
+		}
 	}
 
 }

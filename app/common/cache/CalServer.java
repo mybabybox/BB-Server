@@ -70,7 +70,7 @@ public class CalServer {
 	}
 
 	private static void buildPrizeHighLowPostQueue(Post post) {
-		JedisCache.cache().putToSortedSet("CATEGORY_PRICE_LOW_HIGH"+post.category.id, post.postPrize*1000000 + post.id , post.id.toString());
+		JedisCache.cache().putToSortedSet("CATEGORY_PRICE_LOW_HIGH:"+post.category.id, post.postPrize*1000000 + post.id , post.id.toString());
 	}
 
 	public static boolean isLiked(Long userId, Long postId) {
@@ -106,6 +106,7 @@ public class CalServer {
 	public static List<Long> getCategoryPriceLowHighFeed(Long id) {
 		Set<String> values = JedisCache.cache().getSortedSetDsc("CATEGORY_PRICE_LOW_HIGH:"+id);
         final List<Long> postIds = new ArrayList<>();
+
         for (String value : values) {
             try {
                 postIds.add(Long.parseLong(value));
@@ -113,7 +114,6 @@ public class CalServer {
             }
         }
         return postIds;
-
 	}
 	
 	public static List<Long> getCategoryPriceHighLowFeed(Long id) {
@@ -127,6 +127,32 @@ public class CalServer {
         }
         return postIds;
 
+	}
+	
+	public static List<Long> getUserPostFeeds(Long id) {
+		Set<String> values = JedisCache.cache().getSetMembers("USER_POSTS:"+id);
+        final List<Long> postIds = new ArrayList<>();
+
+        for (String value : values) {
+            try {
+                postIds.add(Long.parseLong(value));
+            } catch (Exception e) {
+            }
+        }
+        return postIds;
+	}
+	
+	public static List<Long> getUserLikeFeeds(Long id) {
+		Set<String> values = JedisCache.cache().getSetMembers("USER_LIKES:"+id);
+        final List<Long> postIds = new ArrayList<>();
+
+        for (String value : values) {
+            try {
+                postIds.add(Long.parseLong(value));
+            } catch (Exception e) {
+            }
+        }
+        return postIds;
 	}
 
 }
