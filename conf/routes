@@ -26,6 +26,7 @@ GET     /profile                      controllers.Application.profile
 
 # Main
 GET     /                           controllers.Application.index
+GET     /frontpage                  controllers.Application.mainFrontpage
 GET     /my                         controllers.Application.mainHome
 GET     /login                      controllers.Application.login
 
