@@ -139,6 +139,18 @@ public class MyUsernamePasswordAuthProvider extends
 		public String getFname() {
 			return fname;
 		}
+
+		public void setRepeatPassword(String repeatPassword) {
+			this.repeatPassword = repeatPassword;
+		}
+
+		public void setLname(String lname) {
+			this.lname = lname;
+		}
+
+		public void setFname(String fname) {
+			this.fname = fname;
+		}
 	}
 
 	public static final Form<MySignup> SIGNUP_FORM = form(MySignup.class);
