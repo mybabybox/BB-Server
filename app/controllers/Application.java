@@ -77,8 +77,27 @@ public class Application extends Controller {
 
 	@Transactional
     public static Result index() {
-        return login();
+        return mainFrontpage();
     }
+	
+	 @Transactional
+	    public static Result mainFrontpage() {
+	        
+	        final User user = getLocalUser(session());
+			if (User.isLoggedIn(user) && user.userInfo == null) {
+			    if (user.fbLogin) {
+			        return ok(views.html.signup_info_fb.render(user));
+			    }
+	    	    return ok(views.html.signup_info.render(user));
+			}
+	        
+			/*if (user.isNewUser()) {
+	            initNewUser();
+		    }
+			*/
+	        return home();
+	    }
+		
 	
 	//
 	// Entry points
@@ -86,7 +105,7 @@ public class Application extends Controller {
     
     @Transactional
     public static Result mainHome() {
-        return home();
+        return index();
     }
 	
 	public static User getBBAdmin() {
@@ -136,7 +155,7 @@ public class Application extends Controller {
 	public static Result home() {
         final User localUser = getLocalUser(session());
 		if(!User.isLoggedIn(localUser)) {
-			return home(null);
+		    return login();
 		}
 
 		return home(localUser);
@@ -471,7 +490,7 @@ public class Application extends Controller {
 
         //CommunityTargetingEngine.assignSystemCommunitiesToUser(user);
         
-        UserController.sendGreetingMessageToNewUser();
+        //UserController.sendGreetingMessageToNewUser();
         
         user.setNewUser(false);
         
