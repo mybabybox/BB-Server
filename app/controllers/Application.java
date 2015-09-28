@@ -11,6 +11,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 import models.Category;
+import models.Location;
 import models.SecurityRole;
 import models.TermsAndConditions;
 import models.User;
@@ -35,10 +36,10 @@ import providers.MyLoginUsernamePasswordAuthUser;
 import providers.MyUsernamePasswordAuthProvider;
 import providers.MyUsernamePasswordAuthProvider.MyLogin;
 import providers.MyUsernamePasswordAuthProvider.MySignup;
-import sun.misc.BASE64Encoder;
 import viewmodel.ApplicationInfoVM;
 import viewmodel.CategoryVM;
 import viewmodel.UserVM;
+import Decoder.BASE64Encoder;
 import Decoder.BASE64Decoder;
 import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
@@ -48,6 +49,7 @@ import com.feth.play.module.pa.exceptions.AuthException;
 import com.feth.play.module.pa.providers.password.UsernamePasswordAuthProvider;
 import com.feth.play.module.pa.providers.password.UsernamePasswordAuthUser;
 import com.feth.play.module.pa.user.AuthUser;
+
 import common.cache.LocationCache;
 import common.model.TargetGender;
 import common.utils.DateTimeUtil;
@@ -77,27 +79,8 @@ public class Application extends Controller {
 
 	@Transactional
     public static Result index() {
-        return mainFrontpage();
-    }
-	
-	 @Transactional
-	    public static Result mainFrontpage() {
-	        
-	        final User user = getLocalUser(session());
-			if (User.isLoggedIn(user) && user.userInfo == null) {
-			    if (user.fbLogin) {
-			        return ok(views.html.signup_info_fb.render(user));
-			    }
-	    	    return ok(views.html.signup_info.render(user));
-			}
-	        
-			/*if (user.isNewUser()) {
-	            initNewUser();
-		    }
-			*/
-	        return home();
-	    }
-		
+        return mainHome();
+    }	
 	
 	//
 	// Entry points
@@ -105,7 +88,19 @@ public class Application extends Controller {
     
     @Transactional
     public static Result mainHome() {
-        return index();
+    	final User user = getLocalUser(session());
+		if (User.isLoggedIn(user) && user.userInfo == null) {
+		    if (user.fbLogin) {
+		        return ok(views.html.signup_info_fb.render(user));
+		    }
+		    return ok(views.html.signup_info.render(user));
+		}
+	    
+		if (user.isNewUser()) {
+	        initNewUser();
+	    }
+		
+	    return home();
     }
 	
 	public static User getBBAdmin() {
@@ -148,7 +143,7 @@ public class Application extends Controller {
 		// put into http session
         session().put(SESSION_PROMOCODE, promoCode);
 
-		return redirect("/frontpage#!/promo-code-page/"+promoCode);
+		return redirect("/my#!/promo-code-page/"+promoCode);
 	}
 
 	@Transactional
@@ -188,7 +183,7 @@ public class Application extends Controller {
         DynamicForm form = DynamicForm.form().bindFromRequest();
         String parentDisplayName = form.get("parent_displayname").trim();
         String parentBirthYear = form.get("parent_birth_year");
-       // Location parentLocation = Location.getLocationById(Integer.valueOf(form.get("parent_location")));
+        Location parentLocation = Location.getLocationById(Integer.valueOf(form.get("parent_location")));
         ParentType parentType = ParentType.valueOf(form.get("parent_type"));
         int numChildren = Integer.valueOf(form.get("num_children"));
         if (ParentType.NA.equals(parentType)) {
@@ -201,16 +196,16 @@ public class Application extends Controller {
         if (User.isDisplayNameExists(parentDisplayName)) {
             return handleSaveSignupInfoError("\""+parentDisplayName+"\" 已被選用。請選擇另一個顯示名稱重試", fb);
         }
-        /*if (StringUtils.isEmpty(parentBirthYear) || parentLocation == null || parentType == null) {
+        if (StringUtils.isEmpty(parentBirthYear) || parentLocation == null || parentType == null) {
             return handleSaveSignupInfoError("請填寫您的生日，地區，媽媽身份", fb);
-        }*/
+        }
         
         localUser.displayName = parentDisplayName;
         localUser.name = parentDisplayName;
         
         UserInfo userInfo = new UserInfo();
         userInfo.birthYear = parentBirthYear;
-        //userInfo.location = parentLocation;
+        userInfo.location = parentLocation;
         userInfo.parentType = parentType;
         
         if (ParentType.MOM.equals(parentType) || ParentType.SOON_MOM.equals(parentType)) {
@@ -260,8 +255,7 @@ public class Application extends Controller {
             logger.underlyingLogger().info("[u="+localUser.id+"][name="+localUser.displayName+"] doSaveSignupInfo userChild="+userChild.toString());
         }
         
-        //return redirect("/my");
-        return redirect("/frontpage");
+        return redirect("/my");
 	}
 	
 	private static Result handleSaveSignupInfoError(String error, boolean fb) {
@@ -479,12 +473,13 @@ public class Application extends Controller {
             return UsernamePasswordAuthProvider.handleLogin(ctx());
         }
     }
+    
     @Transactional
     public static Result initNewUser() {
     	final User user = getLocalUser(session());
     	
-        String promoCode = session().get(SESSION_PROMOCODE);
-       // GameAccountReferral.processAnyReferral(promoCode, user);
+    	String promoCode = session().get(SESSION_PROMOCODE);
+    	// GameAccountReferral.processAnyReferral(promoCode, user);
 
         //GameAccount.setPointsForSignUp(user);
 
