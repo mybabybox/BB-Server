@@ -25,10 +25,11 @@ public class PostVMLite {
 
 	public Boolean hasImage;
     public Long image;
-    public PostVMLite(Post post){
+    
+    public PostVMLite(Post post) {
         this.id = post.id;
         this.title = post.title;
-        this.price = post.postPrize;
+        this.price = post.price;
         this.sold = false; //TODO
         this.numComments = post.noOfComments;
         this.type = post.category.name;
@@ -40,15 +41,15 @@ public class PostVMLite {
         this.isOwner = false; //TODO
         this.isLiked = post.isLikedBy(post.owner);
         
-		if(post.folder != null && !CollectionUtils.isEmpty(post.folder.resources)) {
+		if (post.folder != null && !CollectionUtils.isEmpty(post.folder.resources)) {
 		    this.hasImage = true;
 			this.image = post.folder.resources.get(0).getId();
 			for (Resource resource : post.folder.resources) {
 				this.images.add(resource.getId());
 			}
-				
 		}
     }
+    
     public Long getId() {
         return id;
     }

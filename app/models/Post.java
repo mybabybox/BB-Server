@@ -10,6 +10,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.NoResultException;
@@ -52,7 +54,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 
 	public String tagWords;     // comma separated list
 
-	public Long postPrize = 0L;
+	public Long price = 0L;
 
 	public int noOfComments = 0;
 	public int noOfLikes = 0;
@@ -65,50 +67,32 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	public boolean android = false;
 	public boolean ios = false;
 
+	@Enumerated(EnumType.STRING)
 	public PostType postType;
-
-
 
 	/**
 	 * Ctor
 	 */
 	public Post() {}
 
-	/**
-	 * Ctor
-	 * @param actor
-	 * @param title
-	 * @param description
-	 * @param community
-	 */
-	public Post(User actor, String title, String description) {
-		this.owner = actor;
-		this.title = title;
-		this.description = description;
-		this.objectType = SocialObjectType.POST;
-	}
-
-	public Post(User actor, String post) {
-		this(actor, null, post);
-	}
-
-	public Post(User actor, String title, String description,
-			Category category) {
+	public Post(User actor, String title, String description, Category category) {
 		this.owner = actor;
 		this.title = title;
 		this.description = description;
 		this.category = category;
+		this.price = 0L;
+		this.postType = PostType.STORY;
 		this.objectType = SocialObjectType.POST;
 	}
 
-	public Post(User actor, String title, String description,
-			Category category, Long postPrize) {
+	public Post(User actor, String title, String description, Category category, Long price) {
 		this.owner = actor;
 		this.title = title;
 		this.description = description;
 		this.category = category;
-		this.postPrize = postPrize;
-//		this.productType = productType;
+		this.price = price;
+		this.postType = PostType.PRODUCT;
+		this.objectType = SocialObjectType.POST;
 	}
 
 	@Override

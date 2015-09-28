@@ -35,7 +35,7 @@ public class FeedPostVM1 {
 		this.postId = post.id;
 		this.postName = post.title;
 		this.postDescription = post.description;
-		this.postPrize = post.postPrize;
+		this.postPrize = post.price;
 		this.noOfLikes = post.noOfLikes;
 		
 		if(post.folder != null && !CollectionUtils.isEmpty(post.folder.resources)) {
@@ -44,15 +44,12 @@ public class FeedPostVM1 {
 			for (Resource resource : post.folder.resources) {
 				this.imageArray.add(resource.getId());
 			}
-				
 		}
-		
 	}
 
 	public ArrayList<Long> getImageArray() {
 		return imageArray;
 	}
-
 
 	public Long getProductId() {
 		return postId;

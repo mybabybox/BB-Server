@@ -1,6 +1,8 @@
+import java.util.Arrays;
 import java.util.Date;
 
 import models.Notification;
+import models.SecurityRole;
 import models.User;
 import play.Application;
 import play.GlobalSettings;
@@ -16,11 +18,11 @@ import com.feth.play.module.pa.PlayAuthenticate;
 import com.feth.play.module.pa.PlayAuthenticate.Resolver;
 import com.feth.play.module.pa.exceptions.AccessDeniedException;
 import com.feth.play.module.pa.exceptions.AuthException;
+
 import common.cache.CalServer;
 import common.schedule.CommandChecker;
 import common.schedule.JobScheduler;
 import controllers.routes;
-
 
 /**
  *
@@ -109,8 +111,7 @@ public class Global extends GlobalSettings {
             JPA.withTransaction(new play.libs.F.Callback0() {
                 @Override
                 public void invoke() throws Throwable {
-                    //init();
-                	CalServer.warmUpActivity();
+                    init();
                 }
             });
 
@@ -131,30 +132,33 @@ public class Global extends GlobalSettings {
      */
     private void scheduleJobs() {
         // Note: (OFF as of 20150621) schedule Gamification EOD accounting daily at 3:00am HKT
-//        JobScheduler.getInstance().schedule("gamificationEOD", "0 00 3 ? * *",
-//            new Runnable() {
-//                public void run() {
-//                    try {
-//                       JPA.withTransaction(new play.libs.F.Callback0() {
-//                            public void invoke() {
-//                                GameAccountTransaction.performEndOfDayTasks(1);
-//                            }
-//                        });
-//                    } catch (Exception e) {
-//                        logger.underlyingLogger().error("Error in gamificationEOD", e);
-//                    }
-//                }
-//            }
-//        );
-
+    	/*
+		JobScheduler.getInstance().schedule("gamificationEOD", "0 00 3 ? * *",
+            new Runnable() {
+                public void run() {
+                    try {
+                       JPA.withTransaction(new play.libs.F.Callback0() {
+                            public void invoke() {
+                                GameAccountTransaction.performEndOfDayTasks(1);
+                            }
+                        });
+                    } catch (Exception e) {
+                        logger.underlyingLogger().error("Error in gamificationEOD", e);
+                    }
+                }
+            }
+        );
+        */
+    	
         // schedule to purge notifications daily at 4:00am HKT
+    	/*
         JobScheduler.getInstance().schedule("purgeNotification", "0 00 4 ? * *",
             new Runnable() {
                 public void run() {
                     try {
                        JPA.withTransaction(new play.libs.F.Callback0() {
                             public void invoke() {
-                                   Notification.purgeNotification();
+                            	Notification.purgeNotification();
                             }
                         });
                     } catch (Exception e) {
@@ -163,23 +167,7 @@ public class Global extends GlobalSettings {
                 }
             }
         );
-
-        // schedule to index tag words daily at 4:15am HKT
-        JobScheduler.getInstance().schedule("indexTagWords", "0 15 4 ? * *",
-            new Runnable() {
-                public void run() {
-                    try {
-                       JPA.withTransaction(new play.libs.F.Callback0() {
-                            public void invoke() {
-                                 //  TaggingEngine.indexTagWords();
-                            }
-                        });
-                    } catch (Exception e) {
-                        logger.underlyingLogger().error("Error in indexTagWords", e);
-                    }
-                }
-            }
-        );
+		*/
 
         // schedule to check command every 2 min.
         JobScheduler.getInstance().schedule("commandCheck", 120000,
@@ -200,12 +188,10 @@ public class Global extends GlobalSettings {
     }
 
 	private void init() {
-        /*if (SecurityRole.findRowCount() == 0L) {
+        if (SecurityRole.findRowCount() == 0L) {
             for (final String roleName : Arrays.asList(
                     SecurityRole.USER,
-                    SecurityRole.SUPER_ADMIN,
-                    SecurityRole.BUSINESS_ADMIN,
-                    SecurityRole.COMMUNITY_ADMIN)) {
+                    SecurityRole.SUPER_ADMIN)) {
                 final SecurityRole role = new SecurityRole();
                 role.roleName = roleName;
                 role.save();
@@ -214,9 +200,9 @@ public class Global extends GlobalSettings {
 
         // data first time bootstrap
         DataBootstrap.bootstrap();
-
-        // version upgrade if any
-        SystemVersion.versionUpgradeIfAny();*/
+        
+        // cache warm up
+        CalServer.warmUpActivity();
 	}
 
 	@Override

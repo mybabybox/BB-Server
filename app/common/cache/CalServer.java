@@ -70,7 +70,7 @@ public class CalServer {
 	}
 
 	private static void buildPrizeHighLowPostQueue(Post post) {
-		JedisCache.cache().putToSortedSet("CATEGORY_PRICE_LOW_HIGH:"+post.category.id, post.postPrize*1000000 + post.id , post.id.toString());
+		JedisCache.cache().putToSortedSet("CATEGORY_PRICE_LOW_HIGH:"+post.category.id, post.price*1000000 + post.id , post.id.toString());
 	}
 
 	public static boolean isLiked(Long userId, Long postId) {

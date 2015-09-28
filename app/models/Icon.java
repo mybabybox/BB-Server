@@ -11,10 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
-import org.hibernate.annotations.Index;
-
 import common.cache.IconCache;
-
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 
@@ -30,7 +27,7 @@ public class Icon {
     @GeneratedValue(strategy = GenerationType.AUTO)
     public Long id;
     
-    @Index(name = "Name") 
+    //@Index(name = "Idx_Icon_Name")
     public String name;
     
     @Enumerated(EnumType.STRING)
@@ -41,8 +38,7 @@ public class Icon {
     public String url;
     
     public static enum IconType {
-        COMMUNITY_GENERAL, 
-        WEATHER,                 // condition.code is stored in name
+        CATEGORY, 
         GAME_LEVEL
     }
     
@@ -59,8 +55,8 @@ public class Icon {
         this.url = url;
     }
     
-    public static List<Icon> loadCommunityIcons() {
-        return loadIcons(IconType.COMMUNITY_GENERAL);
+    public static List<Icon> loadCategoryIcons() {
+        return loadIcons(IconType.CATEGORY);
     }
     
     public static List<Icon> loadIcons(IconType iconType) {
@@ -80,23 +76,8 @@ public class Icon {
         }
     }
     
-    public static Icon loadWeatherIcon(int conditionCode) {
-        Query q = JPA.em().createQuery("Select i from Icon i where name = ?1 and iconType = ?2");
-        q.setParameter(1, String.valueOf(conditionCode));
-        q.setParameter(2, IconType.WEATHER);
-        try {
-            return (Icon)q.getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
-    }
-    
     public static List<Icon> getCommunityIcons() {
         return IconCache.getCommunityIcons();
-    }
-    
-    public static Icon getWeatherIcon(int conditionCode) {
-        return IconCache.getWeatherIcon(conditionCode);
     }
     
     public static Icon getGameLevelIcon(int level) {

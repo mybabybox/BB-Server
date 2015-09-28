@@ -2,25 +2,53 @@ package models;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.ManyToOne;
 import javax.persistence.NoResultException;
+import javax.persistence.OneToMany;
 import javax.persistence.Query;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.codehaus.jackson.annotate.JsonIgnore;
+
+import domain.Likeable;
+import domain.Postable;
+import domain.SocialObjectType;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 
 @Entity
-public class Category {
+public class Category extends SocialObject implements Likeable, Postable, Comparable<Category> {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	public Long id;
+	public String icon;
 
-	public String name;
+	@Column(length=2000)
+	public String description;
+    
+	@Enumerated(EnumType.STRING)
+	public CategoryType categoryType;
+    
+	public int seq;
 
+	@ManyToOne(cascade = CascadeType.REMOVE)
+	@JsonIgnore
+	public Folder albumPhotoProfile;
+	
+	@OneToMany(cascade = CascadeType.REMOVE)
+	public List<Folder> folders;
+	
+	public static enum CategoryType {
+		PUBLIC
+	}
+	
+	public Category() {
+		this.objectType = SocialObjectType.CATEGORY;
+	}
+	
 	@Transactional
 	public static Category findById(Long id) {
         try {
@@ -40,4 +68,25 @@ public class Category {
             return null;
         }
 	}
+	
+	@Override
+    public boolean equals(Object o) {
+        if (o != null && o instanceof Category) {
+            final Category other = (Category) o;
+            return new EqualsBuilder().append(id, other.id).isEquals();
+        } 
+        return false;
+    }
+    
+    @Override
+    public int compareTo(Category o) {
+        if (this.system != o.system) {
+            return this.system.compareTo(o.system);
+        }
+        if (this.categoryType != null && o.categoryType != null && 
+        		this.categoryType != o.categoryType) {
+            return this.categoryType.compareTo(o.categoryType);
+        }
+        return this.name.compareTo(o.name);
+    }
 }
