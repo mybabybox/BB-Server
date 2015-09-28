@@ -187,9 +187,9 @@ public class MyUsernamePasswordAuthProvider extends
 		final User newUser = User.create(user);
 		// Usually the email should be verified before allowing login, however
 		// if you return
-		// return SignupResult.USER_CREATED;
+		return SignupResult.USER_CREATED;
 		// then the user gets logged in directly
-		return SignupResult.USER_CREATED_UNVERIFIED;
+		//return SignupResult.USER_CREATED_UNVERIFIED;
 	}
 
 	@Override

@@ -136,16 +136,36 @@ GET     /follow-user/:id          					controllers.UserController.followUser(id:
 GET     /unfollow-user/:id        					controllers.UserController.unfollowUser(id:Long)
 
 # image
-GET     /image/get-product-image-by-id/:id     		controllers.ProductController.getProductImageById(id :Long)
-GET     /image/get-full-product-image-by-id/:id		controllers.ProductController.getFullProductImageById(id :Long)
+GET     /image/get-post-image-by-id/:id     		controllers.ProductController.getProductImageById(id :Long)
+GET     /image/get-original-post-image-by-id/:id		controllers.ProductController.getFullProductImageById(id :Long)
 
 # category
 GET		/categories									controllers.Application.getCategories()
 GET		/category/:id								controllers.Application.category(id:Long)
 
+# mobil 
 POST    /mobile/login              					controllers.Application.doMobileLogin
+POST    /authenticate/mobile/:provider  com.feth.play.module.pa.controllers.Authenticate.mobileAuthenticate(provider: String)
+
 GET		/get-user/:id								controllers.UserController.getUserInfoById(id:Long)
 GET     /followings/:id/:offset						controllers.UserController.getFollowings(id: Long,offset:Long)
 GET     /followers/:id/:offset						controllers.UserController.getFollowers(id: Long,offset:Long)
 GET     /get-user-liked-feed/:id/:offset			controllers.UserController.getUserLikedPosts(id: Long,offset:Long)
 GET		/comments/:postId/:offset 					controllers.ProductController.getPostComments(postId: Long,offset:Long)
+
+GET     /get-all-districts          controllers.Application.getAllDistricts
+
+# Conversation
+GET     /get-all-conversations      controllers.UserController.getAllConversations()
+GET     /get-messages/:id/:offset   controllers.UserController.getMessages(id: Long, offset: Long)
+GET     /start-conversation/:id     controllers.UserController.startConversation(id: Long)
+GET     /open-conversation/:id      controllers.UserController.openConversation(id: Long)
+GET     /delete-conversation/:id    controllers.UserController.deleteConversation(id: Long)
+POST    /message/sendMsg            controllers.UserController.sendMessage()
+#POST    /image/sendMessagePhoto     controllers.UserController.sendPhotoInMessage()
+#GET     /user-friend-search         controllers.UserController.searchUserFriends(query: String)
+#GET     /image/get-message-image-by-id/:id      controllers.UserController.getMessageImageByID(id :Long)
+#GET     /get-unread-msg-count       controllers.UserController.getUnreadMsgCount()
+#GET     /image/get-original-private-image-by-id/:id     controllers.UserController.getOriginalPrivateImageByID(id :Long)
+#GET     /image/getEmoticons         controllers.UserController.getEmoticons()
+
