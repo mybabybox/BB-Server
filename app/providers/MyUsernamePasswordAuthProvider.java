@@ -139,6 +139,18 @@ public class MyUsernamePasswordAuthProvider extends
 		public String getFname() {
 			return fname;
 		}
+
+		public void setRepeatPassword(String repeatPassword) {
+			this.repeatPassword = repeatPassword;
+		}
+
+		public void setLname(String lname) {
+			this.lname = lname;
+		}
+
+		public void setFname(String fname) {
+			this.fname = fname;
+		}
 	}
 
 	public static final Form<MySignup> SIGNUP_FORM = form(MySignup.class);
@@ -175,9 +187,9 @@ public class MyUsernamePasswordAuthProvider extends
 		final User newUser = User.create(user);
 		// Usually the email should be verified before allowing login, however
 		// if you return
-		// return SignupResult.USER_CREATED;
+		return SignupResult.USER_CREATED;
 		// then the user gets logged in directly
-		return SignupResult.USER_CREATED_UNVERIFIED;
+		//return SignupResult.USER_CREATED_UNVERIFIED;
 	}
 
 	@Override

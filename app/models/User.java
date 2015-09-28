@@ -557,6 +557,8 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 			user.email = identity.getEmail();
 			user.emailValidated = false;
 		}
+		
+		user.emailValidated = true;
 
 		/* 
 		 * User name inherited from SocialObject and it's being used 
