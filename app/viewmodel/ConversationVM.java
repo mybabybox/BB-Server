@@ -11,19 +11,25 @@ import org.codehaus.jackson.annotate.JsonProperty;
 public class ConversationVM {
 	private static final play.api.Logger logger = play.api.Logger.apply(ConversationVM.class);
 	
-	@JsonProperty("nm") public String name;
-	@JsonProperty("uid") public Long userId;
 	@JsonProperty("id") public Long id;
-	@JsonProperty("lmd") public Date lastMessageDate;
-	@JsonProperty("lm") public String lastMessage;
-	@JsonProperty("ur") public Long unread = 0L;
+	@JsonProperty("postId") public Long postId;
+	@JsonProperty("postTitle") public String postTitle;
+	@JsonProperty("postPrice") public Long postPrice;
+	@JsonProperty("userId") public Long userId;
+	@JsonProperty("userName") public String userName;
+	@JsonProperty("lastMessageDate") public Date lastMessageDate;
+	@JsonProperty("lastMessage") public String lastMessage;
+	@JsonProperty("unread") public Long unread = 0L;
 	@JsonProperty("isRead") public Boolean isRead = false;
 	@JsonProperty("isToday") public Boolean isToday;
 	
 	public ConversationVM(Conversation conversation, User localUser, User otherUser) {
-		this.name = otherUser.displayName;
-		this.userId = otherUser.id;
 		this.id = conversation.id;
+		this.postId = conversation.post.id;
+		this.postTitle = conversation.post.title;
+		this.postPrice = conversation.post.price.longValue();
+		this.userId = otherUser.id;
+		this.userName = otherUser.displayName;
 		this.lastMessageDate = conversation.getUpdatedDate();
 		this.unread = conversation.getUnreadCount(localUser);
 		try{

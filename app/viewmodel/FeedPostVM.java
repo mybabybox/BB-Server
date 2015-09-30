@@ -43,7 +43,7 @@ public class FeedPostVM {
 		this.postedOn = post.getCreatedDate().getTime();
 		this.type = post.category.name;
 		this.title = post.title;
-		this.price = post.price;
+		this.price = post.price.longValue();
 		this.noOfLikes = post.noOfLikes;
 		this.isLiked = post.isLikedBy(post.owner);
 		

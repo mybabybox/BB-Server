@@ -201,16 +201,6 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 		target.onLikedBy(this);
 	}
 
-	public Conversation sendMessage(User user, String msg) {
-		Conversation conversation = Conversation.findByUsers(this, user);
-
-		if (conversation == null) {
-			conversation = new Conversation(this, user);
-		}
-		conversation.addMessage(this, msg);
-		return conversation;
-	}
-
 	public SocialObject commentedOn(SocialObject target, String comment)
 			throws SocialObjectNotCommentableException {
 		return target.onComment(this, comment, CommentType.SIMPLE);
@@ -1067,8 +1057,8 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 		return Conversation.findByUsers(this, u);
 	}
 
-	public void startChat(User user2) {
-		Conversation.startConversation(this, user2);
+	public void startChat(Post post, User user) {
+		Conversation.openConversation(post, user);
 	}
 
 	public Long getUnreadConversationCount() {

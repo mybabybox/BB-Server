@@ -292,5 +292,4 @@ public class Post extends SocialObject implements Likeable, Commentable {
 			return null;
 		}
 	}
-
 }

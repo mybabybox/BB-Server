@@ -506,7 +506,7 @@ public class UserController extends Controller {
 	}
 	
 	@Transactional
-    public static Result sendMessage() {
+    public static Result newMessage() {
         final User localUser = Application.getLocalUser(session());
         if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
@@ -517,7 +517,7 @@ public class UserController extends Controller {
         Long conversationId = Long.parseLong(form.get("conversationId"));
         Long receiverId = Long.parseLong(form.get("receiverId"));
         String msgText = HtmlUtil.convertTextToHtml(form.get("msgText"));
-        Message message = Conversation.sendMessage(conversationId, localUser, msgText);
+        Message message = Conversation.newMessage(conversationId, localUser, msgText);
         
         Map<String, Object> map = new HashMap<>();
 		map.put("id", message.id);
@@ -584,7 +584,7 @@ public class UserController extends Controller {
 	}
 	
 	@Transactional
-    public static Result openConversation(Long id) {
+    public static Result openConversation(Long postId, Long userId) {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
 		
         final User localUser = Application.getLocalUser(session());
@@ -593,21 +593,26 @@ public class UserController extends Controller {
             return status(500);
         }
         
-        if (localUser.id == id) {
-            logger.underlyingLogger().error(String.format("[u1=%d] [u2=%d] Same user. Will not open conversation", localUser.id, id));
+        if (localUser.id == userId) {
+            logger.underlyingLogger().error(String.format("[p=%d][u1=%d][u2=%d] Same user. Will not open conversation", postId, localUser.id, userId));
             return status(500);
         }
         
-        User otherUser = User.findById(id);
-        Conversation conversation = Conversation.startConversation(localUser, otherUser);
+        Post post = Post.findById(postId);
+        if (post == null) {
+        	logger.underlyingLogger().error(String.format("[p=%d][u1=%d][u2=%d] Post not exist. Will not open conversation", postId, localUser.id, userId));
+            return status(500);
+        }
         
-        List<ConversationVM> vms = new ArrayList<>();
-        ConversationVM conversationVM = new ConversationVM(conversation, localUser, otherUser);
-		vms.add(conversationVM);
+        // New conversation always opened by buyer
+        User user = User.findById(userId);
+        Conversation conversation = Conversation.openConversation(post, user);
         
-		logger.underlyingLogger().debug("[u1="+localUser.id+"][u2="+id+"] openConversation. Took "+sw.getElapsedMS()+"ms");
+        ConversationVM conversationVM = new ConversationVM(conversation, localUser, user);
+        
+		logger.underlyingLogger().debug(String.format("[p=%d][u1=%d][u2=%d] openConversation. Took "+sw.getElapsedMS()+"ms", postId, localUser.id, userId));
 		
-		return ok(Json.toJson(vms));
+		return ok(Json.toJson(conversationVM));
     }
 	
 	@Transactional

@@ -36,9 +36,14 @@ public class ProductController extends Controller{
 	private static play.api.Logger logger = play.api.Logger.apply(ProductController.class);
 	
 	@Transactional
+	public static Result createProductWeb() {
+		DynamicForm dynamicForm = DynamicForm.form().bindFromRequest();
+		List<FilePart> pictures = request().body().asMultipartFormData().getFiles();
+		return createProduct(dynamicForm.get("title"), dynamicForm.get("desc"), Long.parseLong(dynamicForm.get("catId")), Double.parseDouble(dynamicForm.get("price")), pictures);
+	}
+	
+	@Transactional
 	public static Result createProductMobile() {
-
-		
 		Http.MultipartFormData multipartFormData = request().body().asMultipartFormData();
 		List<FilePart> files = new ArrayList<>();
 		for(int i = 0; i<5; i++){
@@ -55,7 +60,6 @@ public class ProductController extends Controller{
 	    request().body().asMultipartFormData().getFiles();
 		return createProduct(title, desc, Long.parseLong(catId), Double.parseDouble(price), files);
 	}
-	
 	
 	private static Result createProduct(String title, String desc,
 			Long catId, Double price, List<FilePart> pictures) {
@@ -85,15 +89,6 @@ public class ProductController extends Controller{
 		return status(500);
 
 	}
-
-	@Transactional
-	public static Result createProductWeb() {
-		DynamicForm dynamicForm = DynamicForm.form().bindFromRequest();
-		List<FilePart> pictures = request().body().asMultipartFormData().getFiles();
-		return createProduct(dynamicForm.get("title"), dynamicForm.get("desc"), Long.parseLong(dynamicForm.get("catId")), Double.parseDouble(dynamicForm.get("price")), pictures);
-	}
-
-
 
 	@Transactional
 	public static Result createCollection() {
@@ -226,7 +221,7 @@ public class ProductController extends Controller{
 		for(Post post : posts) {
 			PostVMLite vm = new PostVMLite(post);
 			vm.isLiked = post.isLikedBy(Application.getLocalUser(session()));
-			vm.offset = post.getBaseScore();
+			vm.offset = post.baseScore;
 			vms.add(vm);
 		}
 		return ok(Json.toJson(vms));
@@ -261,7 +256,7 @@ public class ProductController extends Controller{
 		for(Post product : Post.getPosts(postIds)) {
 			PostVMLite vm = new PostVMLite(product);
 			vm.isLiked = product.isLikedBy(Application.getLocalUser(session()));
-			vm.offset = product.getPostPrize().longValue();
+			vm.offset = product.price.longValue();
 			vms.add(vm);
 		}
 		return ok(Json.toJson(vms));
@@ -277,7 +272,7 @@ public class ProductController extends Controller{
 		for(Post product : Post.getPosts(postIds)) {
 			PostVMLite vm = new PostVMLite(product);
 			vm.isLiked = product.isLikedBy(Application.getLocalUser(session()));
-			vm.offset = product.getPostPrize().longValue();
+			vm.offset = product.price.longValue();
 			vms.add(vm);
 		}
 		return ok(Json.toJson(vms));

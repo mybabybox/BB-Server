@@ -49,13 +49,6 @@ import domain.Updatable;
 public class Conversation extends domain.Entity implements Serializable, Creatable, Updatable {
     private static final play.api.Logger logger = play.api.Logger.apply(Conversation.class);
     
-	public Conversation(){}
-	
-	public Conversation(User user1, User user2) {
-		this.user1 = user1;
-		this.user2 = user2;
-	}
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	public Long id;
@@ -91,6 +84,14 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	@OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true, mappedBy = "conversation")
 	public Set<Message> messages = new TreeSet<Message>();
 
+	public Conversation() {}
+	
+	public Conversation(Post post, User user) {
+		this.post = post;
+		this.user1 = user;
+		this.user2 = post.owner;
+	}
+
 	public Message addMessage(User sender, String body) {
 		Date now = new Date();
 		Message message = new Message();
@@ -120,6 +121,19 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		        "SELECT c from Conversation c where ( ((user1 = ?1 and user2 = ?2) or (user1 = ?2 and user2 = ?1)) ) and c.deleted = 0");
 		q.setParameter(1, u1);
 		q.setParameter(2, u2);
+		
+		try {
+			return (Conversation) q.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+	
+	public static Conversation getConversation(Post post, User user) {
+		Query q = JPA.em().createQuery(
+		        "SELECT c from Conversation c where post = ?1 and user1 = ?2 and deleted = 0");
+		q.setParameter(1, post);
+		q.setParameter(2, user);
 		
 		try {
 			return (Conversation) q.getSingleResult();
@@ -172,20 +186,20 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		}
 	}
 
-	public static Conversation startConversation(User sender, User receiver) {
-		if (sender == null || receiver == null) {
+	public static Conversation openConversation(Post post, User user) {
+		if (post == null || user == null) {
 			return null;
 		}
 		
-		Conversation conversation = findByUsers(sender, receiver);
+		Conversation conversation = getConversation(post, user);
 		if (conversation != null) {
 			return conversation;
 		}
 		
 		Date now = new Date();
-		conversation = new Conversation(sender, receiver);
+		conversation = new Conversation(post, user);
 		conversation.setUpdatedDate(now);
-		conversation.setReadTime(sender);
+		conversation.setReadTime(post.owner);	// New conversation always opened by buyer
 		conversation.save();
 		return conversation;
 	}
@@ -230,7 +244,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
         return (Conversation) q.getSingleResult();
 	}
 
-	public static Message sendMessage(Long conversationId, User sender, String msgText) {
+	public static Message newMessage(Long conversationId, User sender, String msgText) {
 		Conversation conversation = Conversation.findById(conversationId);
 		return conversation.addMessage(sender, msgText);
 	}

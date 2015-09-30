@@ -35,7 +35,7 @@ public class FeedPostVM1 {
 		this.postId = post.id;
 		this.postName = post.title;
 		this.postDescription = post.description;
-		this.postPrize = post.price;
+		this.postPrize = post.price.longValue();
 		this.noOfLikes = post.noOfLikes;
 		
 		if(post.folder != null && !CollectionUtils.isEmpty(post.folder.resources)) {
