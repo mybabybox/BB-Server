@@ -230,8 +230,8 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
         return (Conversation) q.getSingleResult();
 	}
 
-	public static Message sendMessage(User sender, User receiver, String msgText) {
-		Conversation conversation = Conversation.startConversation(sender, receiver);
+	public static Message sendMessage(Long conversationId, User sender, String msgText) {
+		Conversation conversation = Conversation.findById(conversationId);
 		return conversation.addMessage(sender, msgText);
 	}
 

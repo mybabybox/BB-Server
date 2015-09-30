@@ -75,7 +75,6 @@ POST    /accounts/merge             controllers.Account.doMerge
 GET     /login/password/forgot      controllers.Signup.forgotPassword(email: String ?= "")
 POST    /login/password/forgot      controllers.Signup.doForgotPassword
 
-
 # User Info Service
 GET     /get-user-info              controllers.UserController.getUserInfo
 GET     /complete-home-tour         controllers.UserController.completeHomeTour
@@ -85,28 +84,22 @@ POST    /image/upload-profile-photo controllers.UserController.uploadProfilePhot
 POST    /image/upload-product-photo controllers.UserController.addProduct
 POST    /image/upload-cover-photo   controllers.UserController.uploadCoverPhoto
 
-GET     /image/get-profile-image            controllers.UserController.getProfileImage
+GET     /image/get-profile-image    controllers.UserController.getProfileImage
 
 GET     /image/get-thumbnail-image-by-id/:id        controllers.UserController.getThumbnailVersionImageByID(id :Long)
 GET     /image/get-thumbnail-cover-image-by-id/:id      controllers.UserController.getThumbnailCoverImageByID(id :Long)
 GET     /image/get-original-image-by-id/:id     controllers.UserController.getOriginalImageByID(id :Long)
 
 # Conversation
-#GET     /get-all-conversations      controllers.UserController.getAllConversations()
-#GET     /get-messages/:id/:offset   controllers.UserController.getMessages(id: Long, offset: Long)
-#GET     /start-conversation/:id     controllers.UserController.startConversation(id: Long)
-#GET     /open-conversation/:id      controllers.UserController.openConversation(id: Long)
-#GET     /delete-conversation/:id    controllers.UserController.deleteConversation(id: Long)
-#POST    /message/sendMsg            controllers.UserController.sendMessage()
-#POST    /image/sendMessagePhoto     controllers.UserController.sendPhotoInMessage()
-#GET     /user-friend-search         controllers.UserController.searchUserFriends(query: String)
-#GET     /image/get-message-image-by-id/:id      controllers.UserController.getMessageImageByID(id :Long)
-#GET     /get-unread-msg-count       controllers.UserController.getUnreadMsgCount()
-#GET     /image/get-original-private-image-by-id/:id     controllers.UserController.getOriginalPrivateImageByID(id :Long)
-#GET     /image/getEmoticons         controllers.UserController.getEmoticons()
-
-# Admin
-GET     /admin/get-campaign-joiners/:id         controllers.AdminController.getCampaignJoiners(id :Long)
+GET     /get-all-conversations      controllers.UserController.getAllConversations()
+GET     /get-messages/:id/:offset   controllers.UserController.getMessages(id: Long, offset: Long)
+GET     /open-conversation/:id      controllers.UserController.openConversation(id: Long)
+GET     /delete-conversation/:id    controllers.UserController.deleteConversation(id: Long)
+POST    /message/new                controllers.UserController.sendMessage()
+POST    /image/upload-message-photo controllers.UserController.uploadMessagePhoto()
+GET     /image/get-message-image-by/:id         controllers.UserController.getMessageImage(id :Long)
+GET     /get-unread-message-count   controllers.UserController.getUnreadMessageCount()
+GET     /image/get-original-message-image/:id   controllers.UserController.getOriginalMessageImage(id :Long)
 
 # Product
 GET		/get-category-popular-feed/:id/:postType/:offset		controllers.ProductController.getCategoryPopularFeed(id :Long, postType: String, offset: Long)
@@ -137,7 +130,7 @@ GET     /unfollow-user/:id        					controllers.UserController.unfollowUser(i
 
 # image
 GET     /image/get-post-image-by-id/:id     		controllers.ProductController.getProductImageById(id :Long)
-GET     /image/get-original-post-image-by-id/:id		controllers.ProductController.getFullProductImageById(id :Long)
+GET     /image/get-original-post-image-by-id/:id	controllers.ProductController.getFullProductImageById(id :Long)
 
 # category
 GET		/categories									controllers.Application.getCategories()
@@ -154,18 +147,4 @@ GET     /get-user-liked-feed/:id/:offset			controllers.UserController.getUserLik
 GET		/comments/:postId/:offset 					controllers.ProductController.getPostComments(postId: Long,offset:Long)
 
 GET     /get-all-districts          controllers.Application.getAllDistricts
-
-# Conversation
-GET     /get-all-conversations      controllers.UserController.getAllConversations()
-GET     /get-messages/:id/:offset   controllers.UserController.getMessages(id: Long, offset: Long)
-GET     /start-conversation/:id     controllers.UserController.startConversation(id: Long)
-GET     /open-conversation/:id      controllers.UserController.openConversation(id: Long)
-GET     /delete-conversation/:id    controllers.UserController.deleteConversation(id: Long)
-POST    /message/sendMsg            controllers.UserController.sendMessage()
-#POST    /image/sendMessagePhoto     controllers.UserController.sendPhotoInMessage()
-#GET     /user-friend-search         controllers.UserController.searchUserFriends(query: String)
-#GET     /image/get-message-image-by-id/:id      controllers.UserController.getMessageImageByID(id :Long)
-#GET     /get-unread-msg-count       controllers.UserController.getUnreadMsgCount()
-#GET     /image/get-original-private-image-by-id/:id     controllers.UserController.getOriginalPrivateImageByID(id :Long)
-#GET     /image/getEmoticons         controllers.UserController.getEmoticons()
 

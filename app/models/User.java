@@ -54,7 +54,6 @@ import com.feth.play.module.pa.user.AuthUser;
 import com.feth.play.module.pa.user.AuthUserIdentity;
 import com.feth.play.module.pa.user.EmailIdentity;
 import com.feth.play.module.pa.user.FirstLastNameIdentity;
-import com.google.common.collect.Lists;
 
 import common.collection.Pair;
 import common.image.FaceFinder;
@@ -174,10 +173,6 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 	@JsonIgnore
 	public List<Album> album;
 
-	@OneToMany
-	@JsonIgnore
-	public List<Conversation> conversations = new ArrayList<Conversation>();
-
 	@Override
 	@JsonIgnore
 	public List<? extends Role> getRoles() {
@@ -209,11 +204,8 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 	public Conversation sendMessage(User user, String msg) {
 		Conversation conversation = Conversation.findByUsers(this, user);
 
-		if (conversations == null || conversation == null) {
+		if (conversation == null) {
 			conversation = new Conversation(this, user);
-			conversations = Lists.newArrayList();
-			conversations.add(conversation);
-			user.conversations.add(conversation);
 		}
 		conversation.addMessage(this, msg);
 		return conversation;
@@ -357,21 +349,6 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 		this.productCount++;
 		return product;
 	}
-
-	/*  @Transactional
-    public Community createCommunity(String name, String description, CommunityType type, String icon) 
-            throws SocialObjectNotJoinableException {
-        if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(description) || 
-                Strings.isNullOrEmpty(icon) || type == null) {
-            logger.underlyingLogger().warn("Missing parameters to createCommunity");
-            return null;
-        }
-        Community community = new Community(name, description, this, type);
-        community.icon = icon;
-        community.save();
-        community.ownerAsMember(this);
-        return community;
-    }*/
 
 	/**
 	 * create a folder with the type: IMG (contain only image Resource types)
@@ -618,12 +595,12 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 
 		if (frds.has("data")) {
 			List<FbUserFriend> fbUserFriends = null;
-			try{
+			try {
 				fbUserFriends = new ObjectMapper().readValue(frds.get("data").traverse(), new TypeReference<List<FbUserFriend>>() {});
 			} catch(Exception e) {
 
 			}
-			for(FbUserFriend frnd : fbUserFriends) {
+			for (FbUserFriend frnd : fbUserFriends) {
 				frnd.user = user;
 				frnd.save();
 			}
@@ -991,12 +968,12 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 	}
 
 	public List<UserChild> getChildren() {
-		return children;
-	}
+        return children;
+    }
 
-	public void setChildren(List<UserChild> children) {
-		this.children = children;
-	}
+    public void setChildren(List<UserChild> children) {
+        this.children = children;
+    }
 
 	public boolean isActive() {
 		return active;
@@ -1072,14 +1049,6 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 
 	public void setAlbum(List<Album> album) {
 		this.album = album;
-	}
-
-	public List<Conversation> getConversations() {
-		return conversations;
-	}
-
-	public void setConversations(List<Conversation> conversations) {
-		this.conversations = conversations;
 	}
 
 	public void setRoles(List<SecurityRole> roles) {

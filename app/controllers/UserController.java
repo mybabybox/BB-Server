@@ -18,7 +18,6 @@ import models.Emoticon;
 import models.Location;
 import models.Message;
 import models.Post;
-import models.PrimarySocialRelation;
 import models.Resource;
 import models.SecondarySocialRelation;
 import models.SiteTour;
@@ -36,7 +35,6 @@ import play.mvc.Result;
 import viewmodel.CollectionVM;
 import viewmodel.ConversationVM;
 import viewmodel.EmoticonVM;
-import viewmodel.FeedPostVM;
 import viewmodel.MessageVM;
 import viewmodel.PostVMLite;
 import viewmodel.ProfileVM;
@@ -516,27 +514,14 @@ public class UserController extends Controller {
         }
         
         DynamicForm form = form().bindFromRequest();
-        
-        Long receiverUserID = Long.parseLong(form.get("receiver_id"));
-        User receiverUser = User.findById(receiverUserID);
+        Long conversationId = Long.parseLong(form.get("conversationId"));
+        Long receiverId = Long.parseLong(form.get("receiverId"));
         String msgText = HtmlUtil.convertTextToHtml(form.get("msgText"));
-        Conversation.sendMessage(localUser, receiverUser, msgText);
-        Conversation conversation = Conversation.findByUsers(localUser, receiverUser);
-        return getMessages(conversation.id, 0L);
-    }
-	
-	@Transactional
-    public static Result sendGreetingMessageToNewUser() {
-        final User localUser = Application.getLocalUser(session());
-        if (!localUser.isLoggedIn()) {
-            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
-            return status(500);
-        }
+        Message message = Conversation.sendMessage(conversationId, localUser, msgText);
         
-        User superAdmin = Application.getBBAdmin();
-        String msgText = HtmlUtil.convertTextToHtml("歡迎來到「BabyBox」~  立即發掘您喜愛的媽媽社群與話題。 請開心分享！");
-        Conversation.sendMessage(superAdmin, localUser, msgText);
-        return ok();
+        Map<String, Object> map = new HashMap<>();
+		map.put("id", message.id);
+        return ok(Json.toJson(map));
     }
 	
 	@Transactional
@@ -599,34 +584,6 @@ public class UserController extends Controller {
 	}
 	
 	@Transactional
-    public static Result startConversation(Long id) {
-		NanoSecondStopWatch sw = new NanoSecondStopWatch();
-		
-        final User localUser = Application.getLocalUser(session());
-        if (!localUser.isLoggedIn()) {
-            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
-            return status(500);
-        }
-        
-        if (localUser.id == id) {
-            logger.underlyingLogger().error(String.format("[u1=%d] [u2=%d] Same user. Will not start conversation", localUser.id, id));
-            return status(500);
-        }
-        
-        User otherUser = User.findById(id);
-        Conversation conversation = Conversation.startConversation(localUser, otherUser);
-        ConversationVM conversationVM = null;
-        if (conversation != null) {
-        	conversationVM = new ConversationVM(conversation, localUser, otherUser);
-        }
-        List<ConversationVM> vms = getAllConversations(localUser, conversationVM);
-
-        logger.underlyingLogger().debug("[u1="+localUser.id+"][u2="+id+"] startConversation. Took "+sw.getElapsedMS()+"ms");
-        
-        return ok(Json.toJson(vms));
-    }
-	
-	@Transactional
     public static Result openConversation(Long id) {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
 		
@@ -652,8 +609,9 @@ public class UserController extends Controller {
 		
 		return ok(Json.toJson(vms));
     }
-		@Transactional
-		public static Result uploadMessagePhoto() {
+	
+	@Transactional
+	public static Result uploadMessagePhoto() {
 		final User localUser = Application.getLocalUser(session());
 		if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
@@ -685,7 +643,6 @@ public class UserController extends Controller {
 		return ok(Json.toJson(vm));
 	}
 	
-	
 	@Transactional
 	public static Result getMessageImage(Long id) {
 	    response().setHeader("Cache-Control", "max-age=604800");
@@ -693,7 +650,7 @@ public class UserController extends Controller {
 	}
 
     @Transactional
-    public static Result getOriginalPrivateImageByID(Long id) {
+    public static Result getOriginalMessageImage(Long id) {
         response().setHeader("Cache-Control", "max-age=604800");
         return ok(Resource.findById(id).getRealFile());
     }
@@ -824,6 +781,7 @@ public class UserController extends Controller {
     	}
     	return ok(Json.toJson(userFollowers));
     }
+    
     @Transactional
     public static Result getUserLikedPosts(Long id, Long offset){
     	
@@ -838,7 +796,5 @@ public class UserController extends Controller {
 			vms.add(vm);
 		}
 		return ok(Json.toJson(vms));
-    	
     }
-
 }
