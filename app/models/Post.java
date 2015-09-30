@@ -20,7 +20,7 @@ import javax.persistence.Query;
 
 import play.db.jpa.JPA;
 import babybox.shopping.social.exception.SocialObjectNotCommentableException;
-import common.cache.CalServer;
+import common.cache.CalcServer;
 import common.thread.ThreadLocalOverride;
 import common.utils.StringUtil;
 import domain.Commentable;
@@ -54,7 +54,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 
 	public String tagWords;     // comma separated list
 
-	public Long price = 0L;
+	public Double price = 0.0;
 
 	public int noOfComments = 0;
 	public int noOfLikes = 0;
@@ -80,12 +80,12 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		this.title = title;
 		this.description = description;
 		this.category = category;
-		this.price = 0L;
+		this.price = 0.0;
 		this.postType = PostType.STORY;
 		this.objectType = SocialObjectType.POST;
 	}
 
-	public Post(User actor, String title, String description, Category category, Long price) {
+	public Post(User actor, String title, String description, Category category, Double price) {
 		this.owner = actor;
 		this.title = title;
 		this.description = description;
@@ -117,7 +117,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	
 	@Override
 	public boolean isLikedBy(User user){
-		return CalServer.isLiked(user.id, this.id);
+		return CalcServer.isLiked(user.id, this.id);
 	}
 
 	@Override

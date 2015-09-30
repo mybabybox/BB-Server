@@ -5,13 +5,13 @@
 				<div class="products-show-title">
 					<div class="products-show-title-inner-container">
 						<h1 data-attribute="name" data-object="product" data-type="input">
-							<span itemprop="name">{{product.pn}}</span>
+							<span itemprop="name">{{product.title}}</span>
 						</h1>
 					</div>
 				</div>
 				<div class="products-show-poster" style="float: left">
 					<div class="products-show-poster-details">
-						From <a href="/profile/{{product.oid}}">{{product.on}}</a>
+						From <a href="/profile/{{product.ownerid}}">{{product.on}}</a>
 					</div>
 				</div>
 				<div class="products-show-poster" style="float: right">
@@ -21,7 +21,7 @@
 						data-ng-show="!product.isLike" class="btn-like" href=""
 						data-ng-click="unlike_product(product.id)">Unlike</a> <span
 						ng-show="product.nol > 0"><a class="btn-like"> 
-						<img data-ng-src="/assets/app/images/general/icons/liked_1.png" />{{product.nol}}
+						<img data-ng-src="/assets/app/images/general/icons/liked_1.png" />{{product.numLikes}}
 						</a></span>
 					</span> 
 <!-- 					<span ng-show="!userInfo.isLoggedIn" class="btn-like-wrapper"> -->
@@ -36,17 +36,17 @@
 								class="swap-link-if-user store-approved external-product-url"
 								data-domain="restorationhardware.com"
 								data-source="product image" rel="nofollow" target="_blank"><img
-								alt="Vintage Deluxe Scrabble®"
 								class="product-image product-original" itemprop="image"
 								data-ng-src="{{ImageUrl}}"></a>
 						
 						</div>
+						
 						<div
 									class="products-show-more-from-user-grid products-show-more-grid">
-									<a  data-ng-repeat="image in product.imageArray" ><img
+									<a  data-ng-repeat="image in product.images" ><img
 										class="product-image product-x200"
 										ng-click="setImgUrl(image)"
-										data-ng-src="/image/get-product-image-by-id/{{image}}"></a>
+										data-ng-src="/image/get-post-image-by-id/{{image}}"></a>
 						</div>
 						<div class="variant-thumbnails"></div>
 					</div>
@@ -56,7 +56,7 @@
 								<div class="products-show-controls-save-btn"
 									data-attributed-user-id="12069349" data-product-id="31137400"
 									data-store-id="1098">
-									<a href="#" ng-if="userInfo.id == product.oid"
+									<a href="#" ng-if="userInfo.id == product.ownerid"
 										class="button wb-save" data-toggle="modal"
 										data-target="#save-product-modal" id="save_product"
 										rel="nofollow">Save</a>
@@ -77,7 +77,7 @@
 									<div class="products-show-controls-sale-info"></div>
 									<div class="products-show-controls-buy-price-tag-right">
 										&nbsp;&nbsp;$<span class="products-show-controls-buy-price-tag-text"
-											data-object="product" data-type="input" itemprop="price">{{product.pp}}.00</span><i
+											data-object="product" data-type="input" itemprop="price">{{product.price}}.00</span><i
 											class="icon-pencil best-in-place-edit-icon edit-price-tag-icon"></i>
 									</div>
 								</div>
@@ -95,7 +95,7 @@
 						<div class="products-show-more">
 							<div class="products-show-more-from-user">
 								<div class="products-show-more-text">
-									<span>more from&nbsp;</span><a href="/profile/{{product.oid}}"
+									<span>more from&nbsp;</span><a href="/profile/{{product.ownerId}}"
 										class="products-show-poster-details-store">{{product.on}}</a><span></span>
 									<div data-ng-if="userInfo.id != product.oid"
 										class="products-show-more-follow-button products-show-more-follow-store-button">
@@ -110,7 +110,7 @@
 									class="products-show-more-from-user-grid products-show-more-grid">
 									<a  data-ng-repeat="prod in product.relatedProducts" href="/product/{{prod.id}}"><img
 										class="product-image product-x200"
-										data-ng-src="/image/get-product-image-by-id/{{prod.img}}"></a>
+										data-ng-src="/image/get-post-image-by-id/{{prod.image}}"></a>
 								</div>
 							</div>
 						</div>

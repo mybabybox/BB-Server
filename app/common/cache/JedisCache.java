@@ -7,6 +7,7 @@ import redis.clients.jedis.JedisPool;
 import com.typesafe.plugin.RedisPlugin;
 
 import common.serialize.JsonSerializer;
+import domain.DefaultValues;
 
 import java.util.Map;
 import java.util.Set;
@@ -181,22 +182,25 @@ public class JedisCache {
         }
     }
     
-    public Set<String> getSortedSetAsc(String key) {
+    public Set<String> getSortedSetAsc(String key, Double offset) {
         Jedis j = null;
         try {
             j = getResource();
-            return j.zrange(key, 0, -1);
+            return j.zrangeByScore(key, offset, 99999999999999999999.9, 0, DefaultValues.FRONTPAGE_HOT_POSTS_COUNT);
+            //return j.zrange(key, 0, -1);
         } finally {
             if (j != null)
                 returnResource(j);
         }
     }
     
-    public Set<String> getSortedSetDsc(String key) {
+    public Set<String> getSortedSetDsc(String key, Double offset) {
         Jedis j = null;
         try {
             j = getResource();
-            return j.zrevrange(key, 0, -1);
+            return j.zrevrangeByScore(key, 999999999999999999999.9, offset, 0, DefaultValues.FRONTPAGE_HOT_POSTS_COUNT); 
+
+            //return j.zrevrange(key, 0, -1);
         } finally {
             if (j != null)
                 returnResource(j);

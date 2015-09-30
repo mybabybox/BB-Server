@@ -5,23 +5,23 @@
 					class="product-thumbnail js-open-product-modal product-active"
 					data-requesting-action="show"><img
 					alt="Vintage Deluxe Scrabble®"
-					data-ng-src="/image/get-product-image-by-id/{{product.imgs}}"></a>
+					data-ng-src="/image/get-post-image-by-id/{{product.image}}"></a>
 				<div class="info">
-					<a><img alt="sax" class="avatar-image avatar-x45 "
-						data-ng-src=" /image/get-thumbnail-image-by-id/{{product.oid}}"></a><a
-						href="/profile/{{product.oid}}" class="attributed-username">{{product.on}}</a><a
+					<a><img class="avatar-image avatar-x45 "
+						data-ng-src=" /image/get-thumbnail-image-by-id/{{product.ownerid}}"></a><a
+						href="/profile/{{product.ownerid}}" class="attributed-username">{{product.on}}</a><a
 						class="collection-name"></a>
 				</div>
 				<div class="product-overlay">
 					<div class="product-overlay-detail">
 						<div class="name">
-							<a class="js-open-product-modal" data-requesting-action="show">{{product.pd}}</a>
+							<a class="js-open-product-modal" data-requesting-action="show">{{product.desc}}</a>
 						</div>
 						<div class="poster">
-							<a href="/profile/{{product.oid}}">{{product.pn}}</a>
+							<a href="/profile/{{product.oid}}">{{product.title}}</a>
 						</div>
 						<div class="store">
-							<span> Rs.{{product.pp}}/- </span>
+							<span> Rs.{{product.price}}/- </span>
 						</div>
 					</div>
 				</div>

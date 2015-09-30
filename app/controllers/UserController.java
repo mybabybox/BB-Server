@@ -40,7 +40,7 @@ import viewmodel.PostVMLite;
 import viewmodel.ProfileVM;
 import viewmodel.UserVM;
 import viewmodel.UserVMLite;
-import common.cache.CalServer;
+import common.cache.CalcServer;
 import common.utils.HtmlUtil;
 import common.utils.ImageFileUtil;
 import common.utils.NanoSecondStopWatch;
@@ -719,7 +719,7 @@ public class UserController extends Controller {
     
     @Transactional
     public static Result getUserPosts(Long id, Long offset) {
-    	List<Long> postIds = CalServer.getUserPostFeeds(id);
+    	List<Long> postIds = CalcServer.getUserPostFeeds(id);
         
         if(postIds.size() == 0){
 			return ok(Json.toJson(postIds));
@@ -785,7 +785,7 @@ public class UserController extends Controller {
     @Transactional
     public static Result getUserLikedPosts(Long id, Long offset){
     	
-    	List<Long> postIds = CalServer.getUserLikeFeeds(id);
+    	List<Long> postIds = CalcServer.getUserLikeFeeds(id);
         
         if(postIds.size() == 0){
 			return ok(Json.toJson(postIds));

@@ -12,9 +12,9 @@ babybox.controller('FrontPageController',
 	        });
 	$scope.gotoTop=function(){
 		$location.hash('');
-	    $anchorScroll();
+		$anchorScroll();
 	};
-	
+
 	$scope.open = function (product) {
 		$scope.product = product;
 		viewService.viewProduct.get({id:product.id});
@@ -36,19 +36,19 @@ babybox.controller('ProductPageController',
 babybox.controller('ProductController', 
 		function($scope, $route, $http, likeService, userService, productService, usSpinnerService) {
 	console.log($scope.product.imgs);
-	$scope.ImageUrl = "/image/get-full-product-image-by-id/"+$scope.product.imgs;
+	$scope.ImageUrl = "/image/get-original-post-image-by-id/"+$scope.product.image;
 	$scope.collections = [];
 
-	
+
 	$scope.similarProducts = productService.getSimilarProduct.get();
 	$scope.open = false;
 	$scope.product = productService.getProductInfo.get({id:$scope.product.id});
-	
+
 	console.log($scope.ImageUrl);
 	$scope.setImgUrl = function(id){
-		$scope.ImageUrl= "/image/get-full-product-image-by-id/"+id;
+		$scope.ImageUrl= "/image/get-original-post-image-by-id/"+id;
 	};
-	
+
 	if($scope.product.oid = $scope.userInfo.id){
 		$scope.collections = userService.getUserCollection.get({id:$scope.userInfo.id});
 	}
@@ -77,7 +77,7 @@ babybox.controller('ProductController',
 		$scope.colectionValue = collection.cn;
 		$scope.open = false;
 	}
-	
+
 	$scope.add_product_to_collection = function(){
 		var data = {
 				"product_id" : $scope.product.id,
@@ -91,7 +91,7 @@ babybox.controller('ProductController',
 			console.log(response);
 		});
 	}
-	
+
 	$scope.onFollowUser = function() {
 		followService.followUser.get({id:$scope.product.oid});
 		$scope.product.ifu = !$scope.product.ifu;
@@ -107,26 +107,26 @@ babybox.controller('CommentOnProductController',
 	$scope.formData = {};
 
 	$scope.comArray=[];
-	
+
 	$scope.submit = function() {
 		var newCommentVM = {
 				"postId" : $scope.product.id,
 				"desc" : $scope.formData.comment,
 		};
-		
+
 		console.log($scope.userInfo);
 		usSpinnerService.spin('loading...');
 		$http.post('/comment/new', newCommentVM) 
 		.success(function(response) {
 			console.log(response);
-			 $scope.comArray.push({
-			        comment:$scope.formData.comment,
-			        name: $scope.userInfo.displayName,
-			        id: $scope.userInfo.id
-			        
-		    });
-			 $scope.formData.comment="";
-			 usSpinnerService.stop('loading...');
+			$scope.comArray.push({
+				comment:$scope.formData.comment,
+				name: $scope.userInfo.displayName,
+				id: $scope.userInfo.id
+
+			});
+			$scope.formData.comment="";
+			usSpinnerService.stop('loading...');
 		});
 	}
 
@@ -149,7 +149,7 @@ babybox.controller('ProfileController',
 		$scope.user.ifu = !$scope.user.ifu;
 		$scope.user.n_fr--;
 	}
-	
+
 	$scope.open = function (product) {
 		$scope.product = product;
 		viewService.viewProduct.get({id:product.id});
@@ -191,13 +191,13 @@ babybox.controller('CreateProductController',function($scope, $location, $http, 
 				"price" : $scope.formData.productPrice,
 		};
 		console.log(newPostVM);
-		
+
 		usSpinnerService.spin('loading...');
 		$validator.validate($scope, 'formData')
 		.success(function () {
 			usSpinnerService.spin('載入中...');
 			$upload.upload({
-				url: '/create-product',
+				url: '/post/new',
 				method: 'POST',
 				file: $scope.selectedFiles,
 				data: newPostVM,

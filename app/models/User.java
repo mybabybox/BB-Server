@@ -342,7 +342,7 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 	}
 
 	@Transactional
-	public Post createProduct(String name, String description, Category category, Long productPrize) 
+	public Post createProduct(String name, String description, Category category, Double productPrize) 
 			throws SocialObjectNotJoinableException {
 		Post product = new Post(this, name, description, category, productPrize);
 		product.save();

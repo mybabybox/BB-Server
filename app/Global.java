@@ -18,8 +18,7 @@ import com.feth.play.module.pa.PlayAuthenticate;
 import com.feth.play.module.pa.PlayAuthenticate.Resolver;
 import com.feth.play.module.pa.exceptions.AccessDeniedException;
 import com.feth.play.module.pa.exceptions.AuthException;
-
-import common.cache.CalServer;
+import common.cache.CalcServer;
 import common.schedule.CommandChecker;
 import common.schedule.JobScheduler;
 import controllers.routes;
@@ -202,7 +201,7 @@ public class Global extends GlobalSettings {
         DataBootstrap.bootstrap();
         
         // cache warm up
-        CalServer.warmUpActivity();
+        CalcServer.warmUpActivity();
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-'use strict';
+/*'use strict';
 
 var minibean = angular.module('minibean');
 
@@ -49,4 +49,4 @@ minibean.controller('SlidingMenuController', function($scope, $routeParams, $loc
         }
     );
     
-});
+});*/

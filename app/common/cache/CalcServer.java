@@ -8,7 +8,7 @@ import models.Category;
 import models.Post;
 import models.User;
 
-public class CalServer {
+public class CalcServer {
 
 	public static void warmUpActivity() {
 		buildBaseScore();
@@ -78,8 +78,8 @@ public class CalServer {
 	     return JedisCache.cache().isMemberOfSet(key, postId.toString());
 	}
 
-	public static List<Long> getCategoryPopularFeed(Long id) {
-		Set<String> values = JedisCache.cache().getSortedSetDsc("CATEGORY_POPULAR:"+id);
+	public static List<Long> getCategoryPopularFeed(Long id, Double offset) {
+		Set<String> values = JedisCache.cache().getSortedSetDsc("CATEGORY_POPULAR:"+id, offset);
         final List<Long> postIds = new ArrayList<>();
         for (String value : values) {
             try {
@@ -90,8 +90,8 @@ public class CalServer {
         return postIds;
 	}
 	
-	public static List<Long> getCategoryNewestFeed(Long id) {
-		Set<String> values = JedisCache.cache().getSortedSetDsc("CATEGORY_NEWEST:"+id);
+	public static List<Long> getCategoryNewestFeed(Long id, Double offset) {
+		Set<String> values = JedisCache.cache().getSortedSetAsc("CATEGORY_NEWEST:"+id, offset);
         final List<Long> postIds = new ArrayList<>();
         for (String value : values) {
             try {
@@ -103,8 +103,8 @@ public class CalServer {
 
 	}
     
-	public static List<Long> getCategoryPriceLowHighFeed(Long id) {
-		Set<String> values = JedisCache.cache().getSortedSetDsc("CATEGORY_PRICE_LOW_HIGH:"+id);
+	public static List<Long> getCategoryPriceLowHighFeed(Long id, Double offset) {
+		Set<String> values = JedisCache.cache().getSortedSetAsc("CATEGORY_PRICE_LOW_HIGH:"+id, offset*1000000);
         final List<Long> postIds = new ArrayList<>();
 
         for (String value : values) {
@@ -116,8 +116,8 @@ public class CalServer {
         return postIds;
 	}
 	
-	public static List<Long> getCategoryPriceHighLowFeed(Long id) {
-		Set<String> values = JedisCache.cache().getSortedSetAsc("CATEGORY_PRICE_LOW_HIGH:"+id);
+	public static List<Long> getCategoryPriceHighLowFeed(Long id, Double offset) {
+		Set<String> values = JedisCache.cache().getSortedSetDsc("CATEGORY_PRICE_LOW_HIGH:"+id, offset*1000000);
         final List<Long> postIds = new ArrayList<>();
         for (String value : values) {
             try {

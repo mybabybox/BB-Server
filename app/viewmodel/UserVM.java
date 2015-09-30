@@ -34,11 +34,14 @@ public class UserVM extends UserVMLite {
     	super(user);
         this.email = user.email;
         this.createdDate = user.getCreatedDate().getTime();
-        this.aboutMe = user.userInfo.aboutMe;
         this.firstName = user.firstName;
         this.lastName = user.lastName;
-        this.gender = user.userInfo.gender.name();
-        this.birthYear = user.userInfo.birthYear;
+        if(user.userInfo != null){
+        	this.gender = user.userInfo.gender.name();
+            this.birthYear = user.userInfo.birthYear;
+            this.aboutMe = user.userInfo.aboutMe;
+        }
+        
 
         this.lastLogin = user.lastLogin.toString();
         this.totalLogin = user.totalLogin;

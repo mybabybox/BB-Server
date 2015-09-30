@@ -110,7 +110,8 @@ GET		/get-category-price-high-low-feed/:id/:postType/:offset			controllers.Produ
 GET     /add/product            		     		controllers.Application.addProduct
 GET     /add/story                   				controllers.Application.addStory
 
-POST	/post/new		 		             		controllers.ProductController.createProduct
+POST	/post/new		 		             		controllers.ProductController.createProductWeb
+POST	/mobile/post/new		 		             		controllers.ProductController.createProductMobile
 GET     /get-all-feed-products       				controllers.ProductController.getAllFeedProducts
 GET     /get-all-similar-products       			controllers.ProductController.getAllSimilarProducts
 GET     /product/:id            		     		controllers.ProductController.product(id:Long)

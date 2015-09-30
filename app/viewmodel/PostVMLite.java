@@ -22,6 +22,8 @@ public class PostVMLite {
     public int numViews;
     public boolean isOwner = false;
     public boolean isLiked = false;
+    
+    public Long offset;
 
 	public Boolean hasImage;
     public Long image;

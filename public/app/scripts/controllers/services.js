@@ -15,7 +15,7 @@ babybox.service('feedService',function($resource){
 
 babybox.service('productService',function($resource){
     this.getProductInfo = $resource(
-            '/get-product-info/:id',
+            '/post/:id',
             {alt:'json',callback:'JSON_CALLBACK'},
             {
                 get: {method:'get', params:{id:'@id'}}

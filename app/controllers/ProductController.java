@@ -18,55 +18,54 @@ import play.data.DynamicForm;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
 import viewmodel.CommentVM;
-import viewmodel.FeedPostVM;
-import viewmodel.PostInfoVM;
 import viewmodel.PostVM;
 import viewmodel.PostVMLite;
 import viewmodel.ResponseStatusVM;
 import viewmodel.UserVM;
 import babybox.shopping.social.exception.SocialObjectNotJoinableException;
-import common.cache.CalServer;
+
+import common.cache.CalcServer;
 import common.utils.HtmlUtil;
 import common.utils.ImageFileUtil;
 
 public class ProductController extends Controller{
 	private static play.api.Logger logger = play.api.Logger.apply(ProductController.class);
-
+	
 	@Transactional
-	public static Result createProduct() {
+	public static Result createProductMobile() {
+
+		
+		Http.MultipartFormData multipartFormData = request().body().asMultipartFormData();
+		List<FilePart> files = new ArrayList<>();
+		for(int i = 0; i<5; i++){
+			if(multipartFormData.getFile("post-image"+i) != null){
+				files.add(multipartFormData.getFile("post-image"+i));
+			} else {
+				break;
+			}
+		}
+	    String catId = multipartFormData.asFormUrlEncoded().get("catId")[0];
+	    String title = multipartFormData.asFormUrlEncoded().get("title")[0];
+	    String desc = multipartFormData.asFormUrlEncoded().get("desc")[0];
+	    String price = multipartFormData.asFormUrlEncoded().get("price")[0];
+	    request().body().asMultipartFormData().getFiles();
+		return createProduct(title, desc, Long.parseLong(catId), Double.parseDouble(price), files);
+	}
+	
+	
+	private static Result createProduct(String title, String desc,
+			Long catId, Double price, List<FilePart> pictures) {
 		final User localUser = Application.getLocalUser(session());
 		if (!localUser.isLoggedIn()) {
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
 			return status(500);
 		}
-
-		DynamicForm dynamicForm = DynamicForm.form().bindFromRequest();
-		Long catId = Long.parseLong(dynamicForm.get("catId"));
-		Long price = Long.parseLong(dynamicForm.get("price"));
-		
-		String name = dynamicForm.get("title");
-		String desc = dynamicForm.get("desc");
-		
-		Category category = Category.findById(catId);
-		
-//		switch(dynamicForm.get("productType")){
-//		case "Product":
-//			product.productType = ProductType.Product;
-//			if(!dynamicForm.get("category").equals("")){
-//				product.category = Category.findById(Long.parseLong(dynamicForm.get("category")));
-//			}
-//			break;
-//		case "story":
-//			product.productType = ProductType.Post;
-//			break;
-//		}
-		
-		List<FilePart> pictures = request().body().asMultipartFormData().getFiles();
 		try {
-			Post newProduct = localUser.createProduct(name, desc, category, price);
+			Post newProduct = localUser.createProduct(title, desc, Category.findById(catId), price);
 			if (newProduct == null) {
 				return status(505, "Failed to create community. Invalid parameters.");
 			}
@@ -84,6 +83,14 @@ public class ProductController extends Controller{
 			logger.underlyingLogger().error("Error in createCommunity", e);
 		}
 		return status(500);
+
+	}
+
+	@Transactional
+	public static Result createProductWeb() {
+		DynamicForm dynamicForm = DynamicForm.form().bindFromRequest();
+		List<FilePart> pictures = request().body().asMultipartFormData().getFiles();
+		return createProduct(dynamicForm.get("title"), dynamicForm.get("desc"), Long.parseLong(dynamicForm.get("catId")), Double.parseDouble(dynamicForm.get("price")), pictures);
 	}
 
 
@@ -209,40 +216,71 @@ public class ProductController extends Controller{
 	
 	@Transactional 
 	public static Result getCategoryPopularFeed(Long id, String postType, Long offset){
-		List<Long> postIds = CalServer.getCategoryPopularFeed(id);
+		List<Long> postIds = CalcServer.getCategoryPopularFeed(id, offset.doubleValue());
 		if(postIds.size() == 0){
 			return ok(Json.toJson(postIds));
-		}		
-		return ok(Json.toJson(getPostVMsFromPosts(Post.getPosts(postIds))));
+		}
+		
+		List<PostVMLite> vms = new ArrayList<>();
+		List<Post> posts =  Post.getPosts(postIds);
+		for(Post post : posts) {
+			PostVMLite vm = new PostVMLite(post);
+			vm.isLiked = post.isLikedBy(Application.getLocalUser(session()));
+			vm.offset = post.getBaseScore();
+			vms.add(vm);
+		}
+		return ok(Json.toJson(vms));
 
 	}
 	
 	@Transactional 
 	public static Result getCategoryNewestFeed(Long id, String postType, Long offset){
-		List<Long> postIds = CalServer.getCategoryNewestFeed(id);	
+		List<Long> postIds = CalcServer.getCategoryNewestFeed(id, offset.doubleValue());	
 		if(postIds.size() == 0){
 			return ok(Json.toJson(postIds));
 		}
-		return ok(Json.toJson(getPostVMsFromPosts(Post.getPosts(postIds))));
+		List<PostVMLite> vms = new ArrayList<>();
+		List<Post> posts =  Post.getPosts(postIds);
+		for(Post post : posts) {
+			PostVMLite vm = new PostVMLite(post);
+			vm.isLiked = post.isLikedBy(Application.getLocalUser(session()));
+			vm.offset = post.getCreatedDate().getTime();
+			vms.add(vm);
+		}
+		return ok(Json.toJson(vms));
 	}
 	
 	@Transactional 
 	public static Result getCategoryPriceLowHighFeed(Long id, String postType, Long offset){
-		List<Long> postIds = CalServer.getCategoryPriceLowHighFeed(id);
+		List<Long> postIds = CalcServer.getCategoryPriceLowHighFeed(id, offset.doubleValue());
         
         if(postIds.size() == 0){
 			return ok(Json.toJson(postIds));
 		}
-        return ok(Json.toJson(getPostVMsFromPosts(Post.getPosts(postIds))));
+        List<PostVMLite> vms = new ArrayList<>();
+		for(Post product : Post.getPosts(postIds)) {
+			PostVMLite vm = new PostVMLite(product);
+			vm.isLiked = product.isLikedBy(Application.getLocalUser(session()));
+			vm.offset = product.getPostPrize().longValue();
+			vms.add(vm);
+		}
+		return ok(Json.toJson(vms));
 	}
 	
 	@Transactional 
 	public static Result getCategoryPriceHighLowFeed(Long id, String postType, Long offset){
-		List<Long> postIds = CalServer.getCategoryPriceHighLowFeed(id);
+		List<Long> postIds = CalcServer.getCategoryPriceHighLowFeed(id, offset.doubleValue());
 		if(postIds.size() == 0){
 			return ok(Json.toJson(postIds));
 		}
-		return ok(Json.toJson(getPostVMsFromPosts(Post.getPosts(postIds))));
+		List<PostVMLite> vms = new ArrayList<>();
+		for(Post product : Post.getPosts(postIds)) {
+			PostVMLite vm = new PostVMLite(product);
+			vm.isLiked = product.isLikedBy(Application.getLocalUser(session()));
+			vm.offset = product.getPostPrize().longValue();
+			vms.add(vm);
+		}
+		return ok(Json.toJson(vms));
 	}
 	
 	@Transactional
