@@ -2,7 +2,6 @@ package models;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -28,10 +27,7 @@ public class Message extends SocialObject implements Comparable<Message> {
 	@ManyToOne
 	public User userFrom;
 	  
-	@Required
-	public Date date = new Date();
-
-	@Column(length=2000)
+	@Column(length=1000)
 	public String body;
 	
 	@ManyToOne(cascade = CascadeType.REMOVE)
@@ -47,7 +43,7 @@ public class Message extends SocialObject implements Comparable<Message> {
 
 	@Override
 	public int compareTo(Message o) {
-		 return date.compareTo(o.date);
+		 return this.getUpdatedDate().compareTo(o.getUpdatedDate());
 	}
 
 	public static Message findById(Long id) {

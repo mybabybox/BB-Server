@@ -11,20 +11,20 @@ import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 public class MessageVM {
-	public String snm;
-	public Long suid;
-	public Long id;
-	public Date cd;
-	public String text;
-	public boolean hasImage=false;
-	public Long imgs;
+	@JsonProperty("snm") public String senderName;
+	@JsonProperty("suid") public Long senderUserID;
+	@JsonProperty("id") public Long id;
+	@JsonProperty("cd") public Date createdDate;
+	@JsonProperty("txt") public String text;
+	@JsonProperty("hasImage") public boolean hasImage=false;
+	@JsonProperty("imgs") public Long images;
 	
 	public MessageVM(Message message) {
 		User sender = message.userFrom;
-		this.snm = sender.name;
-		this.suid = sender.id;
+		this.senderName = sender.name;
+		this.senderUserID = sender.id;
 		this.id = message.id;
-		this.cd = message.date;
+		this.createdDate = message.getCreatedDate();
 		this.text = message.body;
 		
 		List<Resource> resources = null;
@@ -32,7 +32,7 @@ public class MessageVM {
 			this.hasImage = true;
 			resources = Resource.findAllResourceOfFolder(message.folder.id);
 			for (Resource rs : resources) {
-				this.imgs = rs.id;
+				this.images = rs.id;
 			}
 		}
 	}
