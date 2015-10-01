@@ -2,6 +2,10 @@ import java.util.Collections;
 
 import javax.persistence.Query;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+
+import controllers.Application;
+import models.Category;
 import models.Emoticon;
 import models.Icon;
 import models.Icon.IconType;
@@ -10,7 +14,6 @@ import models.Location.LocationCode;
 import models.SecurityRole;
 import models.TermsAndConditions;
 import models.User;
-
 import play.db.jpa.JPA;
 import providers.MyUsernamePasswordAuthUser;
 import providers.MyUsernamePasswordAuthProvider.MySignup;
@@ -27,7 +30,7 @@ public class DataBootstrap {
         bootstrapEmoticon();
         bootstrapUser();
         bootstrapLocation();
-        //bootstrapCategory();
+        bootstrapCategory();
 	}
     
     private static void bootstrapTermsAndConditions() {
@@ -283,7 +286,7 @@ public class DataBootstrap {
     }
     
     private static void bootstrapUser() {
-        Query q = JPA.em().createQuery("Select count(u) from User u where system = true");
+        Query q = JPA.em().createQuery("Select count(u) from User u where system = true and deleted = 0");
         Long count = (Long)q.getSingleResult();
         if (count > 0) {
             return;
@@ -304,6 +307,8 @@ public class DataBootstrap {
         
         superAdmin.roles = Collections.singletonList(
                 SecurityRole.findByRoleName(SecurityRole.RoleType.SUPER_ADMIN.name()));
+        superAdmin.name = User.BB_ADMIN_NAME;
+        superAdmin.displayName = User.BB_ADMIN_NAME;
         superAdmin.emailValidated = true;
         superAdmin.newUser = false;
         superAdmin.system = true;
@@ -383,7 +388,6 @@ public class DataBootstrap {
         JPA.em().persist(d18);
     }
     
-    /*
     private static void bootstrapCategory() {
         Query q = JPA.em().createQuery("Select count(c) from Category c where system = true");
         Long count = (Long)q.getSingleResult();
@@ -393,99 +397,39 @@ public class DataBootstrap {
         
         logger.underlyingLogger().info("bootstrapCategory()");
         
-        // Feedback community
-        String name = "miniBean小萌豆意見區";
-        String desc = "miniBean小萌豆意見區";
-        createFeedbackCommunity(name, desc);
+        String name = "童裝童鞋";
+        String desc = "童裝童鞋";
+        createCategory(name, desc, "/assets/app/images/category/cat_clothes.jpg", 1);
         
-        // Targeting community
+        name = "玩具教材";
+        desc = "玩具教材";
+        createCategory(name, desc, "/assets/app/images/category/cat_toys.jpg", 2);
         
-        // SOON_MOMS_DADS
-        name = "孕媽媽♥";
-        desc = "孕媽媽♥";
-        createTargetingCommunity(name, desc, 
-                "/assets/app/images/general/icons/community/boy.png",
-                TargetingType.SOON_MOMS_DADS,
-                "SOON_MOMS_DADS");
+        name = "嬰兒食品";
+        desc = "嬰兒食品";
+        createCategory(name, desc, "/assets/app/images/category/cat_food.jpg", 3);
         
-        // NEW_MOMS_DADS
-        name = "新手媽媽♥";
-        desc = "新手媽媽♥";
-        createTargetingCommunity(name, desc, 
-                "/assets/app/images/general/icons/community/boy.png",
-                TargetingType.NEW_MOMS_DADS,
-                "NEW_MOMS_DADS");
+        name = "BB用品";
+        desc = "BB用品";
+        createCategory(name, desc, "/assets/app/images/category/cat_utils.jpg", 4);
         
-        // ALL_MOMS_DADS
-        name = "親子去處♥";
-        desc = "親子去處♥";
-        createTargetingCommunity(name, desc, 
-                "/assets/app/images/general/icons/community/stroller.png",
-                TargetingType.ALL_MOMS_DADS,
-                "BABY_FRIENDLY_PLACES");
+        name = "生活百貨";
+        desc = "生活百貨";
+        createCategory(name, desc, "/assets/app/images/category/cat_home.jpg", 5);
         
-        name = "閒聊專區♥";
-        desc = "閒聊專區♥";
-        createTargetingCommunity(name, desc, 
-                "/assets/app/images/general/icons/community/beans.png",
-                TargetingType.ALL_MOMS_DADS,
-                "MINIBEAN_SHARING");
-        
-        // PUBLIC
-        name = "親子旅遊♥";
-        desc = "親子旅遊♥";
-        createTargetingCommunity(name, desc, 
-                "/assets/app/images/general/icons/community/plane.png",
-                TargetingType.PUBLIC,
-                "TRAVEL");
-        
-        name = "寵物朋友♥";
-        desc = "寵物朋友♥";
-        createTargetingCommunity(name, desc, 
-                "/assets/app/images/general/icons/community/cat.png",
-                TargetingType.PUBLIC,
-                "PETS");
-        
-        name = "單親媽媽♥";
-        desc = "單親媽媽♥";
-        createTargetingCommunity(name, desc, 
-                "/assets/app/images/general/icons/community/mom.png",
-                TargetingType.PUBLIC,
-                "SINGLE_MOMS");
+        name = "其它";
+        desc = "其它";
+        createCategory(name, desc, "/assets/app/images/category/cat_other.jpg", 6);
     }
 
-    private static Community createFeedbackCommunity(String name, String desc) {
-        Community community = null;
+    private static Category createCategory(String name, String desc, String icon, int seq) {
+    	Category category = null;
         try {
-            community = Application.getMBAdmin().createCommunity(
-                    name, desc, CommunityType.OPEN, 
-                    "/assets/app/images/general/icons/community/feedback.png");
-            community.system = true;
-            community.excludeFromNewsfeed = true;
-            community.targetingType = TargetingType.OTHER;
-            community.targetingInfo = "FEEDBACK";
-            //community.setCoverPhoto(new File(Resource.STORAGE_PATH + "/default/beans_cover.jpg"));
+        	category = Application.getBBAdmin().createCategory(name, desc, icon, seq);
+            //category.setCoverPhoto(new File(Resource.STORAGE_PATH + "/default/box_cover.jpg"));
         } catch (Exception e) {
             logger.underlyingLogger().error(ExceptionUtils.getStackTrace(e));
         }
-        return community;
+        return category;
     }
-
-    private static Community createTargetingCommunity(String name, String desc, 
-            String icon, TargetingType targetingType, String targetingInfo) {
-        Community community = null;
-        try {
-            community = Application.getMBAdmin().createCommunity(
-                    name, desc, CommunityType.OPEN, icon);
-            community.system = true;
-            community.excludeFromNewsfeed = false;
-            community.targetingType = targetingType;
-            community.targetingInfo = targetingInfo;
-            //community.setCoverPhoto(new File(Resource.STORAGE_PATH + "/default/beans_cover.jpg"));
-        } catch (Exception e) {
-            logger.underlyingLogger().error(ExceptionUtils.getStackTrace(e));
-        }
-        return community;
-    }
-	*/
 }

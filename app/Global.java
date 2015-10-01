@@ -1,7 +1,6 @@
 import java.util.Arrays;
 import java.util.Date;
 
-import models.Notification;
 import models.SecurityRole;
 import models.User;
 import play.Application;
@@ -116,14 +115,9 @@ public class Global extends GlobalSettings {
 
             // bootstrap community feed Redis lists
             //FeedProcessor.bootstrapCommunityLevelFeed();
-
-            // bootstrap friends Redis sets
-            //FriendCache.bootstrapFriendsSets();
-        }
-        else {
+        } else {
             logger.underlyingLogger().info("[Global.init()] Disabled");
         }
-
 	}
 
     /**
@@ -179,7 +173,7 @@ public class Global extends GlobalSettings {
                             }
                         });
                     } catch (Exception e) {
-                        logger.underlyingLogger().error("Error in indexTagWords", e);
+                        logger.underlyingLogger().error("Error in CommandChecker", e);
                     }
                 }
             }

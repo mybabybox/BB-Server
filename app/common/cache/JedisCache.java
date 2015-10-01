@@ -31,7 +31,7 @@ public class JedisCache {
     public final static String TODAY_WEATHER_KEY = "TODAY_WEATHER";
     public static final String ARTICLE_SLIDER_PREFIX = SYS_PREFIX + "user_sc_";
     
-    private static JedisPool jedisPool = play.Play.application().plugin(RedisPlugin.class).jedisPool();
+    private static JedisPool jedisPool;
     
     private static JedisCache cache = new JedisCache();
     
@@ -85,8 +85,7 @@ public class JedisCache {
             }
             return Status.OK;
         } finally {
-            if (j != null)
-                returnResource(j);
+            returnResource(j);
         }
     }
 
@@ -104,8 +103,7 @@ public class JedisCache {
             }
             return value;
         } finally {
-            if (j != null)
-                returnResource(j);
+            returnResource(j);
         }
     }
 
@@ -118,8 +116,7 @@ public class JedisCache {
             j.sadd(key, value);
             return Status.OK;
         } finally {
-            if (j != null)
-                returnResource(j);
+            returnResource(j);
         }
     }
 
@@ -129,8 +126,7 @@ public class JedisCache {
             j = getResource();
             return j.smembers(key);
         } finally {
-            if (j != null)
-                returnResource(j);
+            returnResource(j);
         }
     }
 
@@ -140,8 +136,7 @@ public class JedisCache {
             j = getResource();
             return j.sismember(key, value);
         } finally {
-            if (j != null)
-                returnResource(j);
+            returnResource(j);
         }
     }
 
@@ -151,8 +146,7 @@ public class JedisCache {
             j = getResource();
             j.srem(key, value);
         } finally {
-            if (j != null)
-                returnResource(j);
+            returnResource(j);
         }
     }
     ////////////////////////////////////////
@@ -165,8 +159,7 @@ public class JedisCache {
             j.zadd(key, score, member);
             return Status.OK;
         } finally {
-            if (j != null)
-                returnResource(j);
+            returnResource(j);
         }
     }
     
@@ -177,8 +170,7 @@ public class JedisCache {
             //j.zadd(key, value);
             return Status.OK;
         } finally {
-            if (j != null)
-                returnResource(j);
+            returnResource(j);
         }
     }
     
@@ -189,8 +181,7 @@ public class JedisCache {
             return j.zrangeByScore(key, offset, 99999999999999999999.9, 0, DefaultValues.FRONTPAGE_HOT_POSTS_COUNT);
             //return j.zrange(key, 0, -1);
         } finally {
-            if (j != null)
-                returnResource(j);
+            returnResource(j);
         }
     }
     
@@ -202,8 +193,7 @@ public class JedisCache {
 
             //return j.zrevrange(key, 0, -1);
         } finally {
-            if (j != null)
-                returnResource(j);
+        	returnResource(j);
         }
     }
     
@@ -216,8 +206,7 @@ public class JedisCache {
             j = getResource();
             return j.exists(key);
         } finally {
-            if (j != null)
-                returnResource(j);
+            returnResource(j);
         }
     }
     
@@ -227,8 +216,7 @@ public class JedisCache {
             j = getResource();
             return j.del(key);
         } finally {
-            if (j != null)
-                returnResource(j);
+            returnResource(j);
         }
     }
     
@@ -238,16 +226,20 @@ public class JedisCache {
             j = getResource();
             return j.expire(key, secs);
         } finally {
-            if (j != null)
-                returnResource(j);
+            returnResource(j);
         }
     }
     
     private Jedis getResource() {
+    	if (jedisPool == null) {
+    		jedisPool = play.Play.application().plugin(RedisPlugin.class).jedisPool();
+    	}
         return jedisPool.getResource();
     }
     
     private void returnResource(Jedis j) {
-        jedisPool.returnResource(j);
+    	if (j != null) {
+    		jedisPool.returnResource(j);
+    	}
     }
 }

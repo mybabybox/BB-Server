@@ -49,6 +49,16 @@ public class Category extends SocialObject implements Likeable, Postable, Compar
 		this.objectType = SocialObjectType.CATEGORY;
 	}
 	
+	public Category(String name, String description, User owner, String icon, int seq) {
+		this();
+		this.name = name;
+		this.description = description;
+		this.owner = owner;
+		this.icon = icon;
+		this.seq = seq;
+		this.system = true;
+	}
+	
 	@Transactional
 	public static Category findById(Long id) {
         try {

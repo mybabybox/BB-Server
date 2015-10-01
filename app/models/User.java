@@ -54,6 +54,7 @@ import com.feth.play.module.pa.user.AuthUser;
 import com.feth.play.module.pa.user.AuthUserIdentity;
 import com.feth.play.module.pa.user.EmailIdentity;
 import com.feth.play.module.pa.user.FirstLastNameIdentity;
+import com.google.common.base.Strings;
 
 import common.collection.Pair;
 import common.image.FaceFinder;
@@ -331,6 +332,22 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 		}
 	}
 
+	@Transactional
+    public Category createCategory(String name, String description, String icon, int seq) 
+            throws SocialObjectNotJoinableException {
+		
+        if (Strings.isNullOrEmpty(name) || 
+        		Strings.isNullOrEmpty(description) || 
+                Strings.isNullOrEmpty(icon)) {
+            logger.underlyingLogger().warn("Missing parameters to createCategory");
+            return null;
+        }
+        
+        Category category = new Category(name, description, this, icon, seq);
+        category.save();
+        return category;
+    }
+	
 	@Transactional
 	public Post createProduct(String name, String description, Category category, Double productPrize) 
 			throws SocialObjectNotJoinableException {

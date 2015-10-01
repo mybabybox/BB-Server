@@ -3,58 +3,109 @@ package common.cache;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
+import common.utils.NanoSecondStopWatch;
+
+import play.db.jpa.JPA;
+import play.libs.Akka;
+import scala.concurrent.duration.Duration;
+import akka.actor.ActorSystem;
 import models.Category;
 import models.Post;
 import models.User;
 
 public class CalcServer {
-
+	private static play.api.Logger logger = play.api.Logger.apply(CalcServer.class);
+	
 	public static void warmUpActivity() {
+		NanoSecondStopWatch sw = new NanoSecondStopWatch();
+		logger.underlyingLogger().debug("warmUpActivity starts");
+		
 		buildBaseScore();
 		buildCategoryQueue();
 		buildUserQueue();
 		
-	}
-
-	private static void buildUserQueue() {
-		for(User user : User.getEligibleUserForFeed()){
-			bulidUserPostedQueue(user);
-			bulidUserLikedPostQueue(user);
-		}
-	}
-
-	private static void bulidUserPostedQueue(User user) {
-		for(Post post : user.getUserPosts()){
-			JedisCache.cache().putToSet("USER_POSTS:"+user.id, post.id.toString());
-		}
-	}
-
-	private static void bulidUserLikedPostQueue(User user) {
-		for(Post post : user.getUserLikedPosts()){
-			JedisCache.cache().putToSet("USER_LIKES:"+user.id, post.id.toString());
-		}
+		/*
+		ActorSystem actorSystem = Akka.system();
+		actorSystem.scheduler().scheduleOnce(
+				Duration.create(0, TimeUnit.MILLISECONDS),
+				new Runnable() {
+					public void run() {
+						JPA.withTransaction(new play.libs.F.Callback0() {
+							@Override
+							public void invoke() throws Throwable {
+								buildBaseScore();
+								buildCategoryQueue();
+								buildUserQueue();
+							}
+						});
+					}
+				}, actorSystem.dispatcher());
+		*/
+		
+		sw.stop();
+		logger.underlyingLogger().debug("warmUpActivity completed. Took "+sw.getElapsedSecs()+"s");
 	}
 
 	private static void buildBaseScore() {
+		NanoSecondStopWatch sw = new NanoSecondStopWatch();
+		logger.underlyingLogger().debug("buildBaseScore starts");
+		
 		for(Post product : Post.getAllPosts()){
 			calculateBaseScore(product);
 		}
+		
+		sw.stop();
+		logger.underlyingLogger().debug("buildBaseScore completed. Took "+sw.getElapsedSecs()+"s");
 	}
 
 	private static void calculateBaseScore(Post product) {
-		product.baseScore = (long) (product.noOfViews
-				+ 2 * product.noOfLikes
-				+ 3 * product.noOfChats
-				+ 4 *product.noOfBuys
-				+ 5 * product.noOfComments);
-		product.save();
+		if (product.baseScore == -1L) {
+			product.baseScore = (long) (product.noOfViews
+					+ 2 * product.noOfLikes
+					+ 3 * product.noOfChats
+					+ 4 *product.noOfBuys
+					+ 5 * product.noOfComments);
+			product.save();
+		}
+	}
+	
+	private static void buildUserQueue() {
+		for(User user : User.getEligibleUserForFeed()){
+			buildUserPostedQueue(user);
+			buildUserLikedPostQueue(user);
+		}
+	}
+
+	private static void buildUserPostedQueue(User user) {
+		NanoSecondStopWatch sw = new NanoSecondStopWatch();
+		logger.underlyingLogger().debug("buildUserPostedQueue starts");
+		
+		for(Post post : user.getUserPosts()){
+			JedisCache.cache().putToSet("USER_POSTS:"+user.id, post.id.toString());
+		}
+		
+		sw.stop();
+		logger.underlyingLogger().debug("buildUserPostedQueue completed. Took "+sw.getElapsedSecs()+"s");
+	}
+
+	private static void buildUserLikedPostQueue(User user) {
+		NanoSecondStopWatch sw = new NanoSecondStopWatch();
+		logger.underlyingLogger().debug("buildUserLikedPostQueue starts");
+		
+		for(Post post : user.getUserLikedPosts()){
+			JedisCache.cache().putToSet("USER_LIKES:"+user.id, post.id.toString());
+		}
+		
+		sw.stop();
+		logger.underlyingLogger().debug("buildUserLikedPostQueue completed. Took "+sw.getElapsedSecs()+"s");
 	}
 
 	private static void buildCategoryQueue() {
 		for(Category category : Category.getAllCategory()){
 			for(Post post : Post.getPostsByCategory(category)){
-				buildPrizeHighLowPostQueue(post);
+				buildPriceHighLowPostQueue(post);
 				buildNewestPostQueue(post);
 				buildPopularPostQueue(post);
 			}
@@ -69,12 +120,12 @@ public class CalcServer {
 		JedisCache.cache().putToSortedSet("CATEGORY_NEWEST:"+post.category.id, post.getCreatedDate().getTime() , post.id.toString());
 	}
 
-	private static void buildPrizeHighLowPostQueue(Post post) {
+	private static void buildPriceHighLowPostQueue(Post post) {
 		JedisCache.cache().putToSortedSet("CATEGORY_PRICE_LOW_HIGH:"+post.category.id, post.price*1000000 + post.id , post.id.toString());
 	}
 
 	public static boolean isLiked(Long userId, Long postId) {
-		 String key = "USER_LIKES"+userId;
+		 String key = "USER_LIKES:"+userId;
 	     return JedisCache.cache().isMemberOfSet(key, postId.toString());
 	}
 
