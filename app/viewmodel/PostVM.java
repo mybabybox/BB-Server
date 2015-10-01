@@ -17,6 +17,7 @@ public class PostVM extends PostVMLite {
     public boolean and = false;
     public boolean ios = false;
     public boolean mob = false;
+	public boolean isFollowdByUser = false;
 
     public PostVM(Post post) {
     	super(post);

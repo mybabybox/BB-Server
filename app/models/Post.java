@@ -97,27 +97,42 @@ public class Post extends SocialObject implements Likeable, Commentable {
 
 	@Override
 	public void onLikedBy(User user) {
-		recordLike(user);
-		this.noOfLikes++;
-		user.likesCount++;
+		if(!isLikedBy(user)){
+			recordLike(user);
+			this.noOfLikes++;
+			user.likesCount++;
+		}
 	}
 
 	@Override
 	public void onUnlikedBy(User user) {
-		this.noOfLikes--;
-		user.likesCount--;
-		Query q = JPA.em().createQuery("Delete from PrimarySocialRelation sa where actor = ?1 and action = ?2 and target = ?3 and actorType = ?4 and targetType = ?5");
-		q.setParameter(1, user.id);
-		q.setParameter(2, PrimarySocialRelation.Action.LIKED);
-		q.setParameter(3, this.id);
-		q.setParameter(4, SocialObjectType.USER);
-		q.setParameter(5, SocialObjectType.USER);
-		q.executeUpdate();
+		if(isLikedBy(user)){
+			this.noOfLikes--;
+			user.likesCount--;
+			Query q = JPA.em().createQuery("Delete from PrimarySocialRelation sa where actor = ?1 and action = ?2 and target = ?3 and actorType = ?4 and targetType = ?5");
+			q.setParameter(1, user.id);
+			q.setParameter(2, PrimarySocialRelation.Action.LIKED);
+			q.setParameter(3, this.id);
+			q.setParameter(4, SocialObjectType.USER);
+			q.setParameter(5, SocialObjectType.POST);
+			q.executeUpdate();
+		}
 	}
 	
 	@Override
 	public boolean isLikedBy(User user){
-		return CalcServer.isLiked(user.id, this.id);
+		Query q = JPA.em().createQuery("Select sa from PrimarySocialRelation sa where actor = ?1 and action = ?2 and target = ?3 and actorType = ?4 and targetType = ?5");
+		q.setParameter(1, user.id);
+		q.setParameter(2, PrimarySocialRelation.Action.LIKED);
+		q.setParameter(3, this.id);
+		q.setParameter(4, SocialObjectType.USER);
+		q.setParameter(5, SocialObjectType.POST);
+		System.out.println("size :: "+q.getResultList().size());
+		if(q.getResultList().size() > 0 ) {
+			// Already liked ; Any logic !
+			return true;
+		}
+		return false;
 	}
 
 	@Override

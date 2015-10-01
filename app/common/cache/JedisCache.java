@@ -189,7 +189,10 @@ public class JedisCache {
         Jedis j = null;
         try {
             j = getResource();
-            return j.zrevrangeByScore(key, 999999999999999999999.9, offset, 0, DefaultValues.FRONTPAGE_HOT_POSTS_COUNT); 
+            if(offset == 0){
+            	offset = 999999999999999999999.9;
+            }
+            return j.zrevrangeByScore(key, offset, 0, 0, DefaultValues.FRONTPAGE_HOT_POSTS_COUNT); 
 
             //return j.zrevrange(key, 0, -1);
         } finally {

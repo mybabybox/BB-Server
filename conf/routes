@@ -75,6 +75,7 @@ POST    /accounts/merge             controllers.Account.doMerge
 GET     /login/password/forgot      controllers.Signup.forgotPassword(email: String ?= "")
 POST    /login/password/forgot      controllers.Signup.doForgotPassword
 
+
 # User Info Service
 GET     /get-user-info              controllers.UserController.getUserInfo
 GET     /complete-home-tour         controllers.UserController.completeHomeTour
@@ -84,7 +85,7 @@ POST    /image/upload-profile-photo controllers.UserController.uploadProfilePhot
 POST    /image/upload-product-photo controllers.UserController.addProduct
 POST    /image/upload-cover-photo   controllers.UserController.uploadCoverPhoto
 
-GET     /image/get-profile-image    controllers.UserController.getProfileImage
+GET     /image/get-profile-image            controllers.UserController.getProfileImage
 
 GET     /image/get-thumbnail-image-by-id/:id        controllers.UserController.getThumbnailVersionImageByID(id :Long)
 GET     /image/get-thumbnail-cover-image-by-id/:id      controllers.UserController.getThumbnailCoverImageByID(id :Long)
@@ -102,32 +103,36 @@ GET     /get-unread-message-count   controllers.UserController.getUnreadMessageC
 GET     /image/get-original-message-image/:id   controllers.UserController.getOriginalMessageImage(id :Long)
 
 # Product
-GET     /get-category-popular-feed/:id/:postType/:offset        controllers.ProductController.getCategoryPopularFeed(id :Long, postType: String, offset: Long)
-GET     /get-category-newest-feed/:id/:postType/:offset         controllers.ProductController.getCategoryNewestFeed(id :Long, postType: String, offset: Long)
-GET     /get-category-price-low-high-feed/:id/:postType/:offset         controllers.ProductController.getCategoryPriceLowHighFeed(id :Long, postType: String, offset: Long)
-GET     /get-category-price-high-low-feed/:id/:postType/:offset         controllers.ProductController.getCategoryPriceHighLowFeed(id :Long, postType: String, offset: Long)
+GET		/get-category-popular-feed/:id/:postType/:offset		controllers.ProductController.getCategoryPopularFeed(id :Long, postType: String, offset: Long)
+GET		/get-category-newest-feed/:id/:postType/:offset			controllers.ProductController.getCategoryNewestFeed(id :Long, postType: String, offset: Long)
+GET		/get-category-price-low-high-feed/:id/:postType/:offset			controllers.ProductController.getCategoryPriceLowHighFeed(id :Long, postType: String, offset: Long)
+GET		/get-category-price-high-low-feed/:id/:postType/:offset			controllers.ProductController.getCategoryPriceHighLowFeed(id :Long, postType: String, offset: Long)
 
-GET     /add/product                                controllers.Application.addProduct
-GET     /add/story                                  controllers.Application.addStory
+GET     /add/product            		     		controllers.Application.addProduct
+GET     /add/story                   				controllers.Application.addStory
 
-POST    /post/new                                   controllers.ProductController.createProductWeb
-POST    /mobile/post/new                            controllers.ProductController.createProductMobile
-GET     /get-all-feed-products                      controllers.ProductController.getAllFeedProducts
-GET     /get-all-similar-products                   controllers.ProductController.getAllSimilarProducts
-GET     /product/:id                                controllers.ProductController.product(id:Long)
-GET     /like-post/:id                              controllers.ProductController.likePost(id:Long)
-GET     /unlike-post/:id                            controllers.ProductController.unlikePost(id:Long)
-POST    /comment/new                                controllers.ProductController.newComment
-GET     /view-product/:id                           controllers.ProductController.onView(id:Long)
-POST    /create-collection                          controllers.ProductController.createCollection
-POST    /product/add-to-collection                  controllers.ProductController.addToCollection
-GET     /post/:id                                   controllers.ProductController.getProductInfo(id: Long)
+POST	/post/new		 		             		controllers.ProductController.createProductWeb
+POST	/mobile/post/new		 		             		controllers.ProductController.createProductMobile
+GET     /get-all-feed-products       				controllers.ProductController.getAllFeedProducts
+GET     /get-all-similar-products       			controllers.ProductController.getAllSimilarProducts
+GET     /product/:id            		     		controllers.ProductController.product(id:Long)
+GET     /like-post/:id          					controllers.ProductController.likePost(id:Long)
+GET     /unlike-post/:id        					controllers.ProductController.unlikePost(id:Long)
+POST	/comment/new								controllers.ProductController.newComment
+GET     /view-product/:id        					controllers.ProductController.onView(id:Long)
+POST	/create-collection		             		controllers.ProductController.createCollection
+POST	/product/add-to-collection					controllers.ProductController.addToCollection
+GET		/post/:id									controllers.ProductController.getProductInfo(id: Long)
 
 # User
-GET     /get-user-posted-feed/:id/:offset           controllers.UserController.getUserPosts(id: Long, offset:Long)
-GET     /collections/:id                            controllers.UserController.getUserCollections(id: Long)
-GET     /follow-user/:id                            controllers.UserController.followUser(id:Long)
-GET     /unfollow-user/:id                          controllers.UserController.unfollowUser(id:Long)
+GET     /get-user-posted-feed/:id/:offset       	controllers.UserController.getUserPosts(id: Long, offset:Long)
+GET     /collections/:id							controllers.UserController.getUserCollections(id: Long)
+GET     /follow-user/:id          					controllers.UserController.followUser(id:Long)
+GET     /unfollow-user/:id        					controllers.UserController.unfollowUser(id:Long)
+GET		/get-user/:id								controllers.UserController.getUserInfoById(id:Long)
+GET     /followings/:id/:offset						controllers.UserController.getFollowings(id: Long,offset:Long)
+GET     /followers/:id/:offset						controllers.UserController.getFollowers(id: Long,offset:Long)
+GET     /get-user-liked-feed/:id/:offset			controllers.UserController.getUserLikedPosts(id: Long,offset:Long)
 
 # image
 GET     /image/get-post-image-by-id/:id             controllers.ProductController.getProductImageById(id :Long)
@@ -141,10 +146,6 @@ GET     /category/:id                               controllers.Application.cate
 POST    /mobile/login                               controllers.Application.doMobileLogin
 POST    /authenticate/mobile/:provider  com.feth.play.module.pa.controllers.Authenticate.mobileAuthenticate(provider: String)
 
-GET     /get-user/:id                               controllers.UserController.getUserInfoById(id:Long)
-GET     /followings/:id/:offset                     controllers.UserController.getFollowings(id: Long,offset:Long)
-GET     /followers/:id/:offset                      controllers.UserController.getFollowers(id: Long,offset:Long)
-GET     /get-user-liked-feed/:id/:offset            controllers.UserController.getUserLikedPosts(id: Long,offset:Long)
-GET     /comments/:postId/:offset                   controllers.ProductController.getPostComments(postId: Long,offset:Long)
+GET		/comments/:postId/:offset 					controllers.ProductController.getPostComments(postId: Long,offset:Long)
 
 GET     /get-all-districts          controllers.Application.getAllDistricts
