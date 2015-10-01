@@ -1,8 +1,7 @@
 package common.utils;
 
 import net.coobird.thumbnailator.Thumbnails;
-
-import org.apache.commons.io.FileUtils;
+import net.coobird.thumbnailator.geometry.Positions;
 
 import play.Play;
 
@@ -30,8 +29,17 @@ public class ImageFileUtil {
     }
 
     public static File copyImageFileToTemp(File file, String fileName) throws IOException {
+    	BufferedImage img = ImageIO.read(file);
+    	int width = img.getWidth();
+    	int height = img.getHeight();
+    	int dimension = (width < height)? width : height;
+    	
         final File fileTo = new File(IMAGE_TEMP_PATH+fileName);
-        FileUtils.copyFile(file, fileTo);
+        Thumbnails.of(file)
+        	.size(dimension, dimension)
+        	.crop(Positions.TOP_CENTER)
+        	.toFile(fileTo);
+        //FileUtils.copyFile(file, fileTo);
         return fileTo;
     }
 
@@ -47,8 +55,7 @@ public class ImageFileUtil {
     
     public static BufferedImage readImageFile(File file) throws IOException {
     	// !!! Don't use ImageIO to read image file as it ignores EXIF information which may needs rotation
-    	//BufferedImage bi = ImageIO.read(file);    	
-    	BufferedImage bi = Thumbnails.of(file).scale(1).asBufferedImage();
-    	return bi;
+    	//return ImageIO.read(file);    	
+    	return Thumbnails.of(file).scale(1).asBufferedImage();
     }
 }
