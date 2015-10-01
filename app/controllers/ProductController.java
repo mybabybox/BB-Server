@@ -172,7 +172,6 @@ public class ProductController extends Controller{
 		return ok(Json.toJson(getProductInfoVM(id)));
 	}
 	
-
 	public static PostVM getProductInfoVM(Long id) {
 		Post post = Post.findById(id);
 		PostVM vm = new PostVM(post);

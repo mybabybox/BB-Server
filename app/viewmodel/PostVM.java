@@ -2,7 +2,6 @@ package viewmodel;
 
 import models.Post;
 
-
 public class PostVM extends PostVMLite {
     public Long ownerId;
     public String postedBy;
@@ -14,9 +13,9 @@ public class PostVM extends PostVMLite {
     public String categoryIcon;
     public Long categoryId;
 
-    public boolean and = false;
+    public boolean mobile = false;
+    public boolean android = false;
     public boolean ios = false;
-    public boolean mob = false;
 
     public PostVM(Post post) {
     	super(post);
@@ -30,9 +29,9 @@ public class PostVM extends PostVMLite {
         this.categoryIcon = post.category.name;//TODO
         this.categoryId = post.category.id;
 
-        this.and = post.android;
+        this.android = post.android;
         this.ios = post.ios;
-        this.mob = post.mobile;
+        this.mobile = post.mobile;
     }
 
     public Long getOwnerId() {
@@ -113,29 +112,5 @@ public class PostVM extends PostVMLite {
 
     public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
-    }
-
-    public boolean isAndroid() {
-        return and;
-    }
-
-    public void setAndroid(boolean and) {
-        this.and = and;
-    }
-
-    public boolean isIOS() {
-        return ios;
-    }
-
-    public void setIOS(boolean ios) {
-        this.ios = ios;
-    }
-
-    public boolean isMobile() {
-        return mob;
-    }
-
-    public void setMobile(boolean mob) {
-        this.mob = mob;
     }
 }

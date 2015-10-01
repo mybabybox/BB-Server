@@ -17,9 +17,9 @@ public class CommentVM {
     public boolean isOwner = false;
     public boolean isLike = false;     // filled outside
 
-    public boolean and = false;
+    public boolean mobile = false;
+    public boolean android = false;
     public boolean ios = false;
-    public boolean mob = false;
 
     // helper state
     public boolean imageLoaded = false;
@@ -35,9 +35,9 @@ public class CommentVM {
         this.seq = 1;//TODO
         //this.isOwner = comment;
         //this.isLike = comment.isLike;
-        this.and = comment.android;
+        this.android = comment.android;
         this.ios = comment.ios;
-        this.mob = comment.mobile;
+        this.mobile = comment.mobile;
 
         //this.imageLoaded = comment;
     }
@@ -120,29 +120,5 @@ public class CommentVM {
 
     public void setIsLike(boolean isLike) {
         this.isLike = isLike;
-    }
-
-    public boolean isAndroid() {
-        return and;
-    }
-
-    public void setAndroid(boolean and) {
-        this.and = and;
-    }
-
-    public boolean getIos() {
-        return ios;
-    }
-
-    public void setIos(boolean ios) {
-        this.ios = ios;
-    }
-
-    public boolean isMobile() {
-        return mob;
-    }
-
-    public void setMobile(boolean mob) {
-        this.mob = mob;
     }
 }
