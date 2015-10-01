@@ -142,7 +142,7 @@ public class CalcServer {
 	}
 	
 	public static List<Long> getCategoryNewestFeed(Long id, Double offset) {
-		Set<String> values = JedisCache.cache().getSortedSetAsc("CATEGORY_NEWEST:"+id, offset);
+		Set<String> values = JedisCache.cache().getSortedSetDsc("CATEGORY_NEWEST:"+id, offset);
         final List<Long> postIds = new ArrayList<>();
         for (String value : values) {
             try {
@@ -204,6 +204,12 @@ public class CalcServer {
             }
         }
         return postIds;
+	}
+
+	public static void addToQueues(Post post) {
+		buildPriceHighLowPostQueue(post);
+		buildNewestPostQueue(post);
+		buildPopularPostQueue(post);
 	}
 
 }

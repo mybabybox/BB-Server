@@ -12,7 +12,8 @@ public class PostVM extends PostVMLite {
     public String categoryName;
     public String categoryIcon;
     public Long categoryId;
-
+    public boolean isFollowingOwner;
+    
     public boolean mobile = false;
     public boolean android = false;
     public boolean ios = false;
@@ -29,9 +30,9 @@ public class PostVM extends PostVMLite {
         this.categoryIcon = post.category.name;//TODO
         this.categoryId = post.category.id;
 
+        this.mobile = post.mobile;
         this.android = post.android;
         this.ios = post.ios;
-        this.mobile = post.mobile;
     }
 
     public Long getOwnerId() {

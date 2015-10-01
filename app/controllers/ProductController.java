@@ -69,17 +69,18 @@ public class ProductController extends Controller{
 			return status(500);
 		}
 		try {
-			Post newProduct = localUser.createProduct(title, desc, Category.findById(catId), price);
-			if (newProduct == null) {
+			Post newPost = localUser.createProduct(title, desc, Category.findById(catId), price);
+			if (newPost == null) {
 				return status(505, "Failed to create community. Invalid parameters.");
 			}
 			for(FilePart picture : pictures){
 				String fileName = picture.getFilename();
 				File file = picture.getFile();
 				File fileTo = ImageFileUtil.copyImageFileToTemp(file, fileName);
-				newProduct.addPostPhoto(fileTo);
+				newPost.addPostPhoto(fileTo);
 			}
-			ResponseStatusVM response = new ResponseStatusVM("post", newProduct.id, localUser.id, true);
+			CalcServer.addToQueues(newPost);
+			ResponseStatusVM response = new ResponseStatusVM("post", newPost.id, localUser.id, true);
 			return ok(Json.toJson(response));
 		} catch (SocialObjectNotJoinableException e) {
 			logger.underlyingLogger().error("Error in createCommunity", e);
@@ -173,8 +174,10 @@ public class ProductController extends Controller{
 	}
 	
 	public static PostVM getProductInfoVM(Long id) {
+		User localUser = Application.getLocalUser(session());
 		Post post = Post.findById(id);
 		PostVM vm = new PostVM(post);
+		vm.isFollowingOwner = post.owner.isFollowedBy(localUser);
 		return vm;
 	}
 

@@ -2,8 +2,6 @@ package viewmodel;
 
 import models.Comment;
 
-
-
 public class CommentVM {
     public Long id;
     public Long ownerId;
@@ -35,11 +33,10 @@ public class CommentVM {
         this.seq = 1;//TODO
         //this.isOwner = comment;
         //this.isLike = comment.isLike;
+        
+        this.mobile = comment.mobile;
         this.android = comment.android;
         this.ios = comment.ios;
-        this.mobile = comment.mobile;
-
-        //this.imageLoaded = comment;
     }
 
     public Long getId() {
