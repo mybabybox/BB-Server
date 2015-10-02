@@ -2,7 +2,6 @@ package models;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,8 +19,6 @@ import javax.persistence.Query;
 
 import play.db.jpa.JPA;
 import babybox.shopping.social.exception.SocialObjectNotCommentableException;
-import common.cache.CalcServer;
-import common.thread.ThreadLocalOverride;
 import common.utils.StringUtil;
 import domain.Commentable;
 import domain.Likeable;
@@ -33,8 +30,8 @@ public class Post extends SocialObject implements Likeable, Commentable {
 
 	public String title;
 
-	@Column(length=2000)
-	public String description;
+	@Column(length=1000)
+	public String body;
 
 	@ManyToOne(cascade = CascadeType.REMOVE)
 	public Folder folder;
@@ -45,14 +42,11 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	@ManyToOne
 	public Category category;
 
-	@ManyToOne
-	public User socialUpdatedBy;
-	public Date socialUpdatedDate = new Date();
-
+	@Enumerated(EnumType.STRING)
+	public PostType postType;
+	
 	@OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
 	public Set<Comment> comments;
-
-	public String tagWords;     // comma separated list
 
 	public Double price = 0.0;
 
@@ -67,18 +61,15 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	public boolean android = false;
 	public boolean ios = false;
 
-	@Enumerated(EnumType.STRING)
-	public PostType postType;
-
 	/**
 	 * Ctor
 	 */
 	public Post() {}
 
-	public Post(User actor, String title, String description, Category category) {
+	public Post(User actor, String title, String body, Category category) {
 		this.owner = actor;
 		this.title = title;
-		this.description = description;
+		this.body = body;
 		this.category = category;
 		this.price = 0.0;
 		this.postType = PostType.STORY;
@@ -88,7 +79,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	public Post(User actor, String title, String description, Category category, Double price) {
 		this.owner = actor;
 		this.title = title;
-		this.description = description;
+		this.body = body;
 		this.category = category;
 		this.price = price;
 		this.postType = PostType.PRODUCT;
@@ -100,7 +91,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		if(!isLikedBy(user)){
 			recordLike(user);
 			this.noOfLikes++;
-			user.likesCount++;
+			user.numLikes++;
 		}
 	}
 
@@ -108,7 +99,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	public void onUnlikedBy(User user) {
 		if(isLikedBy(user)){
 			this.noOfLikes--;
-			user.likesCount--;
+			user.numLikes--;
 			Query q = JPA.em().createQuery("Delete from PrimarySocialRelation sa where actor = ?1 and action = ?2 and target = ?3 and actorType = ?4 and targetType = ?5");
 			q.setParameter(1, user.id);
 			q.setParameter(2, PrimarySocialRelation.Action.LIKED);
@@ -139,38 +130,31 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	public void save() {
 		super.save();
 
-		if (this.socialUpdatedBy == null) {
-			this.socialUpdatedBy = this.owner;
-		}
-		Date override = ThreadLocalOverride.getSocialUpdatedDate();
-		this.socialUpdatedDate = (override == null) ? new Date() : override;
-
-		// push to / remove from community
-		/* if (!this.deleted) {
+		if (!this.deleted) {
             switch(this.postType) {
-                case SIMPLE: {
-                    recordPost(owner);
-                    owner.postsCount++;
+            	case PRODUCT: {
+                    recordPostProduct(owner);
+                    owner.numProducts++;
                     break;
                 }
-                case QUESTION: {
-                    recordQnA(owner);
-                    owner.questionsCount++;
+                case STORY: {
+                    recordPostStory(owner);
+                    owner.numStories++;
                     break;
                 }
             }
         } else {
             switch(this.postType) {
-                case SIMPLE: {
-                    owner.postsCount--;
+                case PRODUCT: {
+                    owner.numProducts--;
                     break;
                 }
-                case QUESTION: {
-                    owner.questionsCount--;
+                case STORY: {
+                    owner.numStories--;
                     break;
                 }
             }
-        }*/
+        }
 	}
 
 	public Set<Comment> getComments() {
@@ -234,28 +218,8 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		}
 	}
 
-	///////////////////// Getters /////////////////////
-	public String getBody() {
-		return description;
-	}
-
-	public Folder getFolder() {
-		return folder;
-	}
-
-	public Date getSocialUpdatedDate() {
-		return socialUpdatedDate;
-	}
-
 	@Override
-	public SocialObject onComment(User user, String body)
-	{
-		// update last socialUpdatedDate in Post
-		this.socialUpdatedBy = user;
-		Date override = ThreadLocalOverride.getSocialUpdatedDate();
-		this.socialUpdatedDate = (override == null) ? new Date() : override;
-
-		// create Comment object
+	public SocialObject onComment(User user, String body) {
 		Comment comment = new Comment(this, user, body);
 		comment.objectType = SocialObjectType.COMMENT;
 		comment.save();
@@ -267,7 +231,14 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		this.comments.add(comment);
 		this.noOfComments++;
 		JPA.em().merge(this);
-		recordCommentOnPost(user, comment);
+		
+        // record for notifications
+        if (this.postType == PostType.PRODUCT) {
+            recordCommentProduct(user, comment);
+        } else if (this.postType == PostType.STORY) {
+            recordCommentStory(user, comment);
+        }
+        
 		return comment;
 	}
 
@@ -279,11 +250,8 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	}
 
 	public void onView(User localUser) {
-		ViewMapping mapping = new ViewMapping();
-		mapping.postId = this.id;
-		mapping.userId = localUser.id;
-		mapping.viewedDate = new Date();
-		mapping.save();
+		ViewSocialRelation action = new ViewSocialRelation(localUser, this);
+		action.ensureUniqueAndCreate();
 	}
 
 	public static List<Post> getPostsByCategory(Category category) {

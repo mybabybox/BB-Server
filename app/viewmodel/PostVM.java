@@ -7,7 +7,7 @@ public class PostVM extends PostVMLite {
     public String postedBy;
     public long createdDate;
     public long updatedDate;
-    public String desc;
+    public String body;
     public String categoryType;
     public String categoryName;
     public String categoryIcon;
@@ -24,10 +24,10 @@ public class PostVM extends PostVMLite {
         this.postedBy = post.getCreatedBy();
         this.createdDate = post.getCreatedDate().getTime();
         this.updatedDate = post.getUpdatedDate().getTime();
-        this.desc = post.description;
-        this.categoryType = post.category.name; //TODO
+        this.body = post.body;
+        this.categoryType = post.category.categoryType.toString();
         this.categoryName = post.category.name;
-        this.categoryIcon = post.category.name;//TODO
+        this.categoryIcon = post.category.icon;
         this.categoryId = post.category.id;
 
         this.mobile = post.mobile;
@@ -67,20 +67,20 @@ public class PostVM extends PostVMLite {
         this.updatedDate = updatedDate;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getBody() {
+        return body;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setBody(String body) {
+        this.body = body;
     }
 
-    public String getType() {
-        return type;
+    public String getPostType() {
+        return postType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setType(String postType) {
+        this.postType = postType;
     }
 
     public String getCategoryType() {

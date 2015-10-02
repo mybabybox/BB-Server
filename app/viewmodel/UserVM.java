@@ -251,10 +251,11 @@ public class UserVM extends UserVMLite {
                 "signupDate=" + createdDate + "\n" +
                 "lastLogin=" + lastLogin + "\n" +
                 "totalLogin=" + totalLogin + "\n" +
+                "numLikes=" + numLikes + "\n" +
                 "numFollowers=" + numFollowers + "\n" +
                 "numFollowings=" + numFollowings + "\n" +
-                "numPosts=" + numPosts + "\n" +
-                "numSold=" + numSold;
+                "numProducts=" + numProducts + "\n" +
+                "numStories=" + numStories;
     }
 }
 

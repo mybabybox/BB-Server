@@ -4,20 +4,21 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.Query;
 
 import common.utils.StringUtil;
 import play.data.validation.Constraints.Required;
 import play.db.jpa.JPA;
-import domain.CommentType;
 import domain.Creatable;
 import domain.Likeable;
+import domain.PostType;
 import domain.SocialObjectType;
 
 /**
@@ -32,15 +33,13 @@ public class Comment extends SocialObject implements Comparable<Comment>, Likeab
     public Long socialObject;       // e.g. Post Id
 
     @Required
-    public Date date = new Date();
-
-    @Required
-    @Column(length=2000)
+    @Column(length=255)
     public String body;
 
-    public int noOfLikes=0;
-
-    private String attribute;
+    @Enumerated(EnumType.STRING)
+	public PostType commentType;
+    
+    public int noOfLikes = 0;
 
     @ManyToOne(cascade = CascadeType.REMOVE)
   	public Folder folder;
@@ -75,7 +74,7 @@ public class Comment extends SocialObject implements Comparable<Comment>, Likeab
 
         recordLike(user);
         this.noOfLikes++;
-        user.likesCount++;
+        user.numLikes++;
     }
     
     @Override
@@ -85,23 +84,17 @@ public class Comment extends SocialObject implements Comparable<Comment>, Likeab
         }
 
         this.noOfLikes--;
-        user.likesCount--;
+        user.numLikes--;
     }
 
     @Override
     public int compareTo(Comment o) {
-        return date.compareTo(o.date);
+        return this.getCreatedDate().compareTo(o.getCreatedDate());
     }
     
     @Override
     public void save() {
         super.save();
-        
-        if (!this.deleted) {
-                    owner.commentsCount++;
-        } else {
-                    owner.commentsCount--;
-        }
     }
     
     public void delete(User deletedBy) {
@@ -141,14 +134,5 @@ public class Comment extends SocialObject implements Comparable<Comment>, Likeab
         } else {
             return StringUtil.truncateWithDots(body, 12);
         }
-    }
-
-    /////////////////// Getters, Setters ///////////////////
-    public String getAttribute() {
-        return attribute;
-    }
-
-    public void setAttribute(String attribute) {
-        this.attribute = attribute;
     }
 }

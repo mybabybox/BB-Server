@@ -7,8 +7,8 @@ public class UserVMLite {
     public String displayName;
     public Long numFollowings = 0L;
     public Long numFollowers = 0L;
-    public Long numPosts = 0L;
-    public Long numSold = 0L;
+    public Long numProducts = 0L;
+    public Long numStories = 0L;
     public Long numLikes = 0L;
     public Long numCollections = 0L;
     public boolean isFollowing = false;
@@ -16,15 +16,15 @@ public class UserVMLite {
     public UserVMLite(User user){
         this.id = user.id;
         this.displayName = user.displayName;
-        this.numPosts = user.productCount;
-        this.numSold = 0L; //TODO
-        this.numLikes = user.likesCount;
-        this.numFollowers = user.followersCount;
-        this.numFollowings = user.followingCount;
-        this.numCollections = user.collectionCount;
-        this.isFollowing = true;//TODO
-
+        this.numProducts = user.numProducts;
+        this.numStories = user.numStories;
+        this.numLikes = user.numLikes;
+        this.numFollowers = user.numFollowers;
+        this.numFollowings = user.numFollowings;
+        this.numCollections = user.numCollections;
+        this.isFollowing = true;	//TODO
     }
+    
     public Long getId() {
         return id;
     }
@@ -57,23 +57,27 @@ public class UserVMLite {
         this.numFollowers = numFollowers;
     }
 
-    public Long getNumPosts() {
-        return numPosts;
-    }
+    public Long getNumProducts() {
+		return numProducts;
+	}
 
-    public void setNumPosts(Long numPosts) {
-        this.numPosts = numPosts;
-    }
+	public void setNumProducts(Long numProducts) {
+		this.numProducts = numProducts;
+	}
 
-    public Long getNumSold() {
-        return numSold;
-    }
+	public Long getNumStories() {
+		return numStories;
+	}
 
-    public void setNumSold(Long numSold) {
-        this.numSold = numSold;
-    }
+	public void setNumStories(Long numStories) {
+		this.numStories = numStories;
+	}
 
-    public Long getNumLikes() {
+	public void setFollowing(boolean isFollowing) {
+		this.isFollowing = isFollowing;
+	}
+
+	public Long getNumLikes() {
         return numLikes;
     }
 

@@ -12,9 +12,8 @@ public class PostVMLite {
     public String title;
     public double price;
     public boolean sold;
-    //public Long[] images;
 	public ArrayList<Long> images = new ArrayList<Long>(20);
-    public String type;
+    public String postType;
     public int numLikes;
     public int numChats;
     public int numBuys;
@@ -34,7 +33,7 @@ public class PostVMLite {
         this.price = post.price;
         this.sold = false; //TODO
         this.numComments = post.noOfComments;
-        this.type = post.category.name;
+        this.postType = post.postType.toString();
         this.numViews = post.noOfViews;
         this.numLikes = post.noOfLikes;
         this.numBuys = post.noOfBuys;
@@ -108,40 +107,38 @@ public class PostVMLite {
         this.numComments = numComments;
     }
 
-/*    public ArrayList<Long> getImages() {
-        return images;
+    public String getPostType() {
+        return postType;
     }
-
-    public void setImages(Long[] imgs) {
-        this.images = imgs;
-    }*/
-
-    public String getType() {
-        return type;
+    
+    public void setPostType(String postType) {
+        this.postType = postType;
     }
 
     public ArrayList<Long> getImages() {
 		return images;
 	}
-	public void setImages(ArrayList<Long> images) {
+	
+    public void setImages(ArrayList<Long> images) {
 		this.images = images;
 	}
+	
 	public Boolean getHasImage() {
 		return hasImage;
 	}
+	
 	public void setHasImage(Boolean hasImage) {
 		this.hasImage = hasImage;
 	}
+	
 	public Long getImage() {
 		return image;
 	}
+	
 	public void setImage(Long image) {
 		this.image = image;
 	}
-	public void setType(String type) {
-        this.type = type;
-    }
-
+	
     public int getNumViews() {
         return numViews;
     }

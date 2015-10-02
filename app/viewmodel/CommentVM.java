@@ -9,8 +9,7 @@ public class CommentVM {
     public Long createdDate;
     public boolean hasImage = false;
     public Long[] images;
-    public String desc;
-    public int seq;
+    public String body;
 
     public boolean isOwner = false;
     public boolean isLike = false;     // filled outside
@@ -27,12 +26,7 @@ public class CommentVM {
         this.ownerId = comment.owner.id;
         this.postedBy = comment.getCreatedBy();
         this.createdDate = comment.getCreatedDate().getTime();
-        //this.hasImage = false;
-        //this.images = comment.imgs;
-        this.desc = comment.body;
-        this.seq = 1;//TODO
-        //this.isOwner = comment;
-        //this.isLike = comment.isLike;
+        this.body = comment.body;
         
         this.mobile = comment.mobile;
         this.android = comment.android;
@@ -87,20 +81,12 @@ public class CommentVM {
         this.images = images;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getBody() {
+        return body;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
-    public int getSeq() {
-        return seq;
-    }
-
-    public void setSeq(int seq) {
-        this.seq = seq;
+    public void setBody(String body) {
+        this.body = body;
     }
 
     public boolean isOwner() {

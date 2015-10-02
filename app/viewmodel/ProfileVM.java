@@ -7,17 +7,18 @@ import models.User;
 
 public class ProfileVM {
 	
+	@JsonProperty("id")  public long id;
     @JsonProperty("dn")	 public String displayName;
     @JsonProperty("yr")  public String birthYear;
     @JsonProperty("gd")  public String gender;
     @JsonProperty("a")   public String aboutMe;
     @JsonProperty("loc") public Location location;
-/*  @JsonProperty("n_fr") public long nofollowers;
-    @JsonProperty("n_fn") public long nofollowing;
-*/
-    @JsonProperty("n_p") public long noProducts;
-    @JsonProperty("n_c") public long noCollection;
-    @JsonProperty("id")  public long id;
+    
+    @JsonProperty("n_l") public long numLikes = 0L;
+    @JsonProperty("n_fr") public long numFollowers = 0L;
+    @JsonProperty("n_fg") public long numFollowings = 0L;
+    @JsonProperty("n_p") public long numProducts;
+    @JsonProperty("n_c") public long numCollections;
 
     // admin readonly fields
     @JsonProperty("n")  public String name;
@@ -27,8 +28,6 @@ public class ProfileVM {
     @JsonProperty("em")  public String email;
     
     @JsonProperty("ilu")  public boolean isLoggedinUser = false;
-    public long numFollowers = 0L;
-    public long numFollowings = 0L;
     @JsonProperty("ifu")  public boolean isFollowdByUser = false;
     
     public String sd;
@@ -56,10 +55,11 @@ public class ProfileVM {
 		}
         
         vm.id = user.id;
-        vm.noProducts = user.productCount;
-        vm.noCollection = user.collectionCount;
-        vm.numFollowers = user.followersCount;
-        vm.numFollowings = user.followingCount;
+        vm.numLikes = user.numLikes;
+        vm.numProducts = user.numProducts;
+        vm.numCollections = user.numCollections;
+        vm.numFollowers = user.numFollowers;
+        vm.numFollowings = user.numFollowings;
         vm.isFollowdByUser = user.isFollowedBy(localUser);
         return vm;
     }

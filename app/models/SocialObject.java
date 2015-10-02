@@ -28,7 +28,6 @@ import play.db.jpa.JPA;
 import com.google.common.base.Objects;
 
 import domain.AuditListener;
-import domain.CommentType;
 import domain.Creatable;
 import domain.PostType;
 import domain.SocialObjectType;
@@ -106,41 +105,34 @@ public abstract class SocialObject extends domain.Entity implements
 		action.validateUniquenessAndCreate();
 	}
 	
-	protected void recordCommentOnPost(SocialObject user, Comment comment) {
-		SocialRelation action = new SocialRelation(user, comment);
-		action.action = SocialRelation.Action.COMMENTED;
-        action.save();
-	}
-    
-    protected final SocialRelation getRequest(User user, SocialRelation.ActionType actionType) {
-        Query q = JPA.em().createQuery(
-                "SELECT sa from SocialRelation sa where actor = ?1 and target = ?2 and actionType =?3");
-        q.setParameter(1, user.id);
-        q.setParameter(2, this.id);
-        q.setParameter(3, actionType);
-
-        try {
-            SocialRelation request = (SocialRelation) q.getSingleResult();
-            return request;
-        } catch (NoResultException nre){
-        }
-        return null;
-    }
-	
-	protected final void recordPost(SocialObject user) {
+	protected final void recordPostProduct(SocialObject user) {
 		SocialRelation action = new SocialRelation(user, this);
-		action.action = SocialRelation.Action.POSTED;
+		action.action = SocialRelation.Action.POST_PRODUCT;
 		action.save();
         // Game Stats
-        //GameAccountStatistics.recordPost(user.id);
+        //GameAccountStatistics.recordPostProduct(user.id);
 	}
 	
-	protected void recordAddedPhoto(SocialObject user) {
+	protected final void recordPostStory(SocialObject user) {
 		SocialRelation action = new SocialRelation(user, this);
-		action.action = SocialRelation.Action.PHOTO_ADDED;
+		action.action = SocialRelation.Action.POST_STORY;
 		action.save();
+        // Game Stats
+        //GameAccountStatistics.recordPostStory(user.id);
 	}
 
+	protected void recordCommentProduct(SocialObject user, Comment comment) {
+		SocialRelation action = new SocialRelation(user, comment);
+		action.action = SocialRelation.Action.COMMENT_PRODUCT;
+        action.save();
+	}
+	
+	protected void recordCommentStory(SocialObject user, Comment comment) {
+		SocialRelation action = new SocialRelation(user, comment);
+		action.action = SocialRelation.Action.COMMENT_STORY;
+        action.save();
+	}
+	
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(name, objectType, id);
@@ -178,11 +170,11 @@ public abstract class SocialObject extends domain.Entity implements
 				"Please make sure Social Object you are unliking is Followable");
 	}
 	
-	public SocialObject onComment(User user, String body, CommentType type) throws SocialObjectNotCommentableException {
+	public SocialObject onComment(User user, String body) throws SocialObjectNotCommentableException {
 		throw new SocialObjectNotCommentableException("Please make sure Social Object you are commenting is Commentable");
 	}
 
-	public void onDeleteComment(User user, String body, CommentType type) throws SocialObjectNotCommentableException {
+	public void onDeleteComment(User user, String body) throws SocialObjectNotCommentableException {
         throw new SocialObjectNotCommentableException("Please make sure Social Object you are deleteing comment is Commentable");
     }
 	

@@ -61,7 +61,6 @@ import common.image.FaceFinder;
 import common.utils.DateTimeUtil;
 import common.utils.ImageFileUtil;
 import common.utils.NanoSecondStopWatch;
-import domain.CommentType;
 import domain.DefaultValues;
 import domain.Followable;
 import domain.SocialObjectType;
@@ -106,18 +105,17 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 
 	// stats
 
-	public Long followingCount = 0L;
+	public Long numLikes = 0L;
+	
+	public Long numFollowings = 0L;
 
-	public Long followersCount = 0L;
+	public Long numFollowers = 0L;
 
-	public Long productCount = 0L;
+	public Long numProducts = 0L;
+	
+	public Long numStories = 0L;
 
-	public Long commentsCount = 0L;
-
-	public Long collectionCount = 0L;
-
-	public Long likesCount = 0L;
-
+	public Long numCollections = 0L;
 
 	// system
 
@@ -204,7 +202,7 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 
 	public SocialObject commentedOn(SocialObject target, String comment)
 			throws SocialObjectNotCommentableException {
-		return target.onComment(this, comment, CommentType.SIMPLE);
+		return target.onComment(this, comment);
 	}
 
 	public void markNotificationRead(Notification notification) {
@@ -353,7 +351,7 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 			throws SocialObjectNotJoinableException {
 		Post product = new Post(this, name, description, category, productPrize);
 		product.save();
-		this.productCount++;
+		this.numProducts++;
 		return product;
 	}
 
@@ -1108,14 +1106,14 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 			Category category) {
 		Collection collection = new Collection(this, name, description, category);
 		collection.save();
-		this.collectionCount++;
+		this.numCollections++;
 		return collection;
 	}
 
 	public Collection createCollection(String name) {
 		Collection collection = new Collection(this, name);
 		collection.save();
-		this.collectionCount++;
+		this.numCollections++;
 		return collection;
 	}
 
@@ -1127,8 +1125,8 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 		}
 
 		recordFollow(user);
-		user.followersCount++;
-		this.followingCount++;
+		user.numFollowers++;
+		this.numFollowings++;
 	}
 
 	@Override
@@ -1136,8 +1134,9 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 		if (logger.underlyingLogger().isDebugEnabled()) {
 			logger.underlyingLogger().debug("[user="+user.id+"][u="+id+"] User onUnFollowedBy");
 		}
-		user.followersCount--;
-		this.followingCount--;
+		
+		user.numFollowers--;
+		this.numFollowings--;
 		Query q = JPA.em().createQuery("Delete from SecondarySocialRelation sa where actor = ?1 and action = ?2 and target = ?3 and actorType = ?4 and targetType = ?5");
 		q.setParameter(1, user.id);
 		q.setParameter(2, SecondarySocialRelation.Action.FOLLOWED);
@@ -1199,7 +1198,7 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 			Query query = JPA.em().createQuery(
 					"Select p from Post p where p.id in " + 
 							"(select pr.target from PrimarySocialRelation pr " + 
-					"where pr.action = ?1 and pr.actor = ?2 and pr.targetType = ?3) and p.deleted = false order by p.socialUpdatedDate desc");
+					"where pr.action = ?1 and pr.actor = ?2 and pr.targetType = ?3) and p.deleted = false order by UPDATED_DATE desc");
 			query.setParameter(1, PrimarySocialRelation.Action.LIKED);
 			query.setParameter(2, this.id);
 			query.setParameter(3, SocialObjectType.POST);

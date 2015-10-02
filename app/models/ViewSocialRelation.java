@@ -14,12 +14,10 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.Transient;
 
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import babybox.shopping.social.SocialActivity;
-
 
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
@@ -61,8 +59,8 @@ import domain.Updatable;
 
 @Entity
 @EntityListeners(AuditListener.class)
-public class SocialRelation extends domain.Entity implements Serializable, Creatable, Updatable  {
-    private static final play.api.Logger logger = play.api.Logger.apply(SocialRelation.class);
+public class ViewSocialRelation extends domain.Entity implements Serializable, Creatable, Updatable  {
+    private static final play.api.Logger logger = play.api.Logger.apply(ViewSocialRelation.class);
     
 	@Id @GeneratedValue(strategy=GenerationType.AUTO)
 	public Long id;
@@ -71,16 +69,12 @@ public class SocialRelation extends domain.Entity implements Serializable, Creat
 	@Enumerated(EnumType.STRING)
 	public SocialObjectType actorType;
 	
-	@Enumerated(EnumType.STRING)
-	public Action action;
-	
 	public Integer relationWeight;
 	
 	@Enumerated(EnumType.STRING)
     public ActionType actionType;
     
     static public enum ActionType {
-		MESSAGE_SEND
     }
 	
 	public Long target;
@@ -97,29 +91,20 @@ public class SocialRelation extends domain.Entity implements Serializable, Creat
 	@Transient
 	boolean isPostSave = true;
 
-	static public enum Action {
-		POST_PRODUCT,
-		POST_STORY,
-		COMMENT_PRODUCT,
-		COMMENT_STORY
-	}
-
-	public SocialRelation(){}
+	public ViewSocialRelation(){}
 	
-	public SocialRelation(Long id, SocialObject actor, Action action,
-			Integer weight, SocialObject target) {
+	public ViewSocialRelation(Long id, SocialObject actor, Integer weight, SocialObject target) {
 		super();
 		this.id = id;
 		this.actor = actor.id;
 		this.actorname = actor.name;
-		this.action = action;
 		this.relationWeight = weight;
 		this.target = target.id;
 		this.targetname = target.name;
 		this.targetOwner = target.owner == null ? null :target.owner.id;
 	}
 	
-	public SocialRelation(SocialObject actor, SocialObject target) {
+	public ViewSocialRelation(SocialObject actor, SocialObject target) {
 		this.actor = actor.id;
 		this.actorname = actor.name;
 		this.target = target.id;
@@ -130,16 +115,15 @@ public class SocialRelation extends domain.Entity implements Serializable, Creat
 	}
 	
 	@Transactional
-    public List<SocialRelation> getSocialRelations() {
+    public List<ViewSocialRelation> getSocialRelations() {
         Query q = JPA.em().createQuery(
-                "Select sa from SocialRelation sa where actor = ?1 and action = ?2 and target = ?3 and actorType = ?4 and targetType = ?5");
+                "Select sa from ViewSocialRelation sa where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
         q.setParameter(1, this.actor);
-        q.setParameter(2, this.action);
-        q.setParameter(3, this.target);
-        q.setParameter(4, this.actorType);
-        q.setParameter(5, this.targetType);
+        q.setParameter(2, this.target);
+        q.setParameter(3, this.actorType);
+        q.setParameter(4, this.targetType);
         try {
-            List<SocialRelation> socialRelations = q.getResultList();
+            List<ViewSocialRelation> socialRelations = q.getResultList();
             return socialRelations;
         } catch (NoResultException nre){
         }
@@ -148,14 +132,14 @@ public class SocialRelation extends domain.Entity implements Serializable, Creat
 	
 	@Transactional
 	public boolean ensureUniqueAndCreate() {
-	    List<SocialRelation> socialRelations = getSocialRelations();
+	    List<ViewSocialRelation> socialRelations = getSocialRelations();
 	    if (CollectionUtils.isEmpty(socialRelations)) {
 	        save();
 	        return true;
 	    }
 	    
 	    boolean keepSocialRelation = true;
-	    for (SocialRelation socialRelation : socialRelations) {
+	    for (ViewSocialRelation socialRelation : socialRelations) {
 	        if (keepSocialRelation) {
 	            keepSocialRelation = false;
 	            continue;
@@ -170,19 +154,19 @@ public class SocialRelation extends domain.Entity implements Serializable, Creat
 	@Transactional
 	public void createOrUpdateForTargetAndActorPair() {
 		Query q = JPA.em().createQuery(
-		        "Select sa from SocialRelation sa where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
+		        "Select sa from ViewSocialRelation sa where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
 		q.setParameter(1, this.actor);
 		q.setParameter(2, this.target);
 		q.setParameter(3, this.actorType);
 		q.setParameter(4, this.targetType);
-		SocialRelation sa = null;
+		ViewSocialRelation sa = null;
 		
 		try{
-			sa = (SocialRelation) q.getSingleResult();
+			sa = (ViewSocialRelation) q.getSingleResult();
 		} catch (NoResultException nre){
 		}
 		
-		if(sa == null ) {
+		if (sa == null) {
 			save();
 		} else {
 			sa.actionType = this.actionType;

@@ -17,8 +17,8 @@ public class FeedPostVM1 {
 	@JsonProperty("imgs") public Long images;
     @JsonProperty("ptyp") public String postType;
 	@JsonProperty("pn") public String postName;
-	@JsonProperty("pp") public Long postPrize;
-	@JsonProperty("pd") public String postDescription;
+	@JsonProperty("pp") public Long postPrice;
+	@JsonProperty("pd") public String postBody;
 	@JsonProperty("hasImage") public Boolean hasImage;
 	@JsonProperty("isLike") public Boolean isLiked;
 	@JsonProperty("nol") public Integer noOfLikes;
@@ -34,8 +34,8 @@ public class FeedPostVM1 {
 		this.ownerName = post.owner.name;
 		this.postId = post.id;
 		this.postName = post.title;
-		this.postDescription = post.description;
-		this.postPrize = post.price.longValue();
+		this.postBody = post.body;
+		this.postPrice = post.price.longValue();
 		this.noOfLikes = post.noOfLikes;
 		
 		if(post.folder != null && !CollectionUtils.isEmpty(post.folder.resources)) {
@@ -51,11 +51,11 @@ public class FeedPostVM1 {
 		return imageArray;
 	}
 
-	public Long getProductId() {
+	public Long getPostId() {
 		return postId;
 	}
 
-	public void setProductId(Long postId) {
+	public void setPostId(Long postId) {
 		this.postId = postId;
 	}
 
@@ -91,36 +91,36 @@ public class FeedPostVM1 {
 		this.images = images;
 	}
 
-	public String getProductType() {
+	public String getPostType() {
 		return postType;
 	}
 
-	public void setProductType(String postType) {
+	public void setPostType(String postType) {
 		this.postType = postType;
 	}
 
-	public String getProductName() {
+	public String getPostName() {
 		return postName;
 	}
 
-	public void setProductName(String postName) {
+	public void setPostName(String postName) {
 		this.postName = postName;
 	}
 
-	public Long getProductPrice() {
-		return postPrize;
+	public Long getPostPrice() {
+		return postPrice;
 	}
 
-	public void setProductPrice(Long postPrice) {
-		this.postPrize = postPrice;
+	public void setPostPrice(Long postPrice) {
+		this.postPrice = postPrice;
 	}
 
-	public String getProductDescription() {
-		return postDescription;
+	public String getPostBody() {
+		return postBody;
 	}
 
-	public void setProductDescription(String postDescription) {
-		this.postDescription = postDescription;
+	public void setPostBody(String postBody) {
+		this.postBody = postBody;
 	}
 
 	public boolean getIsHasImage() {

@@ -7,6 +7,7 @@ import models.Notification;
 import models.Notification.NotificationType;
 import models.PrimarySocialRelation;
 import models.SocialRelation;
+import models.ViewSocialRelation;
 import play.libs.Json;
 
 /**
@@ -16,6 +17,14 @@ public class SocialActivity {
     // play url prefix
     private static final String MY_PREFIX = "/my#!";
 
+    /**
+     * Handle SocialRelation
+     * @param socialAction
+     */
+	public static void handle(ViewSocialRelation socialAction) {
+	
+	}
+	
     //////////////////////////////////////////////////
     // Url Helpers
     /*private static String resolveCommunityLandingUrl(Long commId, Community.CommunityType type,
@@ -57,18 +66,7 @@ public class SocialActivity {
         Community.CommunityType type = Community.getCommunityTypeById(commId);
         return resolveCommunityLandingUrl(commId, type, null);
     }
-
-    private static boolean isBusinessCommunity(Community community) {
-        return community != null && community.communityType == Community.CommunityType.BUSINESS;
-    }
-
-    private static boolean isSendToAllMembers(Community community) {
-        return community.getTargetingType() != null &&
-               (community.getTargetingType() == TargetingType.PRE_NURSERY ||
-                community.getTargetingType() == TargetingType.KINDY);
-    }*/
-    //////////////////////////////////////////////////
-
+    */
 
     /**
      * Handle SocialRelation

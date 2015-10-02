@@ -15,7 +15,7 @@ public class MessageVM {
 	@JsonProperty("suid") public Long senderUserID;
 	@JsonProperty("id") public Long id;
 	@JsonProperty("cd") public Date createdDate;
-	@JsonProperty("txt") public String text;
+	@JsonProperty("txt") public String body;
 	@JsonProperty("hasImage") public boolean hasImage=false;
 	@JsonProperty("imgs") public Long images;
 	
@@ -25,7 +25,7 @@ public class MessageVM {
 		this.senderUserID = sender.id;
 		this.id = message.id;
 		this.createdDate = message.getCreatedDate();
-		this.text = message.body;
+		this.body = message.body;
 		
 		List<Resource> resources = null;
 		if(message.folder != null && !CollectionUtils.isEmpty(message.folder.resources)) {
