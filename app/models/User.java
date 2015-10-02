@@ -1189,7 +1189,7 @@ public class User extends SocialObject implements Subject, Followable {
 			Query query = JPA.em().createQuery(
 					"Select p from Post p where p.id in " + 
 							"(select pr.target from LikeSocialRelation pr " + 
-					"where pr.actor = ?1 and pr.actionType = ?2 and pr.targetType = ?3) and p.deleted = false order by UPDATED_DATE desc");
+					"where pr.actor = ?1 and pr.actorType = ?2 and pr.targetType = ?3) and p.deleted = false order by UPDATED_DATE desc");
 			query.setParameter(1, this.id);
 			query.setParameter(2, SocialObjectType.USER);
 			query.setParameter(3, SocialObjectType.POST);

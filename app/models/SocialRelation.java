@@ -147,7 +147,7 @@ public abstract class SocialRelation extends domain.Entity implements Serializab
 	@Transactional
 	public boolean ensureUniqueAndCreate() {
 	    Query q = JPA.em().createQuery(
-                "Select sa from " + getTableName() + " sa where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
+                "Select count(sa) from " + getTableName() + " sa where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
         q.setParameter(1, this.actor);
         q.setParameter(2, this.target);
         q.setParameter(3, this.actorType);
