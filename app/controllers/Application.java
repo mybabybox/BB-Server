@@ -344,7 +344,7 @@ public class Application extends Controller {
         if (user != null) {
             return user.id;
         }
-        return -1L;
+        return User.NO_LOGIN_ID;
     }
 
     public static String getLocalUserName() {
@@ -642,7 +642,7 @@ public class Application extends Controller {
 	@Transactional
 	public static Result getCategories(){
 		List<CategoryVM> categoryList = new ArrayList<CategoryVM>();
-		for(Category category : Category.getAllCategory()){
+		for(Category category : Category.getAllCategories()){
 			CategoryVM cvm = new CategoryVM();
 			cvm.setId(category.id);
 			cvm.setName(category.name);

@@ -2,7 +2,7 @@ package processor;
 
 import common.utils.StringUtil;
 import domain.SocialObjectType;
-import models.PrimarySocialRelation;
+import models.LikeSocialRelation;
 import models.User;
 import play.db.jpa.JPA;
 import javax.persistence.Query;
@@ -17,42 +17,41 @@ import java.util.Set;
  * Time: 11:33 PM
  * To change this template use File | Settings | File Templates.
  */
-public class PrimarySocialRelationManager {
+public class LikeSocialRelationManager {
 
     /**
      * @param user
      * @param objIds
      */
-    public static Set<PrimarySocialResult> getSocialRelationBy(User user, List<Long> objIds) {
+    public static Set<LikeSocialResult> getSocialRelationBy(User user, List<Long> objIds) {
         if (objIds == null || objIds.size() == 0) {
             return Collections.EMPTY_SET;
         }
 
-        Set<PrimarySocialResult> results = new HashSet<>();
+        Set<LikeSocialResult> results = new HashSet<>();
 
         String idsForIn = StringUtil.collectionToString(objIds, ",");
 
-        Query q = JPA.em().createQuery("Select sr.target, sr.targetType, sr.action from PrimarySocialRelation sr where sr.action=?1 and sr.actor=?2" +
-                "and sr.target in ("+idsForIn+")");
-        q.setParameter(1, PrimarySocialRelation.Action.LIKED);
-        q.setParameter(2, user.id);
+        Query q = JPA.em().createQuery(
+        		"Select sr.target, sr.targetType, sr.action from LikeSocialRelation sr where sr.actor = ?1 and sr.target in ("+idsForIn+")");
+        q.setParameter(1, user.id);
 
         List<Object[]> qRes = q.getResultList();
         for (Object[] entry : qRes) {
-            results.add(new PrimarySocialResult((Long) entry[0], (SocialObjectType) entry[1], (PrimarySocialRelation.Action) entry[2]));
+            results.add(new LikeSocialResult((Long) entry[0], (SocialObjectType) entry[1], (LikeSocialRelation.Action) entry[2]));
         }
         return results;
     }
 
     /**
-     * PrimarySocialResult
+     * 
      */
-    public static class PrimarySocialResult {
+    public static class LikeSocialResult {
         public Long id;
         public SocialObjectType socialObjectType;
-        public PrimarySocialRelation.Action action;
+        public LikeSocialRelation.Action action;
 
-        public PrimarySocialResult(Long id, SocialObjectType socialObjectType, PrimarySocialRelation.Action action) {
+        public LikeSocialResult(Long id, SocialObjectType socialObjectType, LikeSocialRelation.Action action) {
             this.id = id;
             this.socialObjectType = socialObjectType;
             this.action = action;
@@ -63,7 +62,7 @@ public class PrimarySocialRelationManager {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            PrimarySocialResult that = (PrimarySocialResult) o;
+            LikeSocialResult that = (LikeSocialResult) o;
 
             if (action != that.action) return false;
             if (id != null ? !id.equals(that.id) : that.id != null) return false;

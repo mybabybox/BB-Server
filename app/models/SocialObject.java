@@ -10,12 +10,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
 
 import babybox.shopping.social.exception.SocialObjectNotCommentableException;
 import babybox.shopping.social.exception.SocialObjectNotFollowableException;
-import babybox.shopping.social.exception.SocialObjectNotJoinableException;
 import babybox.shopping.social.exception.SocialObjectNotLikableException;
 import babybox.shopping.social.exception.SocialObjectNotPostableException;
 
@@ -23,7 +20,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import play.data.validation.Constraints.Required;
-import play.db.jpa.JPA;
 
 import com.google.common.base.Objects;
 
@@ -37,8 +33,7 @@ import domain.Updatable;
 //@Inheritance(strategy = InheritanceType.JOINED)
 @EntityListeners(AuditListener.class)
 @MappedSuperclass
-public abstract class SocialObject extends domain.Entity implements
-		Serializable, Creatable, Updatable{
+public abstract class SocialObject extends domain.Entity implements Serializable, Creatable, Updatable {
 
 	@Id
 	//MySQL5Dialect does not support sequence
@@ -75,62 +70,52 @@ public abstract class SocialObject extends domain.Entity implements
     public User deletedBy;
 	
 	public boolean isLikedBy(User user){
-        Query q = JPA.em().createQuery("Select sr from PrimarySocialRelation sr where sr.action=?1 and sr.actor=?2 " +
-                "and sr.target=?3 and sr.targetType=?4");
-        q.setParameter(1, PrimarySocialRelation.Action.LIKED);
-        q.setParameter(2, user.id);
-        q.setParameter(3, this.id);
-        q.setParameter(4, this.objectType);
-        PrimarySocialRelation sr = null;
-        try {
-            sr = (PrimarySocialRelation)q.getSingleResult();
-        }
-        catch(NoResultException nre) {
-            return false;
-        }
-        return true;
+			return LikeSocialRelation.isLikedBy(user.id, user.objectType, this.id, this.objectType);
     }
     
 	protected final void recordLike(User user) {
-		PrimarySocialRelation action = new PrimarySocialRelation(user, this);
-		action.action = PrimarySocialRelation.Action.LIKED;
-		action.validateUniquenessAndCreate();
-        // Game Stats
-        //GameAccountStatistics.recordLike(user.id);
+		LikeSocialRelation action = new LikeSocialRelation(user, this);
+		action.ensureUniqueAndCreate();
+		// Game Stats
+		//GameAccountStatistics.recordLike(user.id);
 	}
 	
 	protected final void recordFollow(User user) {
-		SecondarySocialRelation action = new SecondarySocialRelation(user, this);
-		action.action = SecondarySocialRelation.Action.FOLLOWED;
-		action.validateUniquenessAndCreate();
+		FollowSocialRelation action = new FollowSocialRelation(user, this);
+		action.ensureUniqueAndCreate();
 	}
 	
 	protected final void recordPostProduct(SocialObject user) {
-		SocialRelation action = new SocialRelation(user, this);
-		action.action = SocialRelation.Action.POST_PRODUCT;
+		PostSocialRelation action = new PostSocialRelation(user, this);
+		action.actionType = PostSocialRelation.ActionType.PRODUCT;
 		action.save();
-        // Game Stats
-        //GameAccountStatistics.recordPostProduct(user.id);
+		// Game Stats
+		//GameAccountStatistics.recordPostProduct(user.id);
 	}
 	
 	protected final void recordPostStory(SocialObject user) {
-		SocialRelation action = new SocialRelation(user, this);
-		action.action = SocialRelation.Action.POST_STORY;
+		PostSocialRelation action = new PostSocialRelation(user, this);
+		action.actionType = PostSocialRelation.ActionType.STORY;
 		action.save();
-        // Game Stats
-        //GameAccountStatistics.recordPostStory(user.id);
+		// Game Stats
+		//GameAccountStatistics.recordPostStory(user.id);
 	}
 
 	protected void recordCommentProduct(SocialObject user, Comment comment) {
-		SocialRelation action = new SocialRelation(user, comment);
-		action.action = SocialRelation.Action.COMMENT_PRODUCT;
-        action.save();
+		CommentSocialRelation action = new CommentSocialRelation(user, comment);
+		action.actionType = CommentSocialRelation.ActionType.PRODUCT;
+		action.save();
 	}
 	
 	protected void recordCommentStory(SocialObject user, Comment comment) {
-		SocialRelation action = new SocialRelation(user, comment);
-		action.action = SocialRelation.Action.COMMENT_STORY;
-        action.save();
+		CommentSocialRelation action = new CommentSocialRelation(user, comment);
+		action.actionType = CommentSocialRelation.ActionType.STORY;
+		action.save();
+	}
+	
+	protected final void recordView(User user) {
+		ViewSocialRelation action = new ViewSocialRelation(user, this);
+		action.ensureUniqueAndCreate();
 	}
 	
 	@Override
@@ -182,24 +167,6 @@ public abstract class SocialObject extends domain.Entity implements
 			throws SocialObjectNotPostableException {
 		throw new SocialObjectNotPostableException(
 				"Please make sure Social Object you are posting  is Postable");
-	}
-
-	public void onJoinRequest(User user)
-			throws SocialObjectNotJoinableException {
-		throw new SocialObjectNotJoinableException(
-				"Please make sure Social Object you are joining  is Joinable");
-	}
-
-	public void onJoinRequestAccepted(User toBeMember)
-			throws SocialObjectNotJoinableException {
-		throw new SocialObjectNotJoinableException(
-				"Please make sure Social Object you are joining  is Joinable");
-	}
-	
-	public void onInviteRequestAccepted(User toBeMember)
-			throws SocialObjectNotJoinableException {
-		throw new SocialObjectNotJoinableException(
-				"Please make sure Social Object you are joining  is Joinable");
 	}
 
 	public User getOwner() {

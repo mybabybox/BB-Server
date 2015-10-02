@@ -16,13 +16,13 @@ public class ThreadLocalOverride {
             return false;
         }
     };
+    
     private static ThreadLocal<Date> socialUpdatedDateLocal = new ThreadLocal<Date>() {
         @Override
         protected Date initialValue() {
             return null;
         }
     };
-
 
     public static void disableNotification(boolean off) {
         skipNotificationLocal.set(off);

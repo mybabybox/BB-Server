@@ -26,7 +26,6 @@ import viewmodel.PostVM;
 import viewmodel.PostVMLite;
 import viewmodel.ResponseStatusVM;
 import viewmodel.UserVM;
-import babybox.shopping.social.exception.SocialObjectNotJoinableException;
 
 import common.cache.CalcServer;
 import common.utils.HtmlUtil;
@@ -71,7 +70,7 @@ public class ProductController extends Controller{
 		try {
 			Post newPost = localUser.createProduct(title, desc, Category.findById(catId), price);
 			if (newPost == null) {
-				return status(505, "Failed to create community. Invalid parameters.");
+				return status(505, "Failed to create product. Invalid parameters.");
 			}
 			for(FilePart picture : pictures){
 				String fileName = picture.getFilename();
@@ -82,10 +81,8 @@ public class ProductController extends Controller{
 			CalcServer.addToQueues(newPost);
 			ResponseStatusVM response = new ResponseStatusVM("post", newPost.id, localUser.id, true);
 			return ok(Json.toJson(response));
-		} catch (SocialObjectNotJoinableException e) {
-			logger.underlyingLogger().error("Error in createCommunity", e);
 		} catch (IOException e) {
-			logger.underlyingLogger().error("Error in createCommunity", e);
+			logger.underlyingLogger().error("Error in createProduct", e);
 		}
 		return status(500);
 

@@ -53,6 +53,7 @@ public class Category extends SocialObject implements Likeable, Postable, Compar
 		this();
 		this.name = name;
 		this.description = description;
+		this.categoryType = CategoryType.PUBLIC;
 		this.owner = owner;
 		this.icon = icon;
 		this.seq = seq;
@@ -62,7 +63,7 @@ public class Category extends SocialObject implements Likeable, Postable, Compar
 	@Transactional
 	public static Category findById(Long id) {
         try {
-            Query q = JPA.em().createQuery("SELECT c FROM Category c where id = ?1");
+            Query q = JPA.em().createQuery("SELECT c FROM Category c where id = ?1 and deleted = 0");
             q.setParameter(1, id);
             return (Category) q.getSingleResult();
         } catch (NoResultException nre) {
@@ -70,9 +71,9 @@ public class Category extends SocialObject implements Likeable, Postable, Compar
         }
     }
 
-	public static List<Category> getAllCategory() {
+	public static List<Category> getAllCategories() {
 		try {
-            Query q = JPA.em().createQuery("SELECT c FROM Category c ");
+            Query q = JPA.em().createQuery("SELECT c FROM Category c where deleted = 0 order by seq");
             return (List<Category>) q.getResultList();
         } catch (NoResultException nre) {
             return null;

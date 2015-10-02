@@ -3,10 +3,14 @@ package babybox.shopping.social;
 import java.util.HashMap;
 import java.util.Map;
 
+import models.CommentSocialRelation;
+import models.FollowSocialRelation;
 import models.Notification;
 import models.Notification.NotificationType;
-import models.PrimarySocialRelation;
+import models.LikeSocialRelation;
+import models.PostSocialRelation;
 import models.SocialRelation;
+import models.SocialRelation.Action;
 import models.ViewSocialRelation;
 import play.libs.Json;
 
@@ -17,16 +21,6 @@ public class SocialActivity {
     // play url prefix
     private static final String MY_PREFIX = "/my#!";
 
-    /**
-     * Handle SocialRelation
-     * @param socialAction
-     */
-	public static void handle(ViewSocialRelation socialAction) {
-	
-	}
-	
-    //////////////////////////////////////////////////
-    // Url Helpers
     /*private static String resolveCommunityLandingUrl(Long commId, Community.CommunityType type,
                                                      TargetingType targetingType) {
         boolean isBizCommunity = type != null && type == Community.CommunityType.BUSINESS;
@@ -68,16 +62,38 @@ public class SocialActivity {
     }
     */
 
-    /**
-     * Handle SocialRelation
-     * @param socialAction
-     */
+    public static void handle(SocialRelation socialAction) {
+    	Action action = socialAction.getAction();
+    	switch (action) {
+	    	case LIKE: {
+	    		
+	    	}
+	    	break;
+	    	case FOLLOW: {
+	    		
+	    	}
+	    	break;
+	    	case POST: {
+	    		
+	    	}
+	    	break;
+	    	case COMMENT: {
+	    		
+	    	}
+	    	break;
+	    	case VIEW: {
+	    		
+	    	}
+	    	break;
+    	}
+	}
+    
+	/*
 	public static void handle(SocialRelation socialAction) {
 		Map<String, Object> jsonMap = new HashMap<>();
 		jsonMap.put("actor", socialAction.actor);
 		jsonMap.put("target", socialAction.target);
 		
-		/*
 		if(socialAction.action != null) {
 			switch (socialAction.action) {
                 case MEMBER: {
@@ -159,21 +175,16 @@ public class SocialActivity {
 				break;
 			}
 		}
-		*/
 	}
 
-    /**
-     * Handle PrimarySocialRelation
-     * @param socialAction
-     */
-	public static void handle(PrimarySocialRelation socialAction) {
+	public static void handle(LikeSocialRelation socialAction) {
 		if(socialAction.action != null) {
 			Map<String, Object> jsonMap = new HashMap<>();
 			jsonMap.put("actor", socialAction.actor);
 			jsonMap.put("target", socialAction.target);
 			
 			switch (socialAction.action) {
-                /*case POSTED: {
+                case POSTED: {
                     Post post = Post.findById(socialAction.target);
                     Community community = post.community;
                     if (isBusinessCommunity(community)) {
@@ -564,8 +575,9 @@ public class SocialActivity {
                         }
                     }
                 }
-				break;	*/
+				break;
 			}
-		} 
+		}
 	}
+	*/
 }

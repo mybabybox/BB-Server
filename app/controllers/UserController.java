@@ -19,7 +19,7 @@ import models.Location;
 import models.Message;
 import models.Post;
 import models.Resource;
-import models.SecondarySocialRelation;
+import models.FollowSocialRelation;
 import models.SiteTour;
 import models.User;
 
@@ -763,7 +763,7 @@ public class UserController extends Controller {
     
     @Transactional
     public static Result getFollowings(Long id, Long offset){
-    	List<Long> followings = SecondarySocialRelation.getFollowings(id);
+    	List<Long> followings = FollowSocialRelation.getFollowings(id);
     	List<UserVMLite> userFollowings = new ArrayList<UserVMLite>();
     	
     	for(Long f : followings){
@@ -776,7 +776,7 @@ public class UserController extends Controller {
     
     @Transactional
     public static Result getFollowers(Long id, Long offset){
-    	List<Long> followings = SecondarySocialRelation.getFollowers(id);
+    	List<Long> followings = FollowSocialRelation.getFollowers(id);
     	List<UserVMLite> userFollowers = new ArrayList<UserVMLite>();
     	
     	for(Long f : followings){

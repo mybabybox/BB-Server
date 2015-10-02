@@ -66,8 +66,8 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	 */
 	public Post() {}
 
-	public Post(User actor, String title, String body, Category category) {
-		this.owner = actor;
+	public Post(User owner, String title, String body, Category category) {
+		this.owner = owner;
 		this.title = title;
 		this.body = body;
 		this.category = category;
@@ -76,8 +76,8 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		this.objectType = SocialObjectType.POST;
 	}
 
-	public Post(User actor, String title, String description, Category category, Double price) {
-		this.owner = actor;
+	public Post(User owner, String title, String body, Category category, Double price) {
+		this.owner = owner;
 		this.title = title;
 		this.body = body;
 		this.category = category;
@@ -100,25 +100,22 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		if(isLikedBy(user)){
 			this.noOfLikes--;
 			user.numLikes--;
-			Query q = JPA.em().createQuery("Delete from PrimarySocialRelation sa where actor = ?1 and action = ?2 and target = ?3 and actorType = ?4 and targetType = ?5");
+			Query q = JPA.em().createQuery("Delete from LikeSocialRelation sa where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
 			q.setParameter(1, user.id);
-			q.setParameter(2, PrimarySocialRelation.Action.LIKED);
-			q.setParameter(3, this.id);
-			q.setParameter(4, SocialObjectType.USER);
-			q.setParameter(5, SocialObjectType.POST);
+			q.setParameter(2, this.id);
+			q.setParameter(3, SocialObjectType.USER);
+			q.setParameter(4, SocialObjectType.POST);
 			q.executeUpdate();
 		}
 	}
 	
 	@Override
 	public boolean isLikedBy(User user){
-		Query q = JPA.em().createQuery("Select sa from PrimarySocialRelation sa where actor = ?1 and action = ?2 and target = ?3 and actorType = ?4 and targetType = ?5");
+		Query q = JPA.em().createQuery("Select sa from LikeSocialRelation sa where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
 		q.setParameter(1, user.id);
-		q.setParameter(2, PrimarySocialRelation.Action.LIKED);
-		q.setParameter(3, this.id);
-		q.setParameter(4, SocialObjectType.USER);
-		q.setParameter(5, SocialObjectType.POST);
-		System.out.println("size :: "+q.getResultList().size());
+		q.setParameter(2, this.id);
+		q.setParameter(3, SocialObjectType.USER);
+		q.setParameter(4, SocialObjectType.POST);
 		if(q.getResultList().size() > 0 ) {
 			// Already liked ; Any logic !
 			return true;
@@ -250,8 +247,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	}
 
 	public void onView(User localUser) {
-		ViewSocialRelation action = new ViewSocialRelation(localUser, this);
-		action.ensureUniqueAndCreate();
+		this.recordView(localUser);
 	}
 
 	public static List<Post> getPostsByCategory(Category category) {

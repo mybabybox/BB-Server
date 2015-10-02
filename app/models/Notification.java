@@ -45,7 +45,7 @@ public class Notification  extends domain.Entity implements Serializable, Creata
 	
 	public Long target;
 	
-	public long socialActionID;
+	public long socialActionId;
 	
 	public String usersName;
 	
@@ -225,19 +225,8 @@ public class Notification  extends domain.Entity implements Serializable, Creata
         return null;
     }
     
-    public static Notification findBySocialAction(SocialRelation sr) {
-        String sql = "SELECT n FROM Notification n WHERE SocialAction_id=?1";
-        Query query = JPA.em().createQuery(sql);
-        query.setParameter(1, sr);
-        try {
-            return (Notification) query.getSingleResult();
-        } catch (NoResultException nre) {
-        }
-        return null;
-    }
-    
-    public static Notification findBySocialActionID(Long id) {
-        String sql = "SELECT n FROM Notification n WHERE socialActionID=?1";
+    public static Notification findBySocialActionId(Long id) {
+        String sql = "SELECT n FROM Notification n WHERE socialActionId=?1";
         Query query = JPA.em().createQuery(sql);
         query.setParameter(1, id);
         try {

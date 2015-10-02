@@ -41,7 +41,6 @@ import play.data.format.Formats;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import babybox.shopping.social.exception.SocialObjectNotCommentableException;
-import babybox.shopping.social.exception.SocialObjectNotJoinableException;
 import babybox.shopping.social.exception.SocialObjectNotLikableException;
 import be.objectify.deadbolt.core.models.Permission;
 import be.objectify.deadbolt.core.models.Role;
@@ -64,12 +63,13 @@ import common.utils.NanoSecondStopWatch;
 import domain.DefaultValues;
 import domain.Followable;
 import domain.SocialObjectType;
-import domain.Socializable;
 
 @Entity
-public class User extends SocialObject implements Subject, Socializable, Followable {
+public class User extends SocialObject implements Subject, Followable {
 	private static final play.api.Logger logger = play.api.Logger.apply(User.class);
 
+	public static final Long NO_LOGIN_ID = -1L;
+	
 	private static User BB_ADMIN;
 	private static User BB_EDITOR;
 
@@ -331,8 +331,7 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 	}
 
 	@Transactional
-    public Category createCategory(String name, String description, String icon, int seq) 
-            throws SocialObjectNotJoinableException {
+    public Category createCategory(String name, String description, String icon, int seq) {
 		
         if (Strings.isNullOrEmpty(name) || 
         		Strings.isNullOrEmpty(description) || 
@@ -347,8 +346,7 @@ public class User extends SocialObject implements Subject, Socializable, Followa
     }
 	
 	@Transactional
-	public Post createProduct(String name, String description, Category category, Double productPrize) 
-			throws SocialObjectNotJoinableException {
+	public Post createProduct(String name, String description, Category category, Double productPrize) {
 		Post product = new Post(this, name, description, category, productPrize);
 		product.save();
 		this.numProducts++;
@@ -906,28 +904,6 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 		return new File(Play.application().configuration().getString("storage.user.cover.noimage"));
 	}
 
-	public int doUnLike(Long id, SocialObjectType type) {
-		Query query = JPA.em().createQuery(
-				"SELECT sr FROM PrimarySocialRelation sr where sr.targetType = ?4 and sr.action = ?3 and " + 
-						"(sr.target = ?1 and sr.actor = ?2)", PrimarySocialRelation.class);
-		query.setParameter(1, id);
-		query.setParameter(2, this.id);
-		query.setParameter(3, PrimarySocialRelation.Action.LIKED);
-		query.setParameter(4, type);
-
-		try {
-			PrimarySocialRelation sr = (PrimarySocialRelation) query.getSingleResult();
-			sr.delete();
-
-			//GameAccountStatistics.recordunLike(this.id);
-		} catch (NoResultException e) {
-			logger.underlyingLogger().error(String.format("[u=%d][sr.actor=%d][sr.type=%s] like not found", this.id, id, type.name()), e);
-		} catch (Exception e) {
-			logger.underlyingLogger().error("Error in doUnLike", e);
-		}
-		return 1;
-	}
-
 	public String getFirstName() {
 		return firstName;
 	}
@@ -1080,10 +1056,6 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 		return Conversation.getUnreadConversationCount(this.id);
 	}
 
-	///////////////////////////////////////////////
-	// Login, noLogin
-	private static final Long NO_LOGIN_ID = -1L;
-
 	public boolean isLoggedIn() {
 		return isLoggedIn(this);
 	}
@@ -1129,6 +1101,27 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 		this.numFollowings++;
 	}
 
+	public int doUnLike(Long id, SocialObjectType type) {
+		Query query = JPA.em().createQuery(
+				"SELECT sr FROM LikeSocialRelation sr where sr.targetType = ?1 and " + 
+						"(sr.target = ?2 and sr.actor = ?3)", LikeSocialRelation.class);
+		query.setParameter(1, type);
+		query.setParameter(2, id);
+		query.setParameter(3, this.id);
+
+		try {
+			LikeSocialRelation sr = (LikeSocialRelation) query.getSingleResult();
+			sr.delete();
+
+			//GameAccountStatistics.recordunLike(this.id);
+		} catch (NoResultException e) {
+			logger.underlyingLogger().error(String.format("[u=%d][sr.actor=%d][sr.type=%s] like not found", this.id, id, type.name()), e);
+		} catch (Exception e) {
+			logger.underlyingLogger().error("Error in doUnLike", e);
+		}
+		return 1;
+	}
+	
 	@Override
 	public void onUnFollowedBy(User user) {
 		if (logger.underlyingLogger().isDebugEnabled()) {
@@ -1137,23 +1130,21 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 		
 		user.numFollowers--;
 		this.numFollowings--;
-		Query q = JPA.em().createQuery("Delete from SecondarySocialRelation sa where actor = ?1 and action = ?2 and target = ?3 and actorType = ?4 and targetType = ?5");
+		Query q = JPA.em().createQuery("Delete from FollowSocialRelation sa where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
 		q.setParameter(1, user.id);
-		q.setParameter(2, SecondarySocialRelation.Action.FOLLOWED);
-		q.setParameter(3, this.id);
+		q.setParameter(2, this.id);
+		q.setParameter(3, SocialObjectType.USER);
 		q.setParameter(4, SocialObjectType.USER);
-		q.setParameter(5, SocialObjectType.USER);
 		q.executeUpdate();
 	}
 
 	@JsonIgnore
 	public boolean isFollowedBy(User user) {
-		Query q = JPA.em().createQuery("Select sa from SecondarySocialRelation sa where actor = ?1 and action = ?2 and target = ?3 and actorType = ?4 and targetType = ?5");
+		Query q = JPA.em().createQuery("Select sa from FollowSocialRelation sa where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
 		q.setParameter(1, this.id);
-		q.setParameter(2, SecondarySocialRelation.Action.FOLLOWED);
-		q.setParameter(3, user.id);
+		q.setParameter(2, user.id);
+		q.setParameter(3, SocialObjectType.USER);
 		q.setParameter(4, SocialObjectType.USER);
-		q.setParameter(5, SocialObjectType.USER);
 		if(q.getResultList().size() > 0 ) {
 			return true;
 		}
@@ -1197,10 +1188,10 @@ public class User extends SocialObject implements Subject, Socializable, Followa
 		try {
 			Query query = JPA.em().createQuery(
 					"Select p from Post p where p.id in " + 
-							"(select pr.target from PrimarySocialRelation pr " + 
-					"where pr.action = ?1 and pr.actor = ?2 and pr.targetType = ?3) and p.deleted = false order by UPDATED_DATE desc");
-			query.setParameter(1, PrimarySocialRelation.Action.LIKED);
-			query.setParameter(2, this.id);
+							"(select pr.target from LikeSocialRelation pr " + 
+					"where pr.actor = ?1 and pr.actionType = ?2 and pr.targetType = ?3) and p.deleted = false order by UPDATED_DATE desc");
+			query.setParameter(1, this.id);
+			query.setParameter(2, SocialObjectType.USER);
 			query.setParameter(3, SocialObjectType.POST);
 			return (List<Post>)query.getResultList();
 		} catch (NoResultException nre) {
