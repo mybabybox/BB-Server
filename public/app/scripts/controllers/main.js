@@ -111,7 +111,7 @@ babybox.controller('CommentOnProductController',
 	$scope.submit = function() {
 		var newCommentVM = {
 				"postId" : $scope.product.id,
-				"desc" : $scope.formData.comment,
+				"body" : $scope.formData.comment,
 		};
 
 		console.log($scope.userInfo);
@@ -187,8 +187,8 @@ babybox.controller('CreateProductController',function($scope, $location, $http, 
 		var newPostVM = {
 				"catId" : $scope.formData.category,
 				"title" : $scope.formData.name,
-				"desc" : $scope.formData.description,
-				"price" : $scope.formData.productPrice,
+				"body" : $scope.formData.body,
+				"price" : $scope.formData.price,
 		};
 		console.log(newPostVM);
 
