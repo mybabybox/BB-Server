@@ -22,6 +22,7 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
+import play.mvc.Results;
 import viewmodel.CommentVM;
 import viewmodel.PostVM;
 import viewmodel.PostVMLite;
@@ -122,8 +123,6 @@ public class ProductController extends Controller{
 		return ok(Json.toJson(getPostVMsFromPosts(Post.getAllPosts())));
 	}
 
-
-
 	private static List<PostVMLite> getPostVMsFromPosts(List<Post> posts) {
 		List<PostVMLite> vms = new ArrayList<>();
 		for(Post product : posts) {
@@ -167,12 +166,19 @@ public class ProductController extends Controller{
 	
 	@Transactional
 	public static Result getProductInfo(Long id) {
-		return ok(Json.toJson(getProductInfoVM(id)));
+		PostVM post = getProductInfoVM(id);
+		if (post == null) {
+			return notFound();
+		}
+		return ok(Json.toJson(post));
 	}
 	
 	public static PostVM getProductInfoVM(Long id) {
 		User localUser = Application.getLocalUser(session());
 		Post post = Post.findById(id);
+		if (post == null) {
+			return null;
+		}
 		PostVM vm = new PostVM(post, localUser);
 		vm.isFollowingOwner = post.owner.isFollowedBy(localUser);
 		return vm;
@@ -231,7 +237,7 @@ public class ProductController extends Controller{
             post.delete(localUser);
             return ok();
         }
-        return status(500, "Failed to delete post. [u=" + localUser.id + "] not owner of post [id=" + id + "].");
+        return badRequest("Failed to delete post. [u=" + localUser.id + "] not owner of post [id=" + id + "].");
     }
     
     @Transactional
@@ -247,7 +253,7 @@ public class ProductController extends Controller{
             comment.delete(localUser);
             return ok();
         }
-        return status(500, "Failed to delete comment. [u="+localUser.id+"] not owner of comment [id=" + id + "].");
+        return badRequest("Failed to delete comment. [u="+localUser.id+"] not owner of comment [id=" + id + "].");
     }
 
 	@Transactional
@@ -327,8 +333,13 @@ public class ProductController extends Controller{
 	
 	@Transactional
 	public static Result getPostComments(Long id, Long offset){
+		Post post = Post.findById(id);
+		if (post == null) {
+			return ok();
+		}
+		
 		List <CommentVM> comments = new ArrayList<CommentVM>();
-		for(Comment c : Post.findById(id).getComments()){
+		for(Comment c : post.getComments()){
 			CommentVM commentvm = new CommentVM(c);
 			comments.add(commentvm);
 		}
