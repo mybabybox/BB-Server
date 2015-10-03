@@ -338,7 +338,7 @@ public class User extends SocialObject implements Subject, Followable {
 			this.merge();
 		}
 	}
-
+	
 	@Transactional
     public Category createCategory(String name, String description, String icon, int seq) {
 		
@@ -355,8 +355,8 @@ public class User extends SocialObject implements Subject, Followable {
     }
 	
 	@Transactional
-	public Post createProduct(String name, String description, Category category, Double productPrize) {
-		Post product = new Post(this, name, description, category, productPrize);
+	public Post createProduct(String name, String body, Category category, Double price) {
+		Post product = new Post(this, name, body, category, price);
 		product.save();
 		this.numProducts++;
 		return product;
@@ -371,7 +371,6 @@ public class User extends SocialObject implements Subject, Followable {
 	 * @return
 	 */
 	public Folder createAlbum(String name, String description, Boolean system) {
-
 		if (ensureFolderExistWithGivenName(name)) {
 			Folder folder = createFolder(name, description,
 					SocialObjectType.FOLDER, system);

@@ -15,6 +15,8 @@ import javax.persistence.Query;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
+import common.cache.CategoryCache;
+
 import domain.Likeable;
 import domain.Postable;
 import domain.SocialObjectType;
@@ -60,9 +62,23 @@ public class Category extends SocialObject implements Likeable, Postable, Compar
 		this.system = true;
 	}
 	
+	public static List<Category> loadCategories() {
+		try {
+            Query q = JPA.em().createQuery("SELECT c FROM Category c where deleted = 0 order by seq");
+            return (List<Category>) q.getResultList();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
 	@Transactional
 	public static Category findById(Long id) {
-        try {
+		Category category = CategoryCache.getCategory(id);
+		if (category != null) {
+			return category;
+		}
+
+		try {
             Query q = JPA.em().createQuery("SELECT c FROM Category c where id = ?1 and deleted = 0");
             q.setParameter(1, id);
             return (Category) q.getSingleResult();
@@ -72,12 +88,7 @@ public class Category extends SocialObject implements Likeable, Postable, Compar
     }
 
 	public static List<Category> getAllCategories() {
-		try {
-            Query q = JPA.em().createQuery("SELECT c FROM Category c where deleted = 0 order by seq");
-            return (List<Category>) q.getResultList();
-        } catch (NoResultException nre) {
-            return null;
-        }
+		return CategoryCache.getAllCategories();
 	}
 	
 	@Override

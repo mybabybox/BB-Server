@@ -655,7 +655,7 @@ public class Application extends Controller {
 	}
 	
 	//
-	// Test Ads
+	// TEMP
 	//
 	
 	@Transactional

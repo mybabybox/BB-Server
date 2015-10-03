@@ -53,8 +53,7 @@ public class Location  {
     }
     
     public static enum LocationCode {
-        HK,
-        US
+        HK
     }
     
     public Location() {}

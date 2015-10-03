@@ -640,40 +640,7 @@ public class UserController extends Controller {
         }
 		return ok();
 	}
-    
-    @Transactional
-	public static Result addProduct() {
-    	User user = Application.getLocalUser(session());
-    	DynamicForm form = DynamicForm.form().bindFromRequest();
-        String postId = form.get("postId");
-        if (logger.isDebugEnabled()) {
-            logger.underlyingLogger().debug("uploadPhotoOfPost(p="+postId+")");
-        }
-
-        FilePart picture = request().body().asMultipartFormData().getFile("photo");
-        System.out.println("HERE");
-        
-        if (picture == null) {
-            return status(500);
-        }
-        
-        System.out.println("picture");
-        
-        String fileName = picture.getFilename();
-        File file = picture.getFile();
-        try {
-            File fileTo = ImageFileUtil.copyImageFileToTemp(file, fileName);
-            Post product = new Post();
-            product.setOwner(user);
-            Long id = product.addPostPhoto(fileTo).id;
-            return ok(id.toString());
-        } catch (IOException e) {
-        	e.printStackTrace();
-            logger.underlyingLogger().error("Error in uploadPhotoOfPost", e);
-            return status(500);
-        }
-	}
-    
+  
     @Transactional
     public static Result profile(Long id) {
         	NanoSecondStopWatch sw = new NanoSecondStopWatch();

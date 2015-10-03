@@ -21,8 +21,8 @@ GET     /privacy                    controllers.Application.privacy
 GET     /terms                      controllers.Application.terms
 
 GET     /restricted                 controllers.Application.restricted
-GET     /profile/:id                      controllers.UserController.profile(id: Long)
-GET     /profile                      controllers.Application.profile
+GET     /profile/:id                controllers.UserController.profile(id: Long)
+GET     /profile                    controllers.Application.profile
 
 # Main
 GET     /                           controllers.Application.index
@@ -42,7 +42,6 @@ GET     /get-application-info       controllers.Application.getApplicationInfo
 GET     /get-user-target-profile    controllers.Application.getUserTargetProfile
 GET     /init-new-user              controllers.Application.initNewUser
 
-
 GET     /logout                     com.feth.play.module.pa.controllers.Authenticate.logout
 GET     /authenticate/:provider     com.feth.play.module.pa.controllers.Authenticate.authenticate(provider: String)
 GET     /authenticatePopup/:provider    com.feth.play.module.pa.controllers.Authenticate.authenticatePopup(provider: String)
@@ -59,8 +58,8 @@ GET     /accounts/exists            controllers.Signup.exists
 GET     /accounts/password/reset/:token     controllers.Signup.resetPassword(token: String)
 POST    /accounts/password/reset            controllers.Signup.doResetPassword
 
-GET     /accounts/password/change    controllers.Account.changePassword
-POST    /accounts/password/change    controllers.Account.doChangePassword
+GET     /accounts/password/change   controllers.Account.changePassword
+POST    /accounts/password/change   controllers.Account.doChangePassword
 
 GET     /accounts/verify            controllers.Account.verifyEmail
 
@@ -95,9 +94,6 @@ GET		/get-category-newest-feed/:id/:postType/:offset			controllers.ProductContro
 GET		/get-category-price-low-high-feed/:id/:postType/:offset			controllers.ProductController.getCategoryPriceLowHighFeed(id :Long, postType: String, offset: Long)
 GET		/get-category-price-high-low-feed/:id/:postType/:offset			controllers.ProductController.getCategoryPriceHighLowFeed(id :Long, postType: String, offset: Long)
 
-GET     /add/product            		     		controllers.Application.addProduct
-GET     /add/story                   				controllers.Application.addStory
-
 POST	/post/new		 		             		controllers.ProductController.createProductWeb
 POST	/mobile/post/new		 		            controllers.ProductController.createProductMobile
 GET     /get-all-feed-products       				controllers.ProductController.getAllFeedProducts
@@ -124,8 +120,7 @@ GET     /get-user-liked-feed/:id/:offset			controllers.UserController.getUserLik
 # image upload
 POST    /image/upload-profile-photo                 controllers.UserController.uploadProfilePhoto
 POST    /image/upload-cover-photo                   controllers.UserController.uploadCoverPhoto
-POST    /image/upload-product-photo                 controllers.UserController.addProduct
-POST    /image/upload-message-photo controllers.UserController.uploadMessagePhoto()
+POST    /image/upload-message-photo                 controllers.UserController.uploadMessagePhoto()
 
 # image get
 GET     /image/get-profile-image                    controllers.UserController.getProfileImage
@@ -140,14 +135,19 @@ GET     /image/get-message-image-by-id/:id          controllers.UserController.g
 GET     /image/get-original-message-image-by-id/:id controllers.UserController.getOriginalMessageImageById(id :Long)
 GET     /image/getEmoticons                         controllers.UserController.getEmoticons()
 
+# misc
+GET     /get-all-districts                          controllers.Application.getAllDistricts
+
 # category
 GET     /categories                                 controllers.Application.getCategories()
 GET     /category/:id                               controllers.Application.getCategory(id:Long)
 
-# mobil 
+# web
+GET     /add/product                                controllers.Application.addProduct
+GET     /add/story                                  controllers.Application.addStory
+
+# mobile
 POST    /mobile/login                               controllers.Application.doMobileLogin
-POST    /authenticate/mobile/:provider  com.feth.play.module.pa.controllers.Authenticate.mobileAuthenticate(provider: String)
+POST    /authenticate/mobile/:provider              com.feth.play.module.pa.controllers.Authenticate.mobileAuthenticate(provider: String)
 
 GET		/comments/:postId/:offset 					controllers.ProductController.getPostComments(postId: Long,offset:Long)
-
-GET     /get-all-districts          controllers.Application.getAllDistricts

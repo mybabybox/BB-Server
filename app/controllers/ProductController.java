@@ -7,12 +7,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import models.Category;
 import models.Collection;
 import models.Comment;
 import models.Post;
 import models.Resource;
-import models.SocialObject;
 import models.User;
 import play.data.DynamicForm;
 import play.db.jpa.Transactional;
@@ -26,10 +27,10 @@ import viewmodel.PostVM;
 import viewmodel.PostVMLite;
 import viewmodel.ResponseStatusVM;
 import viewmodel.UserVM;
-
 import common.cache.CalcServer;
 import common.utils.HtmlUtil;
 import common.utils.ImageFileUtil;
+import domain.SocialObjectType;
 
 public class ProductController extends Controller{
 	private static play.api.Logger logger = play.api.Logger.apply(ProductController.class);
@@ -38,7 +39,7 @@ public class ProductController extends Controller{
 	public static Result createProductWeb() {
 		DynamicForm dynamicForm = DynamicForm.form().bindFromRequest();
 		List<FilePart> pictures = request().body().asMultipartFormData().getFiles();
-		return createProduct(dynamicForm.get("title"), dynamicForm.get("desc"), Long.parseLong(dynamicForm.get("catId")), Double.parseDouble(dynamicForm.get("price")), pictures);
+		return createProduct(dynamicForm.get("title"), dynamicForm.get("body"), Long.parseLong(dynamicForm.get("catId")), Double.parseDouble(dynamicForm.get("price")), pictures);
 	}
 	
 	@Transactional
@@ -54,21 +55,20 @@ public class ProductController extends Controller{
 		}
 	    String catId = multipartFormData.asFormUrlEncoded().get("catId")[0];
 	    String title = multipartFormData.asFormUrlEncoded().get("title")[0];
-	    String desc = multipartFormData.asFormUrlEncoded().get("desc")[0];
+	    String body = multipartFormData.asFormUrlEncoded().get("body")[0];
 	    String price = multipartFormData.asFormUrlEncoded().get("price")[0];
 	    request().body().asMultipartFormData().getFiles();
-		return createProduct(title, desc, Long.parseLong(catId), Double.parseDouble(price), files);
+		return createProduct(title, body, Long.parseLong(catId), Double.parseDouble(price), files);
 	}
 	
-	private static Result createProduct(String title, String desc,
-			Long catId, Double price, List<FilePart> pictures) {
+	private static Result createProduct(String title, String body, Long catId, Double price, List<FilePart> pictures) {
 		final User localUser = Application.getLocalUser(session());
 		if (!localUser.isLoggedIn()) {
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
 			return status(500);
 		}
 		try {
-			Post newPost = localUser.createProduct(title, desc, Category.findById(catId), price);
+			Post newPost = localUser.createProduct(title, body, Category.findById(catId), price);
 			if (newPost == null) {
 				return status(505, "Failed to create product. Invalid parameters.");
 			}
@@ -79,7 +79,7 @@ public class ProductController extends Controller{
 				newPost.addPostPhoto(fileTo);
 			}
 			CalcServer.addToQueues(newPost);
-			ResponseStatusVM response = new ResponseStatusVM("post", newPost.id, localUser.id, true);
+			ResponseStatusVM response = new ResponseStatusVM(SocialObjectType.POST, newPost.id, localUser.id, true);
 			return ok(Json.toJson(response));
 		} catch (IOException e) {
 			logger.underlyingLogger().error("Error in createProduct", e);
@@ -194,11 +194,21 @@ public class ProductController extends Controller{
 	public static Result newComment() {
 		DynamicForm form = form().bindFromRequest();
 		Long postId = Long.parseLong(form.get("postId"));
-		String desc = HtmlUtil.convertTextToHtml(form.get("desc"));
-		//Boolean android = Boolean.parseBoolean(form.get("android"));
-		//Boolean withphotos;
-		SocialObject comment = Post.findById(postId).onComment(Application.getLocalUser(session()), desc);
-		ResponseStatusVM response = new ResponseStatusVM("comment", comment.id, comment.owner.id, true);
+		String body = HtmlUtil.convertTextToHtml(form.get("body"));
+		Comment comment = (Comment) Post.findById(postId).onComment(Application.getLocalUser(session()), body);
+
+		// set device
+		String android = form.get("android");
+		String ios = form.get("ios");
+		if (!StringUtils.isEmpty(android)) {
+        	comment.android = true;
+		} else if (!StringUtils.isEmpty(ios)) {
+        	comment.ios = true;
+		} else {
+        	comment.mobile = Application.isMobileUser();
+		}
+		
+		ResponseStatusVM response = new ResponseStatusVM(SocialObjectType.COMMENT, comment.id, comment.owner.id, true);
 		return ok(Json.toJson(response));
 	}
 	
