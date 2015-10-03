@@ -1,74 +1,59 @@
 package viewmodel;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
+import controllers.Application;
 import models.User;
 
 public class UserVM extends UserVMLite {
-    public long createdDate;
-    public String email;
-    public String aboutMe;
-    public String firstName;
-    public String lastName;
-    public String gender;
-    public String birthYear;
-    public LocationVM location;
+	@JsonProperty("firstName") public String firstName;
+    @JsonProperty("lastName") public String lastName;
+    @JsonProperty("email") public String email;
+    @JsonProperty("birthYear") public String birthYear;
+    @JsonProperty("gender") public String gender;
+    @JsonProperty("aboutMe") public String aboutMe;
+    @JsonProperty("location") public LocationVM location;
+    @JsonProperty("isMobile") public boolean isMobile = false;
 
     // admin readyonly fields
-    public String lastLogin;
-    public Long totalLogin;
-    public boolean isLoggedIn = false;
-    public boolean isFbLogin = false;
-    public boolean emailValidated = false;
-    public boolean newUser = false;
-    public boolean isAdmin = false;
+    @JsonProperty("createdDate") public Long createdDate;
+    @JsonProperty("lastLogin") public Long lastLogin;
+    @JsonProperty("totalLogin") public Long totalLogin;
+    @JsonProperty("isLoggedIn") public boolean isLoggedIn = false;
+    @JsonProperty("isFbLogin") public boolean isFbLogin = false;
+    @JsonProperty("emailValidated") public boolean emailValidated = false;
+    @JsonProperty("newUser") public boolean newUser = false;
+    @JsonProperty("isAdmin") public boolean isAdmin = false;
 
-    // obsolete
-    public boolean isSA = false;
-    public boolean isBA = false;
-    public boolean isCA = false;
-    public boolean isE = false;
-    public Long questionsCount;
-    public Long answersCount;
-    public boolean enableSignInForToday = false;
-
+    
     public UserVM(User user) {
     	super(user);
         this.email = user.email;
-        this.createdDate = user.getCreatedDate().getTime();
         this.firstName = user.firstName;
         this.lastName = user.lastName;
-        if(user.userInfo != null){
+        if (user.userInfo != null) {
         	this.gender = user.userInfo.gender.name();
             this.birthYear = user.userInfo.birthYear;
             this.aboutMe = user.userInfo.aboutMe;
+            this.location = new LocationVM(user.userInfo.location);
         }
+        this.isMobile = Application.isMobileUser();
         
-
-        this.lastLogin = user.lastLogin.toString();
+        this.createdDate = user.getCreatedDate().getTime();
+        this.lastLogin = user.lastLogin.getTime();
         this.totalLogin = user.totalLogin;
         this.isLoggedIn = user.isLoggedIn();
         this.isFbLogin = user.fbLogin;
         this.emailValidated = user.emailValidated;
         this.newUser = user.isNewUser();
         this.isAdmin = user.isSuperAdmin();
-
-        //UserVMLite
-/*        this.id = user.id;
-        this.displayName = user.displayName;
-        this.numPosts = user.productCount;
-        this.numSold = 0L; //TODO
-        this.numLikes = user.likesCount;
-        this.numFollowers = user.followersCount;
-        this.numFollowings = user.followingCount;
-        this.numCollections = user.collectionCount;
-        this.isFollowing = true;//TODO
-*/
     }
 
-    public long getCreatedDate() {
+    public Long getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(long createdDate) {
+    public void setCreatedDate(Long createdDate) {
         this.createdDate = createdDate;
     }
 
@@ -136,11 +121,11 @@ public class UserVM extends UserVMLite {
         this.totalLogin = totalLogin;
     }
 
-    public String getLastLogin() {
+    public Long getLastLogin() {
         return lastLogin;
     }
 
-    public void setLastLogin(String lastLogin) {
+    public void setLastLogin(Long lastLogin) {
         this.lastLogin = lastLogin;
     }
 
@@ -182,64 +167,6 @@ public class UserVM extends UserVMLite {
 
     public void setIsAdmin(boolean isAdmin) {
         this.isAdmin = isAdmin;
-    }
-
-    // obsolete
-
-    public boolean isSA() {
-        return isSA;
-    }
-
-    public void setIsSA(boolean isSA) {
-        this.isSA = isSA;
-    }
-
-    public boolean isBA() {
-        return isBA;
-    }
-
-    public void setIsBA(boolean isBA) {
-        this.isBA = isBA;
-    }
-
-    public boolean isCA() {
-        return isCA;
-    }
-
-    public void setIsCA(boolean isCA) {
-        this.isCA = isCA;
-    }
-
-    public boolean isE() {
-        return isE;
-    }
-
-    public void setIsE(boolean isE) {
-        this.isE = isE;
-    }
-
-    public Long getQuestionsCount() {
-        return questionsCount;
-    }
-
-    public void setQuestionsCount(Long questionsCount) {
-        this.questionsCount = questionsCount;
-    }
-
-    public Long getAnswersCount() {
-        return answersCount;
-    }
-
-    public void setAnswersCount(Long answersCount) {
-        this.answersCount = answersCount;
-    }
-
-    public boolean getEnableSignInForToday() {
-        return enableSignInForToday;
-    }
-
-    public void setEnableSignInForToday(boolean enableSignInForToday) {
-        this.enableSignInForToday = enableSignInForToday;
     }
 
     @Override

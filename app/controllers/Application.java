@@ -53,6 +53,7 @@ import com.feth.play.module.pa.user.AuthUser;
 import common.cache.LocationCache;
 import common.model.TargetGender;
 import common.utils.DateTimeUtil;
+import common.utils.UserAgentUtil;
 
 public class Application extends Controller {
     private static final play.api.Logger logger = play.api.Logger.apply(Application.class);
@@ -592,6 +593,36 @@ public class Application extends Controller {
 		}
 	}
 	
+	//
+	// Mobile
+	//
+
+	public static boolean isMobileUser() {
+	    try {
+	        return "true".equalsIgnoreCase(session().get("mobile"));
+	    } catch (Exception e) {
+	        return false;
+	    }
+	}
+	
+	public static void setMobileUser() {
+		UserAgentUtil userAgentUtil = new UserAgentUtil(request());
+		if (userAgentUtil != null) {
+			boolean isMobile = userAgentUtil.isMobileUserAgent();
+			session().put("mobile",  isMobile? "true" : "false");
+		}
+	}
+	
+	public static void setMobileUserAgent(User user) {
+		if (user.isLoggedIn()) {
+			UserAgentUtil userAgentUtil = new UserAgentUtil(request());
+            String agentStr = userAgentUtil.getUserAgent();
+			if (agentStr != null) {
+				user.lastLoginUserAgent = userAgentUtil.getUserAgent().substring(0, Math.min(100, agentStr.length()));
+			}
+		}
+	}
+	
 	@Transactional
 	public static Result privacy() {
 		TermsAndConditions terms = TermsAndConditions.getTermsAndConditions();
@@ -643,25 +674,17 @@ public class Application extends Controller {
 	public static Result getCategories(){
 		List<CategoryVM> categoryList = new ArrayList<CategoryVM>();
 		for(Category category : Category.getAllCategories()){
-			CategoryVM cvm = new CategoryVM();
-			cvm.setId(category.id);
-			cvm.setName(category.name);
+			CategoryVM cvm = new CategoryVM(category);
 			categoryList.add(cvm);
 		}
-		return ok(Json.stringify(Json.toJson(categoryList)));
+		return ok(Json.toJson(categoryList));
 	}
 	
 	@Transactional
-	public static Result category(Long id){
-		CategoryVM categoryVm = new CategoryVM();
+	public static Result getCategory(Long id){
 		Category category = Category.findById(id);
-		if(category != null){
-			categoryVm.setId(category.id);
-			categoryVm.setName(category.name);
-			return ok(Json.stringify(Json.toJson(categoryVm)));
-		}else{
-			return ok();
-		}
+		CategoryVM categoryVM = new CategoryVM(category);
+		return ok(Json.toJson(categoryVM));
 	}
 	
 }

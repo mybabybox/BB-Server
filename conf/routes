@@ -78,18 +78,8 @@ POST    /login/password/forgot      controllers.Signup.doForgotPassword
 
 # User Info Service
 GET     /get-user-info              controllers.UserController.getUserInfo
-GET     /complete-home-tour         controllers.UserController.completeHomeTour
 GET     /about-user                 controllers.UserController.aboutUser
 POST    /updateUserProfileData      controllers.UserController.updateUserProfileData
-POST    /image/upload-profile-photo controllers.UserController.uploadProfilePhoto
-POST    /image/upload-product-photo controllers.UserController.addProduct
-POST    /image/upload-cover-photo   controllers.UserController.uploadCoverPhoto
-
-GET     /image/get-profile-image            controllers.UserController.getProfileImage
-
-GET     /image/get-thumbnail-image-by-id/:id        controllers.UserController.getThumbnailVersionImageByID(id :Long)
-GET     /image/get-thumbnail-cover-image-by-id/:id      controllers.UserController.getThumbnailCoverImageByID(id :Long)
-GET     /image/get-original-image-by-id/:id     controllers.UserController.getOriginalImageByID(id :Long)
 
 # Conversation
 GET     /get-all-conversations      controllers.UserController.getAllConversations()
@@ -97,10 +87,7 @@ GET     /get-messages/:id/:offset   controllers.UserController.getMessages(id: L
 GET     /open-conversation/:postId/:userId      controllers.UserController.openConversation(postId: Long, userId: Long)
 GET     /delete-conversation/:id    controllers.UserController.deleteConversation(id: Long)
 POST    /message/new                controllers.UserController.newMessage()
-POST    /image/upload-message-photo controllers.UserController.uploadMessagePhoto()
-GET     /image/get-message-image-by/:id         controllers.UserController.getMessageImage(id :Long)
 GET     /get-unread-message-count   controllers.UserController.getUnreadMessageCount()
-GET     /image/get-original-message-image/:id   controllers.UserController.getOriginalMessageImage(id :Long)
 
 # Product
 GET		/get-category-popular-feed/:id/:postType/:offset		controllers.ProductController.getCategoryPopularFeed(id :Long, postType: String, offset: Long)
@@ -112,7 +99,7 @@ GET     /add/product            		     		controllers.Application.addProduct
 GET     /add/story                   				controllers.Application.addStory
 
 POST	/post/new		 		             		controllers.ProductController.createProductWeb
-POST	/mobile/post/new		 		             		controllers.ProductController.createProductMobile
+POST	/mobile/post/new		 		            controllers.ProductController.createProductMobile
 GET     /get-all-feed-products       				controllers.ProductController.getAllFeedProducts
 GET     /get-all-similar-products       			controllers.ProductController.getAllSimilarProducts
 GET     /product/:id            		     		controllers.ProductController.product(id:Long)
@@ -134,13 +121,28 @@ GET     /followings/:id/:offset						controllers.UserController.getFollowings(id
 GET     /followers/:id/:offset						controllers.UserController.getFollowers(id: Long,offset:Long)
 GET     /get-user-liked-feed/:id/:offset			controllers.UserController.getUserLikedPosts(id: Long,offset:Long)
 
-# image
+# image upload
+POST    /image/upload-profile-photo                 controllers.UserController.uploadProfilePhoto
+POST    /image/upload-cover-photo                   controllers.UserController.uploadCoverPhoto
+POST    /image/upload-product-photo                 controllers.UserController.addProduct
+POST    /image/upload-message-photo controllers.UserController.uploadMessagePhoto()
+
+# image get
+GET     /image/get-profile-image                    controllers.UserController.getProfileImage
+GET     /image/get-profile-image-by-id/:id          controllers.UserController.getProfileImageById(id:Long)
+GET     /image/get-thumbnail-profile-image-by-id/:id    controllers.UserController.getThumbnailProfileImageById(id :Long)
+GET     /image/get-mini-profile-image-by-id/:id     controllers.UserController.getMiniProfileImageById(id :Long)
+GET     /image/get-cover-image-by-id/:id            controllers.UserController.getCoverImageById(id :Long)
+GET     /image/get-thumbnail-cover-image-by-id/:id  controllers.UserController.getThumbnailCoverImageById(id :Long)
 GET     /image/get-post-image-by-id/:id             controllers.ProductController.getProductImageById(id :Long)
 GET     /image/get-original-post-image-by-id/:id    controllers.ProductController.getFullProductImageById(id :Long)
+GET     /image/get-message-image-by-id/:id          controllers.UserController.getMessageImageById(id :Long)
+GET     /image/get-original-message-image-by-id/:id controllers.UserController.getOriginalMessageImageById(id :Long)
+GET     /image/getEmoticons                         controllers.UserController.getEmoticons()
 
 # category
 GET     /categories                                 controllers.Application.getCategories()
-GET     /category/:id                               controllers.Application.category(id:Long)
+GET     /category/:id                               controllers.Application.getCategory(id:Long)
 
 # mobil 
 POST    /mobile/login                               controllers.Application.doMobileLogin

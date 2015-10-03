@@ -68,6 +68,15 @@ import domain.SocialObjectType;
 public class User extends SocialObject implements Subject, Followable {
 	private static final play.api.Logger logger = play.api.Logger.apply(User.class);
 
+	private static final String STORAGE_USER_NOIMAGE = 
+            Play.application().configuration().getString("storage.user.noimage");
+	
+	private static final String STORAGE_USER_THUMBNAIL_NOIMAGE = 
+            Play.application().configuration().getString("storage.user.thumbnail.noimage");
+    
+	private static final String STORAGE_USER_COVER_NOIMAGE = 
+            Play.application().configuration().getString("storage.user.cover.noimage");
+    
 	public static final Long NO_LOGIN_ID = -1L;
 	
 	private static User BB_ADMIN;
@@ -893,15 +902,15 @@ public class User extends SocialObject implements Subject, Followable {
 	}
 
 	public static File getDefaultUserPhoto() throws FileNotFoundException {
-		return new File(Play.application().configuration().getString("storage.user.noimage"));
+		return new File(STORAGE_USER_NOIMAGE);
 	}
 
 	public static File getDefaultThumbnailUserPhoto() throws FileNotFoundException {
-		return new File(Play.application().configuration().getString("storage.user.noimage"));
+		return new File(STORAGE_USER_THUMBNAIL_NOIMAGE);
 	}
 
 	public static File getDefaultCoverPhoto() throws FileNotFoundException {
-		return new File(Play.application().configuration().getString("storage.user.cover.noimage"));
+		return new File(STORAGE_USER_COVER_NOIMAGE);
 	}
 
 	public String getFirstName() {

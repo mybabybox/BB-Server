@@ -1,17 +1,19 @@
 package viewmodel;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import models.User;
 
 public class UserVMLite {
-    public Long id;
-    public String displayName;
-    public Long numFollowings = 0L;
-    public Long numFollowers = 0L;
-    public Long numProducts = 0L;
-    public Long numStories = 0L;
-    public Long numLikes = 0L;
-    public Long numCollections = 0L;
-    public boolean isFollowing = false;
+	@JsonProperty("id") public Long id;
+    @JsonProperty("displayName") public String displayName;
+    @JsonProperty("numFollowings") public Long numFollowings = 0L;
+    @JsonProperty("numFollowers") public Long numFollowers = 0L;
+    @JsonProperty("numProducts") public Long numProducts = 0L;
+    @JsonProperty("numStories") public Long numStories = 0L;
+    @JsonProperty("numLikes") public Long numLikes = 0L;
+    @JsonProperty("numCollections") public Long numCollections = 0L;
+    @JsonProperty("isFollowing") public boolean isFollowing = false;
 
     public UserVMLite(User user){
         this.id = user.id;
