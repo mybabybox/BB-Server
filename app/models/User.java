@@ -1147,10 +1147,23 @@ public class User extends SocialObject implements Subject, Followable {
 	}
 
 	@JsonIgnore
-	public boolean isFollowedBy(User user) {
+	public boolean isFollowing(User user) {
 		Query q = JPA.em().createQuery("Select sa from FollowSocialRelation sa where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
 		q.setParameter(1, this.id);
 		q.setParameter(2, user.id);
+		q.setParameter(3, SocialObjectType.USER);
+		q.setParameter(4, SocialObjectType.USER);
+		if(q.getResultList().size() > 0 ) {
+			return true;
+		}
+		return false;
+	}
+	
+	@JsonIgnore
+	public boolean isFollowedBy(User user) {
+		Query q = JPA.em().createQuery("Select sa from FollowSocialRelation sa where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
+		q.setParameter(1, user.id);
+		q.setParameter(2, this.id);
 		q.setParameter(3, SocialObjectType.USER);
 		q.setParameter(4, SocialObjectType.USER);
 		if(q.getResultList().size() > 0 ) {

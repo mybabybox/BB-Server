@@ -19,7 +19,6 @@ public class PostVMLite {
     public int numBuys;
     public int numComments;
     public int numViews;
-    public boolean isOwner = false;
     public boolean isLiked = false;
     
     public Long offset;
@@ -39,7 +38,6 @@ public class PostVMLite {
         this.numBuys = post.noOfBuys;
         this.numComments = post.noOfComments;
         this.numChats = post.noOfChats;
-        this.isOwner = false; //TODO
         this.isLiked = post.isLikedBy(post.owner);
         
 		if (post.folder != null && !CollectionUtils.isEmpty(post.folder.resources)) {
@@ -153,14 +151,6 @@ public class PostVMLite {
 
     public void setNumLikes(int numLikes) {
         this.numLikes = numLikes;
-    }
-
-    public boolean isOwner() {
-        return isOwner;
-    }
-
-    public void setIsOwner(boolean isOwner) {
-        this.isOwner = isOwner;
     }
 
     public boolean isLiked() {

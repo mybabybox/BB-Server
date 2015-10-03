@@ -173,7 +173,7 @@ public class ProductController extends Controller{
 	public static PostVM getProductInfoVM(Long id) {
 		User localUser = Application.getLocalUser(session());
 		Post post = Post.findById(id);
-		PostVM vm = new PostVM(post);
+		PostVM vm = new PostVM(post, localUser);
 		vm.isFollowingOwner = post.owner.isFollowedBy(localUser);
 		return vm;
 	}
@@ -212,6 +212,44 @@ public class ProductController extends Controller{
 		return ok(Json.toJson(response));
 	}
 	
+	@Transactional
+    public static Result deletePost(Long id) {
+        final User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return status(500);
+        }
+        
+        Post post = Post.findById(id);
+
+        if (logger.underlyingLogger().isDebugEnabled()) {
+            logger.underlyingLogger().debug(String.format("[u=%d][c=%d][p=%d] deletePost", localUser.id, post.category.id, id));
+        }
+
+        if (localUser.equals(post.owner) || 
+                localUser.isSuperAdmin()) {
+            post.delete(localUser);
+            return ok();
+        }
+        return status(500, "Failed to delete post. [u=" + localUser.id + "] not owner of post [id=" + id + "].");
+    }
+    
+    @Transactional
+    public static Result deleteComment(Long id) {
+        final User localUser = Application.getLocalUser(session());
+        if (logger.underlyingLogger().isDebugEnabled()) {
+            logger.underlyingLogger().debug(String.format("[u=%d][cmt=%d] deleteComment", localUser.id, id));
+        }
+
+        Comment comment = Comment.findById(id);
+        if (localUser.equals(comment.owner) ||
+                localUser.isSuperAdmin()) {
+            comment.delete(localUser);
+            return ok();
+        }
+        return status(500, "Failed to delete comment. [u="+localUser.id+"] not owner of comment [id=" + id + "].");
+    }
+
 	@Transactional
 	public static Result onView(Long id) {
 		Post.findById(id).onView(Application.getLocalUser(session()));

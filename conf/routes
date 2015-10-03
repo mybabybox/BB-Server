@@ -105,7 +105,9 @@ POST	/comment/new								controllers.ProductController.newComment
 GET     /view-product/:id        					controllers.ProductController.onView(id:Long)
 POST	/create-collection		             		controllers.ProductController.createCollection
 POST	/product/add-to-collection					controllers.ProductController.addToCollection
-GET		/post/:id									controllers.ProductController.getProductInfo(id: Long)
+GET		/post/:id									controllers.ProductController.getProductInfo(id:Long)
+GET     /post/delete/:id                            controllers.ProductController.deletePost(id:Long)
+GET     /comment/delete/:id                         controllers.ProductController.deleteComment(id:Long)
 
 # User
 GET     /get-user-posted-feed/:id/:offset       	controllers.UserController.getUserPosts(id: Long, offset:Long)

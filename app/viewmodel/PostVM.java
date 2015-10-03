@@ -1,6 +1,7 @@
 package viewmodel;
 
 import models.Post;
+import models.User;
 
 public class PostVM extends PostVMLite {
     public Long ownerId;
@@ -12,13 +13,15 @@ public class PostVM extends PostVMLite {
     public String categoryName;
     public String categoryIcon;
     public Long categoryId;
-    public boolean isFollowingOwner;
+    
+    public boolean isOwner = false;
+    public boolean isFollowingOwner = false;
     
     public boolean mobile = false;
     public boolean android = false;
     public boolean ios = false;
 
-    public PostVM(Post post) {
+    public PostVM(Post post, User user) {
     	super(post);
         this.ownerId = post.owner.id;
         this.postedBy = post.getCreatedBy();
@@ -30,6 +33,9 @@ public class PostVM extends PostVMLite {
         this.categoryIcon = post.category.icon;
         this.categoryId = post.category.id;
 
+        this.isOwner = (post.owner.id == user.id);
+        this.isFollowingOwner = user.isFollowing(post.owner);
+        
         this.mobile = post.mobile;
         this.android = post.android;
         this.ios = post.ios;
@@ -113,5 +119,21 @@ public class PostVM extends PostVMLite {
 
     public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
+    }
+    
+    public boolean isOwner() {
+        return isOwner;
+    }
+
+    public void setIsOwner(boolean isOwner) {
+        this.isOwner = isOwner;
+    }
+    
+    public boolean isFollowingOwner() {
+        return isFollowingOwner;
+    }
+
+    public void setIsFollowingOwner(boolean isFollowingOwner) {
+        this.isFollowingOwner = isFollowingOwner;
     }
 }
