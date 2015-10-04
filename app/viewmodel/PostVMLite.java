@@ -1,50 +1,50 @@
 package viewmodel;
 
-import java.util.ArrayList;
-
 import org.apache.commons.collections.CollectionUtils;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 import models.Post;
 import models.Resource;
 
 public class PostVMLite {
-    public Long id;
-    public String title;
-    public double price;
-    public boolean sold;
-	public ArrayList<Long> images = new ArrayList<Long>(20);
-    public String postType;
-    public int numLikes;
-    public int numChats;
-    public int numBuys;
-    public int numComments;
-    public int numViews;
-    public boolean isLiked = false;
+	@JsonProperty("id") public Long id;
+	@JsonProperty("title") public String title;
+	@JsonProperty("price") public double price;
+	@JsonProperty("sold") public boolean sold;
+	@JsonProperty("postType") public String postType;
+	@JsonProperty("images") public Long[] images;
+	@JsonProperty("hasImage") public Boolean hasImage;
+	
+	@JsonProperty("numLikes") public int numLikes;
+	@JsonProperty("numChats") public int numChats;
+	@JsonProperty("numBuys") public int numBuys;
+	@JsonProperty("numComments") public int numComments;
+	@JsonProperty("numViews") public int numViews;
+	@JsonProperty("isLiked") public boolean isLiked = false;
     
-    public Long offset;
+	@JsonProperty("offset") public Long offset;
 
-	public Boolean hasImage;
-    public Long image;
-    
     public PostVMLite(Post post) {
         this.id = post.id;
         this.title = post.title;
         this.price = post.price;
-        this.sold = false; //TODO
-        this.numComments = post.noOfComments;
+        this.sold = post.sold;
         this.postType = post.postType.toString();
-        this.numViews = post.noOfViews;
+        
         this.numLikes = post.noOfLikes;
+        this.numChats = post.noOfChats;
         this.numBuys = post.noOfBuys;
         this.numComments = post.noOfComments;
-        this.numChats = post.noOfChats;
+        this.numViews = post.noOfViews;
+        
         this.isLiked = post.isLikedBy(post.owner);
         
-		if (post.folder != null && !CollectionUtils.isEmpty(post.folder.resources)) {
+        if (post.folder != null && !CollectionUtils.isEmpty(post.folder.resources)) {
 		    this.hasImage = true;
-			this.image = post.folder.resources.get(0).getId();
-			for (Resource resource : post.folder.resources) {
-				this.images.add(resource.getId());
+		    this.images = new Long[post.folder.resources.size()];
+			int i = 0;
+			for (Resource rs : post.folder.resources) {
+			    this.images[i++] = rs.id;
 			}
 		}
     }
@@ -113,11 +113,11 @@ public class PostVMLite {
         this.postType = postType;
     }
 
-    public ArrayList<Long> getImages() {
+    public Long[] getImages() {
 		return images;
 	}
 	
-    public void setImages(ArrayList<Long> images) {
+    public void setImages(Long[] images) {
 		this.images = images;
 	}
 	
@@ -127,14 +127,6 @@ public class PostVMLite {
 	
 	public void setHasImage(Boolean hasImage) {
 		this.hasImage = hasImage;
-	}
-	
-	public Long getImage() {
-		return image;
-	}
-	
-	public void setImage(Long image) {
-		this.image = image;
 	}
 	
     public int getNumViews() {

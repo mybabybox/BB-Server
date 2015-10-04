@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Query;
 
 import common.utils.StringUtil;
+import controllers.Application.DeviceType;
 import play.data.validation.Constraints.Required;
 import play.db.jpa.JPA;
 import domain.Creatable;
@@ -44,9 +45,7 @@ public class Comment extends SocialObject implements Comparable<Comment>, Likeab
     @ManyToOne(cascade = CascadeType.REMOVE)
   	public Folder folder;
 
-	public boolean mobile = false;
-	public boolean android = false;
-	public boolean ios = false;
+    public DeviceType deviceType;
 	
     /**
      * Ctor

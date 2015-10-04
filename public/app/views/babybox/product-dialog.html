@@ -30,25 +30,21 @@
 <!-- 					</span> -->
 				</div>
 				<div class="products-show" data-id="31137400">
-					<div class="products-show-left-pane">
+				    <div class="products-show-left-pane">
 						<div class="products-show-image">
-							<a 
-								class="swap-link-if-user store-approved external-product-url"
-								data-domain="restorationhardware.com"
-								data-source="product image" rel="nofollow" target="_blank"><img
-								class="product-image product-original" itemprop="image"
-								data-ng-src="{{ImageUrl}}"></a>
-						
+							<a class="swap-link-if-user store-approved external-product-url" 
+							    data-domain="restorationhardware.com"
+								data-source="product image" rel="nofollow" target="_blank">
+								<img class="product-image product-original" itemprop="image" data-ng-src="{{imageUrl}}">
+							</a>
 						</div>
 						
-						<div
-									class="products-show-more-from-user-grid products-show-more-grid">
-									<a  data-ng-repeat="image in product.images" ><img
-										class="product-image product-x200"
-										ng-click="setImgUrl(image)"
-										data-ng-src="/image/get-post-image-by-id/{{image}}"></a>
+						<div class="products-show-more-from-user-grid products-show-more-grid">
+							<a data-ng-repeat="image in product.images">
+	                            <img class="product-image product-x200" ng-click="setImgUrl(image)" data-ng-src="/image/get-post-image-by-id/{{image}}">
+							</a>
 						</div>
-						<div class="variant-thumbnails"></div>
+                        <div class="variant-thumbnails"></div>
 					</div>
 					<div class="products-show-right-pane">
 						<div class="products-show-controls">

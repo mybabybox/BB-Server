@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
 import models.Category;
 import models.Collection;
 import models.Comment;
@@ -22,7 +20,6 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
-import play.mvc.Results;
 import viewmodel.CommentVM;
 import viewmodel.PostVM;
 import viewmodel.PostVMLite;
@@ -31,6 +28,7 @@ import viewmodel.UserVM;
 import common.cache.CalcServer;
 import common.utils.HtmlUtil;
 import common.utils.ImageFileUtil;
+import controllers.Application.DeviceType;
 import domain.SocialObjectType;
 
 public class ProductController extends Controller{
@@ -39,8 +37,13 @@ public class ProductController extends Controller{
 	@Transactional
 	public static Result createProductWeb() {
 		DynamicForm dynamicForm = DynamicForm.form().bindFromRequest();
-		List<FilePart> pictures = request().body().asMultipartFormData().getFiles();
-		return createProduct(dynamicForm.get("title"), dynamicForm.get("body"), Long.parseLong(dynamicForm.get("catId")), Double.parseDouble(dynamicForm.get("price")), pictures);
+		List<FilePart> images = request().body().asMultipartFormData().getFiles();
+		String catId = dynamicForm.get("catId");
+	    String title = dynamicForm.get("title");
+	    String body = dynamicForm.get("body");
+	    String price = dynamicForm.get("price");
+	    String deviceType = dynamicForm.get("deviceType");
+		return createProduct(title, body, Long.parseLong(catId), Double.parseDouble(price), images, Application.parseDeviceType(deviceType));
 	}
 	
 	@Transactional
@@ -54,39 +57,47 @@ public class ProductController extends Controller{
 				break;
 			}
 		}
-	    String catId = multipartFormData.asFormUrlEncoded().get("catId")[0];
+	    
+		String catId = multipartFormData.asFormUrlEncoded().get("catId")[0];
 	    String title = multipartFormData.asFormUrlEncoded().get("title")[0];
 	    String body = multipartFormData.asFormUrlEncoded().get("body")[0];
 	    String price = multipartFormData.asFormUrlEncoded().get("price")[0];
+	    String deviceType = multipartFormData.asFormUrlEncoded().get("deviceType")[0];
 	    request().body().asMultipartFormData().getFiles();
-		return createProduct(title, body, Long.parseLong(catId), Double.parseDouble(price), files);
+		return createProduct(title, body, Long.parseLong(catId), Double.parseDouble(price), files, Application.parseDeviceType(deviceType));
 	}
 	
-	private static Result createProduct(String title, String body, Long catId, Double price, List<FilePart> pictures) {
+	private static Result createProduct(String title, String body, Long catId, Double price, List<FilePart> images, DeviceType deviceType) {
 		final User localUser = Application.getLocalUser(session());
 		if (!localUser.isLoggedIn()) {
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
-			return status(500);
+			return notFound();
 		}
+		
 		try {
 			Post newPost = localUser.createProduct(title, body, Category.findById(catId), price);
 			if (newPost == null) {
-				return status(505, "Failed to create product. Invalid parameters.");
+				return badRequest("Failed to create product. Invalid parameters.");
 			}
-			for(FilePart picture : pictures){
-				String fileName = picture.getFilename();
-				File file = picture.getFile();
+			
+			for(FilePart image : images){
+				String fileName = image.getFilename();
+				File file = image.getFile();
 				File fileTo = ImageFileUtil.copyImageFileToTemp(file, fileName);
 				newPost.addPostPhoto(fileTo);
 			}
+			
+			// set device
+			newPost.deviceType = deviceType;
+			
 			CalcServer.addToQueues(newPost);
 			ResponseStatusVM response = new ResponseStatusVM(SocialObjectType.POST, newPost.id, localUser.id, true);
 			return ok(Json.toJson(response));
 		} catch (IOException e) {
 			logger.underlyingLogger().error("Error in createProduct", e);
 		}
-		return status(500);
-
+		
+		return badRequest();
 	}
 
 	@Transactional
@@ -96,7 +107,7 @@ public class ProductController extends Controller{
 		Category category = Category.findById(Long.parseLong(form1.get("category")));
 		Collection newCollection = localUser.createCollection(form1.get("name"), form1.get("description"), category);
 		if (newCollection == null) {
-			return status(505, "Failed to create Collection. Invalid parameters.");
+			return badRequest("Failed to create Collection. Invalid parameters.");
 		}
 		return ok(Json.toJson(newCollection.id));
 	}
@@ -124,10 +135,16 @@ public class ProductController extends Controller{
 	}
 
 	private static List<PostVMLite> getPostVMsFromPosts(List<Post> posts) {
+		final User localUser = Application.getLocalUser(session());
+		if (!localUser.isLoggedIn()) {
+			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+			return null;
+		}
+		
 		List<PostVMLite> vms = new ArrayList<>();
-		for(Post product : posts) {
+		for (Post product : posts) {
 			PostVMLite vm = new PostVMLite(product);
-			vm.isLiked = product.isLikedBy(Application.getLocalUser(session()));
+			vm.isLiked = product.isLikedBy(localUser);
 			vms.add(vm);
 		}
 		return vms;
@@ -204,15 +221,8 @@ public class ProductController extends Controller{
 		Comment comment = (Comment) Post.findById(postId).onComment(Application.getLocalUser(session()), body);
 
 		// set device
-		String android = form.get("android");
-		String ios = form.get("ios");
-		if (!StringUtils.isEmpty(android)) {
-        	comment.android = true;
-		} else if (!StringUtils.isEmpty(ios)) {
-        	comment.ios = true;
-		} else {
-        	comment.mobile = Application.isMobileUser();
-		}
+		DeviceType deviceType = Application.parseDeviceType(form.get("deviceType"));
+		comment.deviceType = deviceType;
 		
 		ResponseStatusVM response = new ResponseStatusVM(SocialObjectType.COMMENT, comment.id, comment.owner.id, true);
 		return ok(Json.toJson(response));
@@ -223,7 +233,7 @@ public class ProductController extends Controller{
         final User localUser = Application.getLocalUser(session());
         if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
-            return status(500);
+            return notFound();
         }
         
         Post post = Post.findById(id);
@@ -258,12 +268,24 @@ public class ProductController extends Controller{
 
 	@Transactional
 	public static Result onView(Long id) {
-		Post.findById(id).onView(Application.getLocalUser(session()));
+		final User localUser = Application.getLocalUser(session());
+		if (!localUser.isLoggedIn()) {
+			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+			return notFound();
+		}
+		
+		Post.findById(id).onView(localUser);
 		return ok();
 	}
 	
 	@Transactional 
 	public static Result getCategoryPopularFeed(Long id, String postType, Long offset){
+		final User localUser = Application.getLocalUser(session());
+		if (!localUser.isLoggedIn()) {
+			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+			return notFound();
+		}
+		
 		List<Long> postIds = CalcServer.getCategoryPopularFeed(id, offset.doubleValue());
 		if(postIds.size() == 0){
 			return ok(Json.toJson(postIds));
@@ -273,7 +295,7 @@ public class ProductController extends Controller{
 		List<Post> posts =  Post.getPosts(postIds);
 		for(Post post : posts) {
 			PostVMLite vm = new PostVMLite(post);
-			vm.isLiked = post.isLikedBy(Application.getLocalUser(session()));
+			vm.isLiked = post.isLikedBy(localUser);
 			vm.offset = post.baseScore;
 			vms.add(vm);
 		}
@@ -283,15 +305,22 @@ public class ProductController extends Controller{
 	
 	@Transactional 
 	public static Result getCategoryNewestFeed(Long id, String postType, Long offset){
+		final User localUser = Application.getLocalUser(session());
+		if (!localUser.isLoggedIn()) {
+			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+			return notFound();
+		}
+		
 		List<Long> postIds = CalcServer.getCategoryNewestFeed(id, offset.doubleValue());	
 		if(postIds.size() == 0){
 			return ok(Json.toJson(postIds));
 		}
+		
 		List<PostVMLite> vms = new ArrayList<>();
 		List<Post> posts =  Post.getPosts(postIds);
 		for(Post post : posts) {
 			PostVMLite vm = new PostVMLite(post);
-			vm.isLiked = post.isLikedBy(Application.getLocalUser(session()));
+			vm.isLiked = post.isLikedBy(localUser);
 			vm.offset = post.getCreatedDate().getTime();
 			vms.add(vm);
 		}
@@ -300,15 +329,21 @@ public class ProductController extends Controller{
 	
 	@Transactional 
 	public static Result getCategoryPriceLowHighFeed(Long id, String postType, Long offset){
+		final User localUser = Application.getLocalUser(session());
+		if (!localUser.isLoggedIn()) {
+			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+			return notFound();
+		}
+		
 		List<Long> postIds = CalcServer.getCategoryPriceLowHighFeed(id, offset.doubleValue());
-        
         if(postIds.size() == 0){
 			return ok(Json.toJson(postIds));
 		}
+        
         List<PostVMLite> vms = new ArrayList<>();
 		for(Post product : Post.getPosts(postIds)) {
 			PostVMLite vm = new PostVMLite(product);
-			vm.isLiked = product.isLikedBy(Application.getLocalUser(session()));
+			vm.isLiked = product.isLikedBy(localUser);
 			vm.offset = product.price.longValue();
 			vms.add(vm);
 		}
@@ -316,15 +351,22 @@ public class ProductController extends Controller{
 	}
 	
 	@Transactional 
-	public static Result getCategoryPriceHighLowFeed(Long id, String postType, Long offset){
+	public static Result getCategoryPriceHighLowFeed(Long id, String postType, Long offset) {
+		final User localUser = Application.getLocalUser(session());
+		if (!localUser.isLoggedIn()) {
+			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+			return notFound();
+		}
+		
 		List<Long> postIds = CalcServer.getCategoryPriceHighLowFeed(id, offset.doubleValue());
 		if(postIds.size() == 0){
 			return ok(Json.toJson(postIds));
 		}
+		
 		List<PostVMLite> vms = new ArrayList<>();
 		for(Post product : Post.getPosts(postIds)) {
 			PostVMLite vm = new PostVMLite(product);
-			vm.isLiked = product.isLikedBy(Application.getLocalUser(session()));
+			vm.isLiked = product.isLikedBy(localUser);
 			vm.offset = product.price.longValue();
 			vms.add(vm);
 		}
@@ -332,16 +374,22 @@ public class ProductController extends Controller{
 	}
 	
 	@Transactional
-	public static Result getPostComments(Long id, Long offset){
+	public static Result getPostComments(Long id, Long offset) {
+		final User localUser = Application.getLocalUser(session());
+		if (!localUser.isLoggedIn()) {
+			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+			return notFound();
+		}
+		
 		Post post = Post.findById(id);
 		if (post == null) {
 			return ok();
 		}
 		
 		List <CommentVM> comments = new ArrayList<CommentVM>();
-		for(Comment c : post.getComments()){
-			CommentVM commentvm = new CommentVM(c);
-			comments.add(commentvm);
+		for(Comment comment : post.getComments()){
+			CommentVM commentVM = new CommentVM(comment, localUser);
+			comments.add(commentVM);
 		}
 		return ok(Json.toJson(comments));
 	}

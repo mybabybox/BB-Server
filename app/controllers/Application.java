@@ -78,6 +78,22 @@ public class Application extends Controller {
     public static final String FLASH_MESSAGE_KEY = "message";
 	public static final String FLASH_ERROR_KEY = "error";
 
+	public static enum DeviceType {
+		NA,
+		ANDROID,
+		IOS,
+		WEB,
+		WAP
+	}
+	
+	public static DeviceType parseDeviceType(String deviceType) {
+		try {
+			return Enum.valueOf(DeviceType.class, deviceType);
+		} catch (Exception e) {
+			return DeviceType.NA;
+		}
+	}
+	
 	@Transactional
     public static Result index() {
         return mainHome();

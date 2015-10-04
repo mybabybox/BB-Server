@@ -1,36 +1,29 @@
 package viewmodel;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import models.Comment;
+import models.User;
 
 public class CommentVM {
-    public Long id;
-    public Long ownerId;
-    public String postedBy;
-    public Long createdDate;
-    public boolean hasImage = false;
-    public Long[] images;
-    public String body;
+	@JsonProperty("id") public Long id;
+	@JsonProperty("createdDate") public Long createdDate;
+	@JsonProperty("ownerId") public Long ownerId;
+	@JsonProperty("ownerName") public String ownerName;
+	@JsonProperty("body") public String body;
 
-    public boolean isOwner = false;
-    public boolean isLike = false;     // filled outside
+	@JsonProperty("isOwner") public boolean isOwner = false;
 
-    public boolean mobile = false;
-    public boolean android = false;
-    public boolean ios = false;
-
-    // helper state
-    public boolean imageLoaded = false;
-
-    public CommentVM(Comment comment) {
+	@JsonProperty("deviceType") public String deviceType;
+	
+    public CommentVM(Comment comment, User user) {
         this.id = comment.id;
         this.ownerId = comment.owner.id;
-        this.postedBy = comment.getCreatedBy();
+        this.ownerName = comment.owner.displayName;
         this.createdDate = comment.getCreatedDate().getTime();
         this.body = comment.body;
-        
-        this.mobile = comment.mobile;
-        this.android = comment.android;
-        this.ios = comment.ios;
+        this.isOwner = (comment.owner.id == user.id);
+        this.deviceType = comment.deviceType == null? "" : comment.deviceType.name();
     }
 
     public Long getId() {
@@ -49,12 +42,12 @@ public class CommentVM {
         this.ownerId = ownerId;
     }
 
-    public String getPostedBy() {
-        return postedBy;
+    public String getOwnerName() {
+        return ownerName;
     }
 
-    public void setPostedBy(String postedBy) {
-        this.postedBy = postedBy;
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
     }
 
     public Long getCreatedDate() {
@@ -63,22 +56,6 @@ public class CommentVM {
 
     public void setCreatedDate(Long createdDate) {
         this.createdDate = createdDate;
-    }
-
-    public boolean getHasImage() {
-        return hasImage;
-    }
-
-    public void setHasImage(boolean hasImage) {
-        this.hasImage = hasImage;
-    }
-
-    public Long[] getImages() {
-        return images;
-    }
-
-    public void setImages(Long[] images) {
-        this.images = images;
     }
 
     public String getBody() {
@@ -95,13 +72,5 @@ public class CommentVM {
 
     public void setIsOwner(boolean isOwner) {
         this.isOwner = isOwner;
-    }
-
-    public boolean isLike() {
-        return isLike;
-    }
-
-    public void setIsLike(boolean isLike) {
-        this.isLike = isLike;
     }
 }

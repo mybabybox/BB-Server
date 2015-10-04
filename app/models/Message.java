@@ -25,7 +25,7 @@ public class Message extends SocialObject implements Comparable<Message> {
 	  
 	@Required
 	@ManyToOne
-	public User userFrom;
+	public User sender;
 	  
 	@Column(length=1000)
 	public String body;
@@ -34,7 +34,7 @@ public class Message extends SocialObject implements Comparable<Message> {
     public Folder folder;
 	
 	public User receiver() {
-	    if(this.conversation.user1.equals(userFrom)){
+	    if(this.conversation.user1.equals(sender)){
 	      return conversation.user2;
 	    } else {
 	      return conversation.user1;

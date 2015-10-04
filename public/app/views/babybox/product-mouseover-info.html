@@ -2,10 +2,8 @@
 	<span data-ng-repeat="product in products">
 		<div ng-click="open(product)"
 			class="product-card product-overlay-container ">
-			<a href="" 
-				class="product-thumbnail js-open-product-modal product-active"
-				data-requesting-action="show"><img
-				data-ng-src="/image/get-post-image-by-id/{{product.image}}"></a>
+			<a href="" class="product-thumbnail js-open-product-modal product-active" data-requesting-action="show">
+				<img data-ng-src="/image/get-post-image-by-id/{{product.images[0]}}"></a>
 			<div class="info">
 				<!-- <a><img 
 					class="avatar-image avatar-x45 "

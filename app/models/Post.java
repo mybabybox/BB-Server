@@ -20,6 +20,7 @@ import javax.persistence.Query;
 import play.db.jpa.JPA;
 import babybox.shopping.social.exception.SocialObjectNotCommentableException;
 import common.utils.StringUtil;
+import controllers.Application.DeviceType;
 import domain.Commentable;
 import domain.Likeable;
 import domain.PostType;
@@ -30,7 +31,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 
 	public String title;
 
-	@Column(length=1000)
+	@Column(length=2000)
 	public String body;
 
 	@ManyToOne(cascade = CascadeType.REMOVE)
@@ -50,6 +51,8 @@ public class Post extends SocialObject implements Likeable, Commentable {
 
 	public Double price = 0.0;
 
+	public boolean sold;
+	
 	public int noOfComments = 0;
 	public int noOfLikes = 0;
 	public int noOfBuys = 0;
@@ -57,9 +60,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	public int noOfChats = 0;
 	public Long baseScore = 0L;
 
-	public boolean mobile = false;
-	public boolean android = false;
-	public boolean ios = false;
+	public DeviceType deviceType;
 
 	/**
 	 * Ctor

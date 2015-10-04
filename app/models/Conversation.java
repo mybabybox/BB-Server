@@ -96,7 +96,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		Date now = new Date();
 		Message message = new Message();
 		message.body = body;
-		message.userFrom = sender;
+		message.sender = sender;
 		message.conversation = this;
 		message.conversation.lastMesage = trimLastMessage(body);
 		message.setCreatedDate(now);

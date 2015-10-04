@@ -1,30 +1,30 @@
 package viewmodel;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import models.Post;
 import models.User;
 
 public class PostVM extends PostVMLite {
-    public Long ownerId;
-    public String postedBy;
-    public long createdDate;
-    public long updatedDate;
-    public String body;
-    public String categoryType;
-    public String categoryName;
-    public String categoryIcon;
-    public Long categoryId;
+	@JsonProperty("createdDate") public long createdDate;
+	@JsonProperty("updatedDate") public long updatedDate;
+	@JsonProperty("ownerId") public Long ownerId;
+	@JsonProperty("ownerName") public String ownerName;
+	@JsonProperty("body") public String body;
+	@JsonProperty("categoryId") public Long categoryId;
+	@JsonProperty("categoryName") public String categoryName;
+	@JsonProperty("categoryIcon") public String categoryIcon;
+	@JsonProperty("categoryType") public String categoryType;	
     
-    public boolean isOwner = false;
-    public boolean isFollowingOwner = false;
+	@JsonProperty("isOwner") public boolean isOwner = false;
+	@JsonProperty("isFollowingOwner") public boolean isFollowingOwner = false;
     
-    public boolean mobile = false;
-    public boolean android = false;
-    public boolean ios = false;
-
+	@JsonProperty("deviceType") public String deviceType;
+	
     public PostVM(Post post, User user) {
     	super(post);
         this.ownerId = post.owner.id;
-        this.postedBy = post.getCreatedBy();
+        this.ownerName = post.owner.displayName;
         this.createdDate = post.getCreatedDate().getTime();
         this.updatedDate = post.getUpdatedDate().getTime();
         this.body = post.body;
@@ -36,9 +36,7 @@ public class PostVM extends PostVMLite {
         this.isOwner = (post.owner.id == user.id);
         this.isFollowingOwner = user.isFollowing(post.owner);
         
-        this.mobile = post.mobile;
-        this.android = post.android;
-        this.ios = post.ios;
+        this.deviceType = post.deviceType == null? "" : post.deviceType.name();
     }
 
     public Long getOwnerId() {
@@ -49,12 +47,12 @@ public class PostVM extends PostVMLite {
         this.ownerId = ownerId;
     }
 
-    public String getPostedBy() {
-        return postedBy;
+    public String getOwnerName() {
+        return ownerName;
     }
 
-    public void setPostedBy(String postedBy) {
-        this.postedBy = postedBy;
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
     }
 
     public long getCreatedDate() {

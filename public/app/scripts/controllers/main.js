@@ -36,7 +36,7 @@ babybox.controller('ProductPageController',
 babybox.controller('ProductController', 
 		function($scope, $route, $http, likeService, userService, productService, usSpinnerService) {
 	console.log($scope.product.imgs);
-	$scope.ImageUrl = "/image/get-original-post-image-by-id/"+$scope.product.image;
+	$scope.imageUrl = "/image/get-original-post-image-by-id/"+$scope.product.images[0];
 	$scope.collections = [];
 
 
@@ -44,9 +44,9 @@ babybox.controller('ProductController',
 	$scope.open = false;
 	$scope.product = productService.getProductInfo.get({id:$scope.product.id});
 
-	console.log($scope.ImageUrl);
+	console.log($scope.imageUrl);
 	$scope.setImgUrl = function(id){
-		$scope.ImageUrl= "/image/get-original-post-image-by-id/"+id;
+		$scope.imageUrl= "/image/get-original-post-image-by-id/"+id;
 	};
 
 	if($scope.product.oid = $scope.userInfo.id){
