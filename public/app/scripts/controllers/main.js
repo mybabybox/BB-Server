@@ -34,7 +34,7 @@ babybox.controller('ProductPageController',
 });
 
 babybox.controller('ProductController', 
-		function($scope, $route, $http, likeService, userService, productService, usSpinnerService) {
+		function($scope, $route, $http, likeService, userService, productService, usSpinnerService, followService) {
 	console.log($scope.product.imgs);
 	$scope.imageUrl = "/image/get-original-post-image-by-id/"+$scope.product.images[0];
 	$scope.collections = [];
@@ -93,11 +93,11 @@ babybox.controller('ProductController',
 	}
 
 	$scope.onFollowUser = function() {
-		followService.followUser.get({id:$scope.product.oid});
+		followService.followUser.get({id:$scope.product.ownerId});
 		$scope.product.ifu = !$scope.product.ifu;
 	}
 	$scope.onUnFollowUser = function() {
-		followService.unFollowUser.get({id:$scope.product.oid});
+		followService.unFollowUser.get({id:$scope.product.ownerId});
 		$scope.product.ifu = !$scope.product.ifu;
 	}
 });
