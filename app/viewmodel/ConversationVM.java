@@ -17,7 +17,7 @@ public class ConversationVM {
 	@JsonProperty("postPrice") public Long postPrice;
 	@JsonProperty("userId") public Long userId;
 	@JsonProperty("userName") public String userName;
-	@JsonProperty("lastMessageDate") public Date lastMessageDate;
+	@JsonProperty("lastMessageDate") public Long lastMessageDate;
 	@JsonProperty("lastMessage") public String lastMessage;
 	@JsonProperty("unread") public Long unread = 0L;
 	@JsonProperty("isRead") public Boolean isRead = false;
@@ -30,11 +30,11 @@ public class ConversationVM {
 		this.postPrice = conversation.post.price.longValue();
 		this.userId = otherUser.id;
 		this.userName = otherUser.displayName;
-		this.lastMessageDate = conversation.getUpdatedDate();
+		this.lastMessageDate = conversation.getUpdatedDate().getTime();
 		this.unread = conversation.getUnreadCount(localUser);
-		try{
+		try {
 			this.lastMessage = conversation.lastMesage;
-			this.isToday = DateUtils.isSameDay(this.lastMessageDate, new Date());
+			this.isToday = DateUtils.isSameDay(conversation.getUpdatedDate(), new Date());
 			this.isRead = conversation.isReadBy(localUser);
 		} catch(NullPointerException e){
 			logger.underlyingLogger().error(e.getLocalizedMessage(), e);

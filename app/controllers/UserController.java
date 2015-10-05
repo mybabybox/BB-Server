@@ -451,12 +451,12 @@ public class UserController extends Controller {
     }
 	   
 	@Transactional
-	public static Result getMessages(Long id, Long offset) {
+	public static Result getMessages(Long conversationId, Long offset) {
         NanoSecondStopWatch sw = new NanoSecondStopWatch();
 
 		final User localUser = Application.getLocalUser(session());
 		List<MessageVM> vms = new ArrayList<>();
-		Conversation conversation = Conversation.findById(id); 
+		Conversation conversation = Conversation.findById(conversationId); 
 		List<Message> messages =  conversation.getMessages(localUser, offset);
 		if(messages != null ){
 			for(Message message : messages) {
@@ -465,11 +465,11 @@ public class UserController extends Controller {
 			}
 		}
 		Map<String, Object> map = new HashMap<>();
-		map.put("message", vms);
+		map.put("messages", vms);
 		map.put("counter", localUser.getUnreadConversationCount());
 
         sw.stop();
-        logger.underlyingLogger().info("[u="+localUser.id+"][c="+id+"] getMessages(offset="+offset+"). Took "+sw.getElapsedMS()+"ms");
+        logger.underlyingLogger().info("[u="+localUser.id+"][c="+conversationId+"] getMessages(offset="+offset+"). Took "+sw.getElapsedMS()+"ms");
 		return ok(Json.toJson(map));
 	}
 	
@@ -483,9 +483,8 @@ public class UserController extends Controller {
         
         DynamicForm form = form().bindFromRequest();
         Long conversationId = Long.parseLong(form.get("conversationId"));
-        Long receiverId = Long.parseLong(form.get("receiverId"));
-        String msgText = HtmlUtil.convertTextToHtml(form.get("msgText"));
-        Message message = Conversation.newMessage(conversationId, localUser, msgText);
+        String body = HtmlUtil.convertTextToHtml(form.get("body"));
+        Message message = Conversation.newMessage(conversationId, localUser, body);
         
         Map<String, Object> map = new HashMap<>();
 		map.put("id", message.id);
@@ -552,7 +551,7 @@ public class UserController extends Controller {
 	}
 	
 	@Transactional
-    public static Result openConversation(Long postId, Long userId) {
+    public static Result openConversation(Long postId) {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
 		
         final User localUser = Application.getLocalUser(session());
@@ -561,24 +560,23 @@ public class UserController extends Controller {
             return status(500);
         }
         
-        if (localUser.id == userId) {
-            logger.underlyingLogger().error(String.format("[p=%d][u1=%d][u2=%d] Same user. Will not open conversation", postId, localUser.id, userId));
-            return status(500);
-        }
-        
         Post post = Post.findById(postId);
         if (post == null) {
-        	logger.underlyingLogger().error(String.format("[p=%d][u1=%d][u2=%d] Post not exist. Will not open conversation", postId, localUser.id, userId));
+        	logger.underlyingLogger().error(String.format("[p=%d][u1=%d][u2=%d] Post not exist. Will not open conversation", postId, localUser.id, post.owner.id));
+            return status(500);
+        }
+        if (localUser.id == post.owner.id) {
+            logger.underlyingLogger().error(String.format("[p=%d][u1=%d][u2=%d] Same user. Will not open conversation", postId, localUser.id, post.owner.id));
             return status(500);
         }
         
         // New conversation always opened by buyer
-        User user = User.findById(userId);
-        Conversation conversation = Conversation.openConversation(post, user);
+        Conversation conversation = Conversation.openConversation(post, localUser);
         
-        ConversationVM conversationVM = new ConversationVM(conversation, localUser, user);
+        User user = User.findById(localUser.id);
+        ConversationVM conversationVM = new ConversationVM(conversation, localUser, post.owner);
         
-		logger.underlyingLogger().debug(String.format("[p=%d][u1=%d][u2=%d] openConversation. Took "+sw.getElapsedMS()+"ms", postId, localUser.id, userId));
+		logger.underlyingLogger().debug(String.format("[p=%d][u1=%d][u2=%d] openConversation. Took "+sw.getElapsedMS()+"ms", postId, localUser.id, post.owner.id));
 		
 		return ok(Json.toJson(conversationVM));
     }

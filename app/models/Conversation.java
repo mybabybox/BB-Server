@@ -131,9 +131,10 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	
 	public static Conversation getConversation(Post post, User user) {
 		Query q = JPA.em().createQuery(
-		        "SELECT c from Conversation c where post = ?1 and user1 = ?2 and deleted = 0");
-		q.setParameter(1, post);
-		q.setParameter(2, user);
+		        "SELECT c from Conversation c where user1 = ?1 and user2 = ?2 and post = ?3 and deleted = 0");
+		q.setParameter(1, user);
+		q.setParameter(2, post.owner);
+		q.setParameter(3, post);
 		
 		try {
 			return (Conversation) q.getSingleResult();
@@ -204,12 +205,12 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		return conversation;
 	}
 
-	public String getLastMessage(User localUser) {
+	public String getLastMessage(User user) {
 		Query q = JPA.em().createQuery(
 		        "SELECT m FROM Message m WHERE m.CREATED_DATE = (SELECT MAX(CREATED_DATE) FROM Message WHERE conversation_id = ?1 and deleted = 0) and m.CREATED_DATE > ?2 and m.deleted = 0");
         q.setParameter(1, this.id);
         
-        if(this.user1 == localUser){
+        if(this.user1 == user){
         	if(this.user1ArchiveDate == null){
         		q.setParameter(2, new Date(0));
         	} else {
@@ -244,9 +245,9 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
         return (Conversation) q.getSingleResult();
 	}
 
-	public static Message newMessage(Long conversationId, User sender, String msgText) {
+	public static Message newMessage(Long conversationId, User sender, String body) {
 		Conversation conversation = Conversation.findById(conversationId);
-		return conversation.addMessage(sender, msgText);
+		return conversation.addMessage(sender, body);
 	}
 
 	public boolean isReadBy(User user) {
