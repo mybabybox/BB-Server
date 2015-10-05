@@ -256,7 +256,7 @@ public class Folder extends SocialObject implements Serializable, Creatable, Upd
             sw.stop();
             logger.underlyingLogger().info("addFile("+type.name()+"). Resize Took "+sw.getElapsedMS()+"ms");
 		}
-		else if (type == SocialObjectType.PRIVATE_PHOTO) {
+		else if (type == SocialObjectType.MESSAGE_PHOTO) {
             NanoSecondStopWatch sw = new NanoSecondStopWatch();
 
             BufferedImage bimg = ImageFileUtil.readImageFile(source);

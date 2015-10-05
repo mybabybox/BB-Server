@@ -106,10 +106,8 @@ public class Comment extends SocialObject implements Comparable<Comment>, Likeab
 
     public Resource addCommentPhoto(File source) throws IOException {
 		ensureAlbumExist();
-		Resource cover_photo = this.folder.addFile(source,
-				SocialObjectType.COMMENT_PHOTO);
-		
-		return cover_photo;
+		Resource photo = this.folder.addFile(source, SocialObjectType.COMMENT_PHOTO);
+		return photo;
     }
   
     public void ensureAlbumExist() {

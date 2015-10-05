@@ -34,10 +34,10 @@ public class Message extends SocialObject implements Comparable<Message> {
     public Folder folder;
 	
 	public User receiver() {
-	    if(this.conversation.user1.equals(sender)){
-	      return conversation.user2;
+	    if (this.conversation.user1.equals(sender)) {
+	    	return conversation.user2;
 	    } else {
-	      return conversation.user1;
+	    	return conversation.user1;
 	    }
 	}
 
@@ -52,13 +52,12 @@ public class Message extends SocialObject implements Comparable<Message> {
 	     return (Message) q.getSingleResult();
 	}
 	
-	 public Resource addPrivatePhoto(File source,User owner) throws IOException {
-	        ensureAlbumExist(owner);
-	        Resource cover_photo = this.folder.addFile(source,
-	                SocialObjectType.PRIVATE_PHOTO);
-	        cover_photo.save();
-	        return cover_photo;
-	    }
+	public Resource addMessagePhoto(File source, User owner) throws IOException {
+		ensureAlbumExist(owner);
+		Resource photo = this.folder.addFile(source, SocialObjectType.MESSAGE_PHOTO);
+		photo.save();
+		return photo;
+	}
 	    
     public void ensureAlbumExist(User owner) {
         if (this.folder == null) {

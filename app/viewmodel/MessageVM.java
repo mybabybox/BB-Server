@@ -15,7 +15,7 @@ public class MessageVM {
 	@JsonProperty("senderName") public String senderName;
 	@JsonProperty("body") public String body;
 	@JsonProperty("hasImage") public boolean hasImage = false;
-	@JsonProperty("image") public Long image;
+	@JsonProperty("image") public Long image = -1L;
 	
 	public MessageVM(Message message) {
 		this.id = message.id;
@@ -24,10 +24,9 @@ public class MessageVM {
 		this.senderId = message.sender.id;
 		this.body = message.body;
 		
-		List<Resource> resources = null;
 		if (message.folder != null && !CollectionUtils.isEmpty(message.folder.resources)) {
 			this.hasImage = true;
-			resources = Resource.findAllResourceOfFolder(message.folder.id);
+			List<Resource> resources = Resource.findAllResourceOfFolder(message.folder.id);
 			for (Resource rs : resources) {
 				this.image = rs.id;
 				break;

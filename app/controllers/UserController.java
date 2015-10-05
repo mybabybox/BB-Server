@@ -79,7 +79,7 @@ public class UserController extends Controller {
 	    
 		final User localUser = Application.getLocalUser(session());
 		if (localUser == null) {
-			return status(500);
+			return notFound();
 		}
 		
 		UserVM userInfo = new UserVM(localUser);
@@ -97,7 +97,7 @@ public class UserController extends Controller {
 	    
 		final User localUser = User.findById(id);
 		if (localUser == null) {
-			return status(500);
+			return notFound();
 		}
 		
 		UserVM userInfo = new UserVM(localUser);
@@ -120,7 +120,7 @@ public class UserController extends Controller {
 		final User localUser = Application.getLocalUser(session());
 		if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
-            return status(500);
+            return notFound();
         }
 		logger.underlyingLogger().info("STS [u="+localUser.id+"] uploadProfilePhoto");
 
@@ -133,7 +133,7 @@ public class UserController extends Controller {
 			localUser.setPhotoProfile(fileTo);
 		} catch (IOException e) {
 		    logger.underlyingLogger().error("Error in uploadProfilePhoto", e);
-			return status(500);
+			return badRequest();
 		}
 	    completeHomeTour();
 		return ok();
@@ -156,7 +156,7 @@ public class UserController extends Controller {
 		final User localUser = Application.getLocalUser(session());
 		if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
-            return status(500);
+            return notFound();
         }
 		
 		logger.underlyingLogger().info("STS [u="+localUser.id+"] uploadCoverPhoto");
@@ -170,7 +170,7 @@ public class UserController extends Controller {
 			localUser.setCoverPhoto(fileTo);
 		} catch (IOException e) {
 		    logger.underlyingLogger().error("Error in uploadCoverPhoto", e);
-			return status(500);
+			return badRequest();
 		}
 	    completeHomeTour();
 		return ok();
@@ -469,7 +469,7 @@ public class UserController extends Controller {
 		map.put("counter", localUser.getUnreadConversationCount());
 
         sw.stop();
-        logger.underlyingLogger().info("[u="+localUser.id+"][c="+conversationId+"] getMessages(offset="+offset+"). Took "+sw.getElapsedMS()+"ms");
+        logger.underlyingLogger().info("[u="+localUser.id+"][c="+conversationId+"] getMessages(offset="+offset+") size="+vms.size()+". Took "+sw.getElapsedMS()+"ms");
 		return ok(Json.toJson(map));
 	}
 	
@@ -478,17 +478,15 @@ public class UserController extends Controller {
         final User localUser = Application.getLocalUser(session());
         if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
-            return status(500);
+            return notFound();
         }
         
         DynamicForm form = form().bindFromRequest();
         Long conversationId = Long.parseLong(form.get("conversationId"));
         String body = HtmlUtil.convertTextToHtml(form.get("body"));
         Message message = Conversation.newMessage(conversationId, localUser, body);
-        
-        Map<String, Object> map = new HashMap<>();
-		map.put("id", message.id);
-        return ok(Json.toJson(map));
+        MessageVM vm = new MessageVM(message);
+        return ok(Json.toJson(vm));
     }
 	
 	@Transactional
@@ -496,7 +494,7 @@ public class UserController extends Controller {
 		final User localUser = Application.getLocalUser(session());
 		if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
-            return status(500);
+            return notFound();
         }
 		
         Conversation.archiveConversation(id, localUser);
@@ -557,23 +555,22 @@ public class UserController extends Controller {
         final User localUser = Application.getLocalUser(session());
         if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
-            return status(500);
+            return notFound();
         }
         
         Post post = Post.findById(postId);
         if (post == null) {
         	logger.underlyingLogger().error(String.format("[p=%d][u1=%d][u2=%d] Post not exist. Will not open conversation", postId, localUser.id, post.owner.id));
-            return status(500);
+            return notFound();
         }
         if (localUser.id == post.owner.id) {
             logger.underlyingLogger().error(String.format("[p=%d][u1=%d][u2=%d] Same user. Will not open conversation", postId, localUser.id, post.owner.id));
-            return status(500);
+            return badRequest();
         }
         
         // New conversation always opened by buyer
         Conversation conversation = Conversation.openConversation(post, localUser);
         
-        User user = User.findById(localUser.id);
         ConversationVM conversationVM = new ConversationVM(conversation, localUser, post.owner);
         
 		logger.underlyingLogger().debug(String.format("[p=%d][u1=%d][u2=%d] openConversation. Took "+sw.getElapsedMS()+"ms", postId, localUser.id, post.owner.id));
@@ -586,23 +583,27 @@ public class UserController extends Controller {
 		final User localUser = Application.getLocalUser(session());
 		if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
-            return status(500);
+            return notFound();
         }
 		
         DynamicForm form = DynamicForm.form().bindFromRequest();
-        String messageId = form.get("messageId");
-        
-        FilePart picture = request().body().asMultipartFormData().getFile("send-photo0");
-        String fileName = picture.getFilename();
-        
-        File file = picture.getFile();
         try {
+        	Long messageId = Long.valueOf(form.get("messageId"));
+        	Message message = Message.findById(Long.valueOf(messageId));
+        	
+	        FilePart picture = request().body().asMultipartFormData().getFile("send-photo0");
+	        String fileName = picture.getFilename();
+	        
+	        File file = picture.getFile();
             File fileTo = ImageFileUtil.copyImageFileToTemp(file, fileName);
-            Long id = Message.findById(Long.valueOf(messageId)).addPrivatePhoto(fileTo,localUser).id;
+            Long id = message.addMessagePhoto(fileTo,localUser).id;
             return ok(id.toString());
+        } catch (NumberFormatException e) {
+        	logger.underlyingLogger().error(ExceptionUtils.getStackTrace(e));
+            return badRequest();
         } catch (IOException e) {
             logger.underlyingLogger().error(ExceptionUtils.getStackTrace(e));
-            return status(500);
+            return badRequest();
         }
     }
 	
