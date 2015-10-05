@@ -95,9 +95,9 @@
 										class="products-show-poster-details-store">{{product.on}}</a><span></span>
 									<div data-ng-if="userInfo.id != product.oid"
 										class="products-show-more-follow-button products-show-more-follow-store-button">
-										<a data-ng-if="!product.ifu" class="largish wb-follow btn-follow"
+										<a data-ng-if="!product.isFollowingOwner" class="largish wb-follow btn-follow"
 											data-ng-click="onFollowUser()">Follow</a> <a
-											data-ng-if="product.ifu"
+											data-ng-if="product.isFollowingOwner"
 											class="largish wb-unfollow btn-unfollow"
 											data-ng-click="onUnFollowUser()">Following</a>
 									</div>
@@ -110,10 +110,8 @@
 								</div>
 							</div>
 						</div>
-
 					</div>
 				</div>
-
 			</div>
 		</div>
 		<div class="product-container">

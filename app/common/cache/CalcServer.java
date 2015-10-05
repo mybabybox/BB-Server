@@ -103,12 +103,10 @@ public class CalcServer {
 	}
 
 	private static void buildCategoryQueue() {
-		for(Category category : Category.getAllCategories()){
-			for(Post post : Post.getPostsByCategory(category)){
-				buildPriceHighLowPostQueue(post);
-				buildNewestPostQueue(post);
-				buildPopularPostQueue(post);
-			}
+				for(Post post : Post.getAllPosts()){
+			buildPriceHighLowPostQueue(post);
+			buildNewestPostQueue(post);
+			buildPopularPostQueue(post);
 		}
 	}
 

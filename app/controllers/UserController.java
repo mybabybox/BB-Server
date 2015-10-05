@@ -95,18 +95,19 @@ public class UserController extends Controller {
 	public static Result getUserInfoById(Long id) {
 	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
 	    
-		final User localUser = User.findById(id);
-		if (localUser == null) {
+		final User localUser = Application.getLocalUser(session());
+		final User user = User.findById(id);
+		if (localUser == null || user == null) {
 			return notFound();
 		}
 		
-		UserVM userInfo = new UserVM(localUser);
+		UserVM userVM = UserVM.profile(user,localUser);
 		
 		sw.stop();
         if (logger.underlyingLogger().isDebugEnabled()) {
             logger.underlyingLogger().debug("[u="+localUser.getId()+"] getUserInfo(). Took "+sw.getElapsedMS()+"ms");
         }
-		return ok(Json.toJson(userInfo));
+		return ok(Json.toJson(userVM));
 	}
 	
 	@Transactional(readOnly=true)
@@ -224,7 +225,7 @@ public class UserController extends Controller {
 	        logger.underlyingLogger().error(String.format(
 	                "[u=%d][displayname=%s][firstname=%s][lastname=%s] displayname, firstname or lastname missing", 
 	                localUser.id, parentDisplayName, parentFirstName, parentLastName));
-            return status(500, "請填寫您的顯示名稱與姓名");
+            return badRequest("請填寫您的顯示名稱與姓名");
         }
 	    
 	    parentDisplayName = parentDisplayName.trim();
@@ -238,12 +239,12 @@ public class UserController extends Controller {
 	        if (!User.isDisplayNameValid(parentDisplayName)) {
                 logger.underlyingLogger().error(String.format(
                         "[u=%d][displayname=%s] displayname contains whitespace", localUser.id, parentDisplayName));
-                return status(500, "\""+parentDisplayName+"\" 不可有空格");
+                return badRequest("\""+parentDisplayName+"\" 不可有空格");
 	        }
 	        if (User.isDisplayNameExists(parentDisplayName)) {
                 logger.underlyingLogger().error(String.format(
                         "[u=%d][displayname=%s] displayname already exists", localUser.id, parentDisplayName));
-                return status(500, "\""+parentDisplayName+"\" 已被選用。請選擇另一個顯示名稱重試");
+                return badRequest("\""+parentDisplayName+"\" 已被選用。請選擇另一個顯示名稱重試");
             }
         }
         
@@ -254,7 +255,7 @@ public class UserController extends Controller {
         if (StringUtils.isEmpty(parentBirthYear) || parentLocation == null) {
             logger.underlyingLogger().error(String.format(
                     "[u=%d][birthYear=%s][location=%s] birthYear or location missing", localUser.id, parentBirthYear, parentLocation.displayName));
-            return status(500, "請填寫您的生日，地區");
+            return badRequest("請填寫您的生日，地區");
         }
         
         localUser.displayName = parentDisplayName;
@@ -276,7 +277,7 @@ public class UserController extends Controller {
         }
         
         if (parentBirthYear == null || parentLocation == null || parentType == null) {
-            return status(500, "請填寫您的生日，地區，媽媽身份");
+            return badRequest("請填寫您的生日，地區，媽媽身份");
         }
         
         localUser.displayName = parentDisplayName;
@@ -307,7 +308,7 @@ public class UserController extends Controller {
         for (int i = 1; i <= maxChildren; i++) {
             String genderStr = form.get("bb_gender" + i);
             if (genderStr == null) {
-                return status(500, "請選擇寶寶性別");
+                return badRequest("請選擇寶寶性別");
             }
             
             TargetGender bbGender = TargetGender.valueOf(form.get("bb_gender" + i));
@@ -320,7 +321,7 @@ public class UserController extends Controller {
             }
             
             if (!DateTimeUtil.isDateOfBirthValid(bbBirthYear, bbBirthMonth, bbBirthDay)) {
-                return status(500, "寶寶生日日期格式不正確。請重試");
+                return badRequest("寶寶生日日期格式不正確。請重試");
             }
             
             UserChild userChild = new UserChild();
@@ -683,14 +684,14 @@ public class UserController extends Controller {
     @Transactional
     public static Result followUser(Long id) {
     	User user = Application.getLocalUser(session());
-    	user.onFollowedBy(User.findById(id));
+    	user.onFollow(User.findById(id));
 		return ok();
     }
     
     @Transactional
     public static Result unfollowUser(Long id) {
     	User user = Application.getLocalUser(session());
-    	user.onUnFollowedBy(User.findById(id));
+    	user.onUnFollow(User.findById(id));
 		return ok();
     }
     
