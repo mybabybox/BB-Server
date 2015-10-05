@@ -95,18 +95,18 @@ public class UserController extends Controller {
 	public static Result getUserInfoById(Long id) {
 	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
 	    
-		final User localUser = User.findById(id);
-		if (localUser == null) {
+		final User localUser = Application.getLocalUser(session());
+		final User user = User.findById(id);
+		if (localUser == null || user == null) {
 			return status(500);
 		}
-		
-		UserVM userInfo = new UserVM(localUser);
+		UserVM userVM = UserVM.profile(user,localUser);
 		
 		sw.stop();
         if (logger.underlyingLogger().isDebugEnabled()) {
             logger.underlyingLogger().debug("[u="+localUser.getId()+"] getUserInfo(). Took "+sw.getElapsedMS()+"ms");
         }
-		return ok(Json.toJson(userInfo));
+		return ok(Json.toJson(userVM));
 	}
 	
 	@Transactional(readOnly=true)
@@ -682,14 +682,14 @@ public class UserController extends Controller {
     @Transactional
     public static Result followUser(Long id) {
     	User user = Application.getLocalUser(session());
-    	user.onFollowedBy(User.findById(id));
+    	user.onFollow(User.findById(id));
 		return ok();
     }
     
     @Transactional
     public static Result unfollowUser(Long id) {
     	User user = Application.getLocalUser(session());
-    	user.onUnFollowedBy(User.findById(id));
+    	user.onUnFollow(User.findById(id));
 		return ok();
     }
     

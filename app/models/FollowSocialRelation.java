@@ -29,7 +29,7 @@ public class FollowSocialRelation extends SocialRelation {
 	}
 	
 	public static List<Long> getFollowings(Long id) {
-		Query q = JPA.em().createQuery("Select sa from FollowSocialRelation sa where target = ?1");
+		Query q = JPA.em().createQuery("Select sa from FollowSocialRelation sa where actor = ?1");
 		q.setParameter(1, id);
 		List<FollowSocialRelation> sa = new ArrayList<>();
 		List<Long> follwers = new ArrayList<Long>();
@@ -46,7 +46,7 @@ public class FollowSocialRelation extends SocialRelation {
 	}
 	
 	public static List<Long> getFollowers(Long id) {
-		Query q = JPA.em().createQuery("Select sa from FollowSocialRelation sa where actor = ?1");
+		Query q = JPA.em().createQuery("Select sa from FollowSocialRelation sa where target = ?1");
 		q.setParameter(1, id);
 		List<FollowSocialRelation> sa = new ArrayList<>();
 		List<Long> follwers = new ArrayList<Long>();

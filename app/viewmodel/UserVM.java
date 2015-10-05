@@ -48,6 +48,19 @@ public class UserVM extends UserVMLite {
         this.newUser = user.isNewUser();
         this.isAdmin = user.isSuperAdmin();
     }
+    
+    public static UserVM profile(User user, User localUser) {
+        UserVM vm = new UserVM(user);
+
+        vm.id = user.id;
+        vm.numLikes = user.numLikes;
+        vm.numProducts = user.numProducts;
+        vm.numCollections = user.numCollections;
+        vm.numFollowers = user.numFollowers;
+        vm.numFollowings = user.numFollowings;
+        vm.isFollowing = user.isFollowedBy(localUser);
+        return vm;
+    }
 
     public Long getCreatedDate() {
         return createdDate;

@@ -81,7 +81,7 @@ public abstract class SocialObject extends domain.Entity implements Serializable
 	}
 	
 	protected final void recordFollow(User user) {
-		FollowSocialRelation action = new FollowSocialRelation(user, this);
+		FollowSocialRelation action = new FollowSocialRelation(this, user);
 		action.ensureUniqueAndCreate();
 	}
 	

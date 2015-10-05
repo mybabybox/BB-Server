@@ -1099,11 +1099,10 @@ public class User extends SocialObject implements Subject, Followable {
 
 
 	@Override
-	public void onFollowedBy(User user) {
+	public void onFollow(User user) {
 		if (logger.underlyingLogger().isDebugEnabled()) {
 			logger.underlyingLogger().debug("[user="+user.id+"][u="+id+"] User onFollowedBy");
 		}
-
 		recordFollow(user);
 		user.numFollowers++;
 		this.numFollowings++;
@@ -1131,7 +1130,7 @@ public class User extends SocialObject implements Subject, Followable {
 	}
 	
 	@Override
-	public void onUnFollowedBy(User user) {
+	public void onUnFollow(User user) {
 		if (logger.underlyingLogger().isDebugEnabled()) {
 			logger.underlyingLogger().debug("[user="+user.id+"][u="+id+"] User onUnFollowedBy");
 		}
@@ -1139,8 +1138,8 @@ public class User extends SocialObject implements Subject, Followable {
 		user.numFollowers--;
 		this.numFollowings--;
 		Query q = JPA.em().createQuery("Delete from FollowSocialRelation sa where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
-		q.setParameter(1, user.id);
-		q.setParameter(2, this.id);
+		q.setParameter(1, this.id);
+		q.setParameter(2, user.id);
 		q.setParameter(3, SocialObjectType.USER);
 		q.setParameter(4, SocialObjectType.USER);
 		q.executeUpdate();
