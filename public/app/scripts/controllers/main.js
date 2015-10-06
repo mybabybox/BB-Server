@@ -54,13 +54,13 @@ babybox.controller('ProductController',
 	}
 	$scope.like_product = function(id) {
 		likeService.likeProduct.get({id:id});
-		$scope.product.isLike = !$scope.product.isLike;
-		$scope.product.nol++;
+		$scope.product.isLiked = !$scope.product.isLike;
+		$scope.product.numLikes++;
 	}
 	$scope.unlike_product = function(id) {
 		likeService.unLikeProduct.get({id:id});
-		$scope.product.isLike = !$scope.product.isLike;
-		$scope.product.nol--;
+		$scope.product.isLikeD = !$scope.product.isLike;
+		$scope.product.numLikes--;
 	}
 	$scope.colectionValue = "";
 	$scope.collection = {};

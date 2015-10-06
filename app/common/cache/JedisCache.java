@@ -200,6 +200,26 @@ public class JedisCache {
         }
     }
     
+    public Set<String> getSortedSetDsc(String key, Long offset) {
+        Jedis j = null;
+        try {
+            j = getResource();
+            return j.zrevrange(key, offset, -1); 
+        } finally {
+        	returnResource(j);
+        }
+    }
+    
+    public Double getScore(String key, String member) {
+        Jedis j = null;
+        try {
+            j = getResource();
+            return j.zscore(key, member); 
+        } finally {
+        	returnResource(j);
+        }
+    }
+    
     /////////////
     
 

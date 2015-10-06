@@ -2,11 +2,12 @@ package common.cache;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import common.utils.NanoSecondStopWatch;
-
 import play.db.jpa.JPA;
 import play.libs.Akka;
 import scala.concurrent.duration.Duration;
@@ -121,6 +122,33 @@ public class CalcServer {
 	private static void buildPriceHighLowPostQueue(Post post) {
 		JedisCache.cache().putToSortedSet("CATEGORY_PRICE_LOW_HIGH:"+post.category.id, post.price*1000000 + post.id , post.id.toString());
 	}
+	
+	private static void buildUserExplorerFeedQueue(User user) {
+		NanoSecondStopWatch sw = new NanoSecondStopWatch();
+		logger.underlyingLogger().debug("buildUserPostedQueue starts");
+		
+		Map<String, Long> map = user.getUserCategoriesForFeed();
+		for (Entry<String, Long> entry : map.entrySet()){
+			Set<String> values = JedisCache.cache().getSortedSetDsc("CATEGORY_POPULAR:"+entry.getKey(), 0L);
+			final List<Long> postIds = new ArrayList<>();
+			for (String value : values) {
+				try {
+					postIds.add(Long.parseLong(value));
+				} catch (Exception e) {
+				}
+			}
+			int length =  (int) ((postIds.size()*entry.getValue()) / 100);
+			postIds.subList(0,length);
+			for(Long postId : postIds){
+				JedisCache.cache().putToSortedSet("HOME_EXPLORE:"+user.id, JedisCache.cache().getScore("CATEGORY_POPULAR:"+entry.getKey(), postId.toString()), postId.toString());
+			}
+			JedisCache.cache().expire("HOME_EXPLORE:"+user.id, 60 * 2);
+		}
+
+		sw.stop();
+		logger.underlyingLogger().debug("buildUserPostedQueue completed. Took "+sw.getElapsedSecs()+"s");
+	}
+	
 
 	public static boolean isLiked(Long userId, Long postId) {
 		 String key = "USER_LIKES:"+userId;
@@ -175,6 +203,21 @@ public class CalcServer {
             }
         }
         return postIds;
+	}
+	
+	public static List<Long> getHomeExploreFeed(Long id, Long offset) {
+		if(JedisCache.cache().exists("HOME_EXPLORE:"+id)){
+			buildUserExplorerFeedQueue(User.findById(id));
+		}
+		Set<String> values = JedisCache.cache().getSortedSetDsc("HOME_EXPLORE:"+id, offset);
+        final List<Long> postIds = new ArrayList<>();
+        for (String value : values) {
+            try {
+                postIds.add(Long.parseLong(value));
+            } catch (Exception e) {
+            }
+        }
+        return postIds;
 
 	}
 	
@@ -208,6 +251,14 @@ public class CalcServer {
 		buildPriceHighLowPostQueue(post);
 		buildNewestPostQueue(post);
 		buildPopularPostQueue(post);
+	}
+	
+	public static void addToLikeQueue(Long postId, Long userId){
+		JedisCache.cache().putToSet("USER_LIKES:"+userId, postId.toString());
+	}
+	
+	public static void removeFromLikeQueue(Long postId, Long userId){
+		JedisCache.cache().removeMemberFromSet("USER_LIKES:"+userId, postId.toString());
 	}
 
 }

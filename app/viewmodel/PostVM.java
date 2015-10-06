@@ -35,6 +35,7 @@ public class PostVM extends PostVMLite {
 
         this.isOwner = (post.owner.id == user.id);
         this.isFollowingOwner = user.isFollowing(post.owner);
+        this.isLiked = post.isLikedBy(user);
         
         this.deviceType = post.deviceType == null? "" : post.deviceType.name();
     }

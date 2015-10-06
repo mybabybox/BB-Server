@@ -702,7 +702,7 @@ public class UserController extends Controller {
 			return ok(Json.toJson(postIds));
 		}
     	List<PostVMLite> vms = new ArrayList<>();
-		for(Post product : Post.getPosts(postIds)) {
+		for(Post product : Post.getPosts(postIds, offset.intValue())) {
 			PostVMLite vm = new PostVMLite(product);
 			vms.add(vm);
 		}
@@ -768,7 +768,7 @@ public class UserController extends Controller {
 			return ok(Json.toJson(postIds));
 		}
     	List<PostVMLite> vms = new ArrayList<>();
-		for(Post product : Post.getPosts(postIds)) {
+		for(Post product : Post.getPosts(postIds, offset.intValue())) {
 			PostVMLite vm = new PostVMLite(product);
 			vms.add(vm);
 		}

@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1127,14 +1128,15 @@ public class User extends SocialObject implements Subject, Followable {
 	}
 
 	public Map<String, Long> getUserCategoriesForFeed() {
-		Query q = JPA.em().createNativeQuery("select count(*) as count, p.category_id as id from ViewMapping vm, product p "+
-				"where vm.productId = p.id and vm.userId = ? "+
-				"group by p.category_id");
+		Query q = JPA.em().createNativeQuery("Select c.id, (count(p.id)/(Select count(*) from viewsocialrelation vr where vr.actor = 2))*100 "
+				+ "from viewsocialrelation vsr, post p, category c "
+				+ "where vsr.actor = ? and vsr.target = p.id and p.category_id = c.id  "
+				+ "group by c.id");
 		q.setParameter(1, this);
 		List<Object[]> feeds = q.getResultList();
 		Map<String, Long> result = new HashMap<String, Long>();
 		for (Object[] feed : feeds) {
-			result.put(((BigInteger) feed[1]).toString(), ((BigInteger) feed[0]).longValue());
+			result.put(((BigInteger) feed[0]).toString(), ((BigDecimal) feed[1]).longValue());
 		}
 		return result;
 	}

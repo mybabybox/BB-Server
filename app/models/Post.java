@@ -22,6 +22,7 @@ import babybox.shopping.social.exception.SocialObjectNotCommentableException;
 import common.utils.StringUtil;
 import controllers.Application.DeviceType;
 import domain.Commentable;
+import domain.DefaultValues;
 import domain.Likeable;
 import domain.PostType;
 import domain.SocialObjectType;
@@ -264,6 +265,20 @@ public class Post extends SocialObject implements Likeable, Commentable {
 			            "select p from Post p where "+
 			            "p.id in ("+StringUtil.collectionToString(postIds, ",")+") and "+
 			            "p.deleted = false ORDER BY FIELD(p.id,"+StringUtil.collectionToString(postIds, ",")+")");
+			 return (List<Post>) query.getResultList();
+		} catch (NoResultException nre) {
+			return null;
+		}
+	}
+	
+	public static List<Post> getPosts(List<Long> postIds, int offset) {
+		try {
+			 Query query = JPA.em().createQuery(
+					 "select p from Post p where "+
+							 "p.id in ("+StringUtil.collectionToString(postIds, ",")+") and "+
+							 "p.deleted = false ORDER BY FIELD(p.id,"+StringUtil.collectionToString(postIds, ",")+")");
+			 query.setFirstResult(offset * DefaultValues.FRONTPAGE_HOT_COMMUNITIES_COUNT);
+			 query.setMaxResults(DefaultValues.FRONTPAGE_HOT_COMMUNITIES_COUNT);
 			 return (List<Post>) query.getResultList();
 		} catch (NoResultException nre) {
 			return null;

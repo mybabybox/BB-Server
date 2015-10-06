@@ -26,6 +26,7 @@ import viewmodel.PostVMLite;
 import viewmodel.ResponseStatusVM;
 import viewmodel.UserVM;
 import common.cache.CalcServer;
+import common.cache.JedisCache;
 import common.utils.HtmlUtil;
 import common.utils.ImageFileUtil;
 import controllers.Application.DeviceType;
@@ -206,13 +207,19 @@ public class ProductController extends Controller{
 
 	@Transactional
 	public static Result likePost(Long id) {
-		Post.findById(id).onLikedBy(Application.getLocalUser(session()));
+		User localUser = Application.getLocalUser(session());
+		Post post =Post.findById(id); 
+		post.onLikedBy(localUser);
+		CalcServer.addToLikeQueue(post.id, localUser.id);
 		return ok();
 	}
 
 	@Transactional
 	public static Result unlikePost(Long id) {
-		Post.findById(id).onUnlikedBy(Application.getLocalUser(session()));
+		User localUser = Application.getLocalUser(session());
+		Post post =Post.findById(id); 
+		post.onUnlikedBy(localUser);
+		CalcServer.removeFromLikeQueue(post.id, localUser.id);
 		return ok();
 	}
 
@@ -371,6 +378,29 @@ public class ProductController extends Controller{
 			PostVMLite vm = new PostVMLite(product);
 			vm.isLiked = product.isLikedBy(localUser);
 			vm.offset = product.price.longValue();
+			vms.add(vm);
+		}
+		return ok(Json.toJson(vms));
+	}
+	
+
+	@Transactional 
+	public static Result getHomeExplorerFeed(Long offset) {
+		final User localUser = Application.getLocalUser(session());
+		if (!localUser.isLoggedIn()) {
+			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+			return notFound();
+		}
+		
+		List<Long> postIds = CalcServer.getHomeExploreFeed(localUser.id, offset * DefaultValues.FRONTPAGE_HOT_POSTS_COUNT);
+		if(postIds.size() == 0){
+			return ok(Json.toJson(postIds));
+		}
+		
+		List<PostVMLite> vms = new ArrayList<>();
+		for(Post product : Post.getPosts(postIds, offset.intValue())) {
+			PostVMLite vm = new PostVMLite(product);
+			vm.isLiked = product.isLikedBy(localUser);
 			vms.add(vm);
 		}
 		return ok(Json.toJson(vms));

@@ -16,11 +16,11 @@
 				</div>
 				<div class="products-show-poster" style="float: right">
 					<span ng-show="userInfo.isLoggedIn" class="btn-like-wrapper">
-						<a  data-ng-show="product.isLike" class="btn-like" href=""
+						<a  data-ng-show="!product.isLiked" class="btn-like" href=""
 						data-ng-click="like_product(product.id)">Like</a> <a
-						data-ng-show="!product.isLike" class="btn-like" href=""
+						data-ng-show="product.isLiked" class="btn-like" href=""
 						data-ng-click="unlike_product(product.id)">Unlike</a> <span
-						ng-show="product.nol > 0"><a class="btn-like"> 
+						ng-show="product.numLikes > 0"><a class="btn-like"> 
 						<img data-ng-src="/assets/app/images/general/icons/liked_1.png" />{{product.numLikes}}
 						</a></span>
 					</span> 
