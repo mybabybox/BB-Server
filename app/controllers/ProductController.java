@@ -29,6 +29,7 @@ import common.cache.CalcServer;
 import common.utils.HtmlUtil;
 import common.utils.ImageFileUtil;
 import controllers.Application.DeviceType;
+import domain.DefaultValues;
 import domain.SocialObjectType;
 
 public class ProductController extends Controller{
@@ -48,23 +49,15 @@ public class ProductController extends Controller{
 	
 	@Transactional
 	public static Result createProductMobile() {
-		Http.MultipartFormData multipartFormData = request().body().asMultipartFormData();
-		List<FilePart> files = new ArrayList<>();
-		for(int i = 0; i<5; i++){
-			if(multipartFormData.getFile("post-image"+i) != null){
-				files.add(multipartFormData.getFile("post-image"+i));
-			} else {
-				break;
-			}
-		}
+		List<FilePart> images = Application.parseAttachments("image", DefaultValues.MAX_POST_IMAGES);
 	    
+		Http.MultipartFormData multipartFormData = request().body().asMultipartFormData();
 		String catId = multipartFormData.asFormUrlEncoded().get("catId")[0];
 	    String title = multipartFormData.asFormUrlEncoded().get("title")[0];
 	    String body = multipartFormData.asFormUrlEncoded().get("body")[0];
 	    String price = multipartFormData.asFormUrlEncoded().get("price")[0];
 	    String deviceType = multipartFormData.asFormUrlEncoded().get("deviceType")[0];
-	    request().body().asMultipartFormData().getFiles();
-		return createProduct(title, body, Long.parseLong(catId), Double.parseDouble(price), files, Application.parseDeviceType(deviceType));
+		return createProduct(title, body, Long.parseLong(catId), Double.parseDouble(price), images, Application.parseDeviceType(deviceType));
 	}
 	
 	private static Result createProduct(String title, String body, Long catId, Double price, List<FilePart> images, DeviceType deviceType) {
@@ -80,7 +73,7 @@ public class ProductController extends Controller{
 				return badRequest("Failed to create product. Invalid parameters.");
 			}
 			
-			for(FilePart image : images){
+			for (FilePart image : images){
 				String fileName = image.getFilename();
 				File file = image.getFile();
 				File fileTo = ImageFileUtil.copyImageFileToTemp(file, fileName);

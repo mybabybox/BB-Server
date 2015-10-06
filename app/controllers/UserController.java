@@ -30,6 +30,7 @@ import play.data.DynamicForm;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
 import viewmodel.CollectionVM;
@@ -41,9 +42,9 @@ import viewmodel.ProfileVM;
 import viewmodel.UserVM;
 import viewmodel.UserVMLite;
 import common.cache.CalcServer;
-import common.utils.HtmlUtil;
 import common.utils.ImageFileUtil;
 import common.utils.NanoSecondStopWatch;
+import domain.DefaultValues;
 
 public class UserController extends Controller {
     private static final play.api.Logger logger = play.api.Logger.apply(UserController.class);
@@ -482,12 +483,29 @@ public class UserController extends Controller {
             return notFound();
         }
         
-        DynamicForm form = form().bindFromRequest();
-        Long conversationId = Long.parseLong(form.get("conversationId"));
-        String body = HtmlUtil.convertTextToHtml(form.get("body"));
-        Message message = Conversation.newMessage(conversationId, localUser, body);
-        MessageVM vm = new MessageVM(message);
-        return ok(Json.toJson(vm));
+        try {
+	        Http.MultipartFormData multipartFormData = request().body().asMultipartFormData();
+			Long conversationId = Long.parseLong(multipartFormData.asFormUrlEncoded().get("conversationId")[0]);
+		    String body = multipartFormData.asFormUrlEncoded().get("body")[0];
+		    String deviceType = multipartFormData.asFormUrlEncoded().get("deviceType")[0];
+	        
+	        Message message = Conversation.newMessage(conversationId, localUser, body);
+	        
+	        List<FilePart> images = Application.parseAttachments("image", DefaultValues.MAX_MESSAGE_IMAGES);
+	        for (FilePart image : images){
+				String fileName = image.getFilename();
+				File file = image.getFile();
+				File fileTo = ImageFileUtil.copyImageFileToTemp(file, fileName);
+				message.addMessagePhoto(fileTo, localUser);
+			}
+	        
+	        MessageVM vm = new MessageVM(message);
+	        return ok(Json.toJson(vm));
+		} catch (IOException e) {
+			logger.underlyingLogger().error("Error in newMessage", e);
+		}
+        
+        return badRequest();
     }
 	
 	@Transactional

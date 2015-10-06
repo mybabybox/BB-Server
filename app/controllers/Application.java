@@ -30,6 +30,8 @@ import play.db.jpa.Transactional;
 import play.i18n.Messages;
 import play.libs.Json;
 import play.mvc.Controller;
+import play.mvc.Http;
+import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Http.Session;
 import play.mvc.Result;
 import providers.MyLoginUsernamePasswordAuthUser;
@@ -92,6 +94,20 @@ public class Application extends Controller {
 		} catch (Exception e) {
 			return DeviceType.NA;
 		}
+	}
+	
+	public static List<FilePart> parseAttachments(String prefix, int count) {
+		//List<FilePart> files = request().body().asMultipartFormData().getFiles();
+		Http.MultipartFormData multipartFormData = request().body().asMultipartFormData();
+		List<FilePart> files = new ArrayList<>();
+		for(int i = 0; i < count; i++){
+			if (multipartFormData.getFile(prefix+i) != null){
+				files.add(multipartFormData.getFile(prefix+i));
+			} else {
+				break;
+			}
+		}
+		return files;
 	}
 	
 	@Transactional
