@@ -61,7 +61,7 @@ public class Message extends SocialObject implements Comparable<Message> {
 	    
     public void ensureAlbumExist(User owner) {
         if (this.folder == null) {
-            this.folder = Folder.createAlbum(owner, "message-ps", "", true);
+            this.folder = Folder.createFolder(owner, "message-ps", "", true);
             this.merge();
         }
     }

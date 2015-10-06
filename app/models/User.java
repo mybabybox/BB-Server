@@ -177,10 +177,6 @@ public class User extends SocialObject implements Subject, Followable {
 	@JsonIgnore
 	public List<Folder> folders;
 
-	@OneToMany(cascade = CascadeType.REMOVE)
-	@JsonIgnore
-	public List<Album> album;
-
 	@Override
 	@JsonIgnore
 	public List<? extends Role> getRoles() {
@@ -323,7 +319,7 @@ public class User extends SocialObject implements Subject, Followable {
 	 */
 	private void ensureAlbumPhotoProfileExist() {
 		if (this.albumPhotoProfile == null) {
-			this.albumPhotoProfile = createAlbum("profile", "", true);
+			this.albumPhotoProfile = createFolder("profile", "", true);
 			this.merge();
 		}
 	}
@@ -334,7 +330,7 @@ public class User extends SocialObject implements Subject, Followable {
 	private void ensureCoverPhotoProfileExist() {
 
 		if (this.albumCoverProfile == null) {
-			this.albumCoverProfile = createAlbum("cover", "", true);
+			this.albumCoverProfile = createFolder("cover", "", true);
 			this.merge();
 		}
 	}
@@ -370,8 +366,8 @@ public class User extends SocialObject implements Subject, Followable {
 	 * @param system
 	 * @return
 	 */
-	public Folder createAlbum(String name, String description, Boolean system) {
-		if (ensureFolderExistWithGivenName(name)) {
+	public Folder createFolder(String name, String description, Boolean system) {
+		if (ensureAlbumExistWithGivenName(name)) {
 			Folder folder = createFolder(name, description,
 					SocialObjectType.FOLDER, system);
 			folders.add(folder);
@@ -379,48 +375,6 @@ public class User extends SocialObject implements Subject, Followable {
 			return folder;
 		}
 		return null;
-	}
-
-	public Album createAlbum(String name, String description, Boolean system,
-			SocialObjectType type) {
-
-		if (ensureAlbumExistWithGivenName(name)) {
-			Album _album = createAlbum(name, description,
-					SocialObjectType.ALBUMN, system);
-			album.add(_album);
-			this.merge();
-			return _album;
-		}
-		return null;
-	}
-
-	private boolean ensureAlbumExistWithGivenName(String name) {
-
-		if (album == null) {
-			album = new ArrayList<>();
-		}
-
-		if (album.contains(new Album(name))) {
-			return false;
-		}
-
-		return true;
-	}
-
-	private Album createAlbum(String name, String description,
-			SocialObjectType type, Boolean system) {
-		Folder folder = createFolder(name, description,
-				SocialObjectType.FOLDER, system);
-
-		Album _album = new Album(name);
-		_album.owner = this;
-		_album.name = name;
-		_album.description = description;
-		_album.objectType = type;
-		_album.system = system;
-		_album.folder = folder;
-		_album.save();
-		return _album;
 	}
 
 	private Folder createFolder(String name, String description,
@@ -436,16 +390,15 @@ public class User extends SocialObject implements Subject, Followable {
 		return folder;
 	}
 
-	private boolean ensureFolderExistWithGivenName(String name) {
-
-		if (album != null && album.contains(new Folder(name))) {
+	private boolean ensureAlbumExistWithGivenName(String name) {
+		if (folders != null && folders.contains(new Folder(name))) {
 			return false;
 		}
 
-		album = new ArrayList<>();
+		folders = new ArrayList<>();
 		return true;
 	}
-
+	
 	public static boolean existsByAuthUserIdentity(
 			final AuthUserIdentity identity) {
 		final Query exp;
@@ -1030,14 +983,6 @@ public class User extends SocialObject implements Subject, Followable {
 
 	public void setFolders(List<Folder> folders) {
 		this.folders = folders;
-	}
-
-	public List<Album> getAlbum() {
-		return album;
-	}
-
-	public void setAlbum(List<Album> album) {
-		this.album = album;
 	}
 
 	public void setRoles(List<SecurityRole> roles) {

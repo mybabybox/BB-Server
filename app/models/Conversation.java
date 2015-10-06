@@ -105,10 +105,10 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		
 		this.setUpdatedDate(now);
 		if(this.user1 == sender){
-			setReadTime(this.user1);
+			setReadDate(this.user1);
 			this.user2NumMessages++;
 		} else {
-			setReadTime(this.user2);
+			setReadDate(this.user2);
 			this.user1NumMessages++;
 		}
 		this.save();
@@ -149,14 +149,14 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		q.setParameter(1, this);
 
 		if(this.user1 == user){
-			setReadTime(user1);
+			setReadDate(user1);
 			if(this.user1ArchiveDate == null){
 				q.setParameter(2, new Date(0));
 			} else {
 				q.setParameter(2, this.user1ArchiveDate);
 			}
 		} else { 
-			setReadTime(user2);
+			setReadDate(user2);
 			if(this.user2ArchiveDate == null){
 				q.setParameter(2, new Date(0));
 			} else {
@@ -200,7 +200,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		Date now = new Date();
 		conversation = new Conversation(post, user);
 		conversation.setUpdatedDate(now);
-		conversation.setReadTime(post.owner);	// New conversation always opened by buyer
+		conversation.setReadDate(user);		// New conversation always opened by buyer
 		conversation.save();
 		return conversation;
 	}
@@ -260,7 +260,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	
 	public static void archiveConversation(Long id, User user) {
 		Conversation conversation = Conversation.findById(id);
-		conversation.setArchiveTime(user);
+		conversation.setArchiveDate(user);
 	}
 	
 	public static Long getUnreadConversationCount(Long userId) {
@@ -312,7 +312,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
         q.executeUpdate();
 	}
 	
-	private void setReadTime(User user) {
+	private void setReadDate(User user) {
 		logger.underlyingLogger().debug("[conv="+this.id+"][u="+user.id+"] setReadTime");
 		
 		if(this.user1 == user){
@@ -324,7 +324,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	    }
 	}
 	
-	private void setArchiveTime(User user){
+	private void setArchiveDate(User user){
 		logger.underlyingLogger().debug("[conv="+this.id+"][u="+user.id+"] setArchiveTime");
 		
 	    if(this.user1 == user){

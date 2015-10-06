@@ -21,6 +21,7 @@ import common.utils.NanoSecondStopWatch;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.name.Rename;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
@@ -41,7 +42,6 @@ import scala.concurrent.duration.Duration;
 public class Folder extends SocialObject implements Serializable, Creatable, Updatable{
     private static play.api.Logger logger = play.api.Logger.apply(Folder.class);
 
-
 	public Folder() {}
 	
 	public Folder(String name) {
@@ -59,7 +59,18 @@ public class Folder extends SocialObject implements Serializable, Creatable, Upd
 		return super.toString() + " " + name;
 	}
 
-
+	public static Long[] getResources(Folder folder) {
+		Long[] images = null;
+		if (folder != null && !CollectionUtils.isEmpty(folder.resources)) {
+		    images = new Long[folder.resources.size()];
+			int i = 0;
+			for (Resource rs : folder.resources) {
+			    images[i++] = rs.id;
+			}
+		}
+		return images;
+	}
+	
     /**
      * @param owner
      * @param name
@@ -67,7 +78,7 @@ public class Folder extends SocialObject implements Serializable, Creatable, Upd
      * @param system
      * @return
      */
-    public static Folder createAlbum(User owner, String name, String description, Boolean system) {
+    public static Folder createFolder(User owner, String name, String description, Boolean system) {
         Folder folder = createFolder(owner, name, description,
                 SocialObjectType.FOLDER, system);
         return folder;
@@ -416,14 +427,6 @@ public class Folder extends SocialObject implements Serializable, Creatable, Upd
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public List<Resource> getResources() {
-		return resources;
-	}
-
-	public void setResources(List<Resource> resources) {
-		this.resources = resources;
 	}
 
 	public Boolean getSystem() {

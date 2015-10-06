@@ -178,7 +178,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 
 	public void ensureAlbumExist() {
 		if (this.folder == null) {
-			this.folder = Folder.createAlbum(this.owner, "post-ps", "", true);
+			this.folder = Folder.createFolder(this.owner, "post-ps", "", true);
 			this.merge();
 		}
 	}

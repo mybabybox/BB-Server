@@ -3,6 +3,7 @@ package viewmodel;
 import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import models.Folder;
 import models.Post;
 import models.Resource;
 
@@ -39,14 +40,11 @@ public class PostVMLite {
         
         this.isLiked = post.isLikedBy(post.owner);
         
-        if (post.folder != null && !CollectionUtils.isEmpty(post.folder.resources)) {
-		    this.hasImage = true;
-		    this.images = new Long[post.folder.resources.size()];
-			int i = 0;
-			for (Resource rs : post.folder.resources) {
-			    this.images[i++] = rs.id;
-			}
-		}
+        Long[] images = Folder.getResources(post.folder);
+        if (images != null && images.length > 0) {
+        	this.hasImage = true;
+        	this.images = images;
+        }
     }
     
     public Long getId() {

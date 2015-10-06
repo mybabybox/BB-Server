@@ -103,7 +103,7 @@ public class Comment extends SocialObject implements Comparable<Comment>, Likeab
 
     public void ensureAlbumExist() {
 		if (this.folder == null) {
-			this.folder = Folder.createAlbum(this.owner, "comment-ps", "", true);
+			this.folder = Folder.createFolder(this.owner, "comment-ps", "", true);
 			this.merge();
 		}
 	}
