@@ -82,6 +82,7 @@ POST    /updateUserProfileData                      controllers.UserController.u
 
 # Conversation
 GET     /get-all-conversations                      controllers.UserController.getAllConversations()
+GET     /get-conversation/:id                       controllers.UserController.getConversation(id:Long)
 GET     /get-messages/:conversationId/:offset       controllers.UserController.getMessages(conversationId: Long, offset: Long)
 GET     /open-conversation/:postId                  controllers.UserController.openConversation(postId: Long)
 GET     /delete-conversation/:id                    controllers.UserController.deleteConversation(id: Long)

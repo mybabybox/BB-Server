@@ -550,6 +550,21 @@ public class UserController extends Controller {
 	}
 	
 	@Transactional
+	public static Result getConversation(Long id) {
+        NanoSecondStopWatch sw = new NanoSecondStopWatch();
+
+		final User localUser = Application.getLocalUser(session());
+		Conversation conversation = Conversation.findById(id);
+		if (conversation == null) {
+			return notFound();
+		}
+
+        sw.stop();
+        logger.underlyingLogger().info("[u="+localUser.id+"] getConversation. Took "+sw.getElapsedMS()+"ms");
+		return ok(Json.toJson(new ConversationVM(conversation, localUser, conversation.post.owner)));
+	}
+	
+	@Transactional
     public static Result openConversation(Long postId) {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
 		
