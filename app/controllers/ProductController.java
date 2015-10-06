@@ -166,13 +166,23 @@ public class ProductController extends Controller{
 	}
 
 	@Transactional
-	public static Result getFullProductImageById(Long id) {
+	public static Result getOriginalProductImageById(Long id) {
 		response().setHeader("Cache-Control", "max-age=604800");
 		Resource resource = Resource.findById(id);
 		if (resource == null || resource.getRealFile() == null) {
 			return ok();
 		}
 		return ok(resource.getRealFile());
+	}
+	
+	@Transactional
+	public static Result getMiniProductImageById(Long id) {
+		response().setHeader("Cache-Control", "max-age=604800");
+		Resource resource = Resource.findById(id);
+		if (resource == null || resource.getMini() == null) {
+			return ok();
+		}
+		return ok(new File(resource.getMini()));
 	}
 
 	@Transactional

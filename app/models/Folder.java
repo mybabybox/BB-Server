@@ -141,15 +141,9 @@ public class Folder extends SocialObject implements Serializable, Creatable, Upd
 					.keepAspectRatio(true)
 					.toFile(parentFile+"/mini."+fileName);
 			
-			Thumbnails.of(source)
-					.height(ImageDimensions.PROFILE_MINI_COMMENT)
-					.width(ImageDimensions.PROFILE_MINI_COMMENT)
-					.keepAspectRatio(true)
-					.toFile(parentFile+"/miniComment."+fileName);
-
             sw.stop();
             logger.underlyingLogger().info("addFile("+type.name()+"). Resize Took "+sw.getElapsedMS()+"ms");
-		}
+		} 
 		else if (type == SocialObjectType.COVER_PHOTO) {
             NanoSecondStopWatch sw = new NanoSecondStopWatch();
             String fileName = new java.io.File(resource.getPath()).getName();
@@ -172,9 +166,9 @@ public class Folder extends SocialObject implements Serializable, Creatable, Upd
             sw.stop();
             logger.underlyingLogger().info("addFile("+type.name()+"). Resize Took "+sw.getElapsedMS()+"ms");
 		}
-		else if (type == SocialObjectType.POST_PHOTO ||
-                type == SocialObjectType.COMMENT_PHOTO) {
+		else if (type == SocialObjectType.POST_PHOTO) {
             NanoSecondStopWatch sw = new NanoSecondStopWatch();
+            String fileName = new java.io.File(resource.getPath()).getName();
 
 			BufferedImage bimg = ImageFileUtil.readImageFile(source);
 			final int origWidth  = bimg.getWidth();
@@ -182,13 +176,11 @@ public class Folder extends SocialObject implements Serializable, Creatable, Upd
 
             // horizontal or square
 			if(origWidth >= origHeight) {
-                int targetPreviewWidth = (type == SocialObjectType.POST_PHOTO) ?
-                        ImageDimensions.POST_IMAGE_PREVIEW_WIDTH_PX :
-                        ImageDimensions.COMMENT_IMAGE_PREVIEW_WIDTH_PX;
+                int targetPreviewWidth = ImageDimensions.POST_IMAGE_PREVIEW_WIDTH_PX;
                 if (origWidth > targetPreviewWidth) {
                     double scaleFactor = ((double)targetPreviewWidth) / ((double)origWidth);
                     Thumbnails.of(source)
-                                .scale(scaleFactor)
+                    			.scale(scaleFactor)
                                 .toFiles(parentFile, Rename.PREFIX_DOT_THUMBNAIL);
                 } else {
                     FileUtils.copyFile(source, new java.io.File(resource.getThumbnail()));
@@ -218,9 +210,7 @@ public class Folder extends SocialObject implements Serializable, Creatable, Upd
 			}
             // vertical pictures
             else {
-                int targetPreviewHeight = (type == SocialObjectType.POST_PHOTO) ?
-                        ImageDimensions.POST_IMAGE_PREVIEW_HEIGHT_PX :
-                        ImageDimensions.COMMENT_IMAGE_PREVIEW_HEIGHT_PX;
+                int targetPreviewHeight = ImageDimensions.POST_IMAGE_PREVIEW_HEIGHT_PX;
                 if (origHeight > targetPreviewHeight) {
                     double scaleFactor = ((double)targetPreviewHeight) / ((double)origHeight);
                     Thumbnails.of(source)
@@ -253,6 +243,13 @@ public class Folder extends SocialObject implements Serializable, Creatable, Upd
                 );
 			}
 
+			// mini
+            Thumbnails.of(source)
+            			.height(ImageDimensions.PROFILE_MINI)
+            			.width(ImageDimensions.PROFILE_MINI)
+            			.keepAspectRatio(true)
+            			.toFile(parentFile+"/mini."+fileName);
+            
             sw.stop();
             logger.underlyingLogger().info("addFile("+type.name()+"). Resize Took "+sw.getElapsedMS()+"ms");
 		}

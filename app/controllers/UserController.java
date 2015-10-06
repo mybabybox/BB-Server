@@ -629,6 +629,11 @@ public class UserController extends Controller {
     }
 
     @Transactional
+    public static Result getMiniMessageImageById(Long id) {
+    	return ok(new File(Resource.findById(id).getMini()));
+    }
+	
+    @Transactional
     public static Result inviteByEmail(String email) {
 		final User localUser = Application.getLocalUser(session());
 

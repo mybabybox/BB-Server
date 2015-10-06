@@ -9,7 +9,6 @@ public enum SocialObjectType {
      PROFILE_PHOTO,
      COVER_PHOTO,
      POST_PHOTO,
-     COMMENT_PHOTO,
      MESSAGE_PHOTO,
      ALBUMN,
      FOLDER,

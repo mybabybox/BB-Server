@@ -1,7 +1,5 @@
 package models;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
 
@@ -20,7 +18,6 @@ import play.db.jpa.JPA;
 import domain.Creatable;
 import domain.Likeable;
 import domain.PostType;
-import domain.SocialObjectType;
 
 /**
  * A Comment by an User on a SocialObject (Post only)
@@ -104,12 +101,6 @@ public class Comment extends SocialObject implements Comparable<Comment>, Likeab
         save();
     }
 
-    public Resource addCommentPhoto(File source) throws IOException {
-		ensureAlbumExist();
-		Resource photo = this.folder.addFile(source, SocialObjectType.COMMENT_PHOTO);
-		return photo;
-    }
-  
     public void ensureAlbumExist() {
 		if (this.folder == null) {
 			this.folder = Folder.createAlbum(this.owner, "comment-ps", "", true);

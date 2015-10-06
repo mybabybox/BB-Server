@@ -74,10 +74,6 @@ public class Resource extends SocialObject {
         return getStoragePath("mini.");
 	}
 	
-	public String getMiniComment() {
-        return getStoragePath("miniComment.");
-	}
-
 	public java.io.File getRealFile() {
         return getFileObject(getPath());
 	}

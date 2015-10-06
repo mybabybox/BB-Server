@@ -132,9 +132,11 @@ GET     /image/get-mini-profile-image-by-id/:id     controllers.UserController.g
 GET     /image/get-cover-image-by-id/:id            controllers.UserController.getCoverImageById(id :Long)
 GET     /image/get-thumbnail-cover-image-by-id/:id  controllers.UserController.getThumbnailCoverImageById(id :Long)
 GET     /image/get-post-image-by-id/:id             controllers.ProductController.getProductImageById(id :Long)
-GET     /image/get-original-post-image-by-id/:id    controllers.ProductController.getFullProductImageById(id :Long)
+GET     /image/get-original-post-image-by-id/:id    controllers.ProductController.getOriginalProductImageById(id :Long)
+GET     /image/get-mini-post-image-by-id/:id        controllers.ProductController.getMiniProductImageById(id :Long)
 GET     /image/get-message-image-by-id/:id          controllers.UserController.getMessageImageById(id :Long)
 GET     /image/get-original-message-image-by-id/:id controllers.UserController.getOriginalMessageImageById(id :Long)
+GET     /image/get-mini-message-image-by-id/:id     controllers.UserController.getMiniMessageImageById(id :Long)
 GET     /image/getEmoticons                         controllers.UserController.getEmoticons()
 
 # misc
