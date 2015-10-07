@@ -25,7 +25,7 @@ public class LikeSocialRelation extends SocialRelation {
 	}
 	
 	@Override
-	public Action getAction() {
+	public SocialRelation.Action getAction() {
 		return Action.LIKE;
 	}
 	

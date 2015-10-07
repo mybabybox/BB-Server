@@ -383,9 +383,8 @@ public class ProductController extends Controller{
 		return ok(Json.toJson(vms));
 	}
 	
-
 	@Transactional 
-	public static Result getHomeExplorerFeed(Long offset) {
+	public static Result getHomeExploreFeed(Long offset) {
 		final User localUser = Application.getLocalUser(session());
 		if (!localUser.isLoggedIn()) {
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
@@ -403,6 +402,18 @@ public class ProductController extends Controller{
 			vm.isLiked = product.isLikedBy(localUser);
 			vms.add(vm);
 		}
+		return ok(Json.toJson(vms));
+	}
+	
+	@Transactional 
+	public static Result getHomeFollowingFeed(Long offset) {
+		final User localUser = Application.getLocalUser(session());
+		if (!localUser.isLoggedIn()) {
+			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+			return notFound();
+		}
+		
+		List<PostVMLite> vms = new ArrayList<>();
 		return ok(Json.toJson(vms));
 	}
 	

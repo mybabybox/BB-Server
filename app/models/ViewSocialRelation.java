@@ -17,7 +17,7 @@ public class ViewSocialRelation extends SocialRelation {
 	}
 	
 	@Override
-	public Action getAction() {
+	public SocialRelation.Action getAction() {
 		return Action.VIEW;
 	}
 }

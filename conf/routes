@@ -94,7 +94,8 @@ GET		/get-category-popular-feed/:id/:postType/:offset		controllers.ProductContro
 GET		/get-category-newest-feed/:id/:postType/:offset			controllers.ProductController.getCategoryNewestFeed(id :Long, postType: String, offset: Long)
 GET		/get-category-price-low-high-feed/:id/:postType/:offset	controllers.ProductController.getCategoryPriceLowHighFeed(id :Long, postType: String, offset: Long)
 GET		/get-category-price-high-low-feed/:id/:postType/:offset	controllers.ProductController.getCategoryPriceHighLowFeed(id :Long, postType: String, offset: Long)
-GET		/get-home-explore-feed/:offset							controllers.ProductController.getHomeExplorerFeed(offset: Long)
+GET		/get-home-explore-feed/:offset							controllers.ProductController.getHomeExploreFeed(offset: Long)
+GET     /get-home-following-feed/:offset                        controllers.ProductController.getHomeFollowingFeed(offset: Long)
 
 POST	/post/new		 		             		controllers.ProductController.createProductWeb
 POST	/mobile/post/new		 		            controllers.ProductController.createProductMobile

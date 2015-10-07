@@ -4,10 +4,10 @@ import play.Project._
 
 object ApplicationBuild extends Build {
 
-  val appName         = "BabyBox"
+  val appName         = "bb-server"
 
-  val appVersion      = "1.0-SNAPSHOT"
-  //val appVersion      = "%s-%s".format("git rev-parse --abbrev-ref HEAD".!!.trim, "git rev-parse --short HEAD".!!.trim)
+  //val appVersion      = "1.0-SNAPSHOT"
+  val appVersion      = "%s-%s".format("git rev-parse --abbrev-ref HEAD".!!.trim, "git rev-parse --short HEAD".!!.trim)
 
   val appDependencies = Seq(
     // Add your project dependencies here,

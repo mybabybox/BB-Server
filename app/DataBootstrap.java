@@ -413,8 +413,8 @@ public class DataBootstrap {
         desc = "BB用品";
         createCategory(name, desc, "/assets/app/images/category/cat_utils.jpg", 4);
         
-        name = "生活百貨";
-        desc = "生活百貨";
+        name = "生活家居";
+        desc = "生活家居";
         createCategory(name, desc, "/assets/app/images/category/cat_home.jpg", 5);
         
         name = "其它";
