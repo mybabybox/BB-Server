@@ -174,25 +174,25 @@ public class JedisCache {
         }
     }
     
-    public Set<String> getSortedSetAsc(String key, Double offset) {
+    public Set<String> getSortedSetAsc(String key, Double min) {
         Jedis j = null;
         try {
             j = getResource();
-            return j.zrangeByScore(key, offset, 99999999999999999999.9, 0, DefaultValues.FRONTPAGE_HOT_POSTS_COUNT);
+			return j.zrangeByScore(key, ++min, 99999999999999999999.9, 0, DefaultValues.FRONTPAGE_HOT_POSTS_COUNT);
             //return j.zrange(key, 0, -1);
         } finally {
             returnResource(j);
         }
     }
     
-    public Set<String> getSortedSetDsc(String key, Double offset) {
+    public Set<String> getSortedSetDsc(String key, Double max) {
         Jedis j = null;
         try {
             j = getResource();
-            if(offset == 0){
-            	offset = 999999999999999999999.9;
+            if(max == 0){
+            	max = 999999999999999999999.9;
             }
-            return j.zrevrangeByScore(key, offset, 0, 0, DefaultValues.FRONTPAGE_HOT_POSTS_COUNT); 
+            return j.zrevrangeByScore(key, --max, 0, 0, DefaultValues.FRONTPAGE_HOT_POSTS_COUNT); 
 
             //return j.zrevrange(key, 0, -1);
         } finally {

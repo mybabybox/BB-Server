@@ -56,6 +56,7 @@ import com.feth.play.module.pa.user.EmailIdentity;
 import com.feth.play.module.pa.user.FirstLastNameIdentity;
 import com.google.common.base.Strings;
 
+import common.cache.CalcServer;
 import common.collection.Pair;
 import common.image.FaceFinder;
 import common.utils.DateTimeUtil;
@@ -353,10 +354,11 @@ public class User extends SocialObject implements Subject, Followable {
 	
 	@Transactional
 	public Post createProduct(String name, String body, Category category, Double price) {
-		Post product = new Post(this, name, body, category, price);
-		product.save();
+		Post post = new Post(this, name, body, category, price);
+		post.save();
+		CalcServer.addToPostQueue(post.id, this.id);
 		this.numProducts++;
-		return product;
+		return post;
 	}
 
 	/**

@@ -152,7 +152,7 @@ babybox.controller('ProfileController',
 
 	$scope.open = function (product) {
 		$scope.product = product;
-		viewService.viewProduct.get({id:product.id});
+		//viewService.viewProduct.get({id:product.id});
 		ngDialog.open({
 			template: '/assets/app/views/babybox/product-dialog.html',
 			className: 'ngdialog-theme-plain custom-width ',

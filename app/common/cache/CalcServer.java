@@ -1,20 +1,18 @@
 package common.cache;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
-import common.utils.NanoSecondStopWatch;
-import play.db.jpa.JPA;
-import play.libs.Akka;
-import scala.concurrent.duration.Duration;
-import akka.actor.ActorSystem;
-import models.Category;
+import org.joda.time.DateTime;
+import org.joda.time.Weeks;
+
 import models.Post;
 import models.User;
+import common.utils.NanoSecondStopWatch;
 
 public class CalcServer {
 	private static play.api.Logger logger = play.api.Logger.apply(CalcServer.class);
@@ -49,7 +47,7 @@ public class CalcServer {
 		logger.underlyingLogger().debug("warmUpActivity completed. Took "+sw.getElapsedSecs()+"s");
 	}
 
-	private static void buildBaseScore() {
+	public static void buildBaseScore() {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
 		logger.underlyingLogger().debug("buildBaseScore starts");
 		
@@ -112,7 +110,17 @@ public class CalcServer {
 	}
 
 	private static void buildPopularPostQueue(Post post) {
-		JedisCache.cache().putToSortedSet("CATEGORY_POPULAR:"+post.category.id, post.baseScore , post.id.toString());
+		Long timeScore = calculateTimeScore(post);
+		JedisCache.cache().putToSortedSet("CATEGORY_POPULAR:"+post.category.id,  timeScore, post.id.toString());
+	}
+
+	private static Long calculateTimeScore(Post post) {
+		Long timeScore = Math.max(post.baseScore, 1);
+		int timeDiff = Weeks.weeksBetween(new DateTime(new Date()), new DateTime(post.getCreatedDate())).getWeeks();
+		if (timeDiff > 0) 
+		timeScore = (long) (timeScore * Math.exp(-8 * timeDiff * timeDiff));
+		timeScore = timeScore * 1000000 + post.id;
+		return timeScore;
 	}
 
 	private static void buildNewestPostQueue(Post post) {
@@ -181,7 +189,7 @@ public class CalcServer {
 	}
     
 	public static List<Long> getCategoryPriceLowHighFeed(Long id, Double offset) {
-		Set<String> values = JedisCache.cache().getSortedSetAsc("CATEGORY_PRICE_LOW_HIGH:"+id, offset*1000000);
+		Set<String> values = JedisCache.cache().getSortedSetAsc("CATEGORY_PRICE_LOW_HIGH:"+id, offset);
         final List<Long> postIds = new ArrayList<>();
 
         for (String value : values) {
@@ -194,7 +202,7 @@ public class CalcServer {
 	}
 	
 	public static List<Long> getCategoryPriceHighLowFeed(Long id, Double offset) {
-		Set<String> values = JedisCache.cache().getSortedSetDsc("CATEGORY_PRICE_LOW_HIGH:"+id, offset*1000000);
+		Set<String> values = JedisCache.cache().getSortedSetDsc("CATEGORY_PRICE_LOW_HIGH:"+id, offset);
         final List<Long> postIds = new ArrayList<>();
         for (String value : values) {
             try {
@@ -206,7 +214,7 @@ public class CalcServer {
 	}
 	
 	public static List<Long> getHomeExploreFeed(Long id, Long offset) {
-		if(JedisCache.cache().exists("HOME_EXPLORE:"+id)){
+		if(!JedisCache.cache().exists("HOME_EXPLORE:"+id)){
 			buildUserExplorerFeedQueue(User.findById(id));
 		}
 		Set<String> values = JedisCache.cache().getSortedSetDsc("HOME_EXPLORE:"+id, offset);
@@ -248,6 +256,7 @@ public class CalcServer {
 	}
 
 	public static void addToQueues(Post post) {
+		buildBaseScore();
 		buildPriceHighLowPostQueue(post);
 		buildNewestPostQueue(post);
 		buildPopularPostQueue(post);
@@ -259,6 +268,18 @@ public class CalcServer {
 	
 	public static void removeFromLikeQueue(Long postId, Long userId){
 		JedisCache.cache().removeMemberFromSet("USER_LIKES:"+userId, postId.toString());
+	}
+
+	public static void addToPostQueue(Long postId, Long userId){
+		JedisCache.cache().putToSet("USER_POSTS:"+userId, postId.toString());
+	}
+	
+	public static void removeFromPostQueue(Long postId, Long userId){
+		JedisCache.cache().removeMemberFromSet("USER_POSTS:"+userId, postId.toString());
+	}
+	
+	public static Double getScore(String key, Long postId){
+		return JedisCache.cache().getScore(key, postId.toString());
 	}
 
 }

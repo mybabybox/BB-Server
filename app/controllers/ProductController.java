@@ -25,10 +25,11 @@ import viewmodel.PostVM;
 import viewmodel.PostVMLite;
 import viewmodel.ResponseStatusVM;
 import viewmodel.UserVM;
+
 import common.cache.CalcServer;
-import common.cache.JedisCache;
 import common.utils.HtmlUtil;
 import common.utils.ImageFileUtil;
+
 import controllers.Application.DeviceType;
 import domain.DefaultValues;
 import domain.SocialObjectType;
@@ -60,7 +61,7 @@ public class ProductController extends Controller{
 	    String deviceType = multipartFormData.asFormUrlEncoded().get("deviceType")[0];
 		return createProduct(title, body, Long.parseLong(catId), Double.parseDouble(price), images, Application.parseDeviceType(deviceType));
 	}
-	
+
 	private static Result createProduct(String title, String body, Long catId, Double price, List<FilePart> images, DeviceType deviceType) {
 		final User localUser = Application.getLocalUser(session());
 		if (!localUser.isLoggedIn()) {
@@ -182,6 +183,7 @@ public class ProductController extends Controller{
 	@Transactional
 	public static Result product(Long id) {
 		final User localUser = Application.getLocalUser(session());
+		onView(id);
 		return ok(views.html.babybox.web.product.render(Json.stringify(Json.toJson(getProductInfoVM(id))), Json.stringify(Json.toJson(new UserVM(localUser)))));
 	}
 	
@@ -191,6 +193,7 @@ public class ProductController extends Controller{
 		if (post == null) {
 			return notFound();
 		}
+		onView(id);
 		return ok(Json.toJson(post));
 	}
 	
@@ -254,7 +257,8 @@ public class ProductController extends Controller{
 
         if (localUser.equals(post.owner) || 
                 localUser.isSuperAdmin()) {
-            post.delete(localUser);
+        	CalcServer.removeFromPostQueue(post.id, post.owner.id);
+        	post.delete(localUser);
             return ok();
         }
         return badRequest("Failed to delete post. [u=" + localUser.id + "] not owner of post [id=" + id + "].");
@@ -306,7 +310,7 @@ public class ProductController extends Controller{
 		for(Post post : posts) {
 			PostVMLite vm = new PostVMLite(post);
 			vm.isLiked = post.isLikedBy(localUser);
-			vm.offset = post.baseScore;
+			vm.offset = CalcServer.getScore("CATEGORY_POPULAR:"+post.category.id, post.id).longValue();
 			vms.add(vm);
 		}
 		return ok(Json.toJson(vms));
@@ -354,7 +358,7 @@ public class ProductController extends Controller{
 		for(Post product : Post.getPosts(postIds)) {
 			PostVMLite vm = new PostVMLite(product);
 			vm.isLiked = product.isLikedBy(localUser);
-			vm.offset = product.price.longValue();
+			vm.offset = CalcServer.getScore("CATEGORY_PRICE_LOW_HIGH:"+product.category.id, product.id).longValue();
 			vms.add(vm);
 		}
 		return ok(Json.toJson(vms));
@@ -377,7 +381,7 @@ public class ProductController extends Controller{
 		for(Post product : Post.getPosts(postIds)) {
 			PostVMLite vm = new PostVMLite(product);
 			vm.isLiked = product.isLikedBy(localUser);
-			vm.offset = product.price.longValue();
+			vm.offset = CalcServer.getScore("CATEGORY_PRICE_LOW_HIGH:"+product.category.id, product.id).longValue();
 			vms.add(vm);
 		}
 		return ok(Json.toJson(vms));

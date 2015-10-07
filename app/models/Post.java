@@ -19,6 +19,7 @@ import javax.persistence.Query;
 
 import play.db.jpa.JPA;
 import babybox.shopping.social.exception.SocialObjectNotCommentableException;
+import common.cache.CalcServer;
 import common.utils.StringUtil;
 import controllers.Application.DeviceType;
 import domain.Commentable;
@@ -94,6 +95,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 			recordLike(user);
 			this.noOfLikes++;
 			user.numLikes++;
+			CalcServer.buildBaseScore();
 		}
 	}
 
@@ -108,6 +110,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 			q.setParameter(3, SocialObjectType.USER);
 			q.setParameter(4, SocialObjectType.POST);
 			q.executeUpdate();
+			CalcServer.buildBaseScore();
 		}
 	}
 	
@@ -234,7 +237,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
         } else if (this.postType == PostType.STORY) {
             recordCommentStory(user, comment);
         }
-        
+        CalcServer.buildBaseScore();
 		return comment;
 	}
 
@@ -247,6 +250,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 
 	public void onView(User localUser) {
 		this.recordView(localUser);
+		CalcServer.buildBaseScore();
 	}
 
 	public static List<Post> getPostsByCategory(Category category) {
