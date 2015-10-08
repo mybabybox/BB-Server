@@ -71,7 +71,10 @@ public class CalcServer {
 	}
 	
 	private static void buildUserQueue() {
+		
 		for(User user : User.getEligibleUserForFeed()){
+			JedisCache.cache().remove("USER_POSTS:"+user.id);
+			JedisCache.cache().remove("USER_LIKES:"+user.id);
 			buildUserPostedQueue(user);
 			buildUserLikedPostQueue(user);
 		}
@@ -82,7 +85,7 @@ public class CalcServer {
 		logger.underlyingLogger().debug("buildUserPostedQueue starts");
 		
 		for(Post post : user.getUserPosts()){
-			JedisCache.cache().putToSet("USER_POSTS:"+user.id, post.id.toString());
+			JedisCache.cache().putToSortedSet("USER_POSTS:"+user.id, post.getCreatedDate().getTime() , post.id.toString());
 		}
 		
 		sw.stop();
@@ -94,7 +97,7 @@ public class CalcServer {
 		logger.underlyingLogger().debug("buildUserLikedPostQueue starts");
 		
 		for(Post post : user.getUserLikedPosts()){
-			JedisCache.cache().putToSet("USER_LIKES:"+user.id, post.id.toString());
+			JedisCache.cache().putToSortedSet("USER_LIKES:"+user.id, post.getCreatedDate().getTime() , post.id.toString());
 		}
 		
 		sw.stop();
@@ -229,10 +232,9 @@ public class CalcServer {
 
 	}
 	
-	public static List<Long> getUserPostFeeds(Long id) {
-		Set<String> values = JedisCache.cache().getSetMembers("USER_POSTS:"+id);
+	public static List<Long> getUserPostFeeds(Long id, Double offset) {
+		Set<String> values = JedisCache.cache().getSortedSetDsc("USER_POSTS:"+id, offset);
         final List<Long> postIds = new ArrayList<>();
-
         for (String value : values) {
             try {
                 postIds.add(Long.parseLong(value));
@@ -240,12 +242,12 @@ public class CalcServer {
             }
         }
         return postIds;
+
 	}
 	
-	public static List<Long> getUserLikeFeeds(Long id) {
-		Set<String> values = JedisCache.cache().getSetMembers("USER_LIKES:"+id);
+	public static List<Long> getUserLikeFeeds(Long id, Double offset) {
+		Set<String> values = JedisCache.cache().getSortedSetDsc("USER_LIKES:"+id, offset);
         final List<Long> postIds = new ArrayList<>();
-
         for (String value : values) {
             try {
                 postIds.add(Long.parseLong(value));
@@ -253,6 +255,7 @@ public class CalcServer {
             }
         }
         return postIds;
+
 	}
 
 	public static void addToQueues(Post post) {

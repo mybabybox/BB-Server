@@ -696,14 +696,15 @@ public class UserController extends Controller {
     
     @Transactional
     public static Result getUserPosts(Long id, Long offset) {
-    	List<Long> postIds = CalcServer.getUserPostFeeds(id);
+    	List<Long> postIds = CalcServer.getUserPostFeeds(id, offset.doubleValue());
         
         if(postIds.size() == 0){
 			return ok(Json.toJson(postIds));
 		}
     	List<PostVMLite> vms = new ArrayList<>();
-		for(Post product : Post.getPosts(postIds, offset.intValue())) {
+		for(Post product : Post.getPosts(postIds)) {
 			PostVMLite vm = new PostVMLite(product);
+			vm.offset = product.getCreatedDate().getTime();
 			vms.add(vm);
 		}
 		return ok(Json.toJson(vms));
@@ -762,14 +763,15 @@ public class UserController extends Controller {
     @Transactional
     public static Result getUserLikedPosts(Long id, Long offset){
     	
-    	List<Long> postIds = CalcServer.getUserLikeFeeds(id);
+    	List<Long> postIds = CalcServer.getUserLikeFeeds(id, offset.doubleValue());
         
         if(postIds.size() == 0){
 			return ok(Json.toJson(postIds));
 		}
     	List<PostVMLite> vms = new ArrayList<>();
-		for(Post product : Post.getPosts(postIds, offset.intValue())) {
+		for(Post product : Post.getPosts(postIds)) {
 			PostVMLite vm = new PostVMLite(product);
+			vm.offset = product.getCreatedDate().getTime();
 			vms.add(vm);
 		}
 		return ok(Json.toJson(vms));
