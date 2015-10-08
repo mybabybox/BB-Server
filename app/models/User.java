@@ -82,10 +82,8 @@ public class User extends SocialObject implements Subject, Followable {
 	public static final Long NO_LOGIN_ID = -1L;
 	
 	private static User BB_ADMIN;
-	private static User BB_EDITOR;
 
 	public static final String BB_ADMIN_NAME = "BabyBox 管理員";
-	public static final String BB_EDITOR_NAME = "BabyBox 編輯";
 
 	public String firstName;
 	public String lastName;
@@ -361,7 +359,7 @@ public class User extends SocialObject implements Subject, Followable {
 		this.numProducts++;
 		return post;
 	}
-
+	
 	/**
 	 * create a folder with the type: IMG (contain only image Resource types)
 	 * 
@@ -658,18 +656,6 @@ public class User extends SocialObject implements Subject, Followable {
 	}
 
 	@Transactional
-	public static User getBBEditor() {
-		if (BB_EDITOR != null)
-			return BB_EDITOR;
-		User superAdmin = getSuperAdmin(BB_EDITOR_NAME);
-		if (superAdmin == null) {
-			superAdmin = getSuperAdmin();
-		}
-		BB_EDITOR = superAdmin;
-		return superAdmin;
-	}
-
-	@Transactional
 	public static User getSuperAdmin(String name) {
 		Query q = JPA.em().createQuery(
 				"SELECT u FROM User u where name = ?1 and active = ?2 and system = ?3 and deleted = false");
@@ -702,35 +688,9 @@ public class User extends SocialObject implements Subject, Followable {
 	}
 
 	@Transactional
-	public boolean isBusinessAdmin() {
+	public boolean isSystemUser() {
 		for (SecurityRole role : roles) {
-			if (SecurityRole.RoleType.BUSINESS_ADMIN.name().equals(role.roleName)) {
-				return true;
-			}
-		}
-		if (isSuperAdmin()) {
-			return true;
-		}
-		return false;
-	}
-
-	@Transactional
-	public boolean isCommunityAdmin() {
-		for (SecurityRole role : roles) {
-			if (SecurityRole.RoleType.COMMUNITY_ADMIN.name().equals(role.roleName)) {
-				return true;
-			}
-		}
-		if (isSuperAdmin()) {
-			return true;
-		}
-		return false;
-	}
-
-	@Transactional
-	public boolean isEditor() {
-		for (SecurityRole role : roles) {
-			if (SecurityRole.RoleType.EDITOR.name().equals(role.roleName)) {
+			if (SecurityRole.RoleType.SYSTEM_USER.name().equals(role.roleName)) {
 				return true;
 			}
 		}
@@ -997,11 +957,11 @@ public class User extends SocialObject implements Subject, Followable {
 		this.permissions = permissions;
 	}
 
-	public List<Conversation> findMyConversations() {
-		return Conversation.findAllConversations(this,DefaultValues.CONVERSATION_COUNT);
+	public List<Conversation> findConversations() {
+		return Conversation.findUserConversations(this, DefaultValues.CONVERSATION_COUNT);
 	}
 
-	public Conversation findMyConversationWith(User u) {
+	public Conversation findConversationWith(User u) {
 		return Conversation.findByUsers(this, u);
 	}
 
@@ -1131,8 +1091,8 @@ public class User extends SocialObject implements Subject, Followable {
 	}
 
 	public Map<String, Long> getUserCategoriesForFeed() {
-		Query q = JPA.em().createNativeQuery("Select c.id, (count(p.id)/(Select count(*) from viewsocialrelation vr where vr.actor = ?1))*100 "
-				+ "from viewsocialrelation vsr, post p, category c "
+		Query q = JPA.em().createNativeQuery("Select c.id, (count(p.id)/(Select count(*) from ViewSocialRelation vr where vr.actor = ?1))*100 "
+				+ "from ViewSocialRelation vsr, post p, category c "
 				+ "where vsr.actor = ?1 and vsr.target = p.id and p.category_id = c.id  "
 				+ "group by c.id");
 		q.setParameter(1, this);

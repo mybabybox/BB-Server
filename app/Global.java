@@ -2,6 +2,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 import models.SecurityRole;
+import models.SecurityRole.RoleType;
 import models.User;
 import play.Application;
 import play.GlobalSettings;
@@ -17,6 +18,7 @@ import com.feth.play.module.pa.PlayAuthenticate;
 import com.feth.play.module.pa.PlayAuthenticate.Resolver;
 import com.feth.play.module.pa.exceptions.AccessDeniedException;
 import com.feth.play.module.pa.exceptions.AuthException;
+
 import common.cache.CalcServer;
 import common.schedule.CommandChecker;
 import common.schedule.JobScheduler;
@@ -182,11 +184,9 @@ public class Global extends GlobalSettings {
 
 	private void init() {
         if (SecurityRole.findRowCount() == 0L) {
-            for (final String roleName : Arrays.asList(
-                    SecurityRole.USER,
-                    SecurityRole.SUPER_ADMIN)) {
+            for (final RoleType roleType : Arrays.asList(SecurityRole.RoleType.values())) {
                 final SecurityRole role = new SecurityRole();
-                role.roleName = roleName;
+                role.roleName = roleType.name();
                 role.save();
             }
         }

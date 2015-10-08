@@ -14,14 +14,8 @@ public class DefaultValues {
     public static final int COMMENT_PREVIEW_CHARS = 200;
     public static final int DEFAULT_PREVIEW_CHARS = 200;
     
-    public static final int FRONTPAGE_HOT_POSTS_COUNT = 15;
-    public static final int FRONTPAGE_HOT_COMMUNITIES_COUNT = 8;
-    public static final int FRONTPAGE_HOT_COMMUNITIES_FOR_LAST_DAYS = 30;
-    
     public static final int COMMENTS_PREVIEW_COUNT = 10;
-    public static final int DEFAULT_UTILITY_COUNT = 5;
     public static final int DEFAULT_INFINITE_SCROLL_COUNT = 10;
-    public static final int DEFAULT_PAGINATION_COUNT = 10;
     
     public static final int CONVERSATION_LAST_MESSAGE_COUNT = 50;
     public static final int CONVERSATION_MESSAGE_COUNT = 10;

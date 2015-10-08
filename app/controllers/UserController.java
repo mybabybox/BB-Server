@@ -517,22 +517,17 @@ public class UserController extends Controller {
         }
 		
         Conversation.archiveConversation(id, localUser);
-        return getAllConversations();
+        return ok();
     }
 	
-	private static List<ConversationVM> getAllConversations(User localUser, ConversationVM newConversationVM) {
+	private static List<ConversationVM> getAllConversations(User localUser) {
 		List<ConversationVM> vms = new ArrayList<>();
-		List<Conversation> conversations = localUser.findMyConversations();
+		List<Conversation> conversations = localUser.findConversations();
 		if (conversations != null) {
 			User otherUser;
 			for (Conversation conversation : conversations) {
 				// archived, dont show
 				if (conversation.isArchivedBy(localUser)) {
-					continue;
-				}
-
-				// add new conversation to top of list
-				if (newConversationVM != null && conversation.id == newConversationVM.id) {
 					continue;
 				}
 
@@ -547,11 +542,6 @@ public class UserController extends Controller {
 			}
 		}
 		
-		// always add new conversation to top of list
-		if (newConversationVM != null) {
-			vms.add(0,newConversationVM);
-		}
-		
 		return vms;	
 	}
 
@@ -560,7 +550,7 @@ public class UserController extends Controller {
         NanoSecondStopWatch sw = new NanoSecondStopWatch();
 
 		final User localUser = Application.getLocalUser(session());
-		List<ConversationVM> vms = getAllConversations(localUser, null);
+		List<ConversationVM> vms = getAllConversations(localUser);
 
         sw.stop();
         logger.underlyingLogger().info("[u="+localUser.id+"] getAllConversations. Took "+sw.getElapsedMS()+"ms");

@@ -19,9 +19,8 @@ public class SecurityRole extends domain.Entity implements Role {
     private static final long serialVersionUID = 1L;
     
     public static final String USER = "USER";
+    public static final String SYSTEM_USER = "SYSTEM_USER";
     public static final String SUPER_ADMIN = "SUPER_ADMIN";
-    public static final String BUSINESS_ADMIN = "BUSINESS_ADMIN";
-    public static final String COMMUNITY_ADMIN = "COMMUNITY_ADMIN";
     
     public SecurityRole() {}
 
@@ -32,10 +31,8 @@ public class SecurityRole extends domain.Entity implements Role {
 	
 	public static enum RoleType {
 	    USER,
-	    SUPER_ADMIN,
-	    BUSINESS_ADMIN,
-	    COMMUNITY_ADMIN,
-	    EDITOR
+	    SYSTEM_USER,
+	    SUPER_ADMIN
 	}
 	
 	@Override

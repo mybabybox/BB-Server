@@ -10,6 +10,7 @@ import java.util.List;
 import models.Category;
 import models.Collection;
 import models.Comment;
+import models.Conversation;
 import models.Post;
 import models.Resource;
 import models.User;
@@ -21,15 +22,14 @@ import play.mvc.Http;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
 import viewmodel.CommentVM;
+import viewmodel.ConversationVM;
 import viewmodel.PostVM;
 import viewmodel.PostVMLite;
 import viewmodel.ResponseStatusVM;
 import viewmodel.UserVM;
-
 import common.cache.CalcServer;
 import common.utils.HtmlUtil;
 import common.utils.ImageFileUtil;
-
 import controllers.Application.DeviceType;
 import domain.DefaultValues;
 import domain.SocialObjectType;
@@ -211,7 +211,7 @@ public class ProductController extends Controller{
 	@Transactional
 	public static Result likePost(Long id) {
 		User localUser = Application.getLocalUser(session());
-		Post post =Post.findById(id); 
+		Post post = Post.findById(id); 
 		post.onLikedBy(localUser);
 		Long score = post.getCreatedDate().getTime();
 		CalcServer.addToLikeQueue(post.id, localUser.id, score.doubleValue());
@@ -221,9 +221,21 @@ public class ProductController extends Controller{
 	@Transactional
 	public static Result unlikePost(Long id) {
 		User localUser = Application.getLocalUser(session());
-		Post post =Post.findById(id); 
+		Post post = Post.findById(id); 
 		post.onUnlikedBy(localUser);
 		CalcServer.removeFromLikeQueue(post.id, localUser.id);
+		return ok();
+	}
+
+	@Transactional
+	public static Result soldPost(Long id) {
+		User localUser = Application.getLocalUser(session());
+		Post post = Post.findById(id);
+		if (post.owner.id == localUser.id || localUser.isSuperAdmin()) {
+			post.sold = true;
+			post.save();
+			CalcServer.removeFromCategoryFeeds(post.id);
+		}
 		return ok();
 	}
 
@@ -396,7 +408,7 @@ public class ProductController extends Controller{
 			return notFound();
 		}
 		
-		List<Long> postIds = CalcServer.getHomeExploreFeed(localUser.id, offset * DefaultValues.FRONTPAGE_HOT_POSTS_COUNT);
+		List<Long> postIds = CalcServer.getHomeExploreFeed(localUser.id, offset * DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT);
 		if(postIds.size() == 0){
 			return ok(Json.toJson(postIds));
 		}
@@ -443,4 +455,42 @@ public class ProductController extends Controller{
 		return ok(Json.toJson(comments));
 	}
 
+	public static Result getConversations(Long id) {
+		final User localUser = Application.getLocalUser(session());
+		if (!localUser.isLoggedIn()) {
+			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+			return notFound();
+		}
+		
+		// Only owner can view all chats for a product
+		Post post = Post.findById(id);
+		if (post == null) {
+			return notFound();
+		}
+		
+		if (post.owner.id == localUser.id || localUser.isSuperAdmin()) {
+			List<ConversationVM> vms = new ArrayList<>();
+			List<Conversation> conversations = post.findConversations();
+			if (conversations != null) {
+				User otherUser;
+				for (Conversation conversation : conversations) {
+					// archived, dont show
+					if (conversation.isArchivedBy(localUser)) {
+						continue;
+					}
+
+					if (conversation.user1 == localUser) {
+						otherUser = conversation.user2;
+					} else { 
+						otherUser = conversation.user1;
+					}
+					
+					ConversationVM vm = new ConversationVM(conversation, localUser, otherUser);
+					vms.add(vm);
+				}
+			}
+			return ok(Json.toJson(vms));
+		}
+		return badRequest();
+	}
 }

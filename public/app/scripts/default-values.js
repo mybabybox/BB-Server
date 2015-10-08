@@ -1,19 +1,8 @@
 var DefaultValues = new function() {
 
-    this.MAX_SCHOOLS_SEARCH_COUNT = 100;
-    
-    this.FRONTPAGE_HOT_NEWSFEED_COUNT = 5;
-    this.FRONTPAGE_HOT_COMMUNITIES_COUNT = 8;
-    
-    this.TAGWORD_LIST_COLLAPSE_COUNT = 4;
     this.AUTO_SCROLL_INTERVAL = 6000;
-    this.ARTICLE_SLIDER_COUNT = 6;
     this.COMMENTS_PREVIEW_COUNT = 10;
-    this.DEFAULT_ITEMS_PER_PAGE = 30;
-    this.DEFAULT_MEMBERS_PER_PAGE = 30;
     this.DEFAULT_INFINITE_SCROLL_COUNT = 10;
-    this.DEFAULT_PAGINATION_COUNT = 10;
-    this.VIEW_ALL_SHOW = 2; 
     this.POST_PHOTO_UPLOAD = 3;
     this.CONVERSATION_MESSAGE_COUNT = 10;
     
@@ -95,10 +84,4 @@ var DefaultValues = new function() {
                        {value: '2000', text: '2000'},
                        {value: '<2000', text: '2000之前'}
                   ];
-                   
-    this.communityType = [
-                           {value: 'OPEN', text: 'Open'},
-                           {value: 'CLOSE', text: 'Close'},
-                           {value: 'BUSINESS', text: 'Business'}
-                         ];
 };

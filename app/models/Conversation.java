@@ -173,12 +173,27 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		}
 	}
 	
-	public static List<Conversation> findAllConversations(User user, int latest) {
+	public static List<Conversation> findUserConversations(User user, int latest) {
 		Query q = JPA.em().createQuery(
 		        "SELECT c from Conversation c where deleted = 0 and (" + 
 		        "(user1 = ?1 and (user1ArchiveDate < UPDATED_DATE or user1ArchiveDate is null)) or " + 
 		        "(user2 = ?1 and (user2ArchiveDate < UPDATED_DATE or user2ArchiveDate is null)) ) order by UPDATED_DATE desc");
 		q.setParameter(1, user);
+		
+		try {
+			return q.setMaxResults(latest).getResultList();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+	
+	public static List<Conversation> findPostConversations(Post post, User user, int latest) {
+		Query q = JPA.em().createQuery(
+				"SELECT c from Conversation c where deleted = 0 and post = ?1 and (" + 
+				        "(user1 = ?2 and (user1ArchiveDate < UPDATED_DATE or user1ArchiveDate is null)) or " + 
+				        "(user2 = ?2 and (user2ArchiveDate < UPDATED_DATE or user2ArchiveDate is null)) ) order by UPDATED_DATE desc");
+		q.setParameter(1, post);
+		q.setParameter(2, user);
 		
 		try {
 			return q.setMaxResults(latest).getResultList();

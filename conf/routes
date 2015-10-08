@@ -82,6 +82,7 @@ POST    /updateUserProfileData                      controllers.UserController.u
 
 # Conversation
 GET     /get-all-conversations                      controllers.UserController.getAllConversations()
+GET     /get-post-conversations/:id                 controllers.ProductController.getConversations(id:Long)
 GET     /get-conversation/:id                       controllers.UserController.getConversation(id:Long)
 GET     /get-messages/:conversationId/:offset       controllers.UserController.getMessages(conversationId: Long, offset: Long)
 GET     /open-conversation/:postId                  controllers.UserController.openConversation(postId: Long)
@@ -104,6 +105,7 @@ GET     /get-all-similar-products       			controllers.ProductController.getAllS
 GET     /product/:id            		     		controllers.ProductController.product(id:Long)
 GET     /like-post/:id          					controllers.ProductController.likePost(id:Long)
 GET     /unlike-post/:id        					controllers.ProductController.unlikePost(id:Long)
+GET     /sold-post/:id                              controllers.ProductController.soldPost(id:Long)
 POST	/comment/new								controllers.ProductController.newComment
 GET     /view-product/:id        					controllers.ProductController.onView(id:Long)
 POST	/create-collection		             		controllers.ProductController.createCollection

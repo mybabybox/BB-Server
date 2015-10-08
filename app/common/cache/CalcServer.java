@@ -285,4 +285,20 @@ public class CalcServer {
 		return JedisCache.cache().getScore(key, postId.toString());
 	}
 
+	/**
+	 * Remove deleted / sold products from all category feeds
+	 * @param postId
+	 */
+	public static void removeFromCategoryFeeds(Long postId) {
+		
+	}
+	
+	/**
+	 * Remove deleted products from owner posted and liked feeds
+	 * Remove deleted products from other users liked feeds (query from db)
+	 * @param postId
+	 */
+	public static void removeFromUserFeeds(Long postId, Long userId) {
+		
+	}
 }
