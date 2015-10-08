@@ -1130,9 +1130,9 @@ public class User extends SocialObject implements Subject, Followable {
 	}
 
 	public Map<String, Long> getUserCategoriesForFeed() {
-		Query q = JPA.em().createNativeQuery("Select c.id, (count(p.id)/(Select count(*) from viewsocialrelation vr where vr.actor = 2))*100 "
+		Query q = JPA.em().createNativeQuery("Select c.id, (count(p.id)/(Select count(*) from viewsocialrelation vr where vr.actor = ?1))*100 "
 				+ "from viewsocialrelation vsr, post p, category c "
-				+ "where vsr.actor = ? and vsr.target = p.id and p.category_id = c.id  "
+				+ "where vsr.actor = ?1 and vsr.target = p.id and p.category_id = c.id  "
 				+ "group by c.id");
 		q.setParameter(1, this);
 		List<Object[]> feeds = q.getResultList();
