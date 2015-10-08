@@ -163,6 +163,17 @@ public class JedisCache {
         }
     }
     
+    public Status removeMemberFromSortedSet(String key, String member) {
+        Jedis j = null;
+        try {
+            j = getResource();
+            j.zrem(key, member);
+            return Status.OK;
+        } finally {
+            returnResource(j);
+        }
+    }
+    
     public Status putMapToSortedSet(String key, Map<String, Double> value) {
         Jedis j = null;
         try {

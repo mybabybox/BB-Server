@@ -213,7 +213,8 @@ public class ProductController extends Controller{
 		User localUser = Application.getLocalUser(session());
 		Post post =Post.findById(id); 
 		post.onLikedBy(localUser);
-		CalcServer.addToLikeQueue(post.id, localUser.id);
+		Long score = post.getCreatedDate().getTime();
+		CalcServer.addToLikeQueue(post.id, localUser.id, score.doubleValue());
 		return ok();
 	}
 

@@ -265,20 +265,20 @@ public class CalcServer {
 		buildPopularPostQueue(post);
 	}
 	
-	public static void addToLikeQueue(Long postId, Long userId){
-		JedisCache.cache().putToSet("USER_LIKES:"+userId, postId.toString());
+	public static void addToLikeQueue(Long postId, Long userId, Double score){
+		JedisCache.cache().putToSortedSet("USER_LIKES:"+userId, score, postId.toString());
 	}
 	
 	public static void removeFromLikeQueue(Long postId, Long userId){
-		JedisCache.cache().removeMemberFromSet("USER_LIKES:"+userId, postId.toString());
+		JedisCache.cache().removeMemberFromSortedSet("USER_LIKES:"+userId, postId.toString());
 	}
 
-	public static void addToPostQueue(Long postId, Long userId){
-		JedisCache.cache().putToSet("USER_POSTS:"+userId, postId.toString());
+	public static void addToPostQueue(Long postId, Long userId, Double score){
+		JedisCache.cache().putToSortedSet("USER_POSTS:"+userId, score, postId.toString());
 	}
 	
 	public static void removeFromPostQueue(Long postId, Long userId){
-		JedisCache.cache().removeMemberFromSet("USER_POSTS:"+userId, postId.toString());
+		JedisCache.cache().removeMemberFromSortedSet("USER_POSTS:"+userId, postId.toString());
 	}
 	
 	public static Double getScore(String key, Long postId){
