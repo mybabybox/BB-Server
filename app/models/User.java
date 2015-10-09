@@ -1016,8 +1016,8 @@ public class User extends SocialObject implements Subject, Followable {
 		if (!isFollowing(user)) {
 			boolean followed = recordFollow(user);
 			if (followed) {
+				this.numFollowings++;
 				user.numFollowers++;
-				this.numFollowings++;	
 			}
 		}
 	}
@@ -1028,13 +1028,13 @@ public class User extends SocialObject implements Subject, Followable {
 			logger.underlyingLogger().debug("[localUser="+this.id+"][u="+user.id+"] User onUnFollow");
 		}
 		
-		boolean unfollowed = 
-				FollowSocialRelation.unfollow(
-						this.id, SocialObjectType.USER, user.id, SocialObjectType.USER);
 		if (isFollowing(user)) {
+			boolean unfollowed = 
+					FollowSocialRelation.unfollow(
+							this.id, SocialObjectType.USER, user.id, SocialObjectType.USER);
 			if (unfollowed) {
-				user.numFollowers--;
 				this.numFollowings--;
+				user.numFollowers--;
 			}
 		}
 	}

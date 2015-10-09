@@ -23,7 +23,7 @@ public class PostVM extends PostVMLite {
 	@JsonProperty("deviceType") public String deviceType;
 	
     public PostVM(Post post, User user) {
-    	super(post);
+    	super(post, user);
         this.ownerId = post.owner.id;
         this.ownerName = post.owner.displayName;
         this.ownerNumFollowers = post.owner.numFollowers;
@@ -37,7 +37,6 @@ public class PostVM extends PostVMLite {
 
         this.isOwner = (post.owner.id == user.id);
         this.isFollowingOwner = user.isFollowing(post.owner);
-        this.isLiked = post.isLikedBy(user);
         
         this.deviceType = post.deviceType == null? "" : post.deviceType.name();
     }
