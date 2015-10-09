@@ -151,7 +151,7 @@ public class JedisCache {
     }
     ////////////////////////////////////////
     
- // Set operations
+    // Set operations
     public Status putToSortedSet(String key, double score, String member) {
         Jedis j = null;
         try {
@@ -190,7 +190,6 @@ public class JedisCache {
         try {
             j = getResource();
 			return j.zrangeByScore(key, ++min, 99999999999999999999.9, 0, DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT);
-            //return j.zrange(key, 0, -1);
         } finally {
             returnResource(j);
         }
@@ -204,8 +203,6 @@ public class JedisCache {
             	max = 999999999999999999999.9;
             }
             return j.zrevrangeByScore(key, --max, 0, 0, DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT); 
-
-            //return j.zrevrange(key, 0, -1);
         } finally {
         	returnResource(j);
         }
@@ -229,6 +226,10 @@ public class JedisCache {
         } finally {
         	returnResource(j);
         }
+    }
+    
+    public boolean isMemberOfSortedSet(String key, String value) {
+        return getScore(key, value) != null;
     }
     
     /////////////

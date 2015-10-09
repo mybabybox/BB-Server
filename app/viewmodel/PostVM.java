@@ -6,10 +6,11 @@ import models.Post;
 import models.User;
 
 public class PostVM extends PostVMLite {
-	@JsonProperty("createdDate") public long createdDate;
-	@JsonProperty("updatedDate") public long updatedDate;
+	@JsonProperty("createdDate") public Long createdDate;
+	@JsonProperty("updatedDate") public Long updatedDate;
 	@JsonProperty("ownerId") public Long ownerId;
 	@JsonProperty("ownerName") public String ownerName;
+	@JsonProperty("ownerNumFollowers") public Long ownerNumFollowers;
 	@JsonProperty("body") public String body;
 	@JsonProperty("categoryId") public Long categoryId;
 	@JsonProperty("categoryName") public String categoryName;
@@ -25,6 +26,7 @@ public class PostVM extends PostVMLite {
     	super(post);
         this.ownerId = post.owner.id;
         this.ownerName = post.owner.displayName;
+        this.ownerNumFollowers = post.owner.numFollowers;
         this.createdDate = post.getCreatedDate().getTime();
         this.updatedDate = post.getUpdatedDate().getTime();
         this.body = post.body;
@@ -56,19 +58,27 @@ public class PostVM extends PostVMLite {
         this.ownerName = ownerName;
     }
 
-    public long getCreatedDate() {
+    public Long getOwnerNumFollowers() {
+        return ownerNumFollowers;
+    }
+
+    public void setOwnerNumFollowers(Long ownerNumFollowers) {
+        this.ownerNumFollowers = ownerNumFollowers;
+    }
+    
+    public Long getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(long createdDate) {
+    public void setCreatedDate(Long createdDate) {
         this.createdDate = createdDate;
     }
 
-    public long getUpdatedDate() {
+    public Long getUpdatedDate() {
         return updatedDate;
     }
 
-    public void setUpdatedDate(long updatedDate) {
+    public void setUpdatedDate(Long updatedDate) {
         this.updatedDate = updatedDate;
     }
 

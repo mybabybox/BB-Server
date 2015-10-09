@@ -1,11 +1,9 @@
 package viewmodel;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import models.Folder;
 import models.Post;
-import models.Resource;
 
 public class PostVMLite {
 	@JsonProperty("id") public Long id;

@@ -1046,7 +1046,7 @@ public class User extends SocialObject implements Subject, Followable {
 		
 		user.numFollowers--;
 		this.numFollowings--;
-		Query q = JPA.em().createQuery("Delete from FollowSocialRelation sa where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
+		Query q = JPA.em().createQuery("Delete from FollowSocialRelation sr where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
 		q.setParameter(1, this.id);
 		q.setParameter(2, user.id);
 		q.setParameter(3, SocialObjectType.USER);
@@ -1056,7 +1056,7 @@ public class User extends SocialObject implements Subject, Followable {
 
 	@JsonIgnore
 	public boolean isFollowing(User user) {
-		Query q = JPA.em().createQuery("Select sa from FollowSocialRelation sa where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
+		Query q = JPA.em().createQuery("Select sr from FollowSocialRelation sr where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
 		q.setParameter(1, this.id);
 		q.setParameter(2, user.id);
 		q.setParameter(3, SocialObjectType.USER);
@@ -1069,7 +1069,7 @@ public class User extends SocialObject implements Subject, Followable {
 	
 	@JsonIgnore
 	public boolean isFollowedBy(User user) {
-		Query q = JPA.em().createQuery("Select sa from FollowSocialRelation sa where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
+		Query q = JPA.em().createQuery("Select sr from FollowSocialRelation sr where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
 		q.setParameter(1, user.id);
 		q.setParameter(2, this.id);
 		q.setParameter(3, SocialObjectType.USER);
@@ -1082,7 +1082,7 @@ public class User extends SocialObject implements Subject, Followable {
 
 	public List<Collection> getUserCollection() {
 		try {
-			Query q = JPA.em().createQuery("SELECT p FROM Collection p where deleted = false and owner = ?");
+			Query q = JPA.em().createQuery("SELECT c FROM Collection c where deleted = false and owner = ?");
 			q.setParameter(1, this);
 			return (List<Collection>) q.getResultList();
 		} catch (NoResultException nre) {

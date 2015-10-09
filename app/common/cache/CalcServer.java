@@ -160,10 +160,9 @@ public class CalcServer {
 		logger.underlyingLogger().debug("buildUserPostedQueue completed. Took "+sw.getElapsedSecs()+"s");
 	}
 	
-
 	public static boolean isLiked(Long userId, Long postId) {
 		 String key = "USER_LIKES:"+userId;
-	     return JedisCache.cache().isMemberOfSet(key, postId.toString());
+	     return JedisCache.cache().isMemberOfSortedSet(key, postId.toString());
 	}
 
 	public static List<Long> getCategoryPopularFeed(Long id, Double offset) {

@@ -69,8 +69,8 @@ public abstract class SocialObject extends domain.Entity implements Serializable
     @ManyToOne
     public User deletedBy;
 	
-	public boolean isLikedBy(User user){
-			return LikeSocialRelation.isLikedBy(user.id, user.objectType, this.id, this.objectType);
+	public boolean isLikedBy(User user) {
+		return LikeSocialRelation.isLiked(user.id, user.objectType, this.id, this.objectType);
     }
     
 	protected final void recordLike(User user) {
