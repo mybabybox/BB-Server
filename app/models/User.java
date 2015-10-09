@@ -1010,10 +1010,10 @@ public class User extends SocialObject implements Subject, Followable {
 	@Override
 	public void onFollow(User user) {
 		if (logger.underlyingLogger().isDebugEnabled()) {
-			logger.underlyingLogger().debug("[user="+user.id+"][u="+id+"] User onFollow");
+			logger.underlyingLogger().debug("[localUser="+this.id+"][u="+user.id+"] User onFollow");
 		}
 		
-		if (isFollowing(user)) {
+		if (!isFollowing(user)) {
 			boolean followed = recordFollow(user);
 			if (followed) {
 				user.numFollowers++;
@@ -1025,15 +1025,17 @@ public class User extends SocialObject implements Subject, Followable {
 	@Override
 	public void onUnFollow(User user) {
 		if (logger.underlyingLogger().isDebugEnabled()) {
-			logger.underlyingLogger().debug("[user="+user.id+"][u="+id+"] User onUnFollow");
+			logger.underlyingLogger().debug("[localUser="+this.id+"][u="+user.id+"] User onUnFollow");
 		}
 		
 		boolean unfollowed = 
 				FollowSocialRelation.unfollow(
 						this.id, SocialObjectType.USER, user.id, SocialObjectType.USER);
-		if (unfollowed) {
-			user.numFollowers--;
-			this.numFollowings--;
+		if (isFollowing(user)) {
+			if (unfollowed) {
+				user.numFollowers--;
+				this.numFollowings--;
+			}
 		}
 	}
 
