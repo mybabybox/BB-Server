@@ -1010,74 +1010,41 @@ public class User extends SocialObject implements Subject, Followable {
 	@Override
 	public void onFollow(User user) {
 		if (logger.underlyingLogger().isDebugEnabled()) {
-			logger.underlyingLogger().debug("[user="+user.id+"][u="+id+"] User onFollowedBy");
+			logger.underlyingLogger().debug("[user="+user.id+"][u="+id+"] User onFollow");
 		}
-		recordFollow(user);
-		user.numFollowers++;
-		this.numFollowings++;
+		
+		if (isFollowing(user)) {
+			boolean followed = recordFollow(user);
+			if (followed) {
+				user.numFollowers++;
+				this.numFollowings++;	
+			}
+		}
 	}
 
-	public int doUnLike(Long id, SocialObjectType type) {
-		Query query = JPA.em().createQuery(
-				"SELECT sr FROM LikeSocialRelation sr where sr.targetType = ?1 and " + 
-						"(sr.target = ?2 and sr.actor = ?3)", LikeSocialRelation.class);
-		query.setParameter(1, type);
-		query.setParameter(2, id);
-		query.setParameter(3, this.id);
-
-		try {
-			LikeSocialRelation sr = (LikeSocialRelation) query.getSingleResult();
-			sr.delete();
-
-			//GameAccountStatistics.recordunLike(this.id);
-		} catch (NoResultException e) {
-			logger.underlyingLogger().error(String.format("[u=%d][sr.actor=%d][sr.type=%s] like not found", this.id, id, type.name()), e);
-		} catch (Exception e) {
-			logger.underlyingLogger().error("Error in doUnLike", e);
-		}
-		return 1;
-	}
-	
 	@Override
 	public void onUnFollow(User user) {
 		if (logger.underlyingLogger().isDebugEnabled()) {
-			logger.underlyingLogger().debug("[user="+user.id+"][u="+id+"] User onUnFollowedBy");
+			logger.underlyingLogger().debug("[user="+user.id+"][u="+id+"] User onUnFollow");
 		}
 		
-		user.numFollowers--;
-		this.numFollowings--;
-		Query q = JPA.em().createQuery("Delete from FollowSocialRelation sr where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
-		q.setParameter(1, this.id);
-		q.setParameter(2, user.id);
-		q.setParameter(3, SocialObjectType.USER);
-		q.setParameter(4, SocialObjectType.USER);
-		q.executeUpdate();
+		boolean unfollowed = 
+				FollowSocialRelation.unfollow(
+						this.id, SocialObjectType.USER, user.id, SocialObjectType.USER);
+		if (unfollowed) {
+			user.numFollowers--;
+			this.numFollowings--;
+		}
 	}
 
 	@JsonIgnore
 	public boolean isFollowing(User user) {
-		Query q = JPA.em().createQuery("Select sr from FollowSocialRelation sr where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
-		q.setParameter(1, this.id);
-		q.setParameter(2, user.id);
-		q.setParameter(3, SocialObjectType.USER);
-		q.setParameter(4, SocialObjectType.USER);
-		if(q.getResultList().size() > 0 ) {
-			return true;
-		}
-		return false;
+		return FollowSocialRelation.isFollowing(this.id, SocialObjectType.USER, user.id, SocialObjectType.USER);
 	}
 	
 	@JsonIgnore
 	public boolean isFollowedBy(User user) {
-		Query q = JPA.em().createQuery("Select sr from FollowSocialRelation sr where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
-		q.setParameter(1, user.id);
-		q.setParameter(2, this.id);
-		q.setParameter(3, SocialObjectType.USER);
-		q.setParameter(4, SocialObjectType.USER);
-		if(q.getResultList().size() > 0 ) {
-			return true;
-		}
-		return false;
+		return FollowSocialRelation.isFollowing(user.id, SocialObjectType.USER, this.id, SocialObjectType.USER);
 	}
 
 	public List<Collection> getUserCollection() {

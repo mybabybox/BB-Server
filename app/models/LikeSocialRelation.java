@@ -32,20 +32,20 @@ public class LikeSocialRelation extends SocialRelation {
         Query q = JPA.em().createQuery(
         		"Select sr from LikeSocialRelation sr where actor = ?1 and actorType = ?2 and target = ?3 and targetType = ?4");
         q.setParameter(1, actor);
-        q.setParameter(4, actorType);
+        q.setParameter(2, actorType);
         q.setParameter(3, target);
         q.setParameter(4, targetType);
         return q.getResultList().size() > 0;
     }
 	
-	public static int unlike(Long actor, SocialObjectType actorType, Long target, SocialObjectType targetType) {
+	public static boolean unlike(Long actor, SocialObjectType actorType, Long target, SocialObjectType targetType) {
     	Query q = JPA.em().createQuery(
     			"Delete from LikeSocialRelation sr where actor=?1 and actorType=?2 and target=?3 and targetType=?4");
     	q.setParameter(1, actor);
-        q.setParameter(4, actorType);
+        q.setParameter(2, actorType);
         q.setParameter(3, target);
         q.setParameter(4, targetType);
-		return q.executeUpdate();
+		return q.executeUpdate() > 0;
     }
 	
     public static List<LikeSocialRelation> getUserLikedPosts(Long id){

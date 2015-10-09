@@ -92,21 +92,27 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	@Override
 	public void onLikedBy(User user) {
 		if(!isLikedBy(user)){
-			recordLike(user);
-			this.noOfLikes++;
-			user.numLikes++;
-			CalcServer.buildBaseScore();
+			boolean liked = recordLike(user);
+			if (liked) {
+				this.noOfLikes++;
+				user.numLikes++;
+				CalcServer.buildBaseScore();
+			}
 		}
 	}
 
 	@Override
 	public void onUnlikedBy(User user) {
 		if (isLikedBy(user)) {
-			this.noOfLikes--;
-			user.numLikes--;
-			LikeSocialRelation.unlike(user.id, SocialObjectType.USER, this.id, SocialObjectType.POST);
-			CalcServer.buildBaseScore();
-			CalcServer.removeFromLikeQueue(this.id, user.id);
+			boolean unliked = 
+					LikeSocialRelation.unlike(
+							user.id, SocialObjectType.USER, this.id, SocialObjectType.POST);
+			if (unliked) {
+				this.noOfLikes--;
+				user.numLikes--;
+				CalcServer.buildBaseScore();
+				CalcServer.removeFromLikeQueue(this.id, user.id);
+			}
 		}
 	}
 	
