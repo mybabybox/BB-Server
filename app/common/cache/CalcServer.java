@@ -10,12 +10,18 @@ import java.util.Set;
 import org.joda.time.DateTime;
 import org.joda.time.Weeks;
 
+import play.Play;
+import models.Category;
 import models.Post;
+import models.SocialObject;
 import models.User;
 import common.utils.NanoSecondStopWatch;
 
 public class CalcServer {
 	private static play.api.Logger logger = play.api.Logger.apply(CalcServer.class);
+	
+	private static final Long FEED_HOME_COUNT_MAX = Play.application().configuration().getLong("feed.home.count.max");
+	private static final Long FEED_CATEGORY_EXPOSURE_MIN = Play.application().configuration().getLong("feed.category.exposure.min");
 	
 	public static void warmUpActivity() {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
@@ -139,8 +145,8 @@ public class CalcServer {
 		logger.underlyingLogger().debug("buildUserPostedQueue starts");
 		
 		Map<String, Long> map = user.getUserCategoriesForFeed();
-		for (Entry<String, Long> entry : map.entrySet()){
-			Set<String> values = JedisCache.cache().getSortedSetDsc("CATEGORY_POPULAR:"+entry.getKey(), 0L);
+		for (Category category : Category.getAllCategories()){
+			Set<String> values = JedisCache.cache().getSortedSetDsc("CATEGORY_POPULAR:"+category.getId(), 0L);
 			final List<Long> postIds = new ArrayList<>();
 			for (String value : values) {
 				try {
@@ -148,12 +154,17 @@ public class CalcServer {
 				} catch (Exception e) {
 				}
 			}
-			int length =  (int) ((postIds.size()*entry.getValue()) / 100);
-			postIds.subList(0,length);
-			for(Long postId : postIds){
-				JedisCache.cache().putToSortedSet("HOME_EXPLORE:"+user.id, JedisCache.cache().getScore("CATEGORY_POPULAR:"+entry.getKey(), postId.toString()), postId.toString());
+			Long percentage  = FEED_CATEGORY_EXPOSURE_MIN;
+			if(map.get(category.getId()) != null){
+				percentage = map.get(category.getId());
 			}
-			JedisCache.cache().expire("HOME_EXPLORE:"+user.id, 60 * 2);
+			Long postsSize = postIds.size() > FEED_HOME_COUNT_MAX ? FEED_HOME_COUNT_MAX : postIds.size(); // if post.size() is less than FEED_HOME_COUNT_MAX (limit of post) 
+			Integer length =  (int) ((postsSize * percentage) / 100);
+			postIds.subList(0, length);
+			for(Long postId : postIds){
+				JedisCache.cache().putToSortedSet("HOME_EXPLORE:"+user.id, Math.random() , postId.toString());
+			}
+			JedisCache.cache().expire("HOME_EXPLORE:"+user.id, 60 * 2); // expiration time 120 secs
 		}
 
 		sw.stop();
