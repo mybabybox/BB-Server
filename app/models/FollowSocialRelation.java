@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
+import domain.SocialObjectType;
 import play.db.jpa.JPA;
 
 @Entity
@@ -27,6 +28,26 @@ public class FollowSocialRelation extends SocialRelation {
 	public SocialRelation.Action getAction() {
 		return Action.FOLLOW;
 	}
+	
+	public static boolean isFollowing(Long actor, SocialObjectType actorType, Long target, SocialObjectType targetType) {
+        Query q = JPA.em().createQuery(
+        		"Select sr from FollowSocialRelation sr where actor = ?1 and actorType = ?2 and target = ?3 and targetType = ?4");
+        q.setParameter(1, actor);
+        q.setParameter(2, actorType);
+        q.setParameter(3, target);
+        q.setParameter(4, targetType);
+        return q.getResultList().size() > 0;
+    }
+	
+	public static boolean unfollow(Long actor, SocialObjectType actorType, Long target, SocialObjectType targetType) {
+    	Query q = JPA.em().createQuery(
+    			"Delete from FollowSocialRelation sr where actor = ?1 and actorType = ?2 and target = ?3 and targetType = ?4");
+    	q.setParameter(1, actor);
+        q.setParameter(2, actorType);
+        q.setParameter(3, target);
+        q.setParameter(4, targetType);
+		return q.executeUpdate() > 0;
+    }
 	
 	public static List<Long> getFollowings(Long id) {
 		Query q = JPA.em().createQuery("Select sa from FollowSocialRelation sa where actor = ?1");

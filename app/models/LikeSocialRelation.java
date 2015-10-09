@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
-import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
 import play.db.jpa.JPA;
@@ -29,31 +28,35 @@ public class LikeSocialRelation extends SocialRelation {
 		return Action.LIKE;
 	}
 	
-	public static boolean isLikedBy(Long actor, SocialObjectType actorType, Long target, SocialObjectType targetType) {
+	public static boolean isLiked(Long actor, SocialObjectType actorType, Long target, SocialObjectType targetType) {
         Query q = JPA.em().createQuery(
-        		"Select sr from LikeSocialRelation sr where sr.actor=?1 and sr.actorType=?2 and sr.target=?3 and sr.targetType=?4");
+        		"Select sr from LikeSocialRelation sr where actor = ?1 and actorType = ?2 and target = ?3 and targetType = ?4");
         q.setParameter(1, actor);
-        q.setParameter(4, actorType);
+        q.setParameter(2, actorType);
         q.setParameter(3, target);
         q.setParameter(4, targetType);
-        LikeSocialRelation sr = null;
-        try {
-            sr = (LikeSocialRelation)q.getSingleResult();
-        } catch(NoResultException nre) {
-            return false;
-        }
-        return true;
+        return q.getResultList().size() > 0;
+    }
+	
+	public static boolean unlike(Long actor, SocialObjectType actorType, Long target, SocialObjectType targetType) {
+    	Query q = JPA.em().createQuery(
+    			"Delete from LikeSocialRelation sr where actor=?1 and actorType=?2 and target=?3 and targetType=?4");
+    	q.setParameter(1, actor);
+        q.setParameter(2, actorType);
+        q.setParameter(3, target);
+        q.setParameter(4, targetType);
+		return q.executeUpdate() > 0;
     }
 	
     public static List<LikeSocialRelation> getUserLikedPosts(Long id){
-    	Query q = JPA.em().createQuery("Select sa from LikeSocialRelation sa where actor = ?1 and pr.actionType = ?2 and pr.targetType = ?3");
+    	Query q = JPA.em().createQuery(
+    			"Select sr from LikeSocialRelation sr where actor = ?1 and actionType = ?2 and targetType = ?3");
 		q.setParameter(1, id);
 		q.setParameter(2, SocialObjectType.USER);
 		q.setParameter(3, SocialObjectType.POST);
-		List<LikeSocialRelation> l = new ArrayList<>();
-		if(q.getResultList().size() != 0){
+		if (q.getResultList().size() > 0){
 			return q.getResultList(); 
 		}
-    	return l;
+    	return new ArrayList<>();
     }
 }

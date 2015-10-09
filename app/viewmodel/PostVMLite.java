@@ -1,11 +1,10 @@
 package viewmodel;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import models.Folder;
 import models.Post;
-import models.Resource;
+import models.User;
 
 public class PostVMLite {
 	@JsonProperty("id") public Long id;
@@ -25,7 +24,7 @@ public class PostVMLite {
     
 	@JsonProperty("offset") public Long offset;
 
-    public PostVMLite(Post post) {
+    public PostVMLite(Post post, User user) {
         this.id = post.id;
         this.title = post.title;
         this.price = post.price;
@@ -38,7 +37,7 @@ public class PostVMLite {
         this.numComments = post.noOfComments;
         this.numViews = post.noOfViews;
         
-        this.isLiked = post.isLikedBy(post.owner);
+        this.isLiked = post.isLikedBy(user);
         
         Long[] images = Folder.getResources(post.folder);
         if (images != null && images.length > 0) {

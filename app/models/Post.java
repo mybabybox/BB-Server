@@ -92,40 +92,33 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	@Override
 	public void onLikedBy(User user) {
 		if(!isLikedBy(user)){
-			recordLike(user);
-			this.noOfLikes++;
-			user.numLikes++;
-			CalcServer.buildBaseScore();
+			boolean liked = recordLike(user);
+			if (liked) {
+				this.noOfLikes++;
+				user.numLikes++;
+				CalcServer.buildBaseScore();
+			}
 		}
 	}
 
 	@Override
 	public void onUnlikedBy(User user) {
-		if(isLikedBy(user)){
-			this.noOfLikes--;
-			user.numLikes--;
-			Query q = JPA.em().createQuery("Delete from LikeSocialRelation sa where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
-			q.setParameter(1, user.id);
-			q.setParameter(2, this.id);
-			q.setParameter(3, SocialObjectType.USER);
-			q.setParameter(4, SocialObjectType.POST);
-			q.executeUpdate();
-			CalcServer.buildBaseScore();
+		if (isLikedBy(user)) {
+			boolean unliked = 
+					LikeSocialRelation.unlike(
+							user.id, SocialObjectType.USER, this.id, SocialObjectType.POST);
+			if (unliked) {
+				this.noOfLikes--;
+				user.numLikes--;
+				CalcServer.buildBaseScore();
+				CalcServer.removeFromLikeQueue(this.id, user.id);
+			}
 		}
 	}
 	
 	@Override
 	public boolean isLikedBy(User user){
-		Query q = JPA.em().createQuery("Select sa from LikeSocialRelation sa where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
-		q.setParameter(1, user.id);
-		q.setParameter(2, this.id);
-		q.setParameter(3, SocialObjectType.USER);
-		q.setParameter(4, SocialObjectType.POST);
-		if(q.getResultList().size() > 0 ) {
-			// Already liked ; Any logic !
-			return true;
-		}
-		return false;
+		return CalcServer.isLiked(user.id, this.id);
 	}
 
 	@Override

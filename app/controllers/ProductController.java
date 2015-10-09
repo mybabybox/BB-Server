@@ -138,8 +138,7 @@ public class ProductController extends Controller{
 		
 		List<PostVMLite> vms = new ArrayList<>();
 		for (Post product : posts) {
-			PostVMLite vm = new PostVMLite(product);
-			vm.isLiked = product.isLikedBy(localUser);
+			PostVMLite vm = new PostVMLite(product, localUser);
 			vms.add(vm);
 		}
 		return vms;
@@ -321,8 +320,7 @@ public class ProductController extends Controller{
 		List<PostVMLite> vms = new ArrayList<>();
 		List<Post> posts =  Post.getPosts(postIds);
 		for(Post post : posts) {
-			PostVMLite vm = new PostVMLite(post);
-			vm.isLiked = post.isLikedBy(localUser);
+			PostVMLite vm = new PostVMLite(post, localUser);
 			vm.offset = CalcServer.getScore("CATEGORY_POPULAR:"+post.category.id, post.id).longValue();
 			vms.add(vm);
 		}
@@ -346,8 +344,7 @@ public class ProductController extends Controller{
 		List<PostVMLite> vms = new ArrayList<>();
 		List<Post> posts =  Post.getPosts(postIds);
 		for(Post post : posts) {
-			PostVMLite vm = new PostVMLite(post);
-			vm.isLiked = post.isLikedBy(localUser);
+			PostVMLite vm = new PostVMLite(post, localUser);
 			vm.offset = post.getCreatedDate().getTime();
 			vms.add(vm);
 		}
@@ -369,8 +366,7 @@ public class ProductController extends Controller{
         
         List<PostVMLite> vms = new ArrayList<>();
 		for(Post product : Post.getPosts(postIds)) {
-			PostVMLite vm = new PostVMLite(product);
-			vm.isLiked = product.isLikedBy(localUser);
+			PostVMLite vm = new PostVMLite(product, localUser);
 			vm.offset = CalcServer.getScore("CATEGORY_PRICE_LOW_HIGH:"+product.category.id, product.id).longValue();
 			vms.add(vm);
 		}
@@ -392,8 +388,7 @@ public class ProductController extends Controller{
 		
 		List<PostVMLite> vms = new ArrayList<>();
 		for(Post product : Post.getPosts(postIds)) {
-			PostVMLite vm = new PostVMLite(product);
-			vm.isLiked = product.isLikedBy(localUser);
+			PostVMLite vm = new PostVMLite(product, localUser);
 			vm.offset = CalcServer.getScore("CATEGORY_PRICE_LOW_HIGH:"+product.category.id, product.id).longValue();
 			vms.add(vm);
 		}
@@ -415,8 +410,7 @@ public class ProductController extends Controller{
 		
 		List<PostVMLite> vms = new ArrayList<>();
 		for(Post product : Post.getPosts(postIds, offset.intValue())) {
-			PostVMLite vm = new PostVMLite(product);
-			vm.isLiked = product.isLikedBy(localUser);
+			PostVMLite vm = new PostVMLite(product, localUser);
 			vms.add(vm);
 		}
 		return ok(Json.toJson(vms));

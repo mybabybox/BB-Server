@@ -1,7 +1,5 @@
 package controllers;
 
-import static play.data.Form.form;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -686,14 +684,20 @@ public class UserController extends Controller {
     
     @Transactional
     public static Result getUserPosts(Long id, Long offset) {
-    	List<Long> postIds = CalcServer.getUserPostFeeds(id, offset.doubleValue());
+    	final User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
         
+    	List<Long> postIds = CalcServer.getUserPostFeeds(id, offset.doubleValue());
         if(postIds.size() == 0){
 			return ok(Json.toJson(postIds));
 		}
+        
     	List<PostVMLite> vms = new ArrayList<>();
 		for(Post product : Post.getPosts(postIds)) {
-			PostVMLite vm = new PostVMLite(product);
+			PostVMLite vm = new PostVMLite(product, localUser);
 			vm.offset = product.getCreatedDate().getTime();
 			vms.add(vm);
 		}
@@ -712,15 +716,25 @@ public class UserController extends Controller {
     
     @Transactional
     public static Result followUser(Long id) {
-    	User user = Application.getLocalUser(session());
-    	user.onFollow(User.findById(id));
+    	final User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+        
+    	localUser.onFollow(User.findById(id));
 		return ok();
     }
     
     @Transactional
     public static Result unfollowUser(Long id) {
-    	User user = Application.getLocalUser(session());
-    	user.onUnFollow(User.findById(id));
+    	final User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+        
+    	localUser.onUnFollow(User.findById(id));
 		return ok();
     }
     
@@ -752,7 +766,12 @@ public class UserController extends Controller {
     
     @Transactional
     public static Result getUserLikedPosts(Long id, Long offset){
-    	
+    	final User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+        
     	List<Long> postIds = CalcServer.getUserLikeFeeds(id, offset.doubleValue());
         
         if(postIds.size() == 0){
@@ -760,7 +779,7 @@ public class UserController extends Controller {
 		}
     	List<PostVMLite> vms = new ArrayList<>();
 		for(Post product : Post.getPosts(postIds)) {
-			PostVMLite vm = new PostVMLite(product);
+			PostVMLite vm = new PostVMLite(product, localUser);
 			vm.offset = product.getCreatedDate().getTime();
 			vms.add(vm);
 		}
