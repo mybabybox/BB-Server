@@ -100,7 +100,7 @@ public class UserController extends Controller {
 			return notFound();
 		}
 		
-		UserVM userVM = UserVM.profile(user,localUser);
+		UserVM userVM = new UserVM(user, localUser);
 		
 		sw.stop();
         if (logger.underlyingLogger().isDebugEnabled()) {
@@ -731,26 +731,38 @@ public class UserController extends Controller {
     }
     
     @Transactional
-    public static Result getFollowings(Long id, Long offset){
+    public static Result getFollowings(Long id, Long offset) {
+    	final User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+        
     	List<Long> followings = FollowSocialRelation.getFollowings(id);
     	List<UserVMLite> userFollowings = new ArrayList<UserVMLite>();
     	
-    	for(Long f : followings){
+    	for (Long f : followings) {
     		User user = User.findById(f);
-    		UserVMLite uservm = new UserVMLite(user);
+    		UserVMLite uservm = new UserVMLite(user, localUser);
     		userFollowings.add(uservm);
     	}
     	return ok(Json.toJson(userFollowings));
     }
     
     @Transactional
-    public static Result getFollowers(Long id, Long offset){
+    public static Result getFollowers(Long id, Long offset) {
+    	final User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+        
     	List<Long> followings = FollowSocialRelation.getFollowers(id);
     	List<UserVMLite> userFollowers = new ArrayList<UserVMLite>();
     	
     	for(Long f : followings){
     		User user = User.findById(f);
-    		UserVMLite uservm = new UserVMLite(user);
+    		UserVMLite uservm = new UserVMLite(user, localUser);
     		userFollowers.add(uservm);
     	}
     	return ok(Json.toJson(userFollowers));
@@ -770,7 +782,7 @@ public class UserController extends Controller {
 			return ok(Json.toJson(postIds));
 		}
     	List<PostVMLite> vms = new ArrayList<>();
-		for(Post product : Post.getPosts(postIds)) {
+		for (Post product : Post.getPosts(postIds)) {
 			PostVMLite vm = new PostVMLite(product, localUser);
 			vm.offset = product.getCreatedDate().getTime();
 			vms.add(vm);

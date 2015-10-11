@@ -15,7 +15,7 @@ public class UserVMLite {
     @JsonProperty("numCollections") public Long numCollections = 0L;
     @JsonProperty("isFollowing") public boolean isFollowing = false;
 
-    public UserVMLite(User user){
+    public UserVMLite(User user, User localUser) {
         this.id = user.id;
         this.displayName = user.displayName;
         this.numProducts = user.numProducts;
@@ -24,7 +24,9 @@ public class UserVMLite {
         this.numFollowers = user.numFollowers;
         this.numFollowings = user.numFollowings;
         this.numCollections = user.numCollections;
-        this.isFollowing = true;	//TODO
+        if (!user.equals(localUser)) {
+        	this.isFollowing = user.isFollowedBy(localUser);
+        }
     }
     
     public Long getId() {

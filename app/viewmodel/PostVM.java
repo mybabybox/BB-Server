@@ -1,7 +1,12 @@
 package viewmodel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import domain.DefaultValues;
+import models.Comment;
 import models.Post;
 import models.User;
 
@@ -16,6 +21,7 @@ public class PostVM extends PostVMLite {
 	@JsonProperty("categoryName") public String categoryName;
 	@JsonProperty("categoryIcon") public String categoryIcon;
 	@JsonProperty("categoryType") public String categoryType;	
+    @JsonProperty("comments") public List<CommentVM> comments = new ArrayList<>();
     
 	@JsonProperty("isOwner") public boolean isOwner = false;
 	@JsonProperty("isFollowingOwner") public boolean isFollowingOwner = false;
@@ -34,7 +40,11 @@ public class PostVM extends PostVMLite {
         this.categoryName = post.category.name;
         this.categoryIcon = post.category.icon;
         this.categoryId = post.category.id;
-
+        
+        for (Comment comment : post.getLatestComments(DefaultValues.LATEST_COMMENTS_COUNT)) {
+        	this.comments.add(new CommentVM(comment, user));
+        }
+        
         this.isOwner = (post.owner.id == user.id);
         this.isFollowingOwner = user.isFollowing(post.owner);
         

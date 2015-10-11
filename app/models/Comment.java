@@ -63,27 +63,6 @@ public class Comment extends SocialObject implements Comparable<Comment>, Likeab
 
     
     @Override
-    public void onLikedBy(User user) {
-        if (logger.underlyingLogger().isDebugEnabled()) {
-            logger.underlyingLogger().debug("[u="+user.id+"][cmt="+id+"] Comment onLikedBy");
-        }
-
-        recordLike(user);
-        this.noOfLikes++;
-        user.numLikes++;
-    }
-    
-    @Override
-    public void onUnlikedBy(User user) {
-        if (logger.underlyingLogger().isDebugEnabled()) {
-            logger.underlyingLogger().debug("[u="+user.id+"][cmt="+id+"] Comment onUnlikedBy");
-        }
-
-        this.noOfLikes--;
-        user.numLikes--;
-    }
-
-    @Override
     public int compareTo(Comment o) {
         return this.getCreatedDate().compareTo(o.getCreatedDate());
     }

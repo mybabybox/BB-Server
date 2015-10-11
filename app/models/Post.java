@@ -2,9 +2,8 @@ package models;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -15,6 +14,7 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.NoResultException;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Query;
 
 import play.db.jpa.JPA;
@@ -49,7 +49,8 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	public PostType postType;
 	
 	@OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-	public Set<Comment> comments;
+	@OrderBy("CREATED_DATE")
+	public List<Comment> comments;
 
 	public Double price = 0.0;
 
@@ -152,11 +153,28 @@ public class Post extends SocialObject implements Likeable, Commentable {
         }
 	}
 
-	public Set<Comment> getComments() {
+	public List<Comment> getLatestComments(int count) {
+		int start = Math.max(0, comments.size() - count);
+		int end = comments.size();
+		return comments.subList(start, end);
+	}
+	
+	public List<Comment> getPostComments(Long offset) {
+		double maxOffset = Math.floor((double) comments.size() / (double) DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT);
+		if (offset > maxOffset) {
+			return new ArrayList<>();
+		}
+		
+		int start = Long.valueOf(offset).intValue() * DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT;
+		int end = Math.min(start+DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT, comments.size());
+		return comments.subList(start, end);
+	}
+	
+	public List<Comment> getComments() {
 		return comments;
 	}
 
-	public void setComments(Set<Comment> comments) {
+	public void setComments(List<Comment> comments) {
 		this.comments = comments;
 	}
 
@@ -218,7 +236,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 
 		// merge into Post
 		if (comments == null) {
-			comments = new HashSet<>();
+			comments = new ArrayList<>();
 		}
 		this.comments.add(comment);
 		this.noOfComments++;

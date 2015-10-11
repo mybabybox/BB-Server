@@ -53,15 +53,14 @@ public class FollowSocialRelation extends SocialRelation {
 		Query q = JPA.em().createQuery("Select sa from FollowSocialRelation sa where actor = ?1");
 		q.setParameter(1, id);
 		List<FollowSocialRelation> sa = new ArrayList<>();
-		List<Long> follwers = new ArrayList<Long>();
-		try{
+		List<Long> followings = new ArrayList<Long>();
+		try {
 			sa = q.getResultList();
-			for(FollowSocialRelation ssr: sa) {
-				follwers.add(ssr.actor);
+			for (FollowSocialRelation ssr: sa) {
+				followings.add(ssr.target);
 			}
-			return follwers;
-		}
-		catch (NoResultException nre){
+			return followings;
+		} catch (NoResultException nre) {
 		}
 		return null;
 	}
@@ -70,15 +69,14 @@ public class FollowSocialRelation extends SocialRelation {
 		Query q = JPA.em().createQuery("Select sa from FollowSocialRelation sa where target = ?1");
 		q.setParameter(1, id);
 		List<FollowSocialRelation> sa = new ArrayList<>();
-		List<Long> follwers = new ArrayList<Long>();
-		try{
+		List<Long> followers = new ArrayList<Long>();
+		try {
 			sa = q.getResultList();
-			for(FollowSocialRelation ssr: sa) {
-				follwers.add(ssr.target);
+			for (FollowSocialRelation ssr: sa) {
+				followers.add(ssr.actor);
 			}
-			return follwers;
-		}
-		catch (NoResultException nre){
+			return followers;
+		} catch (NoResultException nre){
 		}
 		return null;
 	}

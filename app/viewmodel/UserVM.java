@@ -25,9 +25,13 @@ public class UserVM extends UserVMLite {
     @JsonProperty("newUser") public boolean newUser = false;
     @JsonProperty("isAdmin") public boolean isAdmin = false;
 
-    
     public UserVM(User user) {
-    	super(user);
+    	super(user, user);
+    }
+    
+    public UserVM(User user, User localUser) {
+    	super(user, localUser);
+    	
         this.email = user.email;
         this.firstName = user.firstName;
         this.lastName = user.lastName;
@@ -47,19 +51,6 @@ public class UserVM extends UserVMLite {
         this.emailValidated = user.emailValidated;
         this.newUser = user.isNewUser();
         this.isAdmin = user.isSuperAdmin();
-    }
-    
-    public static UserVM profile(User user, User localUser) {
-        UserVM vm = new UserVM(user);
-
-        vm.id = user.id;
-        vm.numLikes = user.numLikes;
-        vm.numProducts = user.numProducts;
-        vm.numCollections = user.numCollections;
-        vm.numFollowers = user.numFollowers;
-        vm.numFollowings = user.numFollowings;
-        vm.isFollowing = user.isFollowedBy(localUser);
-        return vm;
     }
 
     public Long getCreatedDate() {

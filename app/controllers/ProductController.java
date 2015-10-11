@@ -441,8 +441,8 @@ public class ProductController extends Controller{
 			return ok();
 		}
 		
-		List <CommentVM> comments = new ArrayList<CommentVM>();
-		for(Comment comment : post.getComments()){
+		List<CommentVM> comments = new ArrayList<CommentVM>();
+		for (Comment comment : post.getPostComments(offset)) {
 			CommentVM commentVM = new CommentVM(comment, localUser);
 			comments.add(commentVM);
 		}
