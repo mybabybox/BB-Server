@@ -92,6 +92,14 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		this.user2 = post.owner;
 	}
 
+	public User otherUser(User user) {
+	    if (this.user1.equals(user)) {
+	    	return user2;
+	    } else {
+	    	return user1;
+	    }
+	}
+	
 	public Message addMessage(User sender, String body) {
 		Date now = new Date();
 		Message message = new Message();
@@ -104,7 +112,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		this.messages.add(message);
 		
 		this.setUpdatedDate(now);
-		if(this.user1 == sender){
+		if (this.user1 == sender) {
 			setReadDate(this.user1);
 			this.user2NumMessages++;
 		} else {
@@ -148,7 +156,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 				"SELECT m from Message m where conversation_id = ?1 and CREATED_DATE > ?2 and m.deleted = 0 order by CREATED_DATE desc ");
 		q.setParameter(1, this);
 
-		if(this.user1 == user){
+		if (this.user1 == user) {
 			setReadDate(user1);
 			if(this.user1ArchiveDate == null){
 				q.setParameter(2, new Date(0));
@@ -293,27 +301,6 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 			return ((Integer)user1NumMessages).longValue();
 		}
 		return ((Integer)user2NumMessages).longValue();
-		
-		/*
-        Query q = JPA.em().createQuery("Select count(m) from Message m where m.conversation = ?2 and m.date > ?1 and m.deleted = 0");
-        q.setParameter(2, this);
-        if(this.user1 == user){
-            if(this.user2ArchiveDate == null){
-                q.setParameter(1, new Date(0));
-            } else {
-                q.setParameter(1, this.user2ArchiveDate);
-            }
-        } else {
-            if(this.user1ArchiveDate == null){
-                q.setParameter(1, new Date(0));
-            } else {
-                q.setParameter(1, this.user1ArchiveDate);
-            }
-        }
-        
-        Long ret = (Long) q.getSingleResult();
-        return ret;
-        */
     }
 	
 	public void markDelete() {
@@ -330,7 +317,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	private void setReadDate(User user) {
 		logger.underlyingLogger().debug("[conv="+this.id+"][u="+user.id+"] setReadTime");
 		
-		if(this.user1 == user){
+		if (this.user1 == user) {
             this.user1ReadDate = new Date();
             this.user1NumMessages = 0;
 	    } else {
@@ -342,7 +329,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	private void setArchiveDate(User user){
 		logger.underlyingLogger().debug("[conv="+this.id+"][u="+user.id+"] setArchiveTime");
 		
-	    if(this.user1 == user){
+	    if (this.user1 == user) {
             this.user1ArchiveDate = new Date();
             this.user1NumMessages = 0;
 	    } else {

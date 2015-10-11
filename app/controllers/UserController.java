@@ -522,20 +522,13 @@ public class UserController extends Controller {
 		List<ConversationVM> vms = new ArrayList<>();
 		List<Conversation> conversations = localUser.findConversations();
 		if (conversations != null) {
-			User otherUser;
 			for (Conversation conversation : conversations) {
 				// archived, dont show
 				if (conversation.isArchivedBy(localUser)) {
 					continue;
 				}
 
-				if (conversation.user1 == localUser) {
-					otherUser = conversation.user2;
-				} else { 
-					otherUser = conversation.user1;
-				}
-				
-				ConversationVM vm = new ConversationVM(conversation, localUser, otherUser);
+				ConversationVM vm = new ConversationVM(conversation, localUser);
 				vms.add(vm);
 			}
 		}
@@ -567,7 +560,7 @@ public class UserController extends Controller {
 
         sw.stop();
         logger.underlyingLogger().info("[u="+localUser.id+"] getConversation. Took "+sw.getElapsedMS()+"ms");
-		return ok(Json.toJson(new ConversationVM(conversation, localUser, conversation.post.owner)));
+		return ok(Json.toJson(new ConversationVM(conversation, localUser)));
 	}
 	
 	@Transactional
@@ -592,8 +585,7 @@ public class UserController extends Controller {
         
         // New conversation always opened by buyer
         Conversation conversation = Conversation.openConversation(post, localUser);
-        
-        ConversationVM conversationVM = new ConversationVM(conversation, localUser, post.owner);
+        ConversationVM conversationVM = new ConversationVM(conversation, localUser);
         
 		logger.underlyingLogger().debug(String.format("[p=%d][u1=%d][u2=%d] openConversation. Took "+sw.getElapsedMS()+"ms", postId, localUser.id, post.owner.id));
 		

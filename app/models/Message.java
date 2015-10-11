@@ -34,11 +34,7 @@ public class Message extends SocialObject implements Comparable<Message> {
     public Folder folder;
 	
 	public User receiver() {
-	    if (this.conversation.user1.equals(sender)) {
-	    	return conversation.user2;
-	    } else {
-	    	return conversation.user1;
-	    }
+		return conversation.otherUser(sender);
 	}
 
 	@Override

@@ -466,20 +466,13 @@ public class ProductController extends Controller{
 			List<ConversationVM> vms = new ArrayList<>();
 			List<Conversation> conversations = post.findConversations();
 			if (conversations != null) {
-				User otherUser;
 				for (Conversation conversation : conversations) {
 					// archived, dont show
 					if (conversation.isArchivedBy(localUser)) {
 						continue;
 					}
 
-					if (conversation.user1 == localUser) {
-						otherUser = conversation.user2;
-					} else { 
-						otherUser = conversation.user1;
-					}
-					
-					ConversationVM vm = new ConversationVM(conversation, localUser, otherUser);
+					ConversationVM vm = new ConversationVM(conversation, localUser);
 					vms.add(vm);
 				}
 			}

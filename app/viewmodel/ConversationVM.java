@@ -1,14 +1,10 @@
 package viewmodel;
 
-import java.util.Date;
-
 import models.Conversation;
 import models.Folder;
 import models.Post;
 import models.User;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.time.DateUtils;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 public class ConversationVM {
@@ -25,10 +21,9 @@ public class ConversationVM {
 	@JsonProperty("lastMessageDate") public Long lastMessageDate;
 	@JsonProperty("lastMessage") public String lastMessage;
 	@JsonProperty("unread") public Long unread = 0L;
-	@JsonProperty("isRead") public Boolean isRead = false;
-	@JsonProperty("isToday") public Boolean isToday;
 	
-	public ConversationVM(Conversation conversation, User localUser, User otherUser) {
+	public ConversationVM(Conversation conversation, User localUser) {
+		User otherUser = conversation.otherUser(localUser);
 		Post post = conversation.post;
 		this.id = conversation.id;
 		this.postId = post.id;
@@ -38,19 +33,12 @@ public class ConversationVM {
 		this.userId = otherUser.id;
 		this.userName = otherUser.displayName;
 		this.lastMessageDate = conversation.getUpdatedDate().getTime();
+		this.lastMessage = conversation.lastMesage;
 		this.unread = conversation.getUnreadCount(localUser);
 		
 		Long[] images = Folder.getResources(post.folder);
         if (images != null && images.length > 0) {
         	this.postImage = images[0];
         }
-		
-		try {
-			this.lastMessage = conversation.lastMesage;
-			this.isToday = DateUtils.isSameDay(conversation.getUpdatedDate(), new Date());
-			this.isRead = conversation.isReadBy(localUser);
-		} catch(NullPointerException e){
-			logger.underlyingLogger().error(e.getLocalizedMessage(), e);
-		}
 	}
 }
