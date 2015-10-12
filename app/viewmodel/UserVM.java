@@ -26,7 +26,7 @@ public class UserVM extends UserVMLite {
     @JsonProperty("isAdmin") public boolean isAdmin = false;
 
     public UserVM(User user) {
-    	super(user, user);
+    	this(user, user);
     }
     
     public UserVM(User user, User localUser) {
