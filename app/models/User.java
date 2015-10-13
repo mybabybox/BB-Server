@@ -352,10 +352,14 @@ public class User extends SocialObject implements Subject, Followable {
 	
 	@Transactional
 	public Post createProduct(String name, String body, Category category, Double price) {
+		if (Strings.isNullOrEmpty(name) || 
+        		Strings.isNullOrEmpty(body) || price != 0) {
+            logger.underlyingLogger().warn("Missing parameters to createPost");
+            return null;
+        }
 		Post post = new Post(this, name, body, category, price);
 		post.save();
-		Long score = post.getCreatedDate().getTime();
-		CalcServer.addToPostQueue(post.id, this.id, score.doubleValue());
+		
 		return post;
 	}
 	

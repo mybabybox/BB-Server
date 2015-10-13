@@ -13,11 +13,11 @@ import java.util.Map;
 import models.Collection;
 import models.Conversation;
 import models.Emoticon;
+import models.FollowSocialRelation;
 import models.Location;
 import models.Message;
 import models.Post;
 import models.Resource;
-import models.FollowSocialRelation;
 import models.SiteTour;
 import models.User;
 
@@ -31,6 +31,7 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
+import service.SocialRelationHandler;
 import viewmodel.CollectionVM;
 import viewmodel.ConversationVM;
 import viewmodel.EmoticonVM;
@@ -39,9 +40,11 @@ import viewmodel.PostVMLite;
 import viewmodel.ProfileVM;
 import viewmodel.UserVM;
 import viewmodel.UserVMLite;
+
 import common.cache.CalcServer;
 import common.utils.ImageFileUtil;
 import common.utils.NanoSecondStopWatch;
+
 import domain.DefaultValues;
 
 public class UserController extends Controller {
@@ -713,8 +716,7 @@ public class UserController extends Controller {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
             return notFound();
         }
-        
-    	localUser.onFollow(User.findById(id));
+       SocialRelationHandler.recordOnFollowUser(localUser, User.findById(id));
 		return ok();
     }
     
@@ -726,7 +728,7 @@ public class UserController extends Controller {
             return notFound();
         }
         
-    	localUser.onUnFollow(User.findById(id));
+        SocialRelationHandler.recordOnFollowUser(localUser, User.findById(id));
 		return ok();
     }
     

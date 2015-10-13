@@ -284,6 +284,24 @@ public class CalcServer {
 		buildPopularPostQueue(post);
 	}
 	
+	public static void removeFromCategoryQueues(Long postId, Long categoryId){
+		removeMemberFromPriceHighLowPostQueue(postId, categoryId);
+		removeMemberFromNewestPostQueue(postId, categoryId);
+		removeMemberFromPopularPostQueue(postId, categoryId);
+	}
+	
+	public static void removeMemberFromPriceHighLowPostQueue(Long postId, Long categoryId){
+		JedisCache.cache().removeMemberFromSortedSet("CATEGORY_POPULAR:"+categoryId, postId.toString());
+	}
+	
+	public static void removeMemberFromNewestPostQueue(Long postId, Long categoryId){
+		JedisCache.cache().removeMemberFromSortedSet("CATEGORY_NEWEST:"+categoryId, postId.toString());
+	}
+
+	public static void removeMemberFromPopularPostQueue(Long postId, Long categoryId){
+		JedisCache.cache().removeMemberFromSortedSet("CATEGORY_PRICE_LOW_HIGH:"+categoryId, postId.toString());
+	}
+	
 	public static void addToLikeQueue(Long postId, Long userId, Double score){
 		JedisCache.cache().putToSortedSet("USER_LIKES:"+userId, score, postId.toString());
 	}

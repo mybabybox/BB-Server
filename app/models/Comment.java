@@ -86,8 +86,8 @@ public class Comment extends SocialObject implements Comparable<Comment>, Likeab
 		}
 	}
 
-    public Post getProduct() {
-      	Query q = JPA.em().createNativeQuery("SELECT product_id FROM product_comment where comments_id = "+this.id);
+    public Post getPost() {
+      	Query q = JPA.em().createNativeQuery("SELECT post_id FROM post_comment where comments_id = "+this.id);
       	BigInteger integer = (BigInteger) q.getSingleResult();
         Long id = integer.longValue();
         Post product = Post.findById(id);

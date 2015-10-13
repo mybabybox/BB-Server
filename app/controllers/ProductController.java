@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import babybox.events.handler.EventHandler;
-import babybox.events.map.LikeMap;
 import models.Category;
 import models.Collection;
 import models.Comment;
@@ -23,15 +21,18 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
+import service.SocialRelationHandler;
 import viewmodel.CommentVM;
 import viewmodel.ConversationVM;
 import viewmodel.PostVM;
 import viewmodel.PostVMLite;
 import viewmodel.ResponseStatusVM;
 import viewmodel.UserVM;
+
 import common.cache.CalcServer;
 import common.utils.HtmlUtil;
 import common.utils.ImageFileUtil;
+
 import controllers.Application.DeviceType;
 import domain.DefaultValues;
 import domain.SocialObjectType;
@@ -86,8 +87,7 @@ public class ProductController extends Controller{
 			
 			// set device
 			newPost.deviceType = deviceType;
-			
-			CalcServer.addToQueues(newPost);
+			SocialRelationHandler.recordCreatePost(newPost, localUser);
 			ResponseStatusVM response = new ResponseStatusVM(SocialObjectType.POST, newPost.id, localUser.id, true);
 			return ok(Json.toJson(response));
 		} catch (IOException e) {
@@ -211,10 +211,7 @@ public class ProductController extends Controller{
 	public static Result likePost(Long id) {
 		User localUser = Application.getLocalUser(session());
 		Post post = Post.findById(id); 
-		LikeMap likeMap = new LikeMap();
-		likeMap.put("post", post);
-		likeMap.put("user", localUser);
-		EventHandler.getInstance().getEventBus().post(likeMap);; 
+		SocialRelationHandler.recordLikeOnPost(post, localUser);
 		return ok();
 	}
 
@@ -222,7 +219,7 @@ public class ProductController extends Controller{
 	public static Result unlikePost(Long id) {
 		User localUser = Application.getLocalUser(session());
 		Post post = Post.findById(id); 
-		post.onUnlikedBy(localUser);
+		SocialRelationHandler.recordUnLikeOnPost(post, localUser);
 		return ok();
 	}
 
@@ -243,12 +240,13 @@ public class ProductController extends Controller{
 		DynamicForm form = form().bindFromRequest();
 		Long postId = Long.parseLong(form.get("postId"));
 		String body = HtmlUtil.convertTextToHtml(form.get("body"));
-		Comment comment = (Comment) Post.findById(postId).onComment(Application.getLocalUser(session()), body);
+		Post post = Post.findById(postId);
+		Comment comment = (Comment) post.onComment(Application.getLocalUser(session()), body);
 
 		// set device
 		DeviceType deviceType = Application.parseDeviceType(form.get("deviceType"));
 		comment.deviceType = deviceType;
-		
+		SocialRelationHandler.recordCommentOnPost(comment, post);
 		ResponseStatusVM response = new ResponseStatusVM(SocialObjectType.COMMENT, comment.id, comment.owner.id, true);
 		return ok(Json.toJson(response));
 	}
@@ -269,8 +267,7 @@ public class ProductController extends Controller{
 
         if (localUser.equals(post.owner) || 
                 localUser.isSuperAdmin()) {
-        	CalcServer.removeFromPostQueue(post.id, post.owner.id);
-        	post.delete(localUser);
+        	SocialRelationHandler.recordDeletePost(post, localUser);
             return ok();
         }
         return badRequest("Failed to delete post. [u=" + localUser.id + "] not owner of post [id=" + id + "].");
@@ -286,7 +283,7 @@ public class ProductController extends Controller{
         Comment comment = Comment.findById(id);
         if (localUser.equals(comment.owner) ||
                 localUser.isSuperAdmin()) {
-            comment.delete(localUser);
+        	SocialRelationHandler.recordOnDeleteComment(comment, localUser);
             return ok();
         }
         return badRequest("Failed to delete comment. [u="+localUser.id+"] not owner of comment [id=" + id + "].");
@@ -299,8 +296,7 @@ public class ProductController extends Controller{
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
 			return notFound();
 		}
-		
-		Post.findById(id).onView(localUser);
+		SocialRelationHandler.recordViewOnPost(Post.findById(id), localUser);
 		return ok();
 	}
 	

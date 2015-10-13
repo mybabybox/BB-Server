@@ -107,6 +107,9 @@ public class Post extends SocialObject implements Likeable, Commentable {
 			if (liked) {
 				this.numLikes++;
 				user.numLikes++;
+					Long score = this.getCreatedDate().getTime();
+				CalcServer.addToLikeQueue(this.id, user.id, score.doubleValue());
+				CalcServer.calculateBaseScore(this);
 			} else {
 				logger.underlyingLogger().debug(String.format("Post [p=%d] already liked by User [u=%d]", this.id, user.id));
 			}
@@ -261,7 +264,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
         } else if (this.postType == PostType.STORY) {
             recordCommentStory(user, comment);
         }
-        CalcServer.calculateBaseScore(this);
+       
 		return comment;
 	}
 
