@@ -17,6 +17,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Query;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import play.db.jpa.JPA;
 import babybox.shopping.social.exception.SocialObjectNotCommentableException;
 import common.cache.CalcServer;
@@ -60,6 +62,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	
 	@OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
 	@OrderBy("CREATED_DATE")
+	@JsonIgnore
 	public List<Comment> comments;
 
 	public Double price = 0.0;
