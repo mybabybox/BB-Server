@@ -29,16 +29,16 @@ public class SocialRelationHandler {
 		likeEvent.put("post", post);
 		EventHandler.getInstance().getEventBus().post(likeEvent);
 	}
-	
-	public static void recordDeletePost(Post post, User localUser){
-		DeletePostEvent postEvent = new DeletePostEvent();
+
+	public static void recordCreatePost(Post post, User localUser){
+		PostEvent postEvent = new PostEvent();
 		postEvent.put("user", localUser);
 		postEvent.put("post", post);
 		EventHandler.getInstance().getEventBus().post(postEvent);
 	}
 	
-	public static void recordCreatePost(Post post, User localUser){
-		PostEvent postEvent = new PostEvent();
+	public static void recordDeletePost(Post post, User localUser){
+		DeletePostEvent postEvent = new DeletePostEvent();
 		postEvent.put("user", localUser);
 		postEvent.put("post", post);
 		EventHandler.getInstance().getEventBus().post(postEvent);

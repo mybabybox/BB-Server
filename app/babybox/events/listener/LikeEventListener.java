@@ -16,8 +16,8 @@ public class LikeEventListener {
 		User user = (User) map.get("user");
        	if (post.onLikedBy(user)) {
 	       	Long score = post.getCreatedDate().getTime();
-			CalcServer.addToLikeQueue(post.id, user.id, score.doubleValue());
-			CalcServer.calculateBaseScore(post);
+	       	CalcServer.calculateBaseScore(post);
+	       	CalcServer.addToLikeQueue(post.id, user.id, score.doubleValue());
        	}
     }
 	
