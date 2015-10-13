@@ -4,12 +4,12 @@ import babybox.events.listener.LikeEventListener;
 
 import com.google.common.eventbus.EventBus;
 
-
 public class EventHandler {
 
-	Class [] listners = {LikeEventListener.class, FollowEventListener.class};
+	Class [] listeners = { LikeEventListener.class, FollowEventListener.class };
 	private static EventHandler eventHandler = new EventHandler();
 	private EventBus eventBus = new EventBus();
+	
 	private EventHandler() {
 		registerSubscribers();
 	}
@@ -23,29 +23,27 @@ public class EventHandler {
 	}
 
 	void registerSubscribers() {
-		for(Class listner : listners) {
+		for (Class listener : listeners) {
 			try {
-				eventBus.register(listner.newInstance());
+				eventBus.register(listener.newInstance());
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}
 		}
-		
 	}
 	
 	public void unRegisterSubscribers() {
-		for(Class listner : listners) {
+		for (Class listener : listeners) {
 			try {
-				eventBus.unregister(listner.newInstance());
+				eventBus.unregister(listener.newInstance());
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}
 		}
-		
 	}
 	
 }
