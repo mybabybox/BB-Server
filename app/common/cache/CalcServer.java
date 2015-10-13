@@ -66,14 +66,14 @@ public class CalcServer {
 	}
 
 	private static void calculateBaseScore(Post product) {
-		if (product.baseScore == -1L) {
-			product.baseScore = (long) (product.noOfViews
-					+ 2 * product.noOfLikes
-					+ 3 * product.noOfChats
-					+ 4 *product.noOfBuys
-					+ 5 * product.noOfComments);
-			product.save();
-		}
+		//if (product.baseScore == 0L) {
+		product.baseScore = (long) (product.noOfViews
+				+ 2 * product.noOfLikes
+				+ 3 * product.noOfChats
+				+ 4 * product.noOfBuys
+				+ 5 * product.noOfComments);
+		product.save();
+		//}
 	}
 	
 	private static void buildUserQueue() {

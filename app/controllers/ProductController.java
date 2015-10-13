@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import babybox.events.handler.EventHandler;
+import babybox.events.map.LikeMap;
 import models.Category;
 import models.Collection;
 import models.Comment;
@@ -211,9 +213,10 @@ public class ProductController extends Controller{
 	public static Result likePost(Long id) {
 		User localUser = Application.getLocalUser(session());
 		Post post = Post.findById(id); 
-		post.onLikedBy(localUser);
-		Long score = post.getCreatedDate().getTime();
-		CalcServer.addToLikeQueue(post.id, localUser.id, score.doubleValue());
+		LikeMap likeMap = new LikeMap();
+		likeMap.put("post", post);
+		likeMap.put("user", localUser);
+		EventHandler.getInstance().getEventBus().post(likeMap);; 
 		return ok();
 	}
 
@@ -222,7 +225,6 @@ public class ProductController extends Controller{
 		User localUser = Application.getLocalUser(session());
 		Post post = Post.findById(id); 
 		post.onUnlikedBy(localUser);
-		CalcServer.removeFromLikeQueue(post.id, localUser.id);
 		return ok();
 	}
 

@@ -13,6 +13,7 @@ import play.mvc.Http.RequestHeader;
 import play.mvc.Http.Session;
 import play.mvc.Result;
 import play.mvc.Results;
+import babybox.events.handler.EventHandler;
 
 import com.feth.play.module.pa.PlayAuthenticate;
 import com.feth.play.module.pa.PlayAuthenticate.Resolver;
@@ -38,6 +39,9 @@ public class Global extends GlobalSettings {
      * @param app
      */
 	public void onStart(Application app) {
+		
+		EventHandler.getInstance();
+		
         final boolean runBackgroundTasks = Play.application().configuration().getBoolean(RUN_BACKGROUND_TASKS_PROP, false);
         if (runBackgroundTasks) {
             // schedule background jobs

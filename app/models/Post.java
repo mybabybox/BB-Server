@@ -97,7 +97,6 @@ public class Post extends SocialObject implements Likeable, Commentable {
 			if (liked) {
 				this.noOfLikes++;
 				user.numLikes++;
-				CalcServer.buildBaseScore();
 			}
 		}
 	}
@@ -261,6 +260,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 
 	public void onView(User localUser) {
 		this.recordView(localUser);
+		this.noOfViews++;
 		CalcServer.buildBaseScore();
 	}
 
