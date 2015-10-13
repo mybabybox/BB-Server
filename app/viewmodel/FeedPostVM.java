@@ -44,16 +44,16 @@ public class FeedPostVM {
 		this.type = post.category.name;
 		this.title = post.title;
 		this.price = post.price.longValue();
-		this.noOfLikes = post.noOfLikes;
+		this.noOfLikes = post.numLikes;
 		this.isLiked = post.isLikedBy(post.owner);
 		
 		this.sold = false; //TODO need to change 
 		
-		this.numLikes = post.noOfLikes;
-		this.numChats = post.noOfChats;
-		this.numBuys = post.noOfBuys;
-		this.numComments = post.noOfComments;
-		this.numViews = post.noOfViews;
+		this.numLikes = post.numLikes;
+		this.numChats = post.numChats;
+		this.numBuys = post.numBuys;
+		this.numComments = post.numComments;
+		this.numViews = post.numViews;
 		
 		this.isOwner = false; //TODO need to change
 		

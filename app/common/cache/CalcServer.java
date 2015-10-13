@@ -13,6 +13,7 @@ import play.Play;
 import models.Category;
 import models.Post;
 import models.User;
+import common.thread.ThreadLocalOverride;
 import common.utils.NanoSecondStopWatch;
 
 public class CalcServer {
@@ -64,22 +65,25 @@ public class CalcServer {
 	}
 
 	public static void calculateBaseScore(Post post) {
-		//if (post.baseScore == 0L) {
+		// skip already calculated posts during server startup
+		if (ThreadLocalOverride.isServerStartingUp() && post.baseScore > 0L) {
+			return;
+		}
 		
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
 		logger.underlyingLogger().debug("calculateBaseScore for p="+post.id);
 		
-		post.baseScore = (long) (post.noOfViews
-				+ 2 * post.noOfLikes
-				+ 3 * post.noOfChats
-				+ 4 * post.noOfBuys
-				+ 5 * post.noOfComments);
+		post.baseScore = (long) (
+				post.numComments
+				+ 2 * post.numViews
+				+ 3 * post.numLikes
+				+ 4 * post.numChats
+				+ 5 * post.numBuys
+				+ 1);	// min score of 1
 		post.save();
 		
 		sw.stop();
-		logger.underlyingLogger().debug("calculateBaseScore completed. Took "+sw.getElapsedSecs()+"s");
-		
-		//}
+		logger.underlyingLogger().debug("calculateBaseScore completed with baseScore="+post.baseScore+". Took "+sw.getElapsedSecs()+"s");
 	}
 	
 	private static void buildUserQueue() {
@@ -274,7 +278,7 @@ public class CalcServer {
 	}
 
 	public static void addToQueues(Post post) {
-		buildBaseScore();
+		calculateBaseScore(post);
 		buildPriceHighLowPostQueue(post);
 		buildNewestPostQueue(post);
 		buildPopularPostQueue(post);

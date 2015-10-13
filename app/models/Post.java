@@ -56,11 +56,11 @@ public class Post extends SocialObject implements Likeable, Commentable {
 
 	public boolean sold;
 	
-	public int noOfComments = 0;
-	public int noOfLikes = 0;
-	public int noOfBuys = 0;
-	public int noOfViews = 0;
-	public int noOfChats = 0;
+	public int numComments = 0;
+	public int numLikes = 0;
+	public int numBuys = 0;
+	public int numViews = 0;
+	public int numChats = 0;
 	public Long baseScore = 0L;
 
 	public DeviceType deviceType;
@@ -95,7 +95,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		if(!isLikedBy(user)){
 			boolean liked = recordLike(user);
 			if (liked) {
-				this.noOfLikes++;
+				this.numLikes++;
 				user.numLikes++;
 			}
 		}
@@ -108,9 +108,9 @@ public class Post extends SocialObject implements Likeable, Commentable {
 					LikeSocialRelation.unlike(
 							user.id, SocialObjectType.USER, this.id, SocialObjectType.POST);
 			if (unliked) {
-				this.noOfLikes--;
+				this.numLikes--;
 				user.numLikes--;
-				CalcServer.buildBaseScore();
+				CalcServer.calculateBaseScore(this);
 				CalcServer.removeFromLikeQueue(this.id, user.id);
 			}
 		}
@@ -238,7 +238,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 			comments = new ArrayList<>();
 		}
 		this.comments.add(comment);
-		this.noOfComments++;
+		this.numComments++;
 		JPA.em().merge(this);
 		
         // record for notifications
@@ -247,7 +247,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
         } else if (this.postType == PostType.STORY) {
             recordCommentStory(user, comment);
         }
-        CalcServer.buildBaseScore();
+        CalcServer.calculateBaseScore(this);
 		return comment;
 	}
 
@@ -255,13 +255,15 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	public void onDeleteComment(User user, String body)
 			throws SocialObjectNotCommentableException {
 		// TODO Auto-generated method stub
-		this.noOfComments--;
+		this.numComments--;
 	}
 
-	public void onView(User localUser) {
-		this.recordView(localUser);
-		this.noOfViews++;
-		CalcServer.buildBaseScore();
+	public void onView(User user) {
+		boolean viewed = recordView(user);
+		if (viewed) {
+			this.numViews++;
+			CalcServer.calculateBaseScore(this);
+		}
 	}
 
 	public static List<Post> getPostsByCategory(Category category) {

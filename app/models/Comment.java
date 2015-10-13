@@ -75,7 +75,7 @@ public class Comment extends SocialObject implements Comparable<Comment>, Likeab
     public void delete(User deletedBy) {
         Post post = Post.findById(this.socialObject);
         post.comments.remove(this);
-        post.noOfComments--;
+        post.numComments--;
         this.deleted = true;
         this.deletedBy = deletedBy;
         save();

@@ -113,9 +113,9 @@ public abstract class SocialObject extends domain.Entity implements Serializable
 		action.save();
 	}
 	
-	protected final void recordView(User user) {
+	protected final boolean recordView(User user) {
 		ViewSocialRelation action = new ViewSocialRelation(user, this);
-		action.ensureUniqueAndCreate();
+		return action.ensureUniqueAndCreate();
 	}
 	
 	@Override

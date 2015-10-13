@@ -203,8 +203,8 @@ public abstract class SocialRelation extends domain.Entity implements Serializab
 	@Override
 	public void postSave() {
 		if (isPostSave) {
-            if (ThreadLocalOverride.isDisableNotification()) {
-                logger.underlyingLogger().info("Notification is disabled for: "+this.id);
+            if (ThreadLocalOverride.isCommandRunning()) {
+                logger.underlyingLogger().info("Activity is ignored for: "+this.id);
             } else {
 	            SocialActivity.handle(this);
             }

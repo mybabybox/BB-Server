@@ -36,7 +36,7 @@ public class FeedPostVM1 {
 		this.postName = post.title;
 		this.postBody = post.body;
 		this.postPrice = post.price.longValue();
-		this.noOfLikes = post.noOfLikes;
+		this.noOfLikes = post.numLikes;
 		
 		if(post.folder != null && !CollectionUtils.isEmpty(post.folder.resources)) {
 		    this.hasImage = true;

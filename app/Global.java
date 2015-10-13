@@ -23,6 +23,7 @@ import com.feth.play.module.pa.exceptions.AuthException;
 import common.cache.CalcServer;
 import common.schedule.CommandChecker;
 import common.schedule.JobScheduler;
+import common.thread.ThreadLocalOverride;
 import controllers.routes;
 
 /**
@@ -195,11 +196,15 @@ public class Global extends GlobalSettings {
             }
         }
 
+        ThreadLocalOverride.setIsServerStartingUp(true);
+        
         // data first time bootstrap
         DataBootstrap.bootstrap();
         
         // cache warm up
         CalcServer.warmUpActivity();
+        
+        ThreadLocalOverride.setIsServerStartingUp(false);
 	}
 
 	@Override

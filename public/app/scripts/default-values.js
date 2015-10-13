@@ -1,7 +1,7 @@
 var DefaultValues = new function() {
 
     this.AUTO_SCROLL_INTERVAL = 6000;
-    this.COMMENTS_PREVIEW_COUNT = 10;
+    this.LATEST_COMMENTS_COUNT = 3;
     this.DEFAULT_INFINITE_SCROLL_COUNT = 10;
     this.POST_PHOTO_UPLOAD = 3;
     this.CONVERSATION_MESSAGE_COUNT = 10;

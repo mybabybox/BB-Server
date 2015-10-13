@@ -31,11 +31,11 @@ public class PostVMLite {
         this.sold = post.sold;
         this.postType = post.postType.toString();
         
-        this.numLikes = post.noOfLikes;
-        this.numChats = post.noOfChats;
-        this.numBuys = post.noOfBuys;
-        this.numComments = post.noOfComments;
-        this.numViews = post.noOfViews;
+        this.numLikes = post.numLikes;
+        this.numChats = post.numChats;
+        this.numBuys = post.numBuys;
+        this.numComments = post.numComments;
+        this.numViews = post.numViews;
         
         this.isLiked = post.isLikedBy(user);
         

@@ -1,42 +1,37 @@
 package common.thread;
 
-import java.util.Date;
-
 /**
- * Created by IntelliJ IDEA.
- * Date: 17/3/15
- * Time: 11:41 PM
- * To change this template use File | Settings | File Templates.
+ * Global triggers.
  */
 public class ThreadLocalOverride {
 
-    private static ThreadLocal<Boolean> skipNotificationLocal = new ThreadLocal<Boolean>() {
+	private static ThreadLocal<Boolean> isServerStartingUp = new ThreadLocal<Boolean>() {
         @Override
         protected Boolean initialValue() {
             return false;
         }
     };
-    
-    private static ThreadLocal<Date> socialUpdatedDateLocal = new ThreadLocal<Date>() {
+
+    private static ThreadLocal<Boolean> isCommandRunning = new ThreadLocal<Boolean>() {
         @Override
-        protected Date initialValue() {
-            return null;
+        protected Boolean initialValue() {
+            return false;
         }
     };
 
-    public static void disableNotification(boolean off) {
-        skipNotificationLocal.set(off);
+    public static void setIsServerStartingUp(boolean value) {
+    	isServerStartingUp.set(value);
     }
 
-    public static boolean isDisableNotification() {
-        return skipNotificationLocal.get();
+    public static boolean isServerStartingUp() {
+        return isServerStartingUp.get();
+    }
+    
+    public static void setIsCommandRunning(boolean value) {
+    	isCommandRunning.set(value);
     }
 
-    public static void setSocialUpdatedDate(Date date) {
-        socialUpdatedDateLocal.set(date);
-    }
-
-    public static Date getSocialUpdatedDate() {
-        return socialUpdatedDateLocal.get();
+    public static boolean isCommandRunning() {
+        return isCommandRunning.get();
     }
 }
