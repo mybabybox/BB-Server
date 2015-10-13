@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import babybox.events.handler.EventHandler;
+import babybox.shopping.social.exception.SocialObjectNotCommentableException;
 import models.Category;
 import models.Collection;
 import models.Comment;
@@ -28,11 +30,9 @@ import viewmodel.PostVM;
 import viewmodel.PostVMLite;
 import viewmodel.ResponseStatusVM;
 import viewmodel.UserVM;
-
 import common.cache.CalcServer;
 import common.utils.HtmlUtil;
 import common.utils.ImageFileUtil;
-
 import controllers.Application.DeviceType;
 import domain.DefaultValues;
 import domain.SocialObjectType;
@@ -57,12 +57,24 @@ public class ProductController extends Controller{
 		List<FilePart> images = Application.parseAttachments("image", DefaultValues.MAX_POST_IMAGES);
 	    
 		Http.MultipartFormData multipartFormData = request().body().asMultipartFormData();
-		String catId = multipartFormData.asFormUrlEncoded().get("catId")[0];
+		String catIdStr = multipartFormData.asFormUrlEncoded().get("catId")[0];
 	    String title = multipartFormData.asFormUrlEncoded().get("title")[0];
 	    String body = multipartFormData.asFormUrlEncoded().get("body")[0];
-	    String price = multipartFormData.asFormUrlEncoded().get("price")[0];
+	    String priceStr = multipartFormData.asFormUrlEncoded().get("price")[0];
 	    String deviceType = multipartFormData.asFormUrlEncoded().get("deviceType")[0];
-		return createProduct(title, body, Long.parseLong(catId), Double.parseDouble(price), images, Application.parseDeviceType(deviceType));
+	    
+	    Long catId = -1L;
+	    try {
+	    	catId = Long.parseLong(catIdStr);
+	    } catch (NumberFormatException e) {
+	    }
+	    
+	    Double price = -1D;
+	    try {
+	    	price = Double.parseDouble(priceStr);
+	    } catch (NumberFormatException e) {
+	    }
+		return createProduct(title, body, catId, price, images, Application.parseDeviceType(deviceType));
 	}
 
 	private static Result createProduct(String title, String body, Long catId, Double price, List<FilePart> images, DeviceType deviceType) {
@@ -87,6 +99,7 @@ public class ProductController extends Controller{
 			
 			// set device
 			newPost.deviceType = deviceType;
+			
 			SocialRelationHandler.recordCreatePost(newPost, localUser);
 			ResponseStatusVM response = new ResponseStatusVM(SocialObjectType.POST, newPost.id, localUser.id, true);
 			return ok(Json.toJson(response));
@@ -210,7 +223,7 @@ public class ProductController extends Controller{
 	@Transactional
 	public static Result likePost(Long id) {
 		User localUser = Application.getLocalUser(session());
-		Post post = Post.findById(id); 
+		Post post = Post.findById(id);
 		SocialRelationHandler.recordLikeOnPost(post, localUser);
 		return ok();
 	}
@@ -237,18 +250,30 @@ public class ProductController extends Controller{
 
 	@Transactional
 	public static Result newComment() {
+		final User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+        
 		DynamicForm form = form().bindFromRequest();
 		Long postId = Long.parseLong(form.get("postId"));
 		String body = HtmlUtil.convertTextToHtml(form.get("body"));
+		
 		Post post = Post.findById(postId);
-		Comment comment = (Comment) post.onComment(Application.getLocalUser(session()), body);
-
-		// set device
-		DeviceType deviceType = Application.parseDeviceType(form.get("deviceType"));
-		comment.deviceType = deviceType;
-		SocialRelationHandler.recordCommentOnPost(comment, post);
-		ResponseStatusVM response = new ResponseStatusVM(SocialObjectType.COMMENT, comment.id, comment.owner.id, true);
-		return ok(Json.toJson(response));
+		try {
+			Comment comment = (Comment) post.onComment(localUser, body);
+			
+			// set device
+			DeviceType deviceType = Application.parseDeviceType(form.get("deviceType"));
+			comment.deviceType = deviceType;
+			
+			SocialRelationHandler.recordCommentOnPost(comment, post);
+			ResponseStatusVM response = new ResponseStatusVM(SocialObjectType.COMMENT, comment.id, comment.owner.id, true);
+			return ok(Json.toJson(response));
+		} catch (SocialObjectNotCommentableException e) {
+		}
+		return badRequest();
 	}
 	
 	@Transactional
@@ -267,6 +292,7 @@ public class ProductController extends Controller{
 
         if (localUser.equals(post.owner) || 
                 localUser.isSuperAdmin()) {
+        	localUser.deleteProduct(post);
         	SocialRelationHandler.recordDeletePost(post, localUser);
             return ok();
         }
@@ -280,12 +306,17 @@ public class ProductController extends Controller{
             logger.underlyingLogger().debug(String.format("[u=%d][cmt=%d] deleteComment", localUser.id, id));
         }
 
-        Comment comment = Comment.findById(id);
-        if (localUser.equals(comment.owner) ||
-                localUser.isSuperAdmin()) {
-        	SocialRelationHandler.recordOnDeleteComment(comment, localUser);
-            return ok();
-        }
+        try {
+	        Comment comment = Comment.findById(id);
+	        if (localUser.equals(comment.owner) ||
+	                localUser.isSuperAdmin()) {
+	        	Post post = Post.findById(comment.socialObject);
+	            post.onDeleteComment(localUser, comment);
+	            SocialRelationHandler.recordOnDeleteComment(comment, post);
+	            return ok();
+	        }
+        } catch (SocialObjectNotCommentableException e) {
+		}
         return badRequest("Failed to delete comment. [u="+localUser.id+"] not owner of comment [id=" + id + "].");
     }
 
@@ -296,7 +327,9 @@ public class ProductController extends Controller{
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
 			return notFound();
 		}
-		SocialRelationHandler.recordViewOnPost(Post.findById(id), localUser);
+		
+		Post post = Post.findById(id);
+		SocialRelationHandler.recordViewOnPost(post, localUser);
 		return ok();
 	}
 	

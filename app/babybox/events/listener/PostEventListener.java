@@ -24,7 +24,6 @@ public class PostEventListener {
     public void recordDeletePostEventOnCalcServer(DeletePostEvent map){
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
-    	post.delete(user);
 		CalcServer.removeFromCategoryQueues(post.id, post.category.id);
 		CalcServer.removeFromPostQueue(post.id, post.owner.id);
     }

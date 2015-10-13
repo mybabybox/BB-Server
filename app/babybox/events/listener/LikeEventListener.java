@@ -6,7 +6,6 @@ import babybox.events.map.LikeEvent;
 import babybox.events.map.UnlikeEvent;
 
 import com.google.common.eventbus.Subscribe;
-
 import common.cache.CalcServer;
 
 public class LikeEventListener {
@@ -15,14 +14,20 @@ public class LikeEventListener {
     public void recordLikeEventInDB(LikeEvent map){
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
-       	post.onLikedBy(user);
+       	if (post.onLikedBy(user)) {
+	       	Long score = post.getCreatedDate().getTime();
+			CalcServer.addToLikeQueue(post.id, user.id, score.doubleValue());
+			CalcServer.calculateBaseScore(post);
+       	}
     }
 	
 	@Subscribe
     public void recordUnlikeEventInDB(UnlikeEvent map){
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
-       	post.onUnlikedBy(user);
+       	if (post.onUnlikedBy(user)) {
+       		CalcServer.calculateBaseScore(post);
+       		CalcServer.removeFromLikeQueue(post.id, user.id);
+       	}
     }
-
 }

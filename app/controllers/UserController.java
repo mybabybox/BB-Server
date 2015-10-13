@@ -716,7 +716,8 @@ public class UserController extends Controller {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
             return notFound();
         }
-       SocialRelationHandler.recordOnFollowUser(localUser, User.findById(id));
+        
+        SocialRelationHandler.recordOnFollowUser(localUser, User.findById(id));
 		return ok();
     }
     
@@ -728,7 +729,7 @@ public class UserController extends Controller {
             return notFound();
         }
         
-        SocialRelationHandler.recordOnFollowUser(localUser, User.findById(id));
+        SocialRelationHandler.recordOnUnFollowUser(localUser, User.findById(id));
 		return ok();
     }
     

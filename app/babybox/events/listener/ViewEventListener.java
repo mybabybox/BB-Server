@@ -13,8 +13,8 @@ public class ViewEventListener {
     public void recordViewEventInDB(ViewEvent map){
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
-		System.out.println("view evet");
-       	post.onView(user);
+		if (post.onView(user)) {
+			CalcServer.calculateBaseScore(post);
+		}
     }
-
 }

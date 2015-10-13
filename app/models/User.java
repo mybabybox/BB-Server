@@ -41,7 +41,6 @@ import play.Play;
 import play.data.format.Formats;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
-import babybox.shopping.social.exception.SocialObjectNotCommentableException;
 import babybox.shopping.social.exception.SocialObjectNotLikableException;
 import be.objectify.deadbolt.core.models.Permission;
 import be.objectify.deadbolt.core.models.Role;
@@ -56,7 +55,6 @@ import com.feth.play.module.pa.user.EmailIdentity;
 import com.feth.play.module.pa.user.FirstLastNameIdentity;
 import com.google.common.base.Strings;
 
-import common.cache.CalcServer;
 import common.collection.Pair;
 import common.image.FaceFinder;
 import common.utils.DateTimeUtil;
@@ -205,11 +203,6 @@ public class User extends SocialObject implements Subject, Followable {
 		target.onLikedBy(this);
 	}
 
-	public SocialObject commentedOn(SocialObject target, String comment)
-			throws SocialObjectNotCommentableException {
-		return target.onComment(this, comment);
-	}
-
 	public void markNotificationRead(Notification notification) {
 		notification.changeStatus(1);
 	}
@@ -353,14 +346,26 @@ public class User extends SocialObject implements Subject, Followable {
 	@Transactional
 	public Post createProduct(String name, String body, Category category, Double price) {
 		if (Strings.isNullOrEmpty(name) || 
-        		Strings.isNullOrEmpty(body) || price != 0) {
-            logger.underlyingLogger().warn("Missing parameters to createPost");
-            return null;
-        }
+				Strings.isNullOrEmpty(body) || category == null || price == -1D) {
+			logger.underlyingLogger().warn("Missing parameters to createPost");
+			return null;
+		}
+		
 		Post post = new Post(this, name, body, category, price);
 		post.save();
 		
+		recordPostProduct(this, post);
+		this.numProducts++;
+		
 		return post;
+	}
+	
+	@Transactional
+	public void deleteProduct(Post post) {
+        post.deleted = true;
+        post.deletedBy = this;
+        post.save();
+        this.numProducts--;
 	}
 	
 	/**

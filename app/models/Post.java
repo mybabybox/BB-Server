@@ -101,23 +101,22 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	}
 
 	@Override
-	public void onLikedBy(User user) {
-		if(!isLikedBy(user)){
+	public boolean onLikedBy(User user) {
+		if (!isLikedBy(user)) {
 			boolean liked = recordLike(user);
 			if (liked) {
 				this.numLikes++;
 				user.numLikes++;
-					Long score = this.getCreatedDate().getTime();
-				CalcServer.addToLikeQueue(this.id, user.id, score.doubleValue());
-				CalcServer.calculateBaseScore(this);
 			} else {
 				logger.underlyingLogger().debug(String.format("Post [p=%d] already liked by User [u=%d]", this.id, user.id));
 			}
+			return liked;
 		}
+		return false;
 	}
 
 	@Override
-	public void onUnlikedBy(User user) {
+	public boolean onUnlikedBy(User user) {
 		if (isLikedBy(user)) {
 			boolean unliked = 
 					LikeSocialRelation.unlike(
@@ -125,12 +124,12 @@ public class Post extends SocialObject implements Likeable, Commentable {
 			if (unliked) {
 				this.numLikes--;
 				user.numLikes--;
-				CalcServer.calculateBaseScore(this);
-				CalcServer.removeFromLikeQueue(this.id, user.id);
 			} else {
 				logger.underlyingLogger().debug(String.format("Post [p=%d] already unliked by User [u=%d]", this.id, user.id));
 			}
+			return unliked;
 		}
+		return false;
 	}
 	
 	@Override
@@ -141,32 +140,6 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	@Override
 	public void save() {
 		super.save();
-
-		if (!this.deleted) {
-            switch(this.postType) {
-            	case PRODUCT: {
-                    recordPostProduct(owner);
-                    owner.numProducts++;
-                    break;
-                }
-                case STORY: {
-                    recordPostStory(owner);
-                    owner.numStories++;
-                    break;
-                }
-            }
-        } else {
-            switch(this.postType) {
-                case PRODUCT: {
-                    owner.numProducts--;
-                    break;
-                }
-                case STORY: {
-                    owner.numStories--;
-                    break;
-                }
-            }
-        }
 	}
 
 	public List<Comment> getLatestComments(int count) {
@@ -192,12 +165,6 @@ public class Post extends SocialObject implements Likeable, Commentable {
 
 	public void setComments(List<Comment> comments) {
 		this.comments = comments;
-	}
-
-	public void delete(User deletedBy) {
-		this.deleted = true;
-		this.deletedBy = deletedBy;
-		save();
 	}
 
 	public Resource addPostPhoto(File source) throws IOException {
@@ -245,7 +212,9 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	}
 
 	@Override
-	public SocialObject onComment(User user, String body) {
+	public SocialObject onComment(User user, String body) 
+			throws SocialObjectNotCommentableException {
+		
 		Comment comment = new Comment(this, user, body);
 		comment.objectType = SocialObjectType.COMMENT;
 		comment.save();
@@ -264,23 +233,26 @@ public class Post extends SocialObject implements Likeable, Commentable {
         } else if (this.postType == PostType.STORY) {
             recordCommentStory(user, comment);
         }
-       
-		return comment;
+        return comment;
 	}
 
 	@Override
-	public void onDeleteComment(User user, String body)
+	public void onDeleteComment(User user, Comment comment)
 			throws SocialObjectNotCommentableException {
-		// TODO Auto-generated method stub
-		this.numComments--;
+		
+        this.comments.remove(comment);
+        comment.deleted = true;
+        comment.deletedBy = user;
+        comment.save();
+        this.numComments--;
 	}
 
-	public void onView(User user) {
+	public boolean onView(User user) {
 		boolean viewed = recordView(user);
 		if (viewed) {
 			this.numViews++;
-			CalcServer.calculateBaseScore(this);
 		}
+		return viewed;
 	}
 
 	public static List<Post> getPostsByCategory(Category category) {

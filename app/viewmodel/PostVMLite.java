@@ -15,7 +15,7 @@ public class PostVMLite {
 	@JsonProperty("sold") public boolean sold;
 	@JsonProperty("postType") public String postType;
 	@JsonProperty("images") public Long[] images;
-	@JsonProperty("hasImage") public Boolean hasImage;
+	@JsonProperty("hasImage") public Boolean hasImage = false;
 	
 	@JsonProperty("numLikes") public int numLikes;
 	@JsonProperty("numChats") public int numChats;

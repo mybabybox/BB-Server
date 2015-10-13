@@ -1,7 +1,6 @@
 package models;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -70,15 +69,6 @@ public class Comment extends SocialObject implements Comparable<Comment>, Likeab
         super.save();
     }
     
-    public void delete(User deletedBy) {
-        Post post = Post.findById(this.socialObject);
-        post.comments.remove(this);
-        post.numComments--;
-        this.deleted = true;
-        this.deletedBy = deletedBy;
-        save();
-    }
-
     public void ensureAlbumExist() {
 		if (this.folder == null) {
 			this.folder = Folder.createFolder(this.owner, "comment-ps", "", true);
@@ -87,11 +77,7 @@ public class Comment extends SocialObject implements Comparable<Comment>, Likeab
 	}
 
     public Post getPost() {
-      	Query q = JPA.em().createNativeQuery("SELECT post_id FROM post_comment where comments_id = "+this.id);
-      	BigInteger integer = (BigInteger) q.getSingleResult();
-        Long id = integer.longValue();
-        Post product = Post.findById(id);
-        return product;
+    	return Post.findById(this.socialObject);
     }
 
     public String getShortenedBody() {

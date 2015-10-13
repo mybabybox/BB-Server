@@ -1,6 +1,5 @@
 package service;
 
-import domain.Followable;
 import models.Comment;
 import models.Post;
 import models.User;
@@ -21,14 +20,14 @@ public class SocialRelationHandler {
 		LikeEvent likeEvent = new LikeEvent();
 		likeEvent.put("user", localUser);
 		likeEvent.put("post", post);
-		EventHandler.getInstance().getEventBus().post(likeEvent);; 
+		EventHandler.getInstance().getEventBus().post(likeEvent);
 	}
 	
 	public static void recordUnLikeOnPost(Post post, User localUser){
 		UnlikeEvent likeEvent = new UnlikeEvent();
 		likeEvent.put("user", localUser);
 		likeEvent.put("post", post);
-		EventHandler.getInstance().getEventBus().post(likeEvent);; 
+		EventHandler.getInstance().getEventBus().post(likeEvent);
 	}
 	
 	public static void recordDeletePost(Post post, User localUser){
@@ -61,8 +60,8 @@ public class SocialRelationHandler {
 	
 	public static void recordCommentOnPost(Comment comment, Post post){
 		CommentEvent postEvent = new CommentEvent();
-		postEvent.put("post", post);
 		postEvent.put("comment", comment);
+		postEvent.put("post", post);
 		EventHandler.getInstance().getEventBus().post(postEvent);
 	}
 	
@@ -73,13 +72,10 @@ public class SocialRelationHandler {
 		EventHandler.getInstance().getEventBus().post(viewEvent);
 	}
 
-	public static void recordOnDeleteComment(Comment comment, User localUser) {
+	public static void recordOnDeleteComment(Comment comment, Post post) {
 		DeleteCommentEvent postEvent = new DeleteCommentEvent();
-		postEvent.put("user", localUser);
 		postEvent.put("comment", comment);
 		postEvent.put("post", comment.getPost());
 		EventHandler.getInstance().getEventBus().post(postEvent);
-		
 	}
-
 }

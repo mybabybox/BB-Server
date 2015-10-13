@@ -24,6 +24,7 @@ import play.data.validation.Constraints.Required;
 import com.google.common.base.Objects;
 
 import domain.AuditListener;
+import domain.Commentable;
 import domain.Creatable;
 import domain.PostType;
 import domain.SocialObjectType;
@@ -33,7 +34,7 @@ import domain.Updatable;
 //@Inheritance(strategy = InheritanceType.JOINED)
 @EntityListeners(AuditListener.class)
 @MappedSuperclass
-public abstract class SocialObject extends domain.Entity implements Serializable, Creatable, Updatable {
+public abstract class SocialObject extends domain.Entity implements Serializable, Creatable, Updatable, Commentable {
 
 	@Id
 	//MySQL5Dialect does not support sequence
@@ -85,16 +86,16 @@ public abstract class SocialObject extends domain.Entity implements Serializable
 		return action.ensureUniqueAndCreate();
 	}
 	
-	protected final void recordPostProduct(SocialObject user) {
-		PostSocialRelation action = new PostSocialRelation(user, this);
+	protected final void recordPostProduct(SocialObject user, SocialObject post) {
+		PostSocialRelation action = new PostSocialRelation(user, post);
 		action.actionType = PostSocialRelation.ActionType.PRODUCT;
 		action.save();
 		// Game Stats
 		//GameAccountStatistics.recordPostProduct(user.id);
 	}
 	
-	protected final void recordPostStory(SocialObject user) {
-		PostSocialRelation action = new PostSocialRelation(user, this);
+	protected final void recordPostStory(SocialObject user, SocialObject post) {
+		PostSocialRelation action = new PostSocialRelation(user, post);
 		action.actionType = PostSocialRelation.ActionType.STORY;
 		action.save();
 		// Game Stats
@@ -135,22 +136,22 @@ public abstract class SocialObject extends domain.Entity implements Serializable
 		}
 	}
 
-	public void onLikedBy(User user) throws SocialObjectNotLikableException {
+	public boolean onLikedBy(User user) throws SocialObjectNotLikableException {
 		throw new SocialObjectNotLikableException(
 				"Please make sure Social Object you are liking is Likable");
 	}
 	
-	public void onUnlikedBy(User user) throws SocialObjectNotLikableException {
+	public boolean onUnlikedBy(User user) throws SocialObjectNotLikableException {
 		throw new SocialObjectNotLikableException(
 				"Please make sure Social Object you are unliking is Likable");
 	}
 	
-	public void onFollowedBy(User user) throws SocialObjectNotFollowableException {
+	public boolean onFollowedBy(User user) throws SocialObjectNotFollowableException {
 		throw new SocialObjectNotFollowableException(
 				"Please make sure Social Object you are liking is Followable");
 	}
 	
-	public void onUnFollowedBy(User user) throws SocialObjectNotFollowableException {
+	public boolean onUnFollowedBy(User user) throws SocialObjectNotFollowableException {
 		throw new SocialObjectNotFollowableException(
 				"Please make sure Social Object you are unliking is Followable");
 	}
@@ -159,7 +160,7 @@ public abstract class SocialObject extends domain.Entity implements Serializable
 		throw new SocialObjectNotCommentableException("Please make sure Social Object you are commenting is Commentable");
 	}
 
-	public void onDeleteComment(User user, String body) throws SocialObjectNotCommentableException {
+	public void onDeleteComment(User user, Comment comment) throws SocialObjectNotCommentableException {
         throw new SocialObjectNotCommentableException("Please make sure Social Object you are deleteing comment is Commentable");
     }
 	

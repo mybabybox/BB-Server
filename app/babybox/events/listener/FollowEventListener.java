@@ -21,5 +21,4 @@ public class FollowEventListener {
 		User user = (User) map.get("user");
 		localUser.onUnFollow(user);
     }
-
 }
