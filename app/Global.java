@@ -38,9 +38,9 @@ public class Global extends GlobalSettings {
     /**
      * @param app
      */
-	public void onStart(Application app) {
+    public void onStart(Application app) {
 		
-		EventHandler.getInstance();
+    	EventHandler.getInstance();
 		
         final boolean runBackgroundTasks = Play.application().configuration().getBoolean(RUN_BACKGROUND_TASKS_PROP, false);
         if (runBackgroundTasks) {

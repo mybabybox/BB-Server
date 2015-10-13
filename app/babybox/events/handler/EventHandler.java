@@ -1,13 +1,13 @@
 package babybox.events.handler;
-import babybox.events.listener.FollowEventListners;
-import babybox.events.listener.LikeEventListners;
+import babybox.events.listener.FollowEventListener;
+import babybox.events.listener.LikeEventListener;
 
 import com.google.common.eventbus.EventBus;
 
 
 public class EventHandler {
 
-	Class [] listners = {LikeEventListners.class, FollowEventListners.class};
+	Class [] listners = {LikeEventListener.class, FollowEventListener.class};
 	private static EventHandler eventHandler = new EventHandler();
 	private EventBus eventBus = new EventBus();
 	private EventHandler() {
