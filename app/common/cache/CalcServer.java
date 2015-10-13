@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.joda.time.DateTime;
@@ -13,7 +12,6 @@ import org.joda.time.Weeks;
 import play.Play;
 import models.Category;
 import models.Post;
-import models.SocialObject;
 import models.User;
 import common.utils.NanoSecondStopWatch;
 
@@ -65,19 +63,26 @@ public class CalcServer {
 		logger.underlyingLogger().debug("buildBaseScore completed. Took "+sw.getElapsedSecs()+"s");
 	}
 
-	private static void calculateBaseScore(Post product) {
-		//if (product.baseScore == 0L) {
-		product.baseScore = (long) (product.noOfViews
-				+ 2 * product.noOfLikes
-				+ 3 * product.noOfChats
-				+ 4 * product.noOfBuys
-				+ 5 * product.noOfComments);
-		product.save();
+	public static void calculateBaseScore(Post post) {
+		//if (post.baseScore == 0L) {
+		
+		NanoSecondStopWatch sw = new NanoSecondStopWatch();
+		logger.underlyingLogger().debug("calculateBaseScore for p="+post.id);
+		
+		post.baseScore = (long) (post.noOfViews
+				+ 2 * post.noOfLikes
+				+ 3 * post.noOfChats
+				+ 4 * post.noOfBuys
+				+ 5 * post.noOfComments);
+		post.save();
+		
+		sw.stop();
+		logger.underlyingLogger().debug("calculateBaseScore completed. Took "+sw.getElapsedSecs()+"s");
+		
 		//}
 	}
 	
 	private static void buildUserQueue() {
-		
 		for(User user : User.getEligibleUserForFeed()){
 			JedisCache.cache().remove("USER_POSTS:"+user.id);
 			JedisCache.cache().remove("USER_LIKES:"+user.id);

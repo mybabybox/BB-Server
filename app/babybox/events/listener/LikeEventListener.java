@@ -17,7 +17,7 @@ public class LikeEventListener {
 		post.onLikedBy(user);
 		Long score = post.getCreatedDate().getTime();
 		CalcServer.addToLikeQueue(post.id, user.id, score.doubleValue());
-		CalcServer.buildBaseScore();
+		CalcServer.calculateBaseScore(post);
     }
 
 }
