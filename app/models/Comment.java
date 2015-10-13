@@ -37,8 +37,6 @@ public class Comment extends SocialObject implements Comparable<Comment>, Likeab
     @Enumerated(EnumType.STRING)
 	public PostType commentType;
     
-    public int noOfLikes = 0;
-
     @ManyToOne(cascade = CascadeType.REMOVE)
   	public Folder folder;
 

@@ -1018,6 +1018,8 @@ public class User extends SocialObject implements Subject, Followable {
 			if (followed) {
 				this.numFollowings++;
 				user.numFollowers++;
+			} else {
+				logger.underlyingLogger().debug(String.format("User [u=%d] already followed User [u=%d]", this.id, user.id));
 			}
 		}
 	}
@@ -1035,6 +1037,8 @@ public class User extends SocialObject implements Subject, Followable {
 			if (unfollowed) {
 				this.numFollowings--;
 				user.numFollowers--;
+			} else {
+				logger.underlyingLogger().debug(String.format("User [u=%d] already unfollowed User [u=%d]", this.id, user.id));
 			}
 		}
 	}

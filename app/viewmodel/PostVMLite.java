@@ -2,6 +2,8 @@ package viewmodel;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import common.cache.CalcServer;
+
 import models.Folder;
 import models.Post;
 import models.User;
@@ -23,6 +25,10 @@ public class PostVMLite {
 	@JsonProperty("isLiked") public boolean isLiked = false;
     
 	@JsonProperty("offset") public Long offset;
+	
+	// admin fields
+	@JsonProperty("baseScore") public Long baseScore = 0L;
+	@JsonProperty("timeScore") public Long timeScore = 0L;
 
     public PostVMLite(Post post, User user) {
         this.id = post.id;
@@ -43,6 +49,11 @@ public class PostVMLite {
         if (images != null && images.length > 0) {
         	this.hasImage = true;
         	this.images = images;
+        }
+        
+        if (user.isSuperAdmin()) {
+	        this.baseScore = post.baseScore;
+	        this.timeScore = CalcServer.calculateTimeScore(post);
         }
     }
     

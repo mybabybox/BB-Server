@@ -184,7 +184,6 @@ public class ProductController extends Controller{
 	@Transactional
 	public static Result product(Long id) {
 		final User localUser = Application.getLocalUser(session());
-		onView(id);
 		return ok(views.html.babybox.web.product.render(Json.stringify(Json.toJson(getProductInfoVM(id))), Json.stringify(Json.toJson(new UserVM(localUser)))));
 	}
 	
@@ -194,7 +193,6 @@ public class ProductController extends Controller{
 		if (post == null) {
 			return notFound();
 		}
-		onView(id);
 		return ok(Json.toJson(post));
 	}
 	
@@ -204,8 +202,8 @@ public class ProductController extends Controller{
 		if (post == null) {
 			return null;
 		}
+		onView(id);
 		PostVM vm = new PostVM(post, localUser);
-		vm.isFollowingOwner = post.owner.isFollowedBy(localUser);
 		return vm;
 	}
 

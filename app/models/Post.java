@@ -28,9 +28,19 @@ import domain.Likeable;
 import domain.PostType;
 import domain.SocialObjectType;
 
+/**
+ * ALTER TABLE Post CHANGE COLUMN noOfComments numComments int(11);
+ * ALTER TABLE Post CHANGE COLUMN noOfLikes numLikes int(11);
+ * ALTER TABLE Post CHANGE COLUMN noOfBuys numBuys int(11);
+ * ALTER TABLE Post CHANGE COLUMN noOfViews numViews int(11);
+ * ALTER TABLE Post CHANGE COLUMN noOfChats numChats int(11);
+ * 
+ * @author keithlei
+ */
 @Entity
 public class Post extends SocialObject implements Likeable, Commentable {
-
+	private static final play.api.Logger logger = play.api.Logger.apply(Post.class);
+	
 	public String title;
 
 	@Column(length=2000)
@@ -97,6 +107,8 @@ public class Post extends SocialObject implements Likeable, Commentable {
 			if (liked) {
 				this.numLikes++;
 				user.numLikes++;
+			} else {
+				logger.underlyingLogger().debug(String.format("Post [p=%d] already liked by User [u=%d]", this.id, user.id));
 			}
 		}
 	}
@@ -112,6 +124,8 @@ public class Post extends SocialObject implements Likeable, Commentable {
 				user.numLikes--;
 				CalcServer.calculateBaseScore(this);
 				CalcServer.removeFromLikeQueue(this.id, user.id);
+			} else {
+				logger.underlyingLogger().debug(String.format("Post [p=%d] already unliked by User [u=%d]", this.id, user.id));
 			}
 		}
 	}

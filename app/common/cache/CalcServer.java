@@ -56,8 +56,8 @@ public class CalcServer {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
 		logger.underlyingLogger().debug("buildBaseScore starts");
 		
-		for(Post product : Post.getAllPosts()){
-			calculateBaseScore(product);
+		for(Post post : Post.getAllPosts()){
+			calculateBaseScore(post);
 		}
 		
 		sw.stop();
@@ -132,11 +132,11 @@ public class CalcServer {
 		JedisCache.cache().putToSortedSet("CATEGORY_POPULAR:"+post.category.id,  timeScore, post.id.toString());
 	}
 
-	private static Long calculateTimeScore(Post post) {
+	public static Long calculateTimeScore(Post post) {
 		Long timeScore = Math.max(post.baseScore, 1);
 		int timeDiff = Weeks.weeksBetween(new DateTime(new Date()), new DateTime(post.getCreatedDate())).getWeeks();
-		if (timeDiff > 0) 
-		timeScore = (long) (timeScore * Math.exp(-8 * timeDiff * timeDiff));
+		if (timeDiff > 0)
+			timeScore = (long) (timeScore * Math.exp(-8 * timeDiff * timeDiff));
 		timeScore = timeScore * 1000000 + post.id;
 		return timeScore;
 	}

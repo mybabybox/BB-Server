@@ -157,9 +157,6 @@ public abstract class SocialRelation extends domain.Entity implements Serializab
     		if (count == 0) {
     			save();
     			return true;
-    		} else {
-    			logger.underlyingLogger().debug(String.format("actor[%s|%d] target[%s|%d] already existed... count=%d", 
-    					this.actorType, this.actor, this.targetType, this.target, count));
     		}
         } catch (NoResultException nre){
         }
