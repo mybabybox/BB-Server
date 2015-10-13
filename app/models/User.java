@@ -356,7 +356,6 @@ public class User extends SocialObject implements Subject, Followable {
 		post.save();
 		Long score = post.getCreatedDate().getTime();
 		CalcServer.addToPostQueue(post.id, this.id, score.doubleValue());
-		this.numProducts++;
 		return post;
 	}
 	
