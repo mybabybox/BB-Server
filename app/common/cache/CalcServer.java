@@ -398,10 +398,12 @@ public class CalcServer {
 	}
 
 	public static void addToFollowQueue(Long userId, Long followingUserID, Double score){
+		JedisCache.cache().remove(getKey(FeedType.HOME_FOLLOWING,userId));
 		JedisCache.cache().putToSortedSet(getKey(FeedType.USER_FOLLOWING,userId), score, followingUserID.toString());
 	}
 	
 	public static void removeFromFollowQueue(Long userId, Long followingUserID){
+		JedisCache.cache().remove(getKey(FeedType.HOME_FOLLOWING,userId));
 		JedisCache.cache().removeMemberFromSortedSet(getKey(FeedType.USER_FOLLOWING,userId), followingUserID.toString());
 	}
 

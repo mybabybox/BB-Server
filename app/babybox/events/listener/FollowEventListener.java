@@ -24,10 +24,10 @@ public class FollowEventListener {
 			CalcServer.addToFollowQueue(user.id, localUser.id, score.doubleValue());
 			
 			Activity activity = new Activity();
-	        activity.recipient = localUser.id;
-	        activity.actor = user.id;
-	        activity.actvityType = ActivityType.FOLLOWED;
-	        activity.save();
+			activity.recipient = localUser.id;
+			activity.actor = user.id;
+			activity.actvityType = ActivityType.FOLLOWED;
+			activity.save();
 		}
     }
 	
