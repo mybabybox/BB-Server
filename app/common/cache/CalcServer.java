@@ -25,6 +25,7 @@ public class CalcServer {
 	
 	private static final Long FEED_HOME_COUNT_MAX = Play.application().configuration().getLong("feed.home.count.max");
 	private static final Long FEED_CATEGORY_EXPOSURE_MIN = Play.application().configuration().getLong("feed.category.exposure.min");
+	private static final int FEED_EXPIRY = Play.application().configuration().getInt("feed.expiry");
 	
 	public static void warmUpActivity() {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
@@ -206,7 +207,8 @@ public class CalcServer {
 				JedisCache.cache().putToSortedSet(getKey(FeedType.HOME_EXPLORE,user.id), Math.random() * 100000000, postId.toString());
 			}
 		}
-
+		JedisCache.cache().expire(getKey(FeedType.HOME_EXPLORE,user.id), FEED_EXPIRY);
+		
 		sw.stop();
 		logger.underlyingLogger().debug("buildUserExplorerQueue completed. Took "+sw.getElapsedSecs()+"s");
 	}
@@ -225,9 +227,9 @@ public class CalcServer {
 				} catch (Exception e) {
 				}
 			}
-			JedisCache.cache().expire(getKey(FeedType.HOME_FOLLOWING,user.id), 60 * 2); // expiration time 120 secs
 		}
-
+		JedisCache.cache().expire(getKey(FeedType.HOME_FOLLOWING,user.id), FEED_EXPIRY);
+		
 		sw.stop();
 		logger.underlyingLogger().debug("buildUserFollowingQueue completed. Took "+sw.getElapsedSecs()+"s");
 	}
@@ -304,7 +306,7 @@ public class CalcServer {
             } catch (Exception e) {
             }
         }
-        JedisCache.cache().expire(getKey(FeedType.HOME_EXPLORE,id), 60 * 2); // expiration time 120 secs
+        JedisCache.cache().expire(getKey(FeedType.HOME_EXPLORE,id), FEED_EXPIRY);
         return postIds;
 
 	}
@@ -321,6 +323,7 @@ public class CalcServer {
             } catch (Exception e) {
             }
         }
+        JedisCache.cache().expire(getKey(FeedType.HOME_FOLLOWING,id), FEED_EXPIRY);
         return postIds;
 
 	}
