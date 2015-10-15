@@ -756,7 +756,7 @@ public class UserController extends Controller {
     	List<UserVMLite> userFollowers = new ArrayList<UserVMLite>();
     	
     	for(SocialRelation socialRelation : followings){
-    		User user = User.findById(socialRelation.target);
+    		User user = User.findById(socialRelation.actor);
     		UserVMLite uservm = new UserVMLite(user, localUser);
     		userFollowers.add(uservm);
     	}

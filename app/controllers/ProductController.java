@@ -438,6 +438,7 @@ public class ProductController extends Controller{
 		return ok(Json.toJson(comments));
 	}
 
+	@Transactional
 	public static Result getConversations(Long id) {
 		final User localUser = Application.getLocalUser(session());
 		if (!localUser.isLoggedIn()) {

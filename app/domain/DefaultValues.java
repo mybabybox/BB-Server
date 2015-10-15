@@ -19,7 +19,7 @@ public class DefaultValues {
     
     public static final int CONVERSATION_LAST_MESSAGE_COUNT = 50;
     public static final int CONVERSATION_MESSAGE_COUNT = 10;
-    public static final int CONVERSATION_COUNT = 100;
+    public static final int CONVERSATION_COUNT = 1000;
     
     public static final int GAME_TRANSACTION_PAGESIZE = 30;
     public static final int GAME_TRANSACTION_ADMIN_PAGESIZE = 200;
