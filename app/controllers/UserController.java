@@ -687,7 +687,7 @@ public class UserController extends Controller {
             return notFound();
         }
 
-        List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.USER_LIKED);
+        List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.USER_POSTED);
 		return ok(Json.toJson(vms));
     }
     
