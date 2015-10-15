@@ -21,7 +21,7 @@ public class FollowEventListener {
        	// why we require this, if we are renewing HOME_FOLLOWING feed after every 2 mins 
 		if (localUser.onFollow(user)) {
 			Long score = new Date().getTime();		// ideally use FollowSocialRelation.CREATED_DATE
-			CalcServer.addToFollowQueue(user.id, localUser.id, score.doubleValue());
+			CalcServer.addToFollowQueue(localUser.id, user.id, score.doubleValue());
 			
 			Activity activity = new Activity();
 			activity.recipient = localUser.id;
@@ -37,7 +37,7 @@ public class FollowEventListener {
 		User user = (User) map.get("user");
 		if (localUser.onUnFollow(user)) {
 			// do something
-			CalcServer.removeFromFollowQueue(user.id, localUser.id);
+			CalcServer.removeFromFollowQueue(localUser.id, user.id);
 		}
     }
 }

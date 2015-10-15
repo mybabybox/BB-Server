@@ -182,10 +182,15 @@ public class CalcServer {
 		JedisCache.cache().putToSortedSet(getKey(FeedType.CATEGORY_PRICE_LOW_HIGH,post.category.id), post.price*1000000 + post.id , post.id.toString());
 	}
 	
-	private static void buildUserExplorerFeedQueue(User user) {
+	private static void buildUserExploreFeedQueue(Long userId) {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
-		logger.underlyingLogger().debug("buildUserExplorerQueue starts");
+		logger.underlyingLogger().debug("buildUserExploreQueue starts");
 		
+		User user = User.findById(userId);
+		if (user == null) {
+			logger.underlyingLogger().error("buildUserExploreQueue failed!! User[id="+userId+"] not exists");
+			return;
+		}
 		Map<String, Long> map = user.getUserCategoriesForFeed();
 		for (Category category : Category.getAllCategories()){
 			Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.CATEGORY_POPULAR,category.id), 0L);
@@ -210,25 +215,25 @@ public class CalcServer {
 		JedisCache.cache().expire(getKey(FeedType.HOME_EXPLORE,user.id), FEED_EXPIRY);
 		
 		sw.stop();
-		logger.underlyingLogger().debug("buildUserExplorerQueue completed. Took "+sw.getElapsedSecs()+"s");
+		logger.underlyingLogger().debug("buildUserExploreQueue completed. Took "+sw.getElapsedSecs()+"s");
 	}
 	
-	private static void buildUserFollowingFeedQueue(User user) {
+	private static void buildUserFollowingFeedQueue(Long userId) {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
 		logger.underlyingLogger().debug("buildUserFollowingQueue starts");
 		
-		List<Long> followings = getUserFollowingFeeds(user.id, 0L);
+		List<Long> followings = getUserFollowingFeeds(userId, 0L);
 		for (Long followingUser : followings){
 			Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.USER_POSTED,followingUser), 0L);
 			for (String value : values) {
 				try {
 					Long postId = Long.parseLong(value);
-					JedisCache.cache().putToSortedSet(getKey(FeedType.HOME_FOLLOWING,user.id), getScore(getKey(FeedType.USER_POSTED, followingUser), postId) , postId.toString());
+					JedisCache.cache().putToSortedSet(getKey(FeedType.HOME_FOLLOWING,userId), getScore(getKey(FeedType.USER_POSTED, followingUser), postId) , postId.toString());
 				} catch (Exception e) {
 				}
 			}
 		}
-		JedisCache.cache().expire(getKey(FeedType.HOME_FOLLOWING,user.id), FEED_EXPIRY);
+		JedisCache.cache().expire(getKey(FeedType.HOME_FOLLOWING,userId), FEED_EXPIRY);
 		
 		sw.stop();
 		logger.underlyingLogger().debug("buildUserFollowingQueue completed. Took "+sw.getElapsedSecs()+"s");
@@ -296,7 +301,7 @@ public class CalcServer {
 	
 	public static List<Long> getHomeExploreFeed(Long id, Double offset) {
 		if(!JedisCache.cache().exists(getKey(FeedType.HOME_EXPLORE,id))){
-			buildUserExplorerFeedQueue(User.findById(id));
+			buildUserExploreFeedQueue(id);
 		}
 		Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.HOME_EXPLORE,id), offset);
         final List<Long> postIds = new ArrayList<>();
@@ -313,7 +318,7 @@ public class CalcServer {
 	
 	public static List<Long> getHomeFollowingFeed(Long id, Double offset) {
 		if(!JedisCache.cache().exists(getKey(FeedType.HOME_FOLLOWING,id))){
-			buildUserFollowingFeedQueue(User.findById(id));
+			buildUserFollowingFeedQueue(id);
 		}
 		Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.HOME_FOLLOWING,id), offset);
         final List<Long> postIds = new ArrayList<>();
@@ -400,14 +405,14 @@ public class CalcServer {
 		JedisCache.cache().removeMemberFromSortedSet(getKey(FeedType.USER_LIKED,userId), postId.toString());
 	}
 
-	public static void addToFollowQueue(Long userId, Long followingUserID, Double score){
+	public static void addToFollowQueue(Long userId, Long followingUserId, Double score){
 		JedisCache.cache().remove(getKey(FeedType.HOME_FOLLOWING,userId));
-		JedisCache.cache().putToSortedSet(getKey(FeedType.USER_FOLLOWING,userId), score, followingUserID.toString());
+		JedisCache.cache().putToSortedSet(getKey(FeedType.USER_FOLLOWING,userId), score, followingUserId.toString());
 	}
 	
-	public static void removeFromFollowQueue(Long userId, Long followingUserID){
+	public static void removeFromFollowQueue(Long userId, Long followingUserId){
 		JedisCache.cache().remove(getKey(FeedType.HOME_FOLLOWING,userId));
-		JedisCache.cache().removeMemberFromSortedSet(getKey(FeedType.USER_FOLLOWING,userId), followingUserID.toString());
+		JedisCache.cache().removeMemberFromSortedSet(getKey(FeedType.USER_FOLLOWING,userId), followingUserId.toString());
 	}
 
 	public static void addToPostQueue(Long postId, Long userId, Double score){

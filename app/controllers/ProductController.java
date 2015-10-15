@@ -394,29 +394,6 @@ public class ProductController extends Controller{
 		return ok(Json.toJson(vms));
 	}
 	
-	@Transactional 
-	public static Result getHomeExploreFeed(Long offset) {
-		final User localUser = Application.getLocalUser(session());
-		if (!localUser.isLoggedIn()) {
-			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
-			return notFound();
-		}
-		
-		List<PostVMLite> vms = FeedHandler.getPostVM(localUser.id, offset, localUser, FeedType.HOME_EXPLORE);
-		return ok(Json.toJson(vms));
-	}
-	
-	@Transactional 
-	public static Result getHomeFollowingFeed(Long offset) {
-		final User localUser = Application.getLocalUser(session());
-		if (!localUser.isLoggedIn()) {
-			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
-			return notFound();
-		}
-		List<PostVMLite> vms = FeedHandler.getPostVM(localUser.id, offset, localUser, FeedType.HOME_FOLLOWING);
-		return ok(Json.toJson(vms));
-	}
-	
 	@Transactional
 	public static Result getPostComments(Long id, Long offset) {
 		final User localUser = Application.getLocalUser(session());
