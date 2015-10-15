@@ -11,7 +11,9 @@ import org.joda.time.Weeks;
 
 import play.Play;
 import models.Category;
+import models.LikeSocialRelation;
 import models.Post;
+import models.SocialRelation;
 import models.User;
 import common.thread.ThreadLocalOverride;
 import common.utils.NanoSecondStopWatch;
@@ -111,9 +113,15 @@ public class CalcServer {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
 		logger.underlyingLogger().debug("buildUserLikedPostQueue starts");
 		
-		for(Post post : user.getUserLikedPosts()){
+		for (SocialRelation socialRelation : LikeSocialRelation.getUserLikedPosts(user.id)) {
+			JedisCache.cache().putToSortedSet("USER_LIKES:"+user.id, socialRelation.getCreatedDate().getTime() , socialRelation.target.toString());
+		}
+		
+		/*
+		for (Post post : user.getUserLikedPosts()) {
 			JedisCache.cache().putToSortedSet("USER_LIKES:"+user.id, post.getCreatedDate().getTime() , post.id.toString());
 		}
+		*/
 		
 		sw.stop();
 		logger.underlyingLogger().debug("buildUserLikedPostQueue completed. Took "+sw.getElapsedSecs()+"s");

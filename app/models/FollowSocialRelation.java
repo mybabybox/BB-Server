@@ -49,35 +49,27 @@ public class FollowSocialRelation extends SocialRelation {
 		return q.executeUpdate() > 0;
     }
 	
-	public static List<Long> getFollowings(Long id) {
-		Query q = JPA.em().createQuery("Select sa from FollowSocialRelation sa where actor = ?1");
+	public static List<FollowSocialRelation> getUserFollowings(Long id) {
+		Query q = JPA.em().createQuery(
+				"Select sr from FollowSocialRelation sr where actor = ?1 and actorType = ?2 and targetType = ?3");
 		q.setParameter(1, id);
-		List<FollowSocialRelation> sa = new ArrayList<>();
-		List<Long> followings = new ArrayList<Long>();
-		try {
-			sa = q.getResultList();
-			for (FollowSocialRelation ssr: sa) {
-				followings.add(ssr.target);
-			}
-			return followings;
-		} catch (NoResultException nre) {
+		q.setParameter(2, SocialObjectType.USER);
+		q.setParameter(3, SocialObjectType.USER);
+		if (q.getResultList().size() > 0){
+			return q.getResultList(); 
 		}
-		return null;
+    	return new ArrayList<>();
 	}
 	
-	public static List<Long> getFollowers(Long id) {
-		Query q = JPA.em().createQuery("Select sa from FollowSocialRelation sa where target = ?1");
+	public static List<FollowSocialRelation> getUserFollowers(Long id) {
+		Query q = JPA.em().createQuery(
+				"Select sr from FollowSocialRelation sr where target = ?1 and actorType = ?2 and targetType = ?3");
 		q.setParameter(1, id);
-		List<FollowSocialRelation> sa = new ArrayList<>();
-		List<Long> followers = new ArrayList<Long>();
-		try {
-			sa = q.getResultList();
-			for (FollowSocialRelation ssr: sa) {
-				followers.add(ssr.actor);
-			}
-			return followers;
-		} catch (NoResultException nre){
+		q.setParameter(2, SocialObjectType.USER);
+		q.setParameter(3, SocialObjectType.USER);
+		if (q.getResultList().size() > 0){
+			return q.getResultList(); 
 		}
-		return null;
+    	return new ArrayList<>();
 	}
 }

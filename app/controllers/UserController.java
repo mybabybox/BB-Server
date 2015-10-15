@@ -19,6 +19,7 @@ import models.Message;
 import models.Post;
 import models.Resource;
 import models.SiteTour;
+import models.SocialRelation;
 import models.User;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -40,11 +41,9 @@ import viewmodel.PostVMLite;
 import viewmodel.ProfileVM;
 import viewmodel.UserVM;
 import viewmodel.UserVMLite;
-
 import common.cache.CalcServer;
 import common.utils.ImageFileUtil;
 import common.utils.NanoSecondStopWatch;
-
 import domain.DefaultValues;
 
 public class UserController extends Controller {
@@ -741,11 +740,11 @@ public class UserController extends Controller {
             return notFound();
         }
         
-    	List<Long> followings = FollowSocialRelation.getFollowings(id);
+    	List<FollowSocialRelation> followings = FollowSocialRelation.getUserFollowings(id);
     	List<UserVMLite> userFollowings = new ArrayList<UserVMLite>();
     	
-    	for (Long f : followings) {
-    		User user = User.findById(f);
+    	for (SocialRelation socialRelation : followings) {
+    		User user = User.findById(socialRelation.target);
     		UserVMLite uservm = new UserVMLite(user, localUser);
     		userFollowings.add(uservm);
     	}
@@ -760,11 +759,11 @@ public class UserController extends Controller {
             return notFound();
         }
         
-    	List<Long> followings = FollowSocialRelation.getFollowers(id);
+    	List<FollowSocialRelation> followings = FollowSocialRelation.getUserFollowers(id);
     	List<UserVMLite> userFollowers = new ArrayList<UserVMLite>();
     	
-    	for(Long f : followings){
-    		User user = User.findById(f);
+    	for(SocialRelation socialRelation : followings){
+    		User user = User.findById(socialRelation.target);
     		UserVMLite uservm = new UserVMLite(user, localUser);
     		userFollowers.add(uservm);
     	}

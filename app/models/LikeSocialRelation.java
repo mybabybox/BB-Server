@@ -50,7 +50,7 @@ public class LikeSocialRelation extends SocialRelation {
 	
     public static List<LikeSocialRelation> getUserLikedPosts(Long id){
     	Query q = JPA.em().createQuery(
-    			"Select sr from LikeSocialRelation sr where actor = ?1 and actionType = ?2 and targetType = ?3");
+    			"Select sr from LikeSocialRelation sr where actor = ?1 and actorType = ?2 and targetType = ?3");
 		q.setParameter(1, id);
 		q.setParameter(2, SocialObjectType.USER);
 		q.setParameter(3, SocialObjectType.POST);
