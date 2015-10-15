@@ -390,7 +390,7 @@ public class ProductController extends Controller{
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
 			return notFound();
 		}
-		List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.CATEGORY_PRICE_LOW_HIGH);
+		List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.CATEGORY_PRICE_HIGH_LOW);
 		return ok(Json.toJson(vms));
 	}
 	

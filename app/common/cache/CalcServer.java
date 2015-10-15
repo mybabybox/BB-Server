@@ -138,7 +138,7 @@ public class CalcServer {
 
 	private static void buildCategoryQueue() {
 				for(Post post : Post.getAllPosts()){
-			buildPriceHighLowPostQueue(post);
+			buildPriceLowHighPostQueue(post);
 			buildNewestPostQueue(post);
 			buildPopularPostQueue(post);
 		}
@@ -162,7 +162,7 @@ public class CalcServer {
 		JedisCache.cache().putToSortedSet(FeedType.CATEGORY_NEWEST+":"+post.category.id, post.getCreatedDate().getTime() , post.id.toString());
 	}
 
-	private static void buildPriceHighLowPostQueue(Post post) {
+	private static void buildPriceLowHighPostQueue(Post post) {
 		JedisCache.cache().putToSortedSet(FeedType.CATEGORY_PRICE_LOW_HIGH+":"+post.category.id, post.price*1000000 + post.id , post.id.toString());
 	}
 	
@@ -351,19 +351,19 @@ public class CalcServer {
 	
 	public static void addToQueues(Post post) {
 		calculateBaseScore(post);
-		buildPriceHighLowPostQueue(post);
+		buildPriceLowHighPostQueue(post);
 		buildNewestPostQueue(post);
 		buildPopularPostQueue(post);
 	}
 	
 	public static void removeFromCategoryQueues(Long postId, Long categoryId){
-		removeMemberFromPriceHighLowPostQueue(postId, categoryId);
+		removeMemberFromPriceLowHighPostQueue(postId, categoryId);
 		removeMemberFromNewestPostQueue(postId, categoryId);
 		removeMemberFromPopularPostQueue(postId, categoryId);
 	}
 	
-	public static void removeMemberFromPriceHighLowPostQueue(Long postId, Long categoryId){
-		JedisCache.cache().removeMemberFromSortedSet(FeedType.CATEGORY_POPULAR+":"+categoryId, postId.toString());
+	public static void removeMemberFromPriceLowHighPostQueue(Long postId, Long categoryId){
+		JedisCache.cache().removeMemberFromSortedSet(FeedType.CATEGORY_PRICE_LOW_HIGH+":"+categoryId, postId.toString());
 	}
 	
 	public static void removeMemberFromNewestPostQueue(Long postId, Long categoryId){
@@ -371,7 +371,7 @@ public class CalcServer {
 	}
 
 	public static void removeMemberFromPopularPostQueue(Long postId, Long categoryId){
-		JedisCache.cache().removeMemberFromSortedSet(FeedType.CATEGORY_PRICE_LOW_HIGH+":"+categoryId, postId.toString());
+		JedisCache.cache().removeMemberFromSortedSet(FeedType.CATEGORY_POPULAR+":"+categoryId, postId.toString());
 	}
 	
 	public static void addToLikeQueue(Long postId, Long userId, Double score){
