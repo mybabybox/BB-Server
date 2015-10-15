@@ -131,10 +131,10 @@ public abstract class SocialRelation extends domain.Entity implements Serializab
 	
     public List<SocialRelation> getSocialRelations() {
         Query q = JPA.em().createQuery(
-                "Select sa from " + getTableName() + " sa where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
+        		"Select sr from " + getTableName() + " sr where actor = ?1 and actorType = ?2 and target = ?3 and targetType = ?4");
         q.setParameter(1, this.actor);
-        q.setParameter(2, this.target);
-        q.setParameter(3, this.actorType);
+        q.setParameter(2, this.actorType);
+        q.setParameter(3, this.target);
         q.setParameter(4, this.targetType);
         try {
             List<SocialRelation> socialRelations = q.getResultList();
@@ -146,22 +146,12 @@ public abstract class SocialRelation extends domain.Entity implements Serializab
 	
 	@Transactional
 	public boolean ensureUniqueAndCreate() {
-	    Query q = JPA.em().createQuery(
-                "Select count(sa) from " + getTableName() + " sa where actor = ?1 and target = ?2 and actorType = ?3 and targetType = ?4");
-        q.setParameter(1, this.actor);
-        q.setParameter(2, this.target);
-        q.setParameter(3, this.actorType);
-        q.setParameter(4, this.targetType);
-        try {
-        	Long count = (Long)q.getSingleResult();
-    		if (count == 0) {
-    			save();
-    			return true;
-    		}
-        } catch (NoResultException nre){
-        }
-        
-        return false;
+		List<SocialRelation> socialRelations = getSocialRelations();
+		if (socialRelations == null || socialRelations.size() == 0) {
+			save();
+			return true;
+		}
+		return false;
 	}
 	
 	// NOTE: Caution, call this method when target and actor pair is one to one.

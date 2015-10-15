@@ -1,5 +1,7 @@
 package babybox.events.listener;
 
+import java.util.Date;
+
 import models.User;
 import babybox.events.map.FollowEvent;
 import babybox.events.map.UnFollowEvent;
@@ -13,6 +15,7 @@ public class FollowEventListener {
 		User localUser = (User) map.get("localUser");
 		User user = (User) map.get("user");
 		if (localUser.onFollow(user)) {
+			Long score = new Date().getTime();		// ideally use FollowSocialRelation.CREATED_DATE
 			// do something
 		}
     }
