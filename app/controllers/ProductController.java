@@ -1,6 +1,7 @@
 package controllers;
 
 import static play.data.Form.form;
+import handler.FeedHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +32,7 @@ import viewmodel.PostVMLite;
 import viewmodel.ResponseStatusVM;
 import viewmodel.UserVM;
 import common.cache.CalcServer;
+import common.model.FeedFilter.FeedType;
 import common.utils.HtmlUtil;
 import common.utils.ImageFileUtil;
 import controllers.Application.DeviceType;
@@ -354,22 +356,11 @@ public class ProductController extends Controller{
 			return notFound();
 		}
 		
-		List<Long> postIds = CalcServer.getCategoryPopularFeed(id, offset.doubleValue());
-		if(postIds.size() == 0){
-			return ok(Json.toJson(postIds));
-		}
-		
-		List<PostVMLite> vms = new ArrayList<>();
-		List<Post> posts =  Post.getPosts(postIds);
-		for(Post post : posts) {
-			PostVMLite vm = new PostVMLite(post, localUser);
-			vm.offset = CalcServer.getScore("CATEGORY_POPULAR:"+post.category.id, post.id).longValue();
-			vms.add(vm);
-		}
+		List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.CATEGORY_POPULAR);
 		return ok(Json.toJson(vms));
 
 	}
-	
+
 	@Transactional 
 	public static Result getCategoryNewestFeed(Long id, String postType, Long offset){
 		final User localUser = Application.getLocalUser(session());
@@ -377,19 +368,7 @@ public class ProductController extends Controller{
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
 			return notFound();
 		}
-		
-		List<Long> postIds = CalcServer.getCategoryNewestFeed(id, offset.doubleValue());	
-		if(postIds.size() == 0){
-			return ok(Json.toJson(postIds));
-		}
-		
-		List<PostVMLite> vms = new ArrayList<>();
-		List<Post> posts =  Post.getPosts(postIds);
-		for(Post post : posts) {
-			PostVMLite vm = new PostVMLite(post, localUser);
-			vm.offset = post.getCreatedDate().getTime();
-			vms.add(vm);
-		}
+		List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.CATEGORY_NEWEST);
 		return ok(Json.toJson(vms));
 	}
 	
@@ -400,18 +379,7 @@ public class ProductController extends Controller{
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
 			return notFound();
 		}
-		
-		List<Long> postIds = CalcServer.getCategoryPriceLowHighFeed(id, offset.doubleValue());
-        if(postIds.size() == 0){
-			return ok(Json.toJson(postIds));
-		}
-        
-        List<PostVMLite> vms = new ArrayList<>();
-		for(Post product : Post.getPosts(postIds)) {
-			PostVMLite vm = new PostVMLite(product, localUser);
-			vm.offset = CalcServer.getScore("CATEGORY_PRICE_LOW_HIGH:"+product.category.id, product.id).longValue();
-			vms.add(vm);
-		}
+		List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.CATEGORY_PRICE_LOW_HIGH);
 		return ok(Json.toJson(vms));
 	}
 	
@@ -422,18 +390,7 @@ public class ProductController extends Controller{
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
 			return notFound();
 		}
-		
-		List<Long> postIds = CalcServer.getCategoryPriceHighLowFeed(id, offset.doubleValue());
-		if(postIds.size() == 0){
-			return ok(Json.toJson(postIds));
-		}
-		
-		List<PostVMLite> vms = new ArrayList<>();
-		for(Post product : Post.getPosts(postIds)) {
-			PostVMLite vm = new PostVMLite(product, localUser);
-			vm.offset = CalcServer.getScore("CATEGORY_PRICE_LOW_HIGH:"+product.category.id, product.id).longValue();
-			vms.add(vm);
-		}
+		List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.CATEGORY_PRICE_LOW_HIGH);
 		return ok(Json.toJson(vms));
 	}
 	
@@ -445,16 +402,7 @@ public class ProductController extends Controller{
 			return notFound();
 		}
 		
-		List<Long> postIds = CalcServer.getHomeExploreFeed(localUser.id, offset * DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT);
-		if(postIds.size() == 0){
-			return ok(Json.toJson(postIds));
-		}
-		
-		List<PostVMLite> vms = new ArrayList<>();
-		for(Post product : Post.getPosts(postIds, offset.intValue())) {
-			PostVMLite vm = new PostVMLite(product, localUser);
-			vms.add(vm);
-		}
+		List<PostVMLite> vms = FeedHandler.getPostVM(localUser.id, offset * DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT, localUser, FeedType.HOME_EXPLORE);
 		return ok(Json.toJson(vms));
 	}
 	
@@ -465,8 +413,7 @@ public class ProductController extends Controller{
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
 			return notFound();
 		}
-		
-		List<PostVMLite> vms = new ArrayList<>();
+		List<PostVMLite> vms = FeedHandler.getPostVM(localUser.id, offset * DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT, localUser, FeedType.HOME_FOLLOWING);
 		return ok(Json.toJson(vms));
 	}
 	

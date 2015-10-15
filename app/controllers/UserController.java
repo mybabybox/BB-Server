@@ -1,5 +1,7 @@
 package controllers;
 
+import handler.FeedHandler;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -42,6 +44,7 @@ import viewmodel.ProfileVM;
 import viewmodel.UserVM;
 import viewmodel.UserVMLite;
 import common.cache.CalcServer;
+import common.model.FeedFilter.FeedType;
 import common.utils.ImageFileUtil;
 import common.utils.NanoSecondStopWatch;
 import domain.DefaultValues;
@@ -683,18 +686,8 @@ public class UserController extends Controller {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
             return notFound();
         }
-        
-    	List<Long> postIds = CalcServer.getUserPostFeeds(id, offset.doubleValue());
-        if(postIds.size() == 0){
-			return ok(Json.toJson(postIds));
-		}
-        
-    	List<PostVMLite> vms = new ArrayList<>();
-		for(Post product : Post.getPosts(postIds)) {
-			PostVMLite vm = new PostVMLite(product, localUser);
-			vm.offset = product.getCreatedDate().getTime();
-			vms.add(vm);
-		}
+
+        List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.USER_LIKED);
 		return ok(Json.toJson(vms));
     }
     
@@ -778,17 +771,7 @@ public class UserController extends Controller {
             return notFound();
         }
         
-    	List<Long> postIds = CalcServer.getUserLikeFeeds(id, offset.doubleValue());
-        
-        if(postIds.size() == 0){
-			return ok(Json.toJson(postIds));
-		}
-    	List<PostVMLite> vms = new ArrayList<>();
-		for (Post product : Post.getPosts(postIds)) {
-			PostVMLite vm = new PostVMLite(product, localUser);
-			vm.offset = product.getCreatedDate().getTime();
-			vms.add(vm);
-		}
+        List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.USER_LIKED);
 		return ok(Json.toJson(vms));
     }
 }
