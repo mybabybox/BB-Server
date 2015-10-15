@@ -96,6 +96,7 @@ public class CalcServer {
 			JedisCache.cache().remove(FeedType.USER_LIKED+":"+user.id);
 			buildUserPostedQueue(user);
 			buildUserLikedPostQueue(user);
+			buildUserFollowingUserQueue(user);
 		}
 	}
 
@@ -119,11 +120,17 @@ public class CalcServer {
 			JedisCache.cache().putToSortedSet(FeedType.USER_LIKED+":"+user.id, socialRelation.getCreatedDate().getTime() , socialRelation.target.toString());
 		}
 		
-		/*
-		for (Post post : user.getUserLikedPosts()) {
-			JedisCache.cache().putToSortedSet("USER_LIKES:"+user.id, post.getCreatedDate().getTime() , post.id.toString());
+		sw.stop();
+		logger.underlyingLogger().debug("buildUserLikedPostQueue completed. Took "+sw.getElapsedSecs()+"s");
+	}
+
+	private static void buildUserFollowingUserQueue(User user) {
+		NanoSecondStopWatch sw = new NanoSecondStopWatch();
+		logger.underlyingLogger().debug("buildUserLikedPostQueue starts");
+		
+		for (SocialRelation socialRelation : FollowSocialRelation.getUserFollowings(user.id)) {
+			JedisCache.cache().putToSortedSet(FeedType.USER_FOLLOWING+":"+user.id, socialRelation.getCreatedDate().getTime() , socialRelation.target.toString());
 		}
-		*/
 		
 		sw.stop();
 		logger.underlyingLogger().debug("buildUserLikedPostQueue completed. Took "+sw.getElapsedSecs()+"s");
@@ -194,13 +201,13 @@ public class CalcServer {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
 		logger.underlyingLogger().debug("buildUserFollowingQueue starts");
 		
-		List<FollowSocialRelation> followings = FollowSocialRelation.getUserFollowings(user.id);
-		for (SocialRelation socaiRelation : followings){
-			Set<String> values = JedisCache.cache().getSortedSetDsc(FeedType.USER_POSTED+":"+socaiRelation.target, 0L);
+		List<Long> followings = getUserFollowingFeeds(user.id, 0L);
+		for (Long followingUser : followings){
+			Set<String> values = JedisCache.cache().getSortedSetDsc(FeedType.USER_POSTED+":"+followingUser, 0L);
 			for (String value : values) {
 				try {
 					Long postId = Long.parseLong(value);
-					JedisCache.cache().putToSortedSet(FeedType.HOME_FOLLOWING+":"+user.id, getScore(FeedType.USER_POSTED+":"+socaiRelation.target, postId) , postId.toString());
+					JedisCache.cache().putToSortedSet(FeedType.HOME_FOLLOWING+":"+user.id, getScore(FeedType.USER_POSTED+":"+followingUser, postId) , postId.toString());
 				} catch (Exception e) {
 				}
 			}
@@ -324,6 +331,19 @@ public class CalcServer {
 
 	}
 	
+	public static List<Long> getUserFollowingFeeds(Long id, Long offset) {
+		Set<String> values = JedisCache.cache().getSortedSetDsc(FeedType.USER_FOLLOWING+":"+id, offset);
+        final List<Long> userIds = new ArrayList<>();
+        for (String value : values) {
+            try {
+                userIds.add(Long.parseLong(value));
+            } catch (Exception e) {
+            }
+        }
+        return userIds;
+
+	}
+	
 	public static void addToQueues(Post post) {
 		calculateBaseScore(post);
 		buildPriceHighLowPostQueue(post);
@@ -357,6 +377,15 @@ public class CalcServer {
 		JedisCache.cache().removeMemberFromSortedSet(FeedType.USER_LIKED+":"+userId, postId.toString());
 	}
 
+	public static void addToFollowQueue(Long userId, Long followingUserID, Double score){
+		JedisCache.cache().putToSortedSet(FeedType.USER_FOLLOWING+":"+userId, score, followingUserID.toString());
+	}
+	
+	public static void removeFromFollowQueue(Long userId, Long followingUserID){
+		JedisCache.cache().removeMemberFromSortedSet(FeedType.USER_FOLLOWING+":"+userId, followingUserID.toString());
+	}
+
+	
 	public static void addToPostQueue(Long postId, Long userId, Double score){
 		JedisCache.cache().putToSortedSet(FeedType.USER_POSTED+":"+userId, score, postId.toString());
 	}

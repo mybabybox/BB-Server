@@ -1,7 +1,9 @@
 package babybox.events.listener;
 
+import models.Activity;
 import models.Post;
 import models.User;
+import models.Activity.ActivityType;
 import babybox.events.map.DeletePostEvent;
 import babybox.events.map.PostEvent;
 
@@ -18,6 +20,12 @@ public class PostEventListener {
 		CalcServer.addToQueues(post);
 		Long score = post.getCreatedDate().getTime();
 		CalcServer.addToPostQueue(post.id, user.id, score.doubleValue());
+		
+		// who is recipient here
+		Activity activity = new Activity();
+        activity.actor = user.id;
+        activity.actvityType = ActivityType.FOLLOWED;
+        activity.save();
     }
 	
 	@Subscribe

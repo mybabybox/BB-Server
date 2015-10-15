@@ -2,13 +2,14 @@ package babybox.events.listener;
 
 import java.util.Date;
 
+import models.Activity;
+import models.Activity.ActivityType;
 import models.Post;
 import models.User;
 import babybox.events.map.LikeEvent;
 import babybox.events.map.UnlikeEvent;
 
 import com.google.common.eventbus.Subscribe;
-
 import common.cache.CalcServer;
 
 public class LikeEventListener {
@@ -21,6 +22,12 @@ public class LikeEventListener {
 	       	Long score = new Date().getTime();		// ideally use LikeSocialRelation.CREATED_DATE
 	       	CalcServer.calculateBaseScore(post);
 	       	CalcServer.addToLikeQueue(post.id, user.id, score.doubleValue());
+	       	
+	    	Activity activity = new Activity();
+	        activity.recipient = post.owner.id;
+	        activity.actor = user.id;
+	        activity.actvityType = ActivityType.LIKED;
+	        activity.save();
        	}
     }
 	

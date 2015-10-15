@@ -180,11 +180,11 @@ public abstract class SocialRelation extends domain.Entity implements Serializab
 	
 	@Override
 	public void delete() {
-	    Notification notification = Notification.findBySocialActionId(this.id);
+	   /* Activity notification = Activity.findBySocialActionId(this.id);
         if (notification != null) {
             notification.delete();
         }
-        super.delete();
+        super.delete();*/
 	}
 	
 	@Override

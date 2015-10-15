@@ -283,7 +283,7 @@ public class ProductController extends Controller{
 			DeviceType deviceType = Application.parseDeviceType(form.get("deviceType"));
 			comment.deviceType = deviceType;
 			
-			SocialRelationHandler.recordCreateComment(comment, post);
+			SocialRelationHandler.recordCreateComment(comment, post, localUser);
 			ResponseStatusVM response = new ResponseStatusVM(SocialObjectType.COMMENT, comment.id, comment.owner.id, true);
 			return ok(Json.toJson(response));
 		} catch (SocialObjectNotCommentableException e) {

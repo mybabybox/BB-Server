@@ -203,8 +203,8 @@ public class User extends SocialObject implements Subject, Followable {
 		target.onLikedBy(this);
 	}
 
-	public void markNotificationRead(Notification notification) {
-		notification.changeStatus(1);
+	public void markNotificationRead(Activity notification) {
+		//notification.changeStatus(1);
 	}
 
 	public static User searchEmail(String email) {

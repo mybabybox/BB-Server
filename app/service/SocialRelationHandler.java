@@ -59,10 +59,11 @@ public class SocialRelationHandler {
 		EventHandler.getInstance().getEventBus().post(followEvent);
 	}
 	
-	public static void recordCreateComment(Comment comment, Post post){
+	public static void recordCreateComment(Comment comment, Post post, User localUser){
 		CommentEvent postEvent = new CommentEvent();
 		postEvent.put("comment", comment);
 		postEvent.put("post", post);
+		postEvent.put("localUser", localUser);
 		EventHandler.getInstance().getEventBus().post(postEvent);
 	}
 	

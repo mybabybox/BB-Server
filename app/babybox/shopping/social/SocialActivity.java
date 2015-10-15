@@ -1,18 +1,7 @@
 package babybox.shopping.social;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import models.CommentSocialRelation;
-import models.FollowSocialRelation;
-import models.Notification;
-import models.Notification.NotificationType;
-import models.LikeSocialRelation;
-import models.PostSocialRelation;
 import models.SocialRelation;
 import models.SocialRelation.Action;
-import models.ViewSocialRelation;
-import play.libs.Json;
 
 /**
  * Notification - Class for triggering all the different types of notifications.
