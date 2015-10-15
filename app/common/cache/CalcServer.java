@@ -29,12 +29,6 @@ public class CalcServer {
 	public static void warmUpActivity() {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
 		logger.underlyingLogger().debug("warmUpActivity starts");
-		for(Category category : Category.getAllCategories()){
-			JedisCache.cache().remove(FeedType.CATEGORY_PRICE_HIGH_LOW+":"+category.id);
-			JedisCache.cache().remove(FeedType.CATEGORY_NEWEST+":"+category.id);
-			JedisCache.cache().remove(FeedType.CATEGORY_POPULAR+":"+category.id);
-			JedisCache.cache().remove(FeedType.CATEGORY_PRICE_LOW_HIGH+":"+category.id);
-		}
 		
 		buildBaseScore();
 		buildCategoryQueue();
@@ -62,6 +56,21 @@ public class CalcServer {
 		logger.underlyingLogger().debug("warmUpActivity completed. Took "+sw.getElapsedSecs()+"s");
 	}
 
+	public static void clearCategoryQueues() {
+		for(Category category : Category.getAllCategories()){
+			JedisCache.cache().remove(getKey(FeedType.CATEGORY_PRICE_HIGH_LOW,category.id));
+			JedisCache.cache().remove(getKey(FeedType.CATEGORY_NEWEST,category.id));
+			JedisCache.cache().remove(getKey(FeedType.CATEGORY_POPULAR,category.id));
+			JedisCache.cache().remove(getKey(FeedType.CATEGORY_PRICE_LOW_HIGH,category.id));
+		}
+	}
+	
+	public static void clearUserQueues(User user) {
+		JedisCache.cache().remove(getKey(FeedType.USER_POSTED,user.id));
+		JedisCache.cache().remove(getKey(FeedType.USER_LIKED,user.id));
+		JedisCache.cache().remove(getKey(FeedType.USER_FOLLOWING,user.id));
+	}
+	
 	public static void buildBaseScore() {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
 		logger.underlyingLogger().debug("buildBaseScore starts");
@@ -98,9 +107,7 @@ public class CalcServer {
 	
 	private static void buildUserQueue() {
 		for(User user : User.getEligibleUserForFeed()){
-			JedisCache.cache().remove(FeedType.USER_POSTED+":"+user.id);
-			JedisCache.cache().remove(FeedType.USER_LIKED+":"+user.id);
-			JedisCache.cache().remove(FeedType.USER_FOLLOWING+":"+user.id);
+			clearUserQueues(user);
 			buildUserPostedQueue(user);
 			buildUserLikedPostQueue(user);
 			buildUserFollowingUserQueue(user);
@@ -112,7 +119,7 @@ public class CalcServer {
 		logger.underlyingLogger().debug("buildUserPostedQueue starts");
 		
 		for(Post post : user.getUserPosts()){
-			JedisCache.cache().putToSortedSet(FeedType.USER_POSTED+":"+user.id, post.getCreatedDate().getTime() , post.id.toString());
+			JedisCache.cache().putToSortedSet(getKey(FeedType.USER_POSTED,user.id), post.getCreatedDate().getTime() , post.id.toString());
 		}
 		
 		sw.stop();
@@ -124,7 +131,7 @@ public class CalcServer {
 		logger.underlyingLogger().debug("buildUserLikedPostQueue starts");
 		
 		for (SocialRelation socialRelation : LikeSocialRelation.getUserLikedPosts(user.id)) {
-			JedisCache.cache().putToSortedSet(FeedType.USER_LIKED+":"+user.id, socialRelation.getCreatedDate().getTime() , socialRelation.target.toString());
+			JedisCache.cache().putToSortedSet(getKey(FeedType.USER_LIKED,user.id), socialRelation.getCreatedDate().getTime() , socialRelation.target.toString());
 		}
 		
 		sw.stop();
@@ -136,7 +143,7 @@ public class CalcServer {
 		logger.underlyingLogger().debug("buildUserLikedPostQueue starts");
 		
 		for (SocialRelation socialRelation : FollowSocialRelation.getUserFollowings(user.id)) {
-			JedisCache.cache().putToSortedSet(FeedType.USER_FOLLOWING+":"+user.id, socialRelation.getCreatedDate().getTime() , socialRelation.target.toString());
+			JedisCache.cache().putToSortedSet(getKey(FeedType.USER_FOLLOWING,user.id), socialRelation.getCreatedDate().getTime() , socialRelation.target.toString());
 		}
 		
 		sw.stop();
@@ -144,7 +151,8 @@ public class CalcServer {
 	}
 
 	private static void buildCategoryQueue() {
-				for(Post post : Post.getAllPosts()){
+		clearCategoryQueues();
+		for(Post post : Post.getAllPosts()){
 			buildPriceLowHighPostQueue(post);
 			buildNewestPostQueue(post);
 			buildPopularPostQueue(post);
@@ -153,7 +161,7 @@ public class CalcServer {
 
 	private static void buildPopularPostQueue(Post post) {
 		Long timeScore = calculateTimeScore(post);
-		JedisCache.cache().putToSortedSet(FeedType.CATEGORY_POPULAR+":"+post.category.id,  timeScore, post.id.toString());
+		JedisCache.cache().putToSortedSet(getKey(FeedType.CATEGORY_POPULAR,post.category.id),  timeScore, post.id.toString());
 	}
 
 	public static Long calculateTimeScore(Post post) {
@@ -166,11 +174,11 @@ public class CalcServer {
 	}
 
 	private static void buildNewestPostQueue(Post post) {
-		JedisCache.cache().putToSortedSet(FeedType.CATEGORY_NEWEST+":"+post.category.id, post.getCreatedDate().getTime() , post.id.toString());
+		JedisCache.cache().putToSortedSet(getKey(FeedType.CATEGORY_NEWEST,post.category.id), post.getCreatedDate().getTime() , post.id.toString());
 	}
 
 	private static void buildPriceLowHighPostQueue(Post post) {
-		JedisCache.cache().putToSortedSet(FeedType.CATEGORY_PRICE_LOW_HIGH+":"+post.category.id, post.price*1000000 + post.id , post.id.toString());
+		JedisCache.cache().putToSortedSet(getKey(FeedType.CATEGORY_PRICE_LOW_HIGH,post.category.id), post.price*1000000 + post.id , post.id.toString());
 	}
 	
 	private static void buildUserExplorerFeedQueue(User user) {
@@ -179,7 +187,7 @@ public class CalcServer {
 		
 		Map<String, Long> map = user.getUserCategoriesForFeed();
 		for (Category category : Category.getAllCategories()){
-			Set<String> values = JedisCache.cache().getSortedSetDsc(FeedType.CATEGORY_POPULAR+":"+category.getId(), 0L);
+			Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.CATEGORY_POPULAR,category.id), 0L);
 			final List<Long> postIds = new ArrayList<>();
 			for (String value : values) {
 				try {
@@ -195,7 +203,7 @@ public class CalcServer {
 			Integer length =  (int) ((postsSize * percentage) / 100);
 			postIds.subList(0, length);
 			for(Long postId : postIds){
-				JedisCache.cache().putToSortedSet(FeedType.HOME_EXPLORE+":"+user.id, Math.random() * 100000000, postId.toString());
+				JedisCache.cache().putToSortedSet(getKey(FeedType.HOME_EXPLORE,user.id), Math.random() * 100000000, postId.toString());
 			}
 		}
 
@@ -209,15 +217,15 @@ public class CalcServer {
 		
 		List<Long> followings = getUserFollowingFeeds(user.id, 0L);
 		for (Long followingUser : followings){
-			Set<String> values = JedisCache.cache().getSortedSetDsc(FeedType.USER_POSTED+":"+followingUser, 0L);
+			Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.USER_POSTED,followingUser), 0L);
 			for (String value : values) {
 				try {
 					Long postId = Long.parseLong(value);
-					JedisCache.cache().putToSortedSet(FeedType.HOME_FOLLOWING+":"+user.id, getScore(FeedType.USER_POSTED+":"+followingUser, postId) , postId.toString());
+					JedisCache.cache().putToSortedSet(getKey(FeedType.HOME_FOLLOWING,user.id), getScore(getKey(FeedType.USER_POSTED, followingUser), postId) , postId.toString());
 				} catch (Exception e) {
 				}
 			}
-			JedisCache.cache().expire(FeedType.HOME_FOLLOWING+":"+user.id, 60 * 2); // expiration time 120 secs
+			JedisCache.cache().expire(getKey(FeedType.HOME_FOLLOWING,user.id), 60 * 2); // expiration time 120 secs
 		}
 
 		sw.stop();
@@ -225,17 +233,17 @@ public class CalcServer {
 	}
 	
 	public static boolean isLiked(Long userId, Long postId) {
-		 String key = FeedType.USER_LIKED+":"+userId;
+		 String key = getKey(FeedType.USER_LIKED,userId);
 	     return JedisCache.cache().isMemberOfSortedSet(key, postId.toString());
 	}
 	
 	public static boolean isFollowed(Long userId, Long followingUserId) {
-		 String key = FeedType.USER_FOLLOWING+":"+userId;
+		 String key = getKey(FeedType.USER_FOLLOWING,userId);
 	     return JedisCache.cache().isMemberOfSortedSet(key, followingUserId.toString());
 	}
 
 	public static List<Long> getCategoryPopularFeed(Long id, Double offset) {
-		Set<String> values = JedisCache.cache().getSortedSetDsc(FeedType.CATEGORY_POPULAR+":"+id, offset);
+		Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.CATEGORY_POPULAR,id), offset);
         final List<Long> postIds = new ArrayList<>();
         for (String value : values) {
             try {
@@ -247,7 +255,7 @@ public class CalcServer {
 	}
 	
 	public static List<Long> getCategoryNewestFeed(Long id, Double offset) {
-		Set<String> values = JedisCache.cache().getSortedSetDsc(FeedType.CATEGORY_NEWEST+":"+id, offset);
+		Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.CATEGORY_NEWEST,id), offset);
         final List<Long> postIds = new ArrayList<>();
         for (String value : values) {
             try {
@@ -260,7 +268,7 @@ public class CalcServer {
 	}
     
 	public static List<Long> getCategoryPriceLowHighFeed(Long id, Double offset) {
-		Set<String> values = JedisCache.cache().getSortedSetAsc(FeedType.CATEGORY_PRICE_LOW_HIGH+":"+id, offset);
+		Set<String> values = JedisCache.cache().getSortedSetAsc(getKey(FeedType.CATEGORY_PRICE_LOW_HIGH,id), offset);
         final List<Long> postIds = new ArrayList<>();
 
         for (String value : values) {
@@ -273,7 +281,7 @@ public class CalcServer {
 	}
 	
 	public static List<Long> getCategoryPriceHighLowFeed(Long id, Double offset) {
-		Set<String> values = JedisCache.cache().getSortedSetDsc(FeedType.CATEGORY_PRICE_LOW_HIGH+":"+id, offset);
+		Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.CATEGORY_PRICE_HIGH_LOW,id), offset);
         final List<Long> postIds = new ArrayList<>();
         for (String value : values) {
             try {
@@ -285,10 +293,10 @@ public class CalcServer {
 	}
 	
 	public static List<Long> getHomeExploreFeed(Long id, Double offset) {
-		if(!JedisCache.cache().exists(FeedType.HOME_EXPLORE+":"+id)){
+		if(!JedisCache.cache().exists(getKey(FeedType.HOME_EXPLORE,id))){
 			buildUserExplorerFeedQueue(User.findById(id));
 		}
-		Set<String> values = JedisCache.cache().getSortedSetDsc(FeedType.HOME_EXPLORE+":"+id, offset);
+		Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.HOME_EXPLORE,id), offset);
         final List<Long> postIds = new ArrayList<>();
         for (String value : values) {
             try {
@@ -296,16 +304,16 @@ public class CalcServer {
             } catch (Exception e) {
             }
         }
-        JedisCache.cache().expire(FeedType.HOME_EXPLORE+":"+id, 60 * 2); // expiration time 120 secs
+        JedisCache.cache().expire(getKey(FeedType.HOME_EXPLORE,id), 60 * 2); // expiration time 120 secs
         return postIds;
 
 	}
 	
 	public static List<Long> getHomeFollowingFeed(Long id, Double offset) {
-		if(!JedisCache.cache().exists(FeedType.HOME_FOLLOWING+":"+id)){
+		if(!JedisCache.cache().exists(getKey(FeedType.HOME_FOLLOWING,id))){
 			buildUserFollowingFeedQueue(User.findById(id));
 		}
-		Set<String> values = JedisCache.cache().getSortedSetDsc(FeedType.HOME_FOLLOWING+":"+id, offset);
+		Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.HOME_FOLLOWING,id), offset);
         final List<Long> postIds = new ArrayList<>();
         for (String value : values) {
             try {
@@ -318,7 +326,7 @@ public class CalcServer {
 	}
 	
 	public static List<Long> getUserPostFeeds(Long id, Double offset) {
-		Set<String> values = JedisCache.cache().getSortedSetDsc(FeedType.USER_POSTED+":"+id, offset);
+		Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.USER_POSTED,id), offset);
         final List<Long> postIds = new ArrayList<>();
         for (String value : values) {
             try {
@@ -331,7 +339,7 @@ public class CalcServer {
 	}
 	
 	public static List<Long> getUserLikeFeeds(Long id, Double offset) {
-		Set<String> values = JedisCache.cache().getSortedSetDsc(FeedType.USER_LIKED+":"+id, offset);
+		Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.USER_LIKED,id), offset);
         final List<Long> postIds = new ArrayList<>();
         for (String value : values) {
             try {
@@ -344,7 +352,7 @@ public class CalcServer {
 	}
 	
 	public static List<Long> getUserFollowingFeeds(Long id, Long offset) {
-		Set<String> values = JedisCache.cache().getSortedSetDsc(FeedType.USER_FOLLOWING+":"+id, offset);
+		Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.USER_FOLLOWING,id), offset);
         final List<Long> userIds = new ArrayList<>();
         for (String value : values) {
             try {
@@ -370,44 +378,39 @@ public class CalcServer {
 	}
 	
 	public static void removeMemberFromPriceLowHighPostQueue(Long postId, Long categoryId){
-		JedisCache.cache().removeMemberFromSortedSet(FeedType.CATEGORY_PRICE_LOW_HIGH+":"+categoryId, postId.toString());
+		JedisCache.cache().removeMemberFromSortedSet(getKey(FeedType.CATEGORY_PRICE_LOW_HIGH,categoryId), postId.toString());
 	}
 	
 	public static void removeMemberFromNewestPostQueue(Long postId, Long categoryId){
-		JedisCache.cache().removeMemberFromSortedSet(FeedType.CATEGORY_NEWEST+":"+categoryId, postId.toString());
+		JedisCache.cache().removeMemberFromSortedSet(getKey(FeedType.CATEGORY_NEWEST,categoryId), postId.toString());
 	}
 
 	public static void removeMemberFromPopularPostQueue(Long postId, Long categoryId){
-		JedisCache.cache().removeMemberFromSortedSet(FeedType.CATEGORY_POPULAR+":"+categoryId, postId.toString());
+		JedisCache.cache().removeMemberFromSortedSet(getKey(FeedType.CATEGORY_POPULAR,categoryId), postId.toString());
 	}
 	
 	public static void addToLikeQueue(Long postId, Long userId, Double score){
-		JedisCache.cache().putToSortedSet(FeedType.USER_LIKED+":"+userId, score, postId.toString());
+		JedisCache.cache().putToSortedSet(getKey(FeedType.USER_LIKED,userId), score, postId.toString());
 	}
 	
 	public static void removeFromLikeQueue(Long postId, Long userId){
-		JedisCache.cache().removeMemberFromSortedSet(FeedType.USER_LIKED+":"+userId, postId.toString());
+		JedisCache.cache().removeMemberFromSortedSet(getKey(FeedType.USER_LIKED,userId), postId.toString());
 	}
 
 	public static void addToFollowQueue(Long userId, Long followingUserID, Double score){
-		JedisCache.cache().putToSortedSet(FeedType.USER_FOLLOWING+":"+userId, score, followingUserID.toString());
+		JedisCache.cache().putToSortedSet(getKey(FeedType.USER_FOLLOWING,userId), score, followingUserID.toString());
 	}
 	
 	public static void removeFromFollowQueue(Long userId, Long followingUserID){
-		JedisCache.cache().removeMemberFromSortedSet(FeedType.USER_FOLLOWING+":"+userId, followingUserID.toString());
+		JedisCache.cache().removeMemberFromSortedSet(getKey(FeedType.USER_FOLLOWING,userId), followingUserID.toString());
 	}
 
-	
 	public static void addToPostQueue(Long postId, Long userId, Double score){
-		JedisCache.cache().putToSortedSet(FeedType.USER_POSTED+":"+userId, score, postId.toString());
+		JedisCache.cache().putToSortedSet(getKey(FeedType.USER_POSTED,userId), score, postId.toString());
 	}
 	
 	public static void removeFromPostQueue(Long postId, Long userId){
-		JedisCache.cache().removeMemberFromSortedSet(FeedType.USER_POSTED+":"+userId, postId.toString());
-	}
-	
-	public static Double getScore(String key, Long postId){
-		return JedisCache.cache().getScore(key, postId.toString());
+		JedisCache.cache().removeMemberFromSortedSet(getKey(FeedType.USER_POSTED,userId), postId.toString());
 	}
 
 	/**
@@ -425,5 +428,17 @@ public class CalcServer {
 	 */
 	public static void removeFromUserFeeds(Long postId, Long userId) {
 		
+	}
+	
+	public static Double getScore(String key, Long postId){
+		return JedisCache.cache().getScore(key, postId.toString());
+	}
+	
+	public static String getKey(FeedType feedType, Long keyId) {
+		// Only 1 queue CATEGORY_PRICE_LOW_HIGH
+		if (FeedType.CATEGORY_PRICE_HIGH_LOW.equals(feedType)) {
+			feedType = FeedType.CATEGORY_PRICE_LOW_HIGH;
+		}
+		return feedType+":"+keyId;
 	}
 }
