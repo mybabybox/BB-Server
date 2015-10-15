@@ -732,7 +732,7 @@ public class UserController extends Controller {
             return notFound();
         }
         
-    	List<FollowSocialRelation> followings = FollowSocialRelation.getUserFollowings(id);
+    	List<FollowSocialRelation> followings = FollowSocialRelation.getUserFollowings(id, offset);
     	List<UserVMLite> userFollowings = new ArrayList<UserVMLite>();
     	
     	for (SocialRelation socialRelation : followings) {
@@ -751,7 +751,7 @@ public class UserController extends Controller {
             return notFound();
         }
         
-    	List<FollowSocialRelation> followings = FollowSocialRelation.getUserFollowers(id);
+    	List<FollowSocialRelation> followings = FollowSocialRelation.getUserFollowers(id, offset);
     	List<UserVMLite> userFollowers = new ArrayList<UserVMLite>();
     	
     	for(SocialRelation socialRelation : followings){

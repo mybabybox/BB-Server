@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
+import domain.DefaultValues;
 import domain.SocialObjectType;
 import play.db.jpa.JPA;
 
@@ -60,6 +62,21 @@ public class FollowSocialRelation extends SocialRelation {
     	return new ArrayList<>();
 	}
 	
+	public static List<FollowSocialRelation> getUserFollowings(Long id, Long offset) {
+		Query q = JPA.em().createQuery(
+				"Select sr from FollowSocialRelation sr where actor = ?1 and actorType = ?2 and targetType = ?3");
+		q.setParameter(1, id);
+		q.setParameter(2, SocialObjectType.USER);
+		q.setParameter(3, SocialObjectType.USER);
+		try {
+			q.setFirstResult((int) (offset * DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT));
+			q.setMaxResults(DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT);
+			return (List<FollowSocialRelation>) q.getResultList();
+		} catch (NoResultException e) {
+			return new ArrayList<>();
+		}
+	}
+	
 	public static List<FollowSocialRelation> getUserFollowers(Long id) {
 		Query q = JPA.em().createQuery(
 				"Select sr from FollowSocialRelation sr where target = ?1 and actorType = ?2 and targetType = ?3");
@@ -70,5 +87,20 @@ public class FollowSocialRelation extends SocialRelation {
 			return q.getResultList(); 
 		}
     	return new ArrayList<>();
+	}
+	
+	public static List<FollowSocialRelation> getUserFollowers(Long id, Long offset) {
+		Query q = JPA.em().createQuery(
+				"Select sr from FollowSocialRelation sr where target = ?1 and actorType = ?2 and targetType = ?3");
+		q.setParameter(1, id);
+		q.setParameter(2, SocialObjectType.USER);
+		q.setParameter(3, SocialObjectType.USER);
+		try {
+			q.setFirstResult((int) (offset * DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT));
+			q.setMaxResults(DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT);
+			return (List<FollowSocialRelation>) q.getResultList();
+		} catch (NoResultException e) {
+			return new ArrayList<>();
+		}
 	}
 }
