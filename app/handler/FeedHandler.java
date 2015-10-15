@@ -17,7 +17,7 @@ public class FeedHandler {
 		List<Long> postIds = new ArrayList<>();
 		switch (feedType) {
 			case HOME_EXPLORE:
-				postIds = CalcServer.getHomeExploreFeed(id, offset.doubleValue()));
+				postIds = CalcServer.getHomeExploreFeed(id, offset.doubleValue());
 				break;
 				
 			case HOME_FOLLOWING:

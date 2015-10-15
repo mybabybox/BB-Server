@@ -190,7 +190,6 @@ public class CalcServer {
 			for(Long postId : postIds){
 				JedisCache.cache().putToSortedSet(FeedType.HOME_EXPLORE+":"+user.id, Math.random() , postId.toString());
 			}
-			JedisCache.cache().expire(FeedType.HOME_EXPLORE+":"+user.id, 60 * 2); // expiration time 120 secs
 		}
 
 		sw.stop();
@@ -290,6 +289,7 @@ public class CalcServer {
             } catch (Exception e) {
             }
         }
+        JedisCache.cache().expire(FeedType.HOME_EXPLORE+":"+id, 60 * 2); // expiration time 120 secs
         return postIds;
 
 	}
