@@ -102,7 +102,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		this.postType = PostType.PRODUCT;
 		this.objectType = SocialObjectType.POST;
 	}
-
+	
 	@Override
 	public boolean onLikedBy(User user) {
 		if (!isLikedBy(user)) {
@@ -250,6 +250,12 @@ public class Post extends SocialObject implements Likeable, Commentable {
         this.numComments--;
 	}
 
+	public boolean onSold(User user) {
+		this.sold = true;
+		this.save();
+		return true;
+	}
+	
 	public boolean onView(User user) {
 		boolean viewed = recordView(user);
 		if (viewed) {

@@ -1016,7 +1016,7 @@ public class User extends SocialObject implements Subject, Followable {
 
 
 	@Override
-	public void onFollow(User user) {
+	public boolean onFollow(User user) {
 		if (logger.underlyingLogger().isDebugEnabled()) {
 			logger.underlyingLogger().debug("[localUser="+this.id+"][u="+user.id+"] User onFollow");
 		}
@@ -1029,11 +1029,13 @@ public class User extends SocialObject implements Subject, Followable {
 			} else {
 				logger.underlyingLogger().debug(String.format("User [u=%d] already followed User [u=%d]", this.id, user.id));
 			}
+			return followed;
 		}
+		return false;
 	}
 
 	@Override
-	public void onUnFollow(User user) {
+	public boolean onUnFollow(User user) {
 		if (logger.underlyingLogger().isDebugEnabled()) {
 			logger.underlyingLogger().debug("[localUser="+this.id+"][u="+user.id+"] User onUnFollow");
 		}
@@ -1048,7 +1050,9 @@ public class User extends SocialObject implements Subject, Followable {
 			} else {
 				logger.underlyingLogger().debug(String.format("User [u=%d] already unfollowed User [u=%d]", this.id, user.id));
 			}
+			return unfollowed;
 		}
+		return false;
 	}
 
 	@JsonIgnore

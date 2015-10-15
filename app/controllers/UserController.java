@@ -717,7 +717,7 @@ public class UserController extends Controller {
             return notFound();
         }
         
-        SocialRelationHandler.recordOnFollowUser(localUser, User.findById(id));
+        SocialRelationHandler.recordFollowUser(localUser, User.findById(id));
 		return ok();
     }
     
@@ -729,7 +729,7 @@ public class UserController extends Controller {
             return notFound();
         }
         
-        SocialRelationHandler.recordOnUnFollowUser(localUser, User.findById(id));
+        SocialRelationHandler.recordUnFollowUser(localUser, User.findById(id));
 		return ok();
     }
     

@@ -229,7 +229,7 @@ public class ProductController extends Controller{
         }
 		
 		Post post = Post.findById(id);
-		SocialRelationHandler.recordLikeOnPost(post, localUser);
+		SocialRelationHandler.recordLikePost(post, localUser);
 		return ok();
 	}
 
@@ -242,7 +242,7 @@ public class ProductController extends Controller{
         }
 		
 		Post post = Post.findById(id); 
-		SocialRelationHandler.recordUnLikeOnPost(post, localUser);
+		SocialRelationHandler.recordUnLikePost(post, localUser);
 		return ok();
 	}
 
@@ -256,9 +256,7 @@ public class ProductController extends Controller{
 		
 		Post post = Post.findById(id);
 		if (post.owner.id == localUser.id || localUser.isSuperAdmin()) {
-			post.sold = true;
-			post.save();
-			CalcServer.removeFromCategoryFeeds(post.id);
+			SocialRelationHandler.recordSoldPost(post, localUser);
 		}
 		return ok();
 	}
@@ -283,7 +281,7 @@ public class ProductController extends Controller{
 			DeviceType deviceType = Application.parseDeviceType(form.get("deviceType"));
 			comment.deviceType = deviceType;
 			
-			SocialRelationHandler.recordCommentOnPost(comment, post);
+			SocialRelationHandler.recordCreateComment(comment, post);
 			ResponseStatusVM response = new ResponseStatusVM(SocialObjectType.COMMENT, comment.id, comment.owner.id, true);
 			return ok(Json.toJson(response));
 		} catch (SocialObjectNotCommentableException e) {
@@ -327,7 +325,7 @@ public class ProductController extends Controller{
 	                localUser.isSuperAdmin()) {
 	        	Post post = Post.findById(comment.socialObject);
 	            post.onDeleteComment(localUser, comment);
-	            SocialRelationHandler.recordOnDeleteComment(comment, post);
+	            SocialRelationHandler.recordDeleteComment(comment, post);
 	            return ok();
 	        }
         } catch (SocialObjectNotCommentableException e) {
@@ -344,7 +342,7 @@ public class ProductController extends Controller{
 		}
 		
 		Post post = Post.findById(id);
-		SocialRelationHandler.recordViewOnPost(post, localUser);
+		SocialRelationHandler.recordViewPost(post, localUser);
 		return ok();
 	}
 	

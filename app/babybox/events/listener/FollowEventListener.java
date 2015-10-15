@@ -12,13 +12,17 @@ public class FollowEventListener {
     public void recordFollowEventInDB(FollowEvent map){
 		User localUser = (User) map.get("localUser");
 		User user = (User) map.get("user");
-		localUser.onFollow(user);
+		if (localUser.onFollow(user)) {
+			// do something
+		}
     }
 	
 	@Subscribe
     public void recordUnFollowEventInDB(UnFollowEvent map){
 		User localUser = (User) map.get("localUser");
 		User user = (User) map.get("user");
-		localUser.onUnFollow(user);
+		if (localUser.onUnFollow(user)) {
+			// do something
+		}
     }
 }
