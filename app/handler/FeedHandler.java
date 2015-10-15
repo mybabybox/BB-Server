@@ -17,11 +17,11 @@ public class FeedHandler {
 		List<Long> postIds = new ArrayList<>();
 		switch (feedType) {
 			case HOME_EXPLORE:
-				postIds = CalcServer.getHomeExploreFeed(id, offset);
+				postIds = CalcServer.getHomeExploreFeed(id, offset.doubleValue()));
 				break;
 				
 			case HOME_FOLLOWING:
-				postIds = CalcServer.getHomeFollowingFeed(id, offset);
+				postIds = CalcServer.getHomeFollowingFeed(id, offset.doubleValue());
 				break;
 		
 			case CATEGORY_POPULAR:
@@ -63,6 +63,7 @@ public class FeedHandler {
 		List<Post> posts =  Post.getPosts(postIds);
 		for(Post post : posts) {
 			PostVMLite vm = new PostVMLite(post, localUser);
+			//TODO: offset is bad name , need to change it to proper name.
 			vm.offset = CalcServer.getScore(feedType+":"+id, post.id).longValue();
 			vms.add(vm);
 		}

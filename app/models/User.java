@@ -55,6 +55,7 @@ import com.feth.play.module.pa.user.EmailIdentity;
 import com.feth.play.module.pa.user.FirstLastNameIdentity;
 import com.google.common.base.Strings;
 
+import common.cache.CalcServer;
 import common.collection.Pair;
 import common.image.FaceFinder;
 import common.utils.DateTimeUtil;
@@ -1062,6 +1063,7 @@ public class User extends SocialObject implements Subject, Followable {
 	
 	@JsonIgnore
 	public boolean isFollowedBy(User user) {
+		CalcServer.isFollowed(user.id, this.id);
 		return FollowSocialRelation.isFollowing(user.id, SocialObjectType.USER, this.id, SocialObjectType.USER);
 	}
 

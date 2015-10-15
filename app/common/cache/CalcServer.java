@@ -222,6 +222,11 @@ public class CalcServer {
 		 String key = FeedType.USER_LIKED+":"+userId;
 	     return JedisCache.cache().isMemberOfSortedSet(key, postId.toString());
 	}
+	
+	public static boolean isFollowed(Long userId, Long followingUserId) {
+		 String key = FeedType.USER_FOLLOWING+":"+userId;
+	     return JedisCache.cache().isMemberOfSortedSet(key, followingUserId.toString());
+	}
 
 	public static List<Long> getCategoryPopularFeed(Long id, Double offset) {
 		Set<String> values = JedisCache.cache().getSortedSetDsc(FeedType.CATEGORY_POPULAR+":"+id, offset);
@@ -273,7 +278,7 @@ public class CalcServer {
         return postIds;
 	}
 	
-	public static List<Long> getHomeExploreFeed(Long id, Long offset) {
+	public static List<Long> getHomeExploreFeed(Long id, Double offset) {
 		if(!JedisCache.cache().exists(FeedType.HOME_EXPLORE+":"+id)){
 			buildUserExplorerFeedQueue(User.findById(id));
 		}
@@ -289,7 +294,7 @@ public class CalcServer {
 
 	}
 	
-	public static List<Long> getHomeFollowingFeed(Long id, Long offset) {
+	public static List<Long> getHomeFollowingFeed(Long id, Double offset) {
 		if(!JedisCache.cache().exists(FeedType.HOME_FOLLOWING+":"+id)){
 			buildUserFollowingFeedQueue(User.findById(id));
 		}
