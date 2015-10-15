@@ -402,7 +402,7 @@ public class ProductController extends Controller{
 			return notFound();
 		}
 		
-		List<PostVMLite> vms = FeedHandler.getPostVM(localUser.id, offset * DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT, localUser, FeedType.HOME_EXPLORE);
+		List<PostVMLite> vms = FeedHandler.getPostVM(localUser.id, offset, localUser, FeedType.HOME_EXPLORE);
 		return ok(Json.toJson(vms));
 	}
 	
@@ -413,7 +413,7 @@ public class ProductController extends Controller{
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
 			return notFound();
 		}
-		List<PostVMLite> vms = FeedHandler.getPostVM(localUser.id, offset * DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT, localUser, FeedType.HOME_FOLLOWING);
+		List<PostVMLite> vms = FeedHandler.getPostVM(localUser.id, offset, localUser, FeedType.HOME_FOLLOWING);
 		return ok(Json.toJson(vms));
 	}
 	

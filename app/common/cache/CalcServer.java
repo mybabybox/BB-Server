@@ -29,6 +29,12 @@ public class CalcServer {
 	public static void warmUpActivity() {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
 		logger.underlyingLogger().debug("warmUpActivity starts");
+		for(Category category : Category.getAllCategories()){
+			JedisCache.cache().remove(FeedType.CATEGORY_PRICE_HIGH_LOW+":"+category.id);
+			JedisCache.cache().remove(FeedType.CATEGORY_NEWEST+":"+category.id);
+			JedisCache.cache().remove(FeedType.CATEGORY_POPULAR+":"+category.id);
+			JedisCache.cache().remove(FeedType.CATEGORY_PRICE_LOW_HIGH+":"+category.id);
+		}
 		
 		buildBaseScore();
 		buildCategoryQueue();
@@ -94,6 +100,7 @@ public class CalcServer {
 		for(User user : User.getEligibleUserForFeed()){
 			JedisCache.cache().remove(FeedType.USER_POSTED+":"+user.id);
 			JedisCache.cache().remove(FeedType.USER_LIKED+":"+user.id);
+			JedisCache.cache().remove(FeedType.USER_FOLLOWING+":"+user.id);
 			buildUserPostedQueue(user);
 			buildUserLikedPostQueue(user);
 			buildUserFollowingUserQueue(user);
@@ -188,7 +195,7 @@ public class CalcServer {
 			Integer length =  (int) ((postsSize * percentage) / 100);
 			postIds.subList(0, length);
 			for(Long postId : postIds){
-				JedisCache.cache().putToSortedSet(FeedType.HOME_EXPLORE+":"+user.id, Math.random() , postId.toString());
+				JedisCache.cache().putToSortedSet(FeedType.HOME_EXPLORE+":"+user.id, Math.random() * 100000000, postId.toString());
 			}
 		}
 
