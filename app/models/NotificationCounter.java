@@ -35,6 +35,10 @@ public class NotificationCounter extends domain.Entity implements Serializable, 
 	public Boolean deleted = false;
 	
 	public NotificationCounter() {
+    }
+	
+	public NotificationCounter(Long userId) {
+	    this.userId = userId;
 	}
 	
 	public static NotificationCounter getNotificationCounter(Long userId) {
@@ -44,7 +48,7 @@ public class NotificationCounter extends domain.Entity implements Serializable, 
 		try {
             return (NotificationCounter) q.getSingleResult();
         } catch (NoResultException e) {
-            return null;
+            return new NotificationCounter(userId);
         }
 	}
 	
