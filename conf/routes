@@ -126,6 +126,8 @@ GET     /get-user-liked-feed/:id/:offset			controllers.UserController.getUserLik
 GET     /notification-counter                       controllers.UserController.getNotificationCounter
 GET     /read-activities-count                      controllers.UserController.readActivitiesCount
 GET     /read-conversations-count                   controllers.UserController.readConversationsCount
+GET		/get-all-activities/:offset							controllers.UserController.getAllActivities(offset :Long)
+GET		/mark-viewed/:id							controllers.UserController.markViewed(id :Long)
 
 # image upload
 POST    /image/upload-profile-photo                 controllers.UserController.uploadProfilePhoto

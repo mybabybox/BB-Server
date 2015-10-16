@@ -29,7 +29,7 @@ public class PostEventListener {
 				user.displayName,
 				post.id,
 				StringUtil.shortMessage(post.title));
-        activity.save();
+        activity.ensureUniqueAndCreate();
     }
 	
 	@Subscribe

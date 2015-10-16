@@ -8,10 +8,12 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import models.Activity;
 import models.Collection;
 import models.Conversation;
 import models.Emoticon;
@@ -36,6 +38,7 @@ import play.mvc.Http;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
 import service.SocialRelationHandler;
+import viewmodel.ActivityVM;
 import viewmodel.CollectionVM;
 import viewmodel.ConversationVM;
 import viewmodel.EmoticonVM;
@@ -837,4 +840,38 @@ public class UserController extends Controller {
         NotificationCounter.readConversationsCount(localUser.id);
         return ok();
     }
+    
+    @Transactional
+    public static Result getAllActivities(long offset){
+    	User localUser = Application.getLocalUser(session());
+    	if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+    	
+    	List<Activity> activities = Activity.getAllActivities(localUser.id, offset);
+    	List<ActivityVM> vms = new ArrayList<>();
+		for(Activity activity : activities){
+			ActivityVM vm = new ActivityVM(activity);
+			vms.add(vm);
+		}
+		return ok(Json.toJson(vms));
+	}
+    
+    @Transactional
+    public static Result markViewed(Long id){
+    	User localUser = Application.getLocalUser(session());
+    	if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+    	
+    	Activity activity = Activity.findById(id);
+    	if(activity.userId == localUser.id){
+    		activity.setViewed(true);
+    		activity.setUpdatedDate(new Date());
+    		activity.merge();
+    	}
+		return ok();
+	}
 }

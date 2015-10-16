@@ -1,6 +1,7 @@
 import java.util.Arrays;
 import java.util.Date;
 
+import models.Activity;
 import models.SecurityRole;
 import models.SecurityRole.RoleType;
 import models.User;
@@ -150,24 +151,23 @@ public class Global extends GlobalSettings {
         );
         */
     	
-        // schedule to purge notifications daily at 4:00am HKT
-    	/*
-        JobScheduler.getInstance().schedule("purgeNotification", "0 00 4 ? * *",
+        // schedule to purge Activity daily at 4:00am HKT
+        JobScheduler.getInstance().schedule("purgeActivity", "0 00 4 ? * *",
             new Runnable() {
                 public void run() {
                     try {
                        JPA.withTransaction(new play.libs.F.Callback0() {
                             public void invoke() {
-                            	Notification.purgeNotification();
+                            	Activity.purgeActivity();
                             }
                         });
                     } catch (Exception e) {
-                        logger.underlyingLogger().error("Error in purgeNotification", e);
+                        logger.underlyingLogger().error("Error in purgeActivity", e);
                     }
                 }
             }
         );
-		*/
+		
 
         // schedule to check command every 2 min.
         JobScheduler.getInstance().schedule("commandCheck", 120000,

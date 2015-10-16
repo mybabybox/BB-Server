@@ -35,6 +35,8 @@ public class DefaultValues {
 
     public static final String GOOGLEMAP_PREFIX = "http://maps.google.com.hk/maps?q=";
 
+	public static final int ACTIVITY_COUNT = 10;
+
     static {
         init();
     }

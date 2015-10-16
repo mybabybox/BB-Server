@@ -29,7 +29,7 @@ public class CommentEventListener {
 				user.name,
 				comment.id,
 				StringUtil.shortMessage(comment.body));
-        activity.save();
+        activity.ensureUniqueAndCreate();
 	}
 	
 	@Subscribe

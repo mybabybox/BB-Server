@@ -31,7 +31,7 @@ public class FollowEventListener {
 					localUser.displayName,
 					user.id,
 					user.displayName);
-			activity.save();
+			activity.ensureUniqueAndCreate();
 		}
     }
 	
