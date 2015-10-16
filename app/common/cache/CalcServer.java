@@ -19,13 +19,15 @@ import models.User;
 import common.model.FeedFilter.FeedType;
 import common.thread.ThreadLocalOverride;
 import common.utils.NanoSecondStopWatch;
+import domain.DefaultValues;
 
 public class CalcServer {
 	private static play.api.Logger logger = play.api.Logger.apply(CalcServer.class);
 	
-	private static final Long FEED_HOME_COUNT_MAX = Play.application().configuration().getLong("feed.home.count.max");
-	private static final Long FEED_CATEGORY_EXPOSURE_MIN = Play.application().configuration().getLong("feed.category.exposure.min");
-	private static final int FEED_EXPIRY = Play.application().configuration().getInt("feed.expiry");
+	public static final Long FEED_HOME_COUNT_MAX = Play.application().configuration().getLong("feed.home.count.max");
+	public static final Long FEED_CATEGORY_EXPOSURE_MIN = Play.application().configuration().getLong("feed.category.exposure.min");
+	public static final int FEED_EXPIRY = Play.application().configuration().getInt("feed.expiry");
+	public static final int FEED_RETRIEVAL_COUNT = DefaultValues.FEED_INFINITE_SCROLL_COUNT;
 	
 	public static void warmUpActivity() {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();

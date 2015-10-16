@@ -7,6 +7,7 @@ import org.joda.time.DateTime;
 
 public class DefaultValues {
 	public static final int DEFAULT_INFINITE_SCROLL_COUNT = 10;
+	public static final int FEED_INFINITE_SCROLL_COUNT = 10;
 	
 	public static final int MAX_POST_IMAGES = 4;
 	public static final int MAX_MESSAGE_IMAGES = 1;
@@ -34,8 +35,6 @@ public class DefaultValues {
     public static final int CHILD_YEAR_MAX_AGE = 14;
 
     public static final String GOOGLEMAP_PREFIX = "http://maps.google.com.hk/maps?q=";
-
-	public static final int ACTIVITY_COUNT = 10;
 
     static {
         init();

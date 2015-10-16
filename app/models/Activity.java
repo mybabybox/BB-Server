@@ -154,11 +154,6 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 		q.setParameter(3, this.target);
 		q.setParameter(4, this.targetType);
 		q.setParameter(5, this.userId);
-		System.out.println("this.actor :: "+this.actor);
-		System.out.println("this.actorType :: "+this.actorType);
-		System.out.println("this.target :: "+this.target);
-		System.out.println("this.targetType :: "+this.targetType);
-		System.out.println("this.userId :: "+this.userId);
 		try {
 			Activity activity = (Activity) q.getSingleResult();
 			return activity;
@@ -187,8 +182,8 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 		}
 
 		Query q = JPA.em().createQuery("SELECT a FROM Activity a where userId = ? and deleted = false");
-		q.setFirstResult((int) (offset * DefaultValues.ACTIVITY_COUNT));
-		q.setMaxResults(DefaultValues.ACTIVITY_COUNT);
+		q.setFirstResult((int) (offset * DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT));
+		q.setMaxResults(DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT);
 		q.setParameter(1, userId);
 		try {
 			return (List<Activity>) q.getResultList();

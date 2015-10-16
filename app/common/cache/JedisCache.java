@@ -189,7 +189,7 @@ public class JedisCache {
         Jedis j = null;
         try {
             j = getResource();
-			return j.zrangeByScore(key, ++min, 99999999999999999999.9, 0, DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT);
+			return j.zrangeByScore(key, ++min, 99999999999999999999.9, 0, CalcServer.FEED_RETRIEVAL_COUNT);
         } finally {
             returnResource(j);
         }
@@ -202,7 +202,7 @@ public class JedisCache {
             if(max == 0){
             	max = 999999999999999999999.9;
             }
-            return j.zrevrangeByScore(key, --max, 0, 0, DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT); 
+            return j.zrevrangeByScore(key, --max, 0, 0, CalcServer.FEED_RETRIEVAL_COUNT); 
         } finally {
         	returnResource(j);
         }
