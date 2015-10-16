@@ -124,11 +124,23 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		if (this.user1 == sender) {
 			setReadDate(this.user1);
 			this.user2NumMessages++;
+			
+			// first message, increment conversationsCount for receiver
+			if (this.user2NumMessages == 1) {
+				NotificationCounter.incrementConversationsCount(this.user2.id);
+			}
 		} else {
 			setReadDate(this.user2);
 			this.user1NumMessages++;
+			
+			// first message, increment conversationsCount for receiver
+			if (this.user2NumMessages == 1) {
+			    NotificationCounter.incrementConversationsCount(this.user1.id);
+			}
 		}
 		this.save();
+		
+		NotificationCounter.incrementConversationsCount(message.receiver().id);
 		
 		return message;
 	}
@@ -275,7 +287,11 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	public static Conversation findById(Long id) {
 		Query q = JPA.em().createQuery("SELECT c FROM Conversation c where id = ?1 and deleted = 0");
         q.setParameter(1, id);
-        return (Conversation) q.getSingleResult();
+        try {
+            return (Conversation) q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
 	}
 
 	public boolean isReadBy(User user) {
@@ -328,28 +344,44 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		logger.underlyingLogger().debug("[conv="+this.id+"][u="+user.id+"] setReadTime");
 		
 		if (this.user1 == user) {
+		    // unread messages, decrement conversationsCount
+		    if (this.user1NumMessages > 0) {
+		        NotificationCounter.decrementConversationsCount(user1.id);
+		    }
+		    
             this.user1ReadDate = new Date();
             this.user1NumMessages = 0;
 	    } else {
+	        // unread messages, decrement conversationsCount
+            if (this.user2NumMessages > 0) {
+                NotificationCounter.decrementConversationsCount(user2.id);
+            }
+            
             this.user2ReadDate = new Date();
             this.user2NumMessages = 0;
 	    }
-		
-		NotificationCounter.decrementConversationsCount(user.id);
 	}
 	
 	private void setArchiveDate(User user){
 		logger.underlyingLogger().debug("[conv="+this.id+"][u="+user.id+"] setArchiveTime");
 		
-	    if (this.user1 == user) {
+		if (this.user1 == user) {
+		    // unread messages, decrement conversationsCount
+            if (this.user1NumMessages > 0) {
+                NotificationCounter.decrementConversationsCount(user1.id);
+            }
+            
             this.user1ArchiveDate = new Date();
             this.user1NumMessages = 0;
 	    } else {
+	        // unread messages, decrement conversationsCount
+            if (this.user2NumMessages > 0) {
+                NotificationCounter.decrementConversationsCount(user2.id);
+            }
+            
             this.user2ArchiveDate = new Date();
             this.user2NumMessages = 0;
 	    }
-	    
-	    NotificationCounter.decrementConversationsCount(user.id);
 	    
 	    if (isArchivedByBoth()) {
 	    	markDelete();

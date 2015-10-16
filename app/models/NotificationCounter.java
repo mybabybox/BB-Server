@@ -42,10 +42,10 @@ public class NotificationCounter extends domain.Entity implements Serializable, 
 		q.setParameter(1, userId);
 		
 		try {
-			return (NotificationCounter)q.getResultList();
-		} catch (NoResultException e) {
-			return new NotificationCounter();
-		}
+            return (NotificationCounter) q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
 	}
 	
 	public static void readActivitiesCount(Long userId) {
