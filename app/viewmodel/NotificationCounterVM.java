@@ -7,14 +7,14 @@ import models.NotificationCounter;
 public class NotificationCounterVM {
 	@JsonProperty("id") public Long id;
 	@JsonProperty("userId") public Long userId;
-	@JsonProperty("activities") public Long activities;
-	@JsonProperty("conversations") public Long conversations;
+	@JsonProperty("activitiesCount") public Long activitiesCount;
+	@JsonProperty("conversationsCount") public Long conversationsCount;
 
     public NotificationCounterVM(NotificationCounter counter) {
         this.id = counter.id;
         this.userId = counter.userId;
-        this.activities = counter.activities;
-        this.conversations = counter.conversations;
+        this.activitiesCount = counter.activitiesCount;
+        this.conversationsCount = counter.conversationsCount;
     }
 
     public Long getId() {
@@ -33,19 +33,19 @@ public class NotificationCounterVM {
 		this.userId = userId;
 	}
 
-	public Long getActivities() {
-		return activities;
+	public Long getActivitiesCount() {
+		return activitiesCount;
 	}
 
-	public void setActivities(Long activities) {
-		this.activities = activities;
+	public void setActivitiesCount(Long activitiesCount) {
+		this.activitiesCount = activitiesCount;
 	}
 
-	public Long getConversations() {
-		return conversations;
+	public Long getConversationsCount() {
+		return conversationsCount;
 	}
 
-	public void setConversations(Long conversations) {
-		this.conversations = conversations;
+	public void setConversationsCount(Long conversationsCount) {
+		this.conversationsCount = conversationsCount;
 	}
 }

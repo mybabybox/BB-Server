@@ -28,27 +28,13 @@ public class NotificationCounter extends domain.Entity implements Serializable, 
 	@Required
 	public Long userId;
 	 
-	public Long activities = 0L;
+	public Long activitiesCount = 0L;
 	
-	public Long conversations = 0L;
+	public Long conversationsCount = 0L;
 		
 	public Boolean deleted = false;
 	
 	public NotificationCounter() {
-	}
-	
-	public static void readActivityCounter(Long userId) {
-		NotificationCounter counter = getNotificationCounter(userId);
-		if (counter != null) {
-			counter.activities = 0L;
-		}
-	}
-	
-	public static void readConversationCounter(Long userId) {
-		NotificationCounter counter = getNotificationCounter(userId);
-		if (counter != null) {
-			counter.conversations = 0L;
-		}
 	}
 	
 	public static NotificationCounter getNotificationCounter(Long userId) {
@@ -59,6 +45,54 @@ public class NotificationCounter extends domain.Entity implements Serializable, 
 			return (NotificationCounter)q.getResultList();
 		} catch (NoResultException e) {
 			return new NotificationCounter();
+		}
+	}
+	
+	public static void readActivitiesCount(Long userId) {
+		NotificationCounter counter = getNotificationCounter(userId);
+		if (counter != null) {
+			counter.activitiesCount = 0L;
+			counter.save();
+		}
+	}
+	
+	public static void readConversationsCount(Long userId) {
+		NotificationCounter counter = getNotificationCounter(userId);
+		if (counter != null) {
+			counter.conversationsCount = 0L;
+			counter.save();
+		}
+	}
+	
+	public static void incrementActivitiesCount(Long userId) {
+		NotificationCounter counter = NotificationCounter.getNotificationCounter(userId);
+		if (counter != null) {
+			counter.activitiesCount++;
+			counter.save();
+		}
+	}
+	
+	public static void decrementActivitiesCount(Long userId) {
+		NotificationCounter counter = NotificationCounter.getNotificationCounter(userId);
+		if (counter != null && counter.activitiesCount > 0) {
+			counter.activitiesCount--;
+			counter.save();
+		}
+	}
+	
+	public static void incrementConversationsCount(Long userId) {
+		NotificationCounter counter = NotificationCounter.getNotificationCounter(userId);
+		if (counter != null) {
+			counter.conversationsCount++;
+			counter.save();
+		}
+	}
+	
+	public static void decrementConversationsCount(Long userId) {
+		NotificationCounter counter = NotificationCounter.getNotificationCounter(userId);
+		if (counter != null && counter.conversationsCount > 0) {
+			counter.conversationsCount--;
+			counter.save();
 		}
 	}
 	

@@ -815,26 +815,26 @@ public class UserController extends Controller {
     }
     
     @Transactional
-    public static Result readActivityCounter() {
+    public static Result readActivitiesCount() {
     	final User localUser = Application.getLocalUser(session());
         if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
             return notFound();
         }
         
-        NotificationCounter.readActivityCounter(localUser.id);
+        NotificationCounter.readActivitiesCount(localUser.id);
         return ok();
     }
     
     @Transactional
-    public static Result readConversationCounter() {
+    public static Result readConversationsCount() {
     	final User localUser = Application.getLocalUser(session());
         if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
             return notFound();
         }
         
-        NotificationCounter.readConversationCounter(localUser.id);
+        NotificationCounter.readConversationsCount(localUser.id);
         return ok();
     }
 }

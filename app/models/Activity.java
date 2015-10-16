@@ -1,6 +1,7 @@
 package models;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -92,14 +93,24 @@ public class Activity extends domain.Entity implements Serializable, Creatable, 
 		}
 	}
 	
+	public static List<Activity> getAllActivities(Long userId, Long offset) {
+		// fill in retrieve logic here...
+		
+		
+		// increment notification counter for the recipient
+		if (offset == 0) {
+			NotificationCounter.readActivitiesCount(userId);
+		}
+		
+		return null;
+	}
+	
 	@Override
 	public void postSave() {
 		super.postSave();
 		
 		// increment notification counter for the recipient
-		NotificationCounter counter = NotificationCounter.getNotificationCounter(userId);
-		counter.activities++;
-		counter.save();
+		NotificationCounter.incrementActivitiesCount(userId);
 	}
 	
 	public Long getId() {

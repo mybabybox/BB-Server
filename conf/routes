@@ -124,8 +124,8 @@ GET     /followings/:id/:offset						controllers.UserController.getFollowings(id
 GET     /followers/:id/:offset						controllers.UserController.getFollowers(id: Long,offset:Long)
 GET     /get-user-liked-feed/:id/:offset			controllers.UserController.getUserLikedPosts(id: Long,offset:Long)
 GET     /notification-counter                       controllers.UserController.getNotificationCounter
-GET     /read-activity-counter                      controllers.UserController.readActivityCounter
-GET     /read-conversation-counter                  controllers.UserController.readConversationCounter
+GET     /read-activities-count                      controllers.UserController.readActivitiesCount
+GET     /read-conversations-count                   controllers.UserController.readConversationsCount
 
 # image upload
 POST    /image/upload-profile-photo                 controllers.UserController.uploadProfilePhoto

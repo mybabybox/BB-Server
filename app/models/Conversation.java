@@ -311,12 +311,17 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	public void markDelete() {
 		logger.underlyingLogger().debug("[conv="+this.id+"] markDelete");
 		
-		Query q = JPA.em().createQuery("update Message set deleted = 1 where conversation_id = ?1");
-		q.setParameter(1, this.id);
-		q.executeUpdate();
-		q = JPA.em().createQuery("update Conversation set deleted = 1 where id = ?1");
-        q.setParameter(1, id);
-        q.executeUpdate();
+		try {
+			Query q = JPA.em().createQuery("update Message set deleted = 1 where conversation_id = ?1");
+			q.setParameter(1, this.id);
+			q.executeUpdate();
+			
+			q = JPA.em().createQuery("update Conversation set deleted = 1 where id = ?1");
+	        q.setParameter(1, id);
+	        q.executeUpdate();
+		} catch (Exception e) {
+			logger.underlyingLogger().error("Failed to mark delete conversation conv="+this.id, e);
+		}
 	}
 	
 	private void setReadDate(User user) {
@@ -329,6 +334,8 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
             this.user2ReadDate = new Date();
             this.user2NumMessages = 0;
 	    }
+		
+		NotificationCounter.decrementConversationsCount(user.id);
 	}
 	
 	private void setArchiveDate(User user){
@@ -341,6 +348,8 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
             this.user2ArchiveDate = new Date();
             this.user2NumMessages = 0;
 	    }
+	    
+	    NotificationCounter.decrementConversationsCount(user.id);
 	    
 	    if (isArchivedByBoth()) {
 	    	markDelete();
