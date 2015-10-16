@@ -9,6 +9,7 @@ import babybox.events.map.SoldEvent;
 import com.google.common.eventbus.Subscribe;
 
 import common.cache.CalcServer;
+import common.utils.StringUtil;
 
 public class SoldEventListener {
 	
@@ -19,12 +20,17 @@ public class SoldEventListener {
 		if (post.onSold(user)) {
 			CalcServer.removeFromCategoryQueues(post.id, post.category.id);
 			
-			Activity activity = new Activity();
-	        activity.recipient = post.owner.id;
-	        activity.actor = user.id;
-	        activity.actvityType = ActivityType.SOLD;
+			/*
+			// Need to query users as recipients 
+			Activity activity = new Activity(
+					ActivityType.SOLD, 
+					user.id,
+					user.id,
+					user.displayName,
+					post.id,
+					StringUtil.shortMessage(post.title));
 	        activity.save();
+	        */
 		}
-		
     }
 }

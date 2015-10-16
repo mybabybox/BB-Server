@@ -63,7 +63,7 @@ public class SocialRelationHandler {
 		CommentEvent postEvent = new CommentEvent();
 		postEvent.put("comment", comment);
 		postEvent.put("post", post);
-		postEvent.put("localUser", localUser);
+		postEvent.put("user", localUser);
 		EventHandler.getInstance().getEventBus().post(postEvent);
 	}
 	

@@ -11,6 +11,7 @@ import babybox.events.map.DeleteCommentEvent;
 import com.google.common.eventbus.Subscribe;
 
 import common.cache.CalcServer;
+import common.utils.StringUtil;
 
 public class CommentEventListener {
 
@@ -18,14 +19,16 @@ public class CommentEventListener {
 	public void recordCommentEventInDB(CommentEvent map){
 		Comment comment = (Comment) map.get("comment");
 		Post post = (Post) map.get("post");
-		User user = (User) map.get("localUser");
+		User user = (User) map.get("user");
 		CalcServer.calculateBaseScore(post);
 		
-		
-		Activity activity = new Activity();
-        activity.recipient = post.owner.id;
-        activity.actor = user.id;
-        activity.actvityType = ActivityType.COMMENT;
+		Activity activity = new Activity(
+				ActivityType.NEW_COMMENT, 
+				post.owner.id,
+				user.id, 
+				user.name,
+				comment.id,
+				StringUtil.shortMessage(comment.body));
         activity.save();
 	}
 	

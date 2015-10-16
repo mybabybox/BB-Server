@@ -17,7 +17,8 @@ public class DefaultValues {
     
     public static final int LATEST_COMMENTS_COUNT = 3;
     
-    public static final int CONVERSATION_LAST_MESSAGE_COUNT = 50;
+    public static final int SHORT_MESSAGE_COUNT = 50;
+    
     public static final int CONVERSATION_MESSAGE_COUNT = 10;
     public static final int CONVERSATION_COUNT = 1000;
     

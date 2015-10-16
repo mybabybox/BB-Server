@@ -1,8 +1,6 @@
 package models;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -11,14 +9,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
-
-import org.joda.time.DateTime;
 
 import play.data.validation.Constraints.Required;
-import play.db.jpa.JPA;
-import play.db.jpa.Transactional;
 import domain.AuditListener;
 import domain.Creatable;
 import domain.SocialObjectType;
@@ -35,37 +27,71 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 	@Required
 	public Long recipient;
 	 
-	//@Required
-	public String message;
+	public Long actor;
 	
-	public String URLs;
+	public String actorName;
 	
 	@Enumerated(EnumType.STRING)
-	public SocialObjectType targetType;
+	public SocialObjectType actorType;
 	
 	public Long target;
 	
-	public long actor;
-	
-	public String usersName;
+	public String targetName;
 
+	@Enumerated(EnumType.STRING)
+	public SocialObjectType targetType;
+
+	public Boolean read = false;
+	
+	public Boolean deleted = false;
+	
 	@Enumerated(EnumType.STRING)
 	public ActivityType actvityType;
 
-    public static enum Status {
-        Unread, Read, Ignored, Accepted
-    }
-
 	public static enum ActivityType {
-		NEW_MESSAGE,
-		COMMENT,
-		POSTED,
+		NEW_POST,
+		NEW_COMMENT,
 		LIKED,
 		FOLLOWED,
-		SOLD,
-		VIEWED,
+		SOLD
 	}
 
+	public Activity(ActivityType activityType, Long recipient, 
+			Long actor, String actorName, Long target, String targetName) {
+		this.actvityType = activityType;
+		this.recipient = recipient;
+		this.actor = actor;
+		this.actorName = actorName;
+		this.target = target;
+		this.targetName = targetName;
+		setActorTargetType();
+	}
+	
+	private void setActorTargetType() {
+		switch (this.actvityType) {
+		case NEW_POST:
+			this.actorType = SocialObjectType.USER;
+			this.targetType = SocialObjectType.POST;
+			break;
+		case NEW_COMMENT:
+			this.actorType = SocialObjectType.USER;
+			this.targetType = SocialObjectType.COMMENT;
+			break;
+		case LIKED:
+			this.actorType = SocialObjectType.USER;
+			this.targetType = SocialObjectType.POST;
+			break;
+		case FOLLOWED:
+			this.actorType = SocialObjectType.USER;
+			this.targetType = SocialObjectType.USER;
+			break;
+		case SOLD:
+			this.actorType = SocialObjectType.USER;
+			this.targetType = SocialObjectType.POST;
+			break;
+		}
+	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -80,22 +106,6 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 
 	public void setRecipient(Long recipient) {
 		this.recipient = recipient;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
-	public String getURLs() {
-		return URLs;
-	}
-
-	public void setURLs(String uRLs) {
-		URLs = uRLs;
 	}
 
 	public SocialObjectType getTargetType() {
@@ -122,12 +132,36 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 		this.actor = actor;
 	}
 
-	public String getUsersName() {
-		return usersName;
+	public String getActorName() {
+		return actorName;
 	}
 
-	public void setUsersName(String usersName) {
-		this.usersName = usersName;
+	public void setActorName(String actorName) {
+		this.actorName = actorName;
+	}
+
+	public SocialObjectType getActorType() {
+		return actorType;
+	}
+
+	public void setActorType(SocialObjectType actorType) {
+		this.actorType = actorType;
+	}
+
+	public String getTargetName() {
+		return targetName;
+	}
+
+	public void setTargetName(String targetName) {
+		this.targetName = targetName;
+	}
+
+	public Boolean isRead() {
+		return read;
+	}
+
+	public void setRead(Boolean read) {
+		this.read = read;
 	}
 
 	public ActivityType getActvityType() {
@@ -137,5 +171,4 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 	public void setActvityType(ActivityType actvityType) {
 		this.actvityType = actvityType;
 	}
-
 }

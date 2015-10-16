@@ -10,7 +10,9 @@ import babybox.events.map.LikeEvent;
 import babybox.events.map.UnlikeEvent;
 
 import com.google.common.eventbus.Subscribe;
+
 import common.cache.CalcServer;
+import common.utils.StringUtil;
 
 public class LikeEventListener {
 	
@@ -23,10 +25,13 @@ public class LikeEventListener {
 	       	CalcServer.calculateBaseScore(post);
 	       	CalcServer.addToLikeQueue(post.id, user.id, score.doubleValue());
 	       	
-	    	Activity activity = new Activity();
-	        activity.recipient = post.owner.id;
-	        activity.actor = user.id;
-	        activity.actvityType = ActivityType.LIKED;
+	       	Activity activity = new Activity(
+					ActivityType.LIKED, 
+					post.owner.id,
+					user.id,
+					user.displayName,
+					post.id,
+					StringUtil.shortMessage(post.title));
 	        activity.save();
        	}
     }

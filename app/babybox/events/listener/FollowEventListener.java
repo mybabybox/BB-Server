@@ -9,6 +9,7 @@ import babybox.events.map.FollowEvent;
 import babybox.events.map.UnFollowEvent;
 
 import com.google.common.eventbus.Subscribe;
+
 import common.cache.CalcServer;
 
 public class FollowEventListener {
@@ -23,10 +24,13 @@ public class FollowEventListener {
 			Long score = new Date().getTime();		// ideally use FollowSocialRelation.CREATED_DATE
 			CalcServer.addToFollowQueue(localUser.id, user.id, score.doubleValue());
 			
-			Activity activity = new Activity();
-			activity.recipient = localUser.id;
-			activity.actor = user.id;
-			activity.actvityType = ActivityType.FOLLOWED;
+			Activity activity = new Activity(
+					ActivityType.FOLLOWED, 
+					user.id,
+					localUser.id,
+					localUser.displayName,
+					user.id,
+					user.displayName);
 			activity.save();
 		}
     }
@@ -36,7 +40,6 @@ public class FollowEventListener {
 		User localUser = (User) map.get("localUser");
 		User user = (User) map.get("user");
 		if (localUser.onUnFollow(user)) {
-			// do something
 			CalcServer.removeFromFollowQueue(localUser.id, user.id);
 		}
     }

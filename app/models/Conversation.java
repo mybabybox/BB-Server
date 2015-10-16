@@ -17,6 +17,8 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
 
+import common.utils.StringUtil;
+
 import play.data.validation.Constraints.Required;
 import play.db.jpa.JPA;
 import domain.Creatable;
@@ -363,12 +365,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	}
 	
 	private String trimLastMessage(String message) {
-		//message = removeEmoticons(message);	// no need remove emoticons now...
-		int count = DefaultValues.CONVERSATION_LAST_MESSAGE_COUNT;
-		if (message.length() <= count) {
-			return message;
-		}
-		return message.substring(0, count + 1) + " ...";
+		return StringUtil.shortMessage(message);
 	}
 	
 	private String removeEmoticons(String message) {

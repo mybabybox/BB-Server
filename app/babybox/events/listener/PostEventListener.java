@@ -10,6 +10,7 @@ import babybox.events.map.PostEvent;
 import com.google.common.eventbus.Subscribe;
 
 import common.cache.CalcServer;
+import common.utils.StringUtil;
 
 public class PostEventListener {
 	
@@ -21,10 +22,13 @@ public class PostEventListener {
 		Long score = post.getCreatedDate().getTime();
 		CalcServer.addToPostQueue(post.id, user.id, score.doubleValue());
 		
-		// who is recipient here
-		Activity activity = new Activity();
-        activity.actor = user.id;
-        activity.actvityType = ActivityType.FOLLOWED;
+		Activity activity = new Activity(
+				ActivityType.NEW_POST, 
+				user.id,
+				user.id,
+				user.displayName,
+				post.id,
+				StringUtil.shortMessage(post.title));
         activity.save();
     }
 	

@@ -7,14 +7,21 @@ import java.util.Collection;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-/**
- * Created by IntelliJ IDEA.
- * Date: 28/6/14
- * Time: 1:35 PM
- * To change this template use File | Settings | File Templates.
- */
 public class StringUtil {
 
+	/**
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public static String shortMessage(String str) {
+		int count = DefaultValues.SHORT_MESSAGE_COUNT;
+		if (str.length() <= count) {
+			return str;
+		}
+		return str.substring(0, count + 1) + " ...";
+	}
+	
     /**
      * @param collection
      * @param separator
