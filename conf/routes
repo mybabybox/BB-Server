@@ -123,11 +123,14 @@ GET		/get-user/:id								controllers.UserController.getUserInfoById(id:Long)
 GET     /followings/:id/:offset						controllers.UserController.getFollowings(id: Long,offset:Long)
 GET     /followers/:id/:offset						controllers.UserController.getFollowers(id: Long,offset:Long)
 GET     /get-user-liked-feed/:id/:offset			controllers.UserController.getUserLikedPosts(id: Long,offset:Long)
+GET     /notification-counter                       controllers.UserController.getNotificationCounter
+GET     /read-activity-counter                      controllers.UserController.readActivityCounter
+GET     /read-conversation-counter                  controllers.UserController.readConversationCounter
 
 # image upload
 POST    /image/upload-profile-photo                 controllers.UserController.uploadProfilePhoto
 POST    /image/upload-cover-photo                   controllers.UserController.uploadCoverPhoto
-POST    /image/upload-message-photo                 controllers.UserController.uploadMessagePhoto()
+POST    /image/upload-message-photo                 controllers.UserController.uploadMessagePhoto
 
 # image get
 GET     /image/get-profile-image                    controllers.UserController.getProfileImage

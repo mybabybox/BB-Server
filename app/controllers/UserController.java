@@ -18,6 +18,7 @@ import models.Emoticon;
 import models.FollowSocialRelation;
 import models.Location;
 import models.Message;
+import models.NotificationCounter;
 import models.Post;
 import models.Resource;
 import models.SiteTour;
@@ -39,6 +40,7 @@ import viewmodel.CollectionVM;
 import viewmodel.ConversationVM;
 import viewmodel.EmoticonVM;
 import viewmodel.MessageVM;
+import viewmodel.NotificationCounterVM;
 import viewmodel.PostVMLite;
 import viewmodel.ProfileVM;
 import viewmodel.UserVM;
@@ -795,5 +797,44 @@ public class UserController extends Controller {
         
         List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.USER_LIKED);
 		return ok(Json.toJson(vms));
+    }
+    
+    @Transactional
+    public static Result getNotificationCounter() {
+    	final User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+        
+        NotificationCounter counter = NotificationCounter.getNotificationCounter(localUser.id);
+        if (counter != null) {
+        	return ok(Json.toJson(new NotificationCounterVM(counter)));
+        }
+        return ok();
+    }
+    
+    @Transactional
+    public static Result readActivityCounter() {
+    	final User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+        
+        NotificationCounter.readActivityCounter(localUser.id);
+        return ok();
+    }
+    
+    @Transactional
+    public static Result readConversationCounter() {
+    	final User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+        
+        NotificationCounter.readConversationCounter(localUser.id);
+        return ok();
     }
 }

@@ -18,14 +18,14 @@ import domain.Updatable;
 
 @Entity
 @EntityListeners(AuditListener.class)
-public class Activity  extends domain.Entity implements Serializable, Creatable, Updatable {
+public class Activity extends domain.Entity implements Serializable, Creatable, Updatable {
 	
 	@Id @GeneratedValue(strategy=GenerationType.AUTO)
 	public Long id;
 	
 	/*To whom this Activity is intended for*/
 	@Required
-	public Long recipient;
+	public Long userId;
 	 
 	public Long actor;
 	
@@ -56,10 +56,10 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 		SOLD
 	}
 
-	public Activity(ActivityType activityType, Long recipient, 
+	public Activity(ActivityType activityType, Long userId, 
 			Long actor, String actorName, Long target, String targetName) {
 		this.actvityType = activityType;
-		this.recipient = recipient;
+		this.userId = userId;
 		this.actor = actor;
 		this.actorName = actorName;
 		this.target = target;
@@ -92,6 +92,16 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 		}
 	}
 	
+	@Override
+	public void postSave() {
+		super.postSave();
+		
+		// increment notification counter for the recipient
+		NotificationCounter counter = NotificationCounter.getNotificationCounter(userId);
+		counter.activities++;
+		counter.save();
+	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -100,12 +110,12 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 		this.id = id;
 	}
 
-	public Long getRecipient() {
-		return recipient;
+	public Long getUserId() {
+		return userId;
 	}
 
-	public void setRecipient(Long recipient) {
-		this.recipient = recipient;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
 	public SocialObjectType getTargetType() {

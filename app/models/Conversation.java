@@ -8,6 +8,7 @@ import java.util.TreeSet;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,9 +19,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Query;
 
 import common.utils.StringUtil;
-
 import play.data.validation.Constraints.Required;
 import play.db.jpa.JPA;
+import domain.AuditListener;
 import domain.Creatable;
 import domain.DefaultValues;
 import domain.Updatable;
@@ -48,6 +49,7 @@ import domain.Updatable;
  *
  */
 @Entity
+@EntityListeners(AuditListener.class)
 public class Conversation extends domain.Entity implements Serializable, Creatable, Updatable {
     private static final play.api.Logger logger = play.api.Logger.apply(Conversation.class);
     
@@ -100,6 +102,11 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	    } else {
 	    	return user1;
 	    }
+	}
+	
+	public static Message newMessage(Long conversationId, User sender, String body) {
+		Conversation conversation = Conversation.findById(conversationId);
+		return conversation.addMessage(sender, body);
 	}
 	
 	public Message addMessage(User sender, String body) {
@@ -230,6 +237,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		return conversation;
 	}
 
+	// obsolete, should NEVER use
 	public String getLastMessage(User user) {
 		Query q = JPA.em().createQuery(
 		        "SELECT m FROM Message m WHERE m.CREATED_DATE = (SELECT MAX(CREATED_DATE) FROM Message WHERE conversation_id = ?1 and deleted = 0) and m.CREATED_DATE > ?2 and m.deleted = 0");
@@ -268,11 +276,6 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		Query q = JPA.em().createQuery("SELECT c FROM Conversation c where id = ?1 and deleted = 0");
         q.setParameter(1, id);
         return (Conversation) q.getSingleResult();
-	}
-
-	public static Message newMessage(Long conversationId, User sender, String body) {
-		Conversation conversation = Conversation.findById(conversationId);
-		return conversation.addMessage(sender, body);
 	}
 
 	public boolean isReadBy(User user) {
