@@ -18,7 +18,7 @@ import domain.Updatable;
 
 @Entity
 @EntityListeners(AuditListener.class)
-public class Activity  extends domain.Entity implements Serializable, Creatable, Updatable  {
+public class Activity  extends domain.Entity implements Serializable, Creatable, Updatable {
 	
 	@Id @GeneratedValue(strategy=GenerationType.AUTO)
 	public Long id;
@@ -41,7 +41,7 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 	@Enumerated(EnumType.STRING)
 	public SocialObjectType targetType;
 
-	public Boolean read = false;
+	public Boolean viewed = false;
 	
 	public Boolean deleted = false;
 	
@@ -156,12 +156,12 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 		this.targetName = targetName;
 	}
 
-	public Boolean isRead() {
-		return read;
+	public Boolean isViewed() {
+		return viewed;
 	}
 
-	public void setRead(Boolean read) {
-		this.read = read;
+	public void setViewed(Boolean viewed) {
+		this.viewed = viewed;
 	}
 
 	public ActivityType getActvityType() {
