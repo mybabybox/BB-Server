@@ -134,13 +134,11 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 			this.user1NumMessages++;
 			
 			// first message, increment conversationsCount for receiver
-			if (this.user2NumMessages == 1) {
+			if (this.user1NumMessages == 1) {
 			    NotificationCounter.incrementConversationsCount(this.user1.id);
 			}
 		}
 		this.save();
-		
-		NotificationCounter.incrementConversationsCount(message.receiver().id);
 		
 		return message;
 	}
