@@ -13,8 +13,6 @@ import models.User;
 public class PostVM extends PostVMLite {
 	@JsonProperty("createdDate") public Long createdDate;
 	@JsonProperty("updatedDate") public Long updatedDate;
-	@JsonProperty("ownerId") public Long ownerId;
-	@JsonProperty("ownerName") public String ownerName;
 	@JsonProperty("ownerNumProducts") public Long ownerNumProducts;
 	@JsonProperty("ownerNumFollowers") public Long ownerNumFollowers;
 	@JsonProperty("body") public String body;
@@ -31,8 +29,7 @@ public class PostVM extends PostVMLite {
 	
     public PostVM(Post post, User user) {
     	super(post, user);
-        this.ownerId = post.owner.id;
-        this.ownerName = post.owner.displayName;
+    	
         this.ownerNumProducts = post.owner.numProducts;
         this.ownerNumFollowers = post.owner.numFollowers;
         this.createdDate = post.getCreatedDate().getTime();
@@ -52,22 +49,6 @@ public class PostVM extends PostVMLite {
         this.isFollowingOwner = user.isFollowing(post.owner);
         
         this.deviceType = post.deviceType == null? "" : post.deviceType.name();
-    }
-
-    public Long getOwnerId() {
-        return ownerId;
-    }
-
-    public void setOwnerId(Long ownerId) {
-        this.ownerId = ownerId;
-    }
-
-    public String getOwnerName() {
-        return ownerName;
-    }
-
-    public void setOwnerName(String ownerName) {
-        this.ownerName = ownerName;
     }
 
     public Long getOwnerNumProducts() {
