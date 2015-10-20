@@ -158,8 +158,8 @@ public class CalcServer {
 		}
 	}
 
-	private static Long calculateTimeScore(Post post) {
-	    return calculateTimeScore(post, true);
+	public static Long calculateTimeScore(Post post) {
+	    return calculateTimeScore(post, false);
 	}
 	
 	private static Long calculateTimeScore(Post post, boolean recalcBaseScore) {
@@ -182,7 +182,7 @@ public class CalcServer {
 	}
 
 	public static void addToCategoryPopularQueue(Post post) {
-        Long timeScore = calculateTimeScore(post);
+        Long timeScore = calculateTimeScore(post, true);
         JedisCache.cache().putToSortedSet(getKey(FeedType.CATEGORY_POPULAR,post.category.id),  timeScore, post.id.toString());
     }
 	
