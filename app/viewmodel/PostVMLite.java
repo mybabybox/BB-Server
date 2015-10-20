@@ -57,7 +57,7 @@ public class PostVMLite {
         
         if (user.isSuperAdmin()) {
 	        this.baseScore = post.baseScore;
-	        this.timeScore = CalcServer.calculateTimeScore(post);
+	        this.timeScore = post.timeScore;
         }
     }
     

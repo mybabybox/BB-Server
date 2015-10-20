@@ -17,11 +17,8 @@ import models.SocialRelation;
 import models.User;
 import play.Play;
 import play.db.jpa.JPA;
-import play.libs.Akka;
-import scala.concurrent.duration.Duration;
-import akka.actor.ActorSystem;
-
 import common.model.FeedFilter.FeedType;
+import common.schedule.JobScheduler;
 import common.thread.ThreadLocalOverride;
 import common.utils.NanoSecondStopWatch;
 import domain.DefaultValues;
@@ -29,7 +26,7 @@ import domain.DefaultValues;
 public class CalcServer {
 	private static play.api.Logger logger = play.api.Logger.apply(CalcServer.class);
 	
-	public static final Long FEED_TIMESCORE_RECALC_MIN = Play.application().configuration().getLong("feed.timescore.recalc.min");
+	public static final Long FEED_SCORE_COMPUTE_SCHEDULE = Play.application().configuration().getLong("feed.score.compute.schedule");
 	public static final Long FEED_SCORE_HIGH_BASE = Play.application().configuration().getLong("feed.score.high.base");
 	public static final Long FEED_HOME_COUNT_MAX = Play.application().configuration().getLong("feed.home.count.max");
 	public static final Long FEED_CATEGORY_EXPOSURE_MIN = Play.application().configuration().getLong("feed.category.exposure.min");
@@ -48,36 +45,17 @@ public class CalcServer {
 		buildUserQueue();
 		buildPostQueue();
 		
-		/*
-		ActorSystem actorSystem = Akka.system();
-		actorSystem.scheduler().scheduleOnce(
-				Duration.create(0, TimeUnit.MILLISECONDS),
+		JobScheduler.getInstance().schedule("buildCategoryPopularQueue", FEED_SCORE_COMPUTE_SCHEDULE, TimeUnit.MINUTES,
 				new Runnable() {
 					public void run() {
 						JPA.withTransaction(new play.libs.F.Callback0() {
 							@Override
 							public void invoke() throws Throwable {
-								buildCategoryQueues();
-								buildUserQueue();
+								buildCategoryPopularQueues();
 							}
 						});
 					}
-				}, actorSystem.dispatcher());
-		*/
-		
-		ActorSystem actorSystem = Akka.system();
-		actorSystem.scheduler().scheduleOnce(
-				Duration.create(FEED_TIMESCORE_RECALC_MIN, TimeUnit.MINUTES),
-				new Runnable() {
-					public void run() {
-						JPA.withTransaction(new play.libs.F.Callback0() {
-							@Override
-							public void invoke() throws Throwable {
-								buildCategoryPopularQueue();
-							}
-						});
-					}
-				}, actorSystem.dispatcher());
+				});
 		
 		sw.stop();
 		logger.underlyingLogger().debug("warmUpActivity completed. Took "+sw.getElapsedSecs()+"s");
@@ -157,6 +135,9 @@ public class CalcServer {
 	}
 
 	private static void buildCategoryQueues() {
+	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
+        logger.underlyingLogger().debug("buildCategoryQueues starts");
+        
 		clearCategoryQueues();
 		for (Post post : Post.getAllPosts()) {
 		    if (post.sold) {
@@ -165,16 +146,24 @@ public class CalcServer {
 		    addToCategoryPriceLowHighQueue(post);
 		    addToCategoryNewestQueue(post);
 		}
+		
+		sw.stop();
+        logger.underlyingLogger().debug("buildCategoryQueues completed. Took "+sw.getElapsedSecs()+"s");
 	}
 	
-	private static void buildCategoryPopularQueue() {
-		clearCategoryQueues();
+	private static void buildCategoryPopularQueues() {
+	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
+        logger.underlyingLogger().debug("buildCategoryPopularQueue starts");
+        
 		for (Post post : Post.getAllPosts()) {
 		    if (post.sold) {
 		        continue;
 		    }
 			addToCategoryPopularQueue(post);
 		}
+		
+		sw.stop();
+        logger.underlyingLogger().debug("buildCategoryPopularQueue completed. Took "+sw.getElapsedSecs()+"s");
 	}
 	
 	private static void buildPostQueue() {

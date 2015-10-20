@@ -1,10 +1,11 @@
 package common.cache;
 
+import java.math.BigDecimal;
+
 import models.Post;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
-import org.joda.time.Hours;
 
 import play.Play;
 import common.utils.NanoSecondStopWatch;
@@ -17,6 +18,7 @@ import common.utils.NanoSecondStopWatch;
 public class CalcFormula {
 	private static play.api.Logger logger = play.api.Logger.apply(CalcFormula.class);
 	
+	public static final Long FEED_SCORE_HIGH_BASE = Play.application().configuration().getLong("feed.score.high.base");
 	public static final int FEED_SCORE_COMPUTE_BASE = Play.application().configuration().getInt("feed.score.compute.base");
 	public static final int FEED_SCORE_COMPUTE_DECAY_START = Play.application().configuration().getInt("feed.score.compute.decay.start");
 	public static final int FEED_SCORE_COMPUTE_DECAY_VELOCITY = Play.application().configuration().getInt("feed.score.compute.decay.velocity");
@@ -26,11 +28,11 @@ public class CalcFormula {
         logger.underlyingLogger().debug("calculateBaseScore for p="+post.id);
         
         post.baseScore = (long) (
-                post.numComments
-                + 2 * post.numViews
-                + 3 * post.numLikes
-                + 4 * post.numChats
-                + 5 * post.numBuys
+                post.numComments * 10
+                + 2 * post.numViews * 10
+                + 4 * post.numLikes * 10
+                + 6 * post.numChats * 10
+                + 8 * post.numBuys * 10
                 + FEED_SCORE_COMPUTE_BASE);
         
         if (post.baseScoreAdjust != null) {
@@ -46,14 +48,20 @@ public class CalcFormula {
 	
 	public Double computeTimeScore(Post post) {
 	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
-        logger.underlyingLogger().debug("calculateTimeScore for p="+post.id+" with baseScore="+post.baseScore);
+        logger.underlyingLogger().debug("calculateTimeScore for p="+post.id+" date=" + post.getCreatedDate() + " baseScore="+post.baseScore);
         
         Double timeScore = Math.log(Math.max(post.baseScore, 1));
-        int hrs = Hours.hoursBetween(new DateTime(), new DateTime(post.getCreatedDate())).getHours();
-        if (hrs > FEED_SCORE_COMPUTE_DECAY_START) {
-            timeScore = timeScore * Math.exp(-FEED_SCORE_COMPUTE_DECAY_VELOCITY * hrs * hrs);
+        int x = Math.abs(Days.daysBetween(new DateTime(post.getCreatedDate()), new DateTime()).getDays());
+        if (x > FEED_SCORE_COMPUTE_DECAY_START) {
+            x -= FEED_SCORE_COMPUTE_DECAY_START;
+            timeScore = timeScore * Math.exp(-FEED_SCORE_COMPUTE_DECAY_VELOCITY * x);
         }
-        //timeScore = timeScore * FEED_SCORE_HIGH_BASE + post.id;
+        timeScore = timeScore * FEED_SCORE_HIGH_BASE;
+        
+        BigDecimal bd = new BigDecimal(timeScore);
+        bd = bd.setScale(5, BigDecimal.ROUND_HALF_UP);
+        post.timeScore = bd.doubleValue();
+        post.save();
         
         sw.stop();
         logger.underlyingLogger().debug("computeTimeScore completed with timeScore="+timeScore+". Took "+sw.getElapsedSecs()+"s");
