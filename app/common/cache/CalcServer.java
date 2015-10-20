@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import org.joda.time.DateTime;
@@ -27,15 +28,17 @@ public class CalcServer {
 	public static final Long FEED_SCORE_BASE = Play.application().configuration().getLong("feed.score.base");
 	public static final Long FEED_HOME_COUNT_MAX = Play.application().configuration().getLong("feed.home.count.max");
 	public static final Long FEED_CATEGORY_EXPOSURE_MIN = Play.application().configuration().getLong("feed.category.exposure.min");
+	public static final int FEED_SCORE_RANDOMIZE_PERCENT = Play.application().configuration().getInt("feed.score.randomize.percent");
 	public static final int FEED_EXPIRY = Play.application().configuration().getInt("feed.expiry");
 	public static final int FEED_RETRIEVAL_COUNT = DefaultValues.FEED_INFINITE_SCROLL_COUNT;
+	
+	private static Random random = new Random();
 	
 	public static void warmUpActivity() {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
 		logger.underlyingLogger().debug("warmUpActivity starts");
 		
-		buildBaseScore();
-		buildCategoryQueue();
+		buildCategoryQueues();
 		buildUserQueue();
 		
 		/*
@@ -47,8 +50,7 @@ public class CalcServer {
 						JPA.withTransaction(new play.libs.F.Callback0() {
 							@Override
 							public void invoke() throws Throwable {
-								buildBaseScore();
-								buildCategoryQueue();
+								buildCategoryQueues();
 								buildUserQueue();
 							}
 						});
@@ -73,18 +75,6 @@ public class CalcServer {
 		JedisCache.cache().remove(getKey(FeedType.USER_POSTED,user.id));
 		JedisCache.cache().remove(getKey(FeedType.USER_LIKED,user.id));
 		JedisCache.cache().remove(getKey(FeedType.USER_FOLLOWING,user.id));
-	}
-	
-	public static void buildBaseScore() {
-		NanoSecondStopWatch sw = new NanoSecondStopWatch();
-		logger.underlyingLogger().debug("buildBaseScore starts");
-		
-		for (Post post : Post.getAllPosts()) {
-			calculateBaseScore(post);
-		}
-		
-		sw.stop();
-		logger.underlyingLogger().debug("buildBaseScore completed. Took "+sw.getElapsedSecs()+"s");
 	}
 
 	public static Long calculateBaseScore(Post post) {
@@ -156,7 +146,7 @@ public class CalcServer {
 		logger.underlyingLogger().debug("buildUserLikedPostQueue completed. Took "+sw.getElapsedSecs()+"s");
 	}
 
-	private static void buildCategoryQueue() {
+	private static void buildCategoryQueues() {
 		clearCategoryQueues();
 		for (Post post : Post.getAllPosts()) {
 		    if (post.sold) {
@@ -168,14 +158,26 @@ public class CalcServer {
 		}
 	}
 
-	public static Long calculateTimeScore(Post post) {
-	    Long baseScore = calculateBaseScore(post);
+	private static Long calculateTimeScore(Post post) {
+	    return calculateTimeScore(post, true);
+	}
+	
+	private static Long calculateTimeScore(Post post, boolean recalcBaseScore) {
+	    Long baseScore = recalcBaseScore? calculateBaseScore(post) : post.baseScore;
+	    
+	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
+	    logger.underlyingLogger().debug("calculateTimeScore for p="+post.id);
+        
 		Long timeScore = Math.max(baseScore, 1);
 		int timeDiff = Weeks.weeksBetween(new DateTime(new Date()), new DateTime(post.getCreatedDate())).getWeeks();
 		if (timeDiff > 0) {
 			timeScore = (long) (timeScore * Math.exp(-8 * timeDiff * timeDiff));
 		}
 		timeScore = timeScore * FEED_SCORE_BASE + post.id;
+		
+		sw.stop();
+        logger.underlyingLogger().debug("calculateTimeScore completed with timeScore="+timeScore+". Took "+sw.getElapsedSecs()+"s");
+        
 		return timeScore;
 	}
 
@@ -226,6 +228,14 @@ public class CalcServer {
 		
 		sw.stop();
 		logger.underlyingLogger().debug("buildUserExploreQueue completed. Took "+sw.getElapsedSecs()+"s");
+	}
+	
+	private static Long randomizeScore(Post post) {
+	    Long timeScore = calculateTimeScore(post, false);
+	    int min = 100 - FEED_SCORE_RANDOMIZE_PERCENT;
+	    int max = 100 + FEED_SCORE_RANDOMIZE_PERCENT;
+	    int percent = (random.nextInt(max - min) + min) / 100;
+	    return timeScore * percent;
 	}
 	
 	private static void buildUserFollowingFeedQueue(Long userId) {
@@ -383,7 +393,6 @@ public class CalcServer {
 	}
 	
 	public static void addToCategoryQueues(Post post) {
-		calculateBaseScore(post);
 		addToCategoryPriceLowHighQueue(post);
 		addToCategoryNewestQueue(post);
 		addToCategoryPopularQueue(post);
