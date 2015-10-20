@@ -1,22 +1,26 @@
 package common.cache;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
-import org.joda.time.DateTime;
-import org.joda.time.Days;
-
-import play.Play;
 import models.Category;
 import models.FollowSocialRelation;
 import models.LikeSocialRelation;
 import models.Post;
 import models.SocialRelation;
 import models.User;
+import play.Play;
+import play.db.jpa.JPA;
+import play.libs.Akka;
+import scala.concurrent.duration.Duration;
+import akka.actor.ActorSystem;
+
 import common.model.FeedFilter.FeedType;
 import common.thread.ThreadLocalOverride;
 import common.utils.NanoSecondStopWatch;
@@ -25,6 +29,7 @@ import domain.DefaultValues;
 public class CalcServer {
 	private static play.api.Logger logger = play.api.Logger.apply(CalcServer.class);
 	
+	public static final Long FEED_TIMESCORE_RECALC_MIN = Play.application().configuration().getLong("feed.timescore.recalc.min");
 	public static final Long FEED_SCORE_HIGH_BASE = Play.application().configuration().getLong("feed.score.high.base");
 	public static final Long FEED_HOME_COUNT_MAX = Play.application().configuration().getLong("feed.home.count.max");
 	public static final Long FEED_CATEGORY_EXPOSURE_MIN = Play.application().configuration().getLong("feed.category.exposure.min");
@@ -41,6 +46,7 @@ public class CalcServer {
 		
 		buildCategoryQueues();
 		buildUserQueue();
+		buildPostQueue();
 		
 		/*
 		ActorSystem actorSystem = Akka.system();
@@ -58,6 +64,20 @@ public class CalcServer {
 					}
 				}, actorSystem.dispatcher());
 		*/
+		
+		ActorSystem actorSystem = Akka.system();
+		actorSystem.scheduler().scheduleOnce(
+				Duration.create(FEED_TIMESCORE_RECALC_MIN, TimeUnit.MINUTES),
+				new Runnable() {
+					public void run() {
+						JPA.withTransaction(new play.libs.F.Callback0() {
+							@Override
+							public void invoke() throws Throwable {
+								buildCategoryPopularQueue();
+							}
+						});
+					}
+				}, actorSystem.dispatcher());
 		
 		sw.stop();
 		logger.underlyingLogger().debug("warmUpActivity completed. Took "+sw.getElapsedSecs()+"s");
@@ -77,6 +97,11 @@ public class CalcServer {
 		JedisCache.cache().remove(getKey(FeedType.USER_LIKED,user.id));
 		JedisCache.cache().remove(getKey(FeedType.USER_FOLLOWING,user.id));
 	}
+	
+	public static void clearPostQueues(Post post) {
+		JedisCache.cache().remove(getKey(FeedType.PRODUCT_LIKES,post.id));
+	}
+
 
 	public static Long calculateBaseScore(Post post) {
 		// skip already calculated posts during server startup
@@ -139,8 +164,39 @@ public class CalcServer {
 		    }
 		    addToCategoryPriceLowHighQueue(post);
 		    addToCategoryNewestQueue(post);
+		}
+	}
+	
+	private static void buildCategoryPopularQueue() {
+		clearCategoryQueues();
+		for (Post post : Post.getAllPosts()) {
+		    if (post.sold) {
+		        continue;
+		    }
 			addToCategoryPopularQueue(post);
 		}
+	}
+	
+	private static void buildPostQueue() {
+		for (Post post : Post.getAllPosts()) {
+			clearPostQueues(post);
+			if (post.sold) {
+		        continue;
+		    }
+		    buildProductLikedUserQueue(post);
+		}
+	}
+	
+	private static void buildProductLikedUserQueue(Post post) {
+		NanoSecondStopWatch sw = new NanoSecondStopWatch();
+		logger.underlyingLogger().debug("buildProductLikedUserQueue starts");
+		
+		for (SocialRelation socialRelation : LikeSocialRelation.getPostLikedUsers(post.id)) {
+			JedisCache.cache().putToSortedSet(getKey(FeedType.PRODUCT_LIKES,post.id), socialRelation.getCreatedDate().getTime(), socialRelation.actor.toString());
+		}
+		
+		sw.stop();
+		logger.underlyingLogger().debug("buildProductLikedUserQueue completed. Took "+sw.getElapsedSecs()+"s");
 	}
 
 	public static Double calculateTimeScore(Post post) {
@@ -230,6 +286,36 @@ public class CalcServer {
 		
 		sw.stop();
 		logger.underlyingLogger().debug("buildUserFollowingQueue completed. Took "+sw.getElapsedSecs()+"s");
+	}
+	
+	private static void buildSuggestedProductQueue(Long productId) {
+		NanoSecondStopWatch sw = new NanoSecondStopWatch();
+		logger.underlyingLogger().debug("buildSuggestedProductQueue starts");
+		
+		List<Long> users = getProductLikeUserQueue(productId);
+		List<Long> postIds = new ArrayList<>();
+		for (Long userId : users){
+			Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.USER_LIKED, userId), 0L);
+			for (String value : values) {
+				try {
+					Long postId = Long.parseLong(value);
+					postIds.add(postId);
+				} catch (Exception e) {
+				}
+			}
+		}
+		Collections.shuffle(postIds);
+		postIds = postIds.subList(0, postIds.size() <= 20 ? postIds.size() : 20 );
+		
+		
+		for(Long postId : postIds){
+			JedisCache.cache().putToSortedSet(getKey(FeedType.PRODUCT_SUGGEST, productId), Math.random() * FEED_SCORE_HIGH_BASE, postId.toString());
+		}
+		
+		JedisCache.cache().expire(getKey(FeedType.PRODUCT_SUGGEST, productId), FEED_EXPIRY);
+		
+		sw.stop();
+		logger.underlyingLogger().debug("buildSuggestedProductQueue completed. Took "+sw.getElapsedSecs()+"s");
 	}
 	
 	public static boolean isLiked(Long userId, Long postId) {
@@ -354,6 +440,39 @@ public class CalcServer {
 	
 	public static List<Long> getUserFollowingFeeds(Long id, Long offset) {
 		Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.USER_FOLLOWING,id), offset);
+        final List<Long> userIds = new ArrayList<>();
+        for (String value : values) {
+            try {
+                userIds.add(Long.parseLong(value));
+            } catch (Exception e) {
+            }
+        }
+        return userIds;
+
+	}
+	
+	public static List<Long> getSuggestedProducts(Long id) {
+		if(!JedisCache.cache().exists(getKey(FeedType.PRODUCT_SUGGEST, id))){
+			buildSuggestedProductQueue(id);
+		}
+		System.out.println("PRODUCT_SUGGEST");
+		Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.PRODUCT_SUGGEST, id) , 0L);
+		System.out.println("size :: "+values.size());
+        final List<Long> postIds = new ArrayList<>();
+        for (String value : values) {
+            try {
+            	System.out.println(" :: "+value);
+                postIds.add(Long.parseLong(value));
+            } catch (Exception e) {
+            }
+        }
+        JedisCache.cache().expire(getKey(FeedType.PRODUCT_SUGGEST, id), FEED_EXPIRY);
+        return postIds;
+
+	}
+	
+	public static List<Long> getProductLikeUserQueue(Long productId) {
+		Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.PRODUCT_LIKES,productId), 0L);
         final List<Long> userIds = new ArrayList<>();
         for (String value : values) {
             try {
