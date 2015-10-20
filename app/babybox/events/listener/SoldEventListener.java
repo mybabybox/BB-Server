@@ -21,7 +21,7 @@ public class SoldEventListener {
 			CalcServer.removeFromCategoryQueues(post.id, post.category.id);
 			
 			/*
-			// Need to query users as recipients 
+			// Need to query chat users as recipients
 			Activity activity = new Activity(
 					ActivityType.SOLD, 
 					user.id,

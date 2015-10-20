@@ -22,14 +22,16 @@ public class CommentEventListener {
 		User user = (User) map.get("user");
 		CalcServer.calculateBaseScore(post);
 		
-		Activity activity = new Activity(
-				ActivityType.NEW_COMMENT, 
-				post.owner.id,
-				user.id, 
-				user.name,
-				comment.id,
-				StringUtil.shortMessage(comment.body));
-        activity.ensureUniqueAndCreate();
+		if (user.id != post.owner.id) {
+    		Activity activity = new Activity(
+    				ActivityType.NEW_COMMENT, 
+    				post.owner.id,
+    				user.id, 
+    				user.name,
+    				comment.id,
+    				StringUtil.shortMessage(comment.body));
+            activity.ensureUniqueAndCreate();
+		}
 	}
 	
 	@Subscribe

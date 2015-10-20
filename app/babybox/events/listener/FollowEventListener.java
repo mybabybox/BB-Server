@@ -24,14 +24,16 @@ public class FollowEventListener {
 			Long score = new Date().getTime();		// ideally use FollowSocialRelation.CREATED_DATE
 			CalcServer.addToFollowQueue(localUser.id, user.id, score.doubleValue());
 			
-			Activity activity = new Activity(
-					ActivityType.FOLLOWED, 
-					user.id,
-					localUser.id,
-					localUser.displayName,
-					user.id,
-					user.displayName);
-			activity.ensureUniqueAndCreate();
+			if (user.id != localUser.id) {
+    			Activity activity = new Activity(
+    					ActivityType.FOLLOWED, 
+    					user.id,
+    					localUser.id,
+    					localUser.displayName,
+    					user.id,
+    					user.displayName);
+    			activity.ensureUniqueAndCreate();
+			}
 		}
     }
 	

@@ -155,7 +155,10 @@ public class CalcServer {
 
 	private static void buildCategoryQueue() {
 		clearCategoryQueues();
-		for(Post post : Post.getAllPosts()){
+		for (Post post : Post.getAllPosts()) {
+		    if (post.sold) {
+		        continue;
+		    }
 			buildPriceLowHighPostQueue(post);
 			buildNewestPostQueue(post);
 			buildPopularPostQueue(post);

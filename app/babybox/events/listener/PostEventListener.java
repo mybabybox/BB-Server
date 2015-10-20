@@ -22,6 +22,8 @@ public class PostEventListener {
 		Long score = post.getCreatedDate().getTime();
 		CalcServer.addToPostQueue(post.id, user.id, score.doubleValue());
 		
+		/*
+		// Need to query followers as recipients
 		Activity activity = new Activity(
 				ActivityType.NEW_POST, 
 				user.id,
@@ -30,6 +32,7 @@ public class PostEventListener {
 				post.id,
 				StringUtil.shortMessage(post.title));
         activity.ensureUniqueAndCreate();
+        */
     }
 	
 	@Subscribe

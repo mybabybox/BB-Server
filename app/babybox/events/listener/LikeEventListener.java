@@ -25,14 +25,16 @@ public class LikeEventListener {
 	       	CalcServer.calculateBaseScore(post);
 	       	CalcServer.addToLikeQueue(post.id, user.id, score.doubleValue());
 	       	
-	       	Activity activity = new Activity(
-					ActivityType.LIKED, 
-					post.owner.id,
-					user.id,
-					user.displayName,
-					post.id,
-					StringUtil.shortMessage(post.title));
-	        activity.ensureUniqueAndCreate();
+	       	if (user.id != post.owner.id) {
+    	       	Activity activity = new Activity(
+    					ActivityType.LIKED, 
+    					post.owner.id,
+    					user.id,
+    					user.displayName,
+    					post.id,
+    					StringUtil.shortMessage(post.title));
+    	        activity.ensureUniqueAndCreate();
+	       	}
        	}
     }
 	
