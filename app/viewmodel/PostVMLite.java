@@ -30,7 +30,7 @@ public class PostVMLite {
 	
 	// admin fields
 	@JsonProperty("baseScore") public Long baseScore = 0L;
-	@JsonProperty("timeScore") public Long timeScore = 0L;
+	@JsonProperty("timeScore") public Double timeScore = 0D;
 
     public PostVMLite(Post post, User user) {
         this.id = post.id;

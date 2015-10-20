@@ -8,7 +8,7 @@ import java.util.Random;
 import java.util.Set;
 
 import org.joda.time.DateTime;
-import org.joda.time.Weeks;
+import org.joda.time.Days;
 
 import play.Play;
 import models.Category;
@@ -25,13 +25,14 @@ import domain.DefaultValues;
 public class CalcServer {
 	private static play.api.Logger logger = play.api.Logger.apply(CalcServer.class);
 	
-	public static final Long FEED_SCORE_BASE = Play.application().configuration().getLong("feed.score.base");
+	public static final Long FEED_SCORE_HIGH_BASE = Play.application().configuration().getLong("feed.score.high.base");
 	public static final Long FEED_HOME_COUNT_MAX = Play.application().configuration().getLong("feed.home.count.max");
 	public static final Long FEED_CATEGORY_EXPOSURE_MIN = Play.application().configuration().getLong("feed.category.exposure.min");
 	public static final int FEED_SCORE_RANDOMIZE_PERCENT = Play.application().configuration().getInt("feed.score.randomize.percent");
 	public static final int FEED_EXPIRY = Play.application().configuration().getInt("feed.expiry");
 	public static final int FEED_RETRIEVAL_COUNT = DefaultValues.FEED_INFINITE_SCROLL_COUNT;
 	
+	private static CalcFormula formula = new CalcFormula();
 	private static Random random = new Random();
 	
 	public static void warmUpActivity() {
@@ -82,23 +83,7 @@ public class CalcServer {
 		if (ThreadLocalOverride.isServerStartingUp() && post.baseScore > 0L) {
 			return post.baseScore;
 		}
-		
-		NanoSecondStopWatch sw = new NanoSecondStopWatch();
-		logger.underlyingLogger().debug("calculateBaseScore for p="+post.id);
-		
-		post.baseScore = (long) (
-				post.numComments
-				+ 2 * post.numViews
-				+ 3 * post.numLikes
-				+ 4 * post.numChats
-				+ 5 * post.numBuys
-				+ 1);	// min score of 1
-		post.save();
-		
-		sw.stop();
-		logger.underlyingLogger().debug("calculateBaseScore completed with baseScore="+post.baseScore+". Took "+sw.getElapsedSecs()+"s");
-		
-		return post.baseScore;
+		return formula.computeBaseScore(post);
 	}
 	
 	private static void buildUserQueue() {
@@ -158,31 +143,19 @@ public class CalcServer {
 		}
 	}
 
-	public static Long calculateTimeScore(Post post) {
+	public static Double calculateTimeScore(Post post) {
 	    return calculateTimeScore(post, false);
 	}
 	
-	private static Long calculateTimeScore(Post post, boolean recalcBaseScore) {
-	    Long baseScore = recalcBaseScore? calculateBaseScore(post) : post.baseScore;
-	    
-	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
-	    logger.underlyingLogger().debug("calculateTimeScore for p="+post.id);
-        
-		Long timeScore = Math.max(baseScore, 1);
-		int timeDiff = Weeks.weeksBetween(new DateTime(new Date()), new DateTime(post.getCreatedDate())).getWeeks();
-		if (timeDiff > 0) {
-			timeScore = (long) (timeScore * Math.exp(-8 * timeDiff * timeDiff));
-		}
-		timeScore = timeScore * FEED_SCORE_BASE + post.id;
-		
-		sw.stop();
-        logger.underlyingLogger().debug("calculateTimeScore completed with timeScore="+timeScore+". Took "+sw.getElapsedSecs()+"s");
-        
-		return timeScore;
+	private static Double calculateTimeScore(Post post, boolean recalcBaseScore) {
+	    if (recalcBaseScore) {
+	        calculateBaseScore(post);
+	    }
+		return formula.computeTimeScore(post);
 	}
 
 	public static void addToCategoryPopularQueue(Post post) {
-        Long timeScore = calculateTimeScore(post, true);
+        Double timeScore = calculateTimeScore(post, true);
         JedisCache.cache().putToSortedSet(getKey(FeedType.CATEGORY_POPULAR,post.category.id),  timeScore, post.id.toString());
     }
 	
@@ -191,7 +164,7 @@ public class CalcServer {
 	}
 
 	private static void addToCategoryPriceLowHighQueue(Post post) {
-		JedisCache.cache().putToSortedSet(getKey(FeedType.CATEGORY_PRICE_LOW_HIGH,post.category.id), post.price * FEED_SCORE_BASE + post.id , post.id.toString());
+		JedisCache.cache().putToSortedSet(getKey(FeedType.CATEGORY_PRICE_LOW_HIGH,post.category.id), post.price * FEED_SCORE_HIGH_BASE + post.id , post.id.toString());
 	}
 	
 	private static void buildUserExploreFeedQueue(Long userId) {
@@ -221,7 +194,7 @@ public class CalcServer {
 			Integer length =  (int) ((postsSize * percentage) / 100);
 			postIds.subList(0, length);
 			for(Long postId : postIds){
-				JedisCache.cache().putToSortedSet(getKey(FeedType.HOME_EXPLORE,user.id), Math.random() * FEED_SCORE_BASE, postId.toString());
+				JedisCache.cache().putToSortedSet(getKey(FeedType.HOME_EXPLORE,user.id), Math.random() * FEED_SCORE_HIGH_BASE, postId.toString());
 			}
 		}
 		JedisCache.cache().expire(getKey(FeedType.HOME_EXPLORE,user.id), FEED_EXPIRY);
@@ -230,8 +203,8 @@ public class CalcServer {
 		logger.underlyingLogger().debug("buildUserExploreQueue completed. Took "+sw.getElapsedSecs()+"s");
 	}
 	
-	private static Long randomizeScore(Post post) {
-	    Long timeScore = calculateTimeScore(post, false);
+	private static Double randomizeScore(Post post) {
+	    Double timeScore = calculateTimeScore(post, false);
 	    int min = 100 - FEED_SCORE_RANDOMIZE_PERCENT;
 	    int max = 100 + FEED_SCORE_RANDOMIZE_PERCENT;
 	    int percent = (random.nextInt(max - min) + min) / 100;

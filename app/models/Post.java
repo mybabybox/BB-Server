@@ -75,6 +75,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	public int numViews = 0;
 	public int numChats = 0;
 	public Long baseScore = 0L;
+	public Long baseScoreAdjust = 0L;
 
 	public DeviceType deviceType;
 
