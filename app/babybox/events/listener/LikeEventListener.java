@@ -1,7 +1,5 @@
 package babybox.events.listener;
 
-import java.util.Date;
-
 import models.Activity;
 import models.Activity.ActivityType;
 import models.Post;
@@ -21,9 +19,8 @@ public class LikeEventListener {
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
        	if (post.onLikedBy(user)) {
-	       	Long score = new Date().getTime();		// ideally use LikeSocialRelation.CREATED_DATE
-	       	CalcServer.calculateBaseScore(post);
-	       	CalcServer.addToLikeQueue(post.id, user.id, score.doubleValue());
+	       	CalcServer.addToPopularPostQueue(post);
+	       	CalcServer.addToLikeQueue(post, user);
 	       	
 	       	if (user.id != post.owner.id) {
     	       	Activity activity = new Activity(
@@ -43,8 +40,8 @@ public class LikeEventListener {
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
        	if (post.onUnlikedBy(user)) {
-       		CalcServer.calculateBaseScore(post);
-       		CalcServer.removeFromLikeQueue(post.id, user.id);
+       	    CalcServer.addToPopularPostQueue(post);
+       		CalcServer.removeFromLikeQueue(post, user);
        	}
     }
 }

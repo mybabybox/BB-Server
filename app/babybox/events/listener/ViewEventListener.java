@@ -15,7 +15,7 @@ public class ViewEventListener {
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
 		if (post.onView(user)) {
-			CalcServer.calculateBaseScore(post);
+		    //CalcServer.addToPopularPostQueue(post);
 		}
     }
 }

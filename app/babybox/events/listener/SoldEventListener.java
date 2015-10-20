@@ -18,7 +18,7 @@ public class SoldEventListener {
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
 		if (post.onSold(user)) {
-			CalcServer.removeFromCategoryQueues(post.id, post.category.id);
+			CalcServer.removeFromCategoryQueues(post);
 			
 			/*
 			// Need to query chat users as recipients

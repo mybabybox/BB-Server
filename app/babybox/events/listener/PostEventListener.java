@@ -18,9 +18,8 @@ public class PostEventListener {
     public void recordPostEventOnCalcServer(PostEvent map){
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
-		CalcServer.addToQueues(post);
-		Long score = post.getCreatedDate().getTime();
-		CalcServer.addToPostQueue(post.id, user.id, score.doubleValue());
+		CalcServer.addToCategoryQueues(post);
+		CalcServer.addToPostQueue(post, user);
 		
 		/*
 		// Need to query followers as recipients
@@ -39,7 +38,7 @@ public class PostEventListener {
     public void recordDeletePostEventOnCalcServer(DeletePostEvent map){
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
-		CalcServer.removeFromCategoryQueues(post.id, post.category.id);
-		CalcServer.removeFromPostQueue(post.id, post.owner.id);
+		CalcServer.removeFromCategoryQueues(post);
+		CalcServer.removeFromUserQueues(post, post.owner);
     }
 }

@@ -24,6 +24,7 @@ import domain.DefaultValues;
 public class CalcServer {
 	private static play.api.Logger logger = play.api.Logger.apply(CalcServer.class);
 	
+	public static final Long FEED_SCORE_BASE = Play.application().configuration().getLong("feed.score.base");
 	public static final Long FEED_HOME_COUNT_MAX = Play.application().configuration().getLong("feed.home.count.max");
 	public static final Long FEED_CATEGORY_EXPOSURE_MIN = Play.application().configuration().getLong("feed.category.exposure.min");
 	public static final int FEED_EXPIRY = Play.application().configuration().getInt("feed.expiry");
@@ -78,7 +79,7 @@ public class CalcServer {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
 		logger.underlyingLogger().debug("buildBaseScore starts");
 		
-		for(Post post : Post.getAllPosts()){
+		for (Post post : Post.getAllPosts()) {
 			calculateBaseScore(post);
 		}
 		
@@ -86,10 +87,10 @@ public class CalcServer {
 		logger.underlyingLogger().debug("buildBaseScore completed. Took "+sw.getElapsedSecs()+"s");
 	}
 
-	public static void calculateBaseScore(Post post) {
+	public static Long calculateBaseScore(Post post) {
 		// skip already calculated posts during server startup
 		if (ThreadLocalOverride.isServerStartingUp() && post.baseScore > 0L) {
-			return;
+			return post.baseScore;
 		}
 		
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
@@ -106,6 +107,8 @@ public class CalcServer {
 		
 		sw.stop();
 		logger.underlyingLogger().debug("calculateBaseScore completed with baseScore="+post.baseScore+". Took "+sw.getElapsedSecs()+"s");
+		
+		return post.baseScore;
 	}
 	
 	private static void buildUserQueue() {
@@ -134,7 +137,7 @@ public class CalcServer {
 		logger.underlyingLogger().debug("buildUserLikedPostQueue starts");
 		
 		for (SocialRelation socialRelation : LikeSocialRelation.getUserLikedPosts(user.id)) {
-			JedisCache.cache().putToSortedSet(getKey(FeedType.USER_LIKED,user.id), socialRelation.getCreatedDate().getTime() , socialRelation.target.toString());
+			JedisCache.cache().putToSortedSet(getKey(FeedType.USER_LIKED,user.id), socialRelation.getCreatedDate().getTime(), socialRelation.target.toString());
 		}
 		
 		sw.stop();
@@ -159,32 +162,34 @@ public class CalcServer {
 		    if (post.sold) {
 		        continue;
 		    }
-			buildPriceLowHighPostQueue(post);
-			buildNewestPostQueue(post);
-			buildPopularPostQueue(post);
+		    addToPriceLowHighPostQueue(post);
+		    addToNewestPostQueue(post);
+			addToPopularPostQueue(post);
 		}
 	}
 
-	private static void buildPopularPostQueue(Post post) {
-		Long timeScore = calculateTimeScore(post);
-		JedisCache.cache().putToSortedSet(getKey(FeedType.CATEGORY_POPULAR,post.category.id),  timeScore, post.id.toString());
-	}
-
 	public static Long calculateTimeScore(Post post) {
-		Long timeScore = Math.max(post.baseScore, 1);
+	    Long baseScore = calculateBaseScore(post);
+		Long timeScore = Math.max(baseScore, 1);
 		int timeDiff = Weeks.weeksBetween(new DateTime(new Date()), new DateTime(post.getCreatedDate())).getWeeks();
-		if (timeDiff > 0)
+		if (timeDiff > 0) {
 			timeScore = (long) (timeScore * Math.exp(-8 * timeDiff * timeDiff));
-		timeScore = timeScore * 1000000 + post.id;
+		}
+		timeScore = timeScore * FEED_SCORE_BASE + post.id;
 		return timeScore;
 	}
 
-	private static void buildNewestPostQueue(Post post) {
+	public static void addToPopularPostQueue(Post post) {
+        Long timeScore = calculateTimeScore(post);
+        JedisCache.cache().putToSortedSet(getKey(FeedType.CATEGORY_POPULAR,post.category.id),  timeScore, post.id.toString());
+    }
+	
+	private static void addToNewestPostQueue(Post post) {
 		JedisCache.cache().putToSortedSet(getKey(FeedType.CATEGORY_NEWEST,post.category.id), post.getCreatedDate().getTime() , post.id.toString());
 	}
 
-	private static void buildPriceLowHighPostQueue(Post post) {
-		JedisCache.cache().putToSortedSet(getKey(FeedType.CATEGORY_PRICE_LOW_HIGH,post.category.id), post.price*1000000 + post.id , post.id.toString());
+	private static void addToPriceLowHighPostQueue(Post post) {
+		JedisCache.cache().putToSortedSet(getKey(FeedType.CATEGORY_PRICE_LOW_HIGH,post.category.id), post.price * FEED_SCORE_BASE + post.id , post.id.toString());
 	}
 	
 	private static void buildUserExploreFeedQueue(Long userId) {
@@ -214,7 +219,7 @@ public class CalcServer {
 			Integer length =  (int) ((postsSize * percentage) / 100);
 			postIds.subList(0, length);
 			for(Long postId : postIds){
-				JedisCache.cache().putToSortedSet(getKey(FeedType.HOME_EXPLORE,user.id), Math.random() * 100000000, postId.toString());
+				JedisCache.cache().putToSortedSet(getKey(FeedType.HOME_EXPLORE,user.id), Math.random() * FEED_SCORE_BASE, postId.toString());
 			}
 		}
 		JedisCache.cache().expire(getKey(FeedType.HOME_EXPLORE,user.id), FEED_EXPIRY);
@@ -377,17 +382,17 @@ public class CalcServer {
 
 	}
 	
-	public static void addToQueues(Post post) {
+	public static void addToCategoryQueues(Post post) {
 		calculateBaseScore(post);
-		buildPriceLowHighPostQueue(post);
-		buildNewestPostQueue(post);
-		buildPopularPostQueue(post);
+		addToPriceLowHighPostQueue(post);
+		addToNewestPostQueue(post);
+		addToPopularPostQueue(post);
 	}
 	
-	public static void removeFromCategoryQueues(Long postId, Long categoryId){
-		removeMemberFromPriceLowHighPostQueue(postId, categoryId);
-		removeMemberFromNewestPostQueue(postId, categoryId);
-		removeMemberFromPopularPostQueue(postId, categoryId);
+	public static void removeFromCategoryQueues(Post post){
+		removeMemberFromPriceLowHighPostQueue(post.id, post.category.id);
+		removeMemberFromNewestPostQueue(post.id, post.category.id);
+		removeMemberFromPopularPostQueue(post.id, post.category.id);
 	}
 	
 	public static void removeMemberFromPriceLowHighPostQueue(Long postId, Long categoryId){
@@ -402,12 +407,12 @@ public class CalcServer {
 		JedisCache.cache().removeMemberFromSortedSet(getKey(FeedType.CATEGORY_POPULAR,categoryId), postId.toString());
 	}
 	
-	public static void addToLikeQueue(Long postId, Long userId, Double score){
-		JedisCache.cache().putToSortedSet(getKey(FeedType.USER_LIKED,userId), score, postId.toString());
+	public static void addToLikeQueue(Post post, User user){
+		JedisCache.cache().putToSortedSet(getKey(FeedType.USER_LIKED,user.id), new Date().getTime(), post.id.toString());
 	}
 	
-	public static void removeFromLikeQueue(Long postId, Long userId){
-		JedisCache.cache().removeMemberFromSortedSet(getKey(FeedType.USER_LIKED,userId), postId.toString());
+	public static void removeFromLikeQueue(Post post, User user){
+		JedisCache.cache().removeMemberFromSortedSet(getKey(FeedType.USER_LIKED,user.id), post.id.toString());
 	}
 
 	public static void addToFollowQueue(Long userId, Long followingUserId, Double score){
@@ -420,29 +425,22 @@ public class CalcServer {
 		JedisCache.cache().removeMemberFromSortedSet(getKey(FeedType.USER_FOLLOWING,userId), followingUserId.toString());
 	}
 
-	public static void addToPostQueue(Long postId, Long userId, Double score){
-		JedisCache.cache().putToSortedSet(getKey(FeedType.USER_POSTED,userId), score, postId.toString());
+	public static void addToPostQueue(Post post, User user){
+		JedisCache.cache().putToSortedSet(getKey(FeedType.USER_POSTED,user.id), post.getCreatedDate().getTime(), post.id.toString());
 	}
 	
-	public static void removeFromPostQueue(Long postId, Long userId){
-		JedisCache.cache().removeMemberFromSortedSet(getKey(FeedType.USER_POSTED,userId), postId.toString());
+	public static void removeFromPostQueue(Post post, User user){
+		JedisCache.cache().removeMemberFromSortedSet(getKey(FeedType.USER_POSTED,user.id), post.id.toString());
 	}
 
-	/**
-	 * Remove deleted / sold products from all category feeds
-	 * @param postId
-	 */
-	public static void removeFromCategoryFeeds(Long postId) {
-		
-	}
-	
 	/**
 	 * Remove deleted products from owner posted and liked feeds
 	 * Remove deleted products from other users liked feeds (query from db)
 	 * @param postId
 	 */
-	public static void removeFromUserFeeds(Long postId, Long userId) {
-		
+	public static void removeFromUserQueues(Post post, User user) {
+	    removeFromLikeQueue(post, user);
+	    removeFromPostQueue(post, user);
 	}
 	
 	public static Double getScore(String key, Long postId){
