@@ -162,9 +162,9 @@ public class CalcServer {
 		    if (post.sold) {
 		        continue;
 		    }
-		    addToPriceLowHighPostQueue(post);
-		    addToNewestPostQueue(post);
-			addToPopularPostQueue(post);
+		    addToCategoryPriceLowHighQueue(post);
+		    addToCategoryNewestQueue(post);
+			addToCategoryPopularQueue(post);
 		}
 	}
 
@@ -179,16 +179,16 @@ public class CalcServer {
 		return timeScore;
 	}
 
-	public static void addToPopularPostQueue(Post post) {
+	public static void addToCategoryPopularQueue(Post post) {
         Long timeScore = calculateTimeScore(post);
         JedisCache.cache().putToSortedSet(getKey(FeedType.CATEGORY_POPULAR,post.category.id),  timeScore, post.id.toString());
     }
 	
-	private static void addToNewestPostQueue(Post post) {
+	private static void addToCategoryNewestQueue(Post post) {
 		JedisCache.cache().putToSortedSet(getKey(FeedType.CATEGORY_NEWEST,post.category.id), post.getCreatedDate().getTime() , post.id.toString());
 	}
 
-	private static void addToPriceLowHighPostQueue(Post post) {
+	private static void addToCategoryPriceLowHighQueue(Post post) {
 		JedisCache.cache().putToSortedSet(getKey(FeedType.CATEGORY_PRICE_LOW_HIGH,post.category.id), post.price * FEED_SCORE_BASE + post.id , post.id.toString());
 	}
 	
@@ -384,9 +384,9 @@ public class CalcServer {
 	
 	public static void addToCategoryQueues(Post post) {
 		calculateBaseScore(post);
-		addToPriceLowHighPostQueue(post);
-		addToNewestPostQueue(post);
-		addToPopularPostQueue(post);
+		addToCategoryPriceLowHighQueue(post);
+		addToCategoryNewestQueue(post);
+		addToCategoryPopularQueue(post);
 	}
 	
 	public static void removeFromCategoryQueues(Post post){

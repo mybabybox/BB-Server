@@ -19,7 +19,7 @@ public class LikeEventListener {
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
        	if (post.onLikedBy(user)) {
-	       	CalcServer.addToPopularPostQueue(post);
+	       	CalcServer.addToCategoryPopularQueue(post);
 	       	CalcServer.addToLikeQueue(post, user);
 	       	
 	       	if (user.id != post.owner.id) {
@@ -40,7 +40,7 @@ public class LikeEventListener {
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
        	if (post.onUnlikedBy(user)) {
-       	    CalcServer.addToPopularPostQueue(post);
+       	    CalcServer.addToCategoryPopularQueue(post);
        		CalcServer.removeFromLikeQueue(post, user);
        	}
     }
