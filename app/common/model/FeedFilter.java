@@ -11,7 +11,9 @@ public class FeedFilter {
         CATEGORY_PRICE_HIGH_LOW,
         USER_POSTED,
         USER_LIKED,
-        USER_FOLLOWING
+        USER_FOLLOWING,
+        PRODUCT_LIKES,
+        PRODUCT_SUGGEST
     }
 
     public enum FeedProductType {

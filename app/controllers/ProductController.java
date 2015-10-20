@@ -393,6 +393,17 @@ public class ProductController extends Controller{
 		return ok(Json.toJson(vms));
 	}
 	
+	@Transactional 
+	public static Result getSuggestedProducts(Long id) {
+		final User localUser = Application.getLocalUser(session());
+		if (!localUser.isLoggedIn()) {
+			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+			return notFound();
+		}
+		List<PostVMLite> vms = FeedHandler.getPostVM(id, 0l, localUser, FeedType.PRODUCT_SUGGEST);
+		return ok(Json.toJson(vms));
+	}
+	
 	@Transactional
 	public static Result getPostComments(Long id, Long offset) {
 		final User localUser = Application.getLocalUser(session());

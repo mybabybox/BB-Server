@@ -48,6 +48,11 @@ public class FeedHandler {
 				postIds = CalcServer.getUserPostFeeds(id, offset.doubleValue());
 				break;
 				
+			case PRODUCT_SUGGEST:
+				postIds = CalcServer.getSuggestedProducts(id);
+				break;
+			
+			
 			default:
 				break;
 			
