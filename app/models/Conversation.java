@@ -248,6 +248,9 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		conversation.setUpdatedDate(now);
 		conversation.setReadDate(user);		// New conversation always opened by buyer
 		conversation.save();
+		
+		post.numChats++;      // new conversation for post
+		
 		return conversation;
 	}
 

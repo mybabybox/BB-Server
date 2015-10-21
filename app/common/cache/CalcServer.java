@@ -45,7 +45,7 @@ public class CalcServer {
 		buildUserQueue();
 		buildPostQueue();
 		
-		JobScheduler.getInstance().schedule("buildCategoryPopularQueue", FEED_SCORE_COMPUTE_SCHEDULE, TimeUnit.MINUTES,
+		JobScheduler.getInstance().schedule("buildCategoryPopularQueue", FEED_SCORE_COMPUTE_SCHEDULE, TimeUnit.HOURS,
 				new Runnable() {
 					public void run() {
 						JPA.withTransaction(new play.libs.F.Callback0() {

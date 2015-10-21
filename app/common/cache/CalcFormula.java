@@ -6,6 +6,7 @@ import models.Post;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
+import org.joda.time.Weeks;
 
 import play.Play;
 import common.utils.NanoSecondStopWatch;
@@ -28,11 +29,11 @@ public class CalcFormula {
         logger.underlyingLogger().debug("calculateBaseScore for p="+post.id);
         
         post.baseScore = (long) (
-                post.numComments * 10
-                + 2 * post.numViews * 10
-                + 4 * post.numLikes * 10
-                + 6 * post.numChats * 10
-                + 8 * post.numBuys * 10
+                post.numComments 
+                + 2 * post.numViews 
+                + 2 * post.numLikes 
+                + 3 * post.numChats 
+                + 4 * post.numBuys 
                 + FEED_SCORE_COMPUTE_BASE);
         
         if (post.baseScoreAdjust != null) {
@@ -50,13 +51,13 @@ public class CalcFormula {
 	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
         logger.underlyingLogger().debug("calculateTimeScore for p="+post.id+" date=" + post.getCreatedDate() + " baseScore="+post.baseScore);
         
-        Double timeScore = Math.log(Math.max(post.baseScore, 1));
-        int x = Math.abs(Days.daysBetween(new DateTime(post.getCreatedDate()), new DateTime()).getDays());
-        if (x > FEED_SCORE_COMPUTE_DECAY_START) {
-            x -= FEED_SCORE_COMPUTE_DECAY_START;
-            timeScore = timeScore * Math.exp(-FEED_SCORE_COMPUTE_DECAY_VELOCITY * x);
+        Double timeScore = (double) Math.max(post.baseScore, 1);
+        Double timeDiff = Math.abs(Days.daysBetween(new DateTime(post.getCreatedDate()), new DateTime()).getDays()) / 7D;
+        timeDiff = (double) Math.ceil(timeDiff);
+        if (timeDiff > FEED_SCORE_COMPUTE_DECAY_START) {
+            timeDiff -= FEED_SCORE_COMPUTE_DECAY_START;
+            timeScore = timeScore * getDiscountFactor(timeDiff);
         }
-        timeScore = timeScore * FEED_SCORE_HIGH_BASE;
         
         BigDecimal bd = new BigDecimal(timeScore);
         bd = bd.setScale(5, BigDecimal.ROUND_HALF_UP);
@@ -68,4 +69,9 @@ public class CalcFormula {
         
         return timeScore;
 	}
+	
+	private Double getDiscountFactor(Double timeDiff) {
+	    return Math.exp(-FEED_SCORE_COMPUTE_DECAY_VELOCITY * timeDiff);
+	}
+
 }
