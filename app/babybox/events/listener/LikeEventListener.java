@@ -1,5 +1,6 @@
 package babybox.events.listener;
 
+import mobile.GcmSender;
 import models.Activity;
 import models.Activity.ActivityType;
 import models.Post;
@@ -31,6 +32,10 @@ public class LikeEventListener {
     					post.id,
     					StringUtil.shortMessage(post.title));
     	        activity.ensureUniqueAndCreate();
+    	        
+    	        //GCM Notification sender
+    	        System.out.println("LIKE");
+    	        GcmSender.sendNotification(post.owner.id, user.name+" Liked on your post "+post.title);
 	       	}
        	}
     }
