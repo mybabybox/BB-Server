@@ -10,36 +10,36 @@ import javax.persistence.Query;
 import play.db.jpa.JPA;
 
 @Entity
-public class Gcm extends domain.Entity {
+public class GcmToken extends domain.Entity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	private String reg_id;
+	private String regId;
 
-	private Long user_id;
+	private Long userId;
 
     /**
      * Ctor
      */
-    public Gcm() {}
+    public GcmToken() {}
 
     public static void createUpdateGcmKey(Long userId, String key) {
-        Gcm gcm = findByUserId(userId);
-        if (gcm == null) {
-            gcm = new Gcm();
+        GcmToken gcmToken = findByUserId(userId);
+        if (gcmToken == null) {
+            gcmToken = new GcmToken();
         }
-        gcm.setUser_id(userId);
-        gcm.setReg_id(key);
-        gcm.merge();
+        gcmToken.setUserId(userId);
+        gcmToken.setRegId(key);
+        gcmToken.merge();
     }
 
     ///////////////////////// Find APIs /////////////////////////
-	public static Gcm findByUserId(Long userId) {
+	public static GcmToken findByUserId(Long userId) {
 		try { 
 			Query q = JPA.em().createQuery("SELECT g FROM Gcm g where user_id = ?1");
 			q.setParameter(1, userId);
-			return (Gcm) q.getSingleResult();
+			return (GcmToken) q.getSingleResult();
 		} catch (NoResultException e) {
 			return null;
 		} 
@@ -50,19 +50,19 @@ public class Gcm extends domain.Entity {
 		return id;
 	}
 
-	public String getReg_id() {
-		return reg_id;
+	public String getRegId() {
+		return regId;
 	}
 
-	public void setReg_id(String reg_id) {
-		this.reg_id = reg_id;
+	public void setRegId(String regId) {
+		this.regId = regId;
 	}
 
-	public Long getUser_id() {
-		return user_id;
+	public Long getUserId() {
+		return userId;
 	}
 
-	public void setUser_id(Long user_id) {
-		this.user_id = user_id;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 }

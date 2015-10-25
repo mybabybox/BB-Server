@@ -19,7 +19,7 @@ import models.Collection;
 import models.Conversation;
 import models.Emoticon;
 import models.FollowSocialRelation;
-import models.Gcm;
+import models.GcmToken;
 import models.Location;
 import models.Message;
 import models.NotificationCounter;
@@ -882,7 +882,7 @@ public class UserController extends Controller {
         final User localUser = Application.getLocalUser(session());
 
         if (localUser.isLoggedIn()) {
-            Gcm.createUpdateGcmKey(localUser.id, key);
+            GcmToken.createUpdateGcmKey(localUser.id, key);
         } else {
             logger.underlyingLogger().info("Not signed in. Skipped saveGcmKey.");
         }

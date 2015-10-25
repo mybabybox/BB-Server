@@ -1,28 +1,26 @@
 package mobile;
 
-import models.Gcm;
+import play.Play;
+import models.GcmToken;
 
 import com.google.android.gcm.server.Sender;
 import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.Result;
 
-/**
- * Created by IntelliJ IDEA.
- * Date: 20/9/15
- * Time: 5:33 PM
- */
 public class GcmSender {
     private static final play.api.Logger logger = play.api.Logger.apply(GcmSender.class);
 
-    private static final String AUTHORIZATION_KEY = "AIzaSyD0WLyJEeiZpAof0WwxbLaQJB0Dzp7ToHg"; // 
-
+    public static final String MESSAGE_KEY = "message";
+    
+    public static final String AUTHORIZATION_KEY = Play.application().configuration().getString("gcm.authorization.key");
+    
     private static final int TTL = 30;
     private static final int RETRIES = 2;
 
     public static void sendNotification(Long userId, String msg){
-        Gcm gcm = Gcm.findByUserId(userId);
-        if (gcm != null) {
-            sendToGcm(userId, gcm.getReg_id() ,msg);
+        GcmToken gcmToken = GcmToken.findByUserId(userId);
+        if (gcmToken != null) {
+            sendToGcm(userId, gcmToken.getRegId(), msg);
         } else {
             logger.underlyingLogger().info("[u="+userId+"] User does not have Gcm reg");
         }
@@ -31,9 +29,10 @@ public class GcmSender {
     private static boolean sendToGcm(Long userId, String regId, String msg) {
         try {
             Sender sender = new Sender(AUTHORIZATION_KEY);
-            Message message = new Message.Builder().timeToLive(TTL).collapseKey("message")
+            Message message = new Message.Builder().timeToLive(TTL)
+                    .collapseKey(MESSAGE_KEY)
                     .delayWhileIdle(true)
-                    .addData("message", msg).build();
+                    .addData(MESSAGE_KEY, msg).build();
 
             Result result = sender.send(message, regId, RETRIES);
             logger.underlyingLogger().info("[u="+userId+"] Gcm send result("+regId+"): "+result);
