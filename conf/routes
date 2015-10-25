@@ -76,12 +76,13 @@ POST    /login/password/forgot      controllers.Signup.doForgotPassword
 
 
 # User Info Service
-GET     /get-user-info                              controllers.UserController.getUserInfo
-GET     /about-user                                 controllers.UserController.aboutUser
-POST    /updateUserProfileData                      controllers.UserController.updateUserProfileData
+GET     /get-user-info              controllers.UserController.getUserInfo
+GET     /about-user                 controllers.UserController.aboutUser
+POST    /updateUserProfileData      controllers.UserController.updateUserProfileData
 
-#User Gcm
-POST	/save-gcm-key/:key			controllers.UserController.saveGcmKey(key : String)
+# Gcm
+POST	/save-gcm-key/:key/:versionCode            controllers.UserController.saveGcmKey(key:String, versionCode:Long)
+
 # Conversation
 GET     /get-all-conversations                      controllers.UserController.getAllConversations()
 GET     /get-post-conversations/:id                 controllers.ProductController.getConversations(id:Long)

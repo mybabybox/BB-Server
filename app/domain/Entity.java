@@ -55,7 +55,6 @@ public class Entity
   
   @Transactional
   public void save() {
-      //setCreatedDate(new Date());
       JPA.em().persist(this);
       JPA.em().flush();
       postSave();
@@ -68,7 +67,6 @@ public class Entity
   
   @Transactional
   public void merge() {
-      //setUpdatedDate(new Date());
       JPA.em().merge(this);
   }
   

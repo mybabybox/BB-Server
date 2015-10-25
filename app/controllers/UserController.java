@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import mobile.GcmSender;
 import models.Activity;
 import models.Collection;
 import models.Conversation;
@@ -878,13 +877,20 @@ public class UserController extends Controller {
 	}
     
     @Transactional
-    public static Result saveGcmKey(String key){
-        final User localUser = Application.getLocalUser(session());
+    public static Result saveGcmKey(String key, Long versionCode){
+        NanoSecondStopWatch sw = new NanoSecondStopWatch();
+        
+        User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
 
-        if (localUser.isLoggedIn()) {
-            GcmToken.createUpdateGcmKey(localUser.id, key);
-        } else {
-            logger.underlyingLogger().info("Not signed in. Skipped saveGcmKey.");
+        GcmToken.createUpdateGcmKey(localUser.id, key, versionCode);
+        
+        sw.stop();
+        if (logger.underlyingLogger().isDebugEnabled()) {
+            logger.underlyingLogger().debug("[u="+localUser.getId()+"][gcmKey="+key+"][versionCode="+versionCode+"] saveGcmKey(). Took "+sw.getElapsedMS()+"ms");
         }
 		return ok();
     }
