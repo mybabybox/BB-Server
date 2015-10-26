@@ -179,11 +179,6 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 	}
 
 	public static List<Activity> getActivities(Long userId, Long offset) {
-		// increment notification counter for the recipient
-		if (offset == 0) {
-			NotificationCounter.readActivitiesCount(userId);
-		}
-
 		Query q = JPA.em().createQuery("SELECT a FROM Activity a where userId = ? and deleted = false");
 		q.setFirstResult((int) (offset * DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT));
 		q.setMaxResults(DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT);

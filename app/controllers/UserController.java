@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -852,7 +851,7 @@ public class UserController extends Controller {
     	
     	List<Activity> activities = Activity.getActivities(localUser.id, offset);
     	List<ActivityVM> vms = new ArrayList<>();
-		for(Activity activity : activities){
+		for (Activity activity : activities) {
 			ActivityVM vm = new ActivityVM(activity);
 			vms.add(vm);
 			
@@ -861,8 +860,11 @@ public class UserController extends Controller {
 			activity.save();
 		}
 		
-		resetActivitiesCount();
-		
+		// increment notification counter for the recipient
+        if (offset == 0) {
+            resetActivitiesCount();
+        }
+        
 		return ok(Json.toJson(vms));
 	}
     
