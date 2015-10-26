@@ -26,6 +26,7 @@ public class PostEventListener {
 		Activity activity = new Activity(
 				ActivityType.NEW_POST, 
 				user.id,
+				true, 
 				user.id,
 				user.displayName,
 				post.id,

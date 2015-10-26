@@ -28,6 +28,7 @@ public class FollowEventListener {
     			Activity activity = new Activity(
     					ActivityType.FOLLOWED, 
     					user.id,
+    					false, 
     					localUser.id,
     					localUser.displayName,
     					user.id,

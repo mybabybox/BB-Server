@@ -25,6 +25,7 @@ public class SoldEventListener {
 			Activity activity = new Activity(
 					ActivityType.SOLD, 
 					user.id,
+					true, 
 					user.id,
 					user.displayName,
 					post.id,

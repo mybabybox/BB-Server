@@ -35,11 +35,10 @@ public class GcmSender {
                     .addData(MESSAGE_KEY, msg).build();
 
             Result result = sender.send(message, regId, RETRIES);
-            logger.underlyingLogger().info("[u="+userId+"] Gcm send result("+regId+"): "+result);
+            logger.underlyingLogger().info("[u="+userId+"][regId="+regId+"] Gcm send result: "+result);
             return true;
         } catch (Exception e) {
             logger.underlyingLogger().error("[u="+userId+"] Error in Gcm send", e);
-            System.out.println("exception in gcm");
             return false;
         }
     }

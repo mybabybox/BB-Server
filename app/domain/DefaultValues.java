@@ -23,8 +23,7 @@ public class DefaultValues {
     public static final int CONVERSATION_MESSAGE_COUNT = 10;
     public static final int CONVERSATION_COUNT = 1000;
     
-    public static final int GAME_TRANSACTION_PAGESIZE = 30;
-    public static final int GAME_TRANSACTION_ADMIN_PAGESIZE = 200;
+    public static final int ACTIVITY_NEW_COMMENT_MAX_FAN_OUT = 100;
     
     public static Map<String, String> PARENT_BIRTH_YEARS = new LinkedHashMap<String, String>();
     public static Map<String, String> CHILD_BIRTH_YEARS = new LinkedHashMap<String, String>();

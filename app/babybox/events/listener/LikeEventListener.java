@@ -27,6 +27,7 @@ public class LikeEventListener {
     	       	Activity activity = new Activity(
     					ActivityType.LIKED, 
     					post.owner.id,
+    					true, 
     					user.id,
     					user.displayName,
     					post.id,
@@ -35,7 +36,7 @@ public class LikeEventListener {
     	        
     	        //GCM Notification sender
     	        System.out.println("LIKE");
-    	        GcmSender.sendNotification(post.owner.id, user.name+" Liked on your post "+post.title);
+    	        GcmSender.sendNotification(post.owner.id, user.name+" Liked on your post - "+post.title);
 	       	}
        	}
     }
