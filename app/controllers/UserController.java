@@ -855,25 +855,12 @@ public class UserController extends Controller {
 		for(Activity activity : activities){
 			ActivityVM vm = new ActivityVM(activity);
 			vms.add(vm);
+			
+			// mark read
+			activity.viewed = true;
+			activity.save();
 		}
 		return ok(Json.toJson(vms));
-	}
-    
-    @Transactional
-    public static Result markViewed(Long id){
-    	User localUser = Application.getLocalUser(session());
-    	if (!localUser.isLoggedIn()) {
-            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
-            return notFound();
-        }
-    	
-    	Activity activity = Activity.findById(id);
-    	if(activity.userId == localUser.id){
-    		activity.setViewed(true);
-    		activity.setUpdatedDate(new Date());
-    		activity.merge();
-    	}
-		return ok();
 	}
     
     @Transactional
