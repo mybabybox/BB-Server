@@ -843,14 +843,14 @@ public class UserController extends Controller {
     }
     
     @Transactional
-    public static Result getAllActivities(long offset){
+    public static Result getActivities(Long offset){
     	User localUser = Application.getLocalUser(session());
     	if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
             return notFound();
         }
     	
-    	List<Activity> activities = Activity.getAllActivities(localUser.id, offset);
+    	List<Activity> activities = Activity.getActivities(localUser.id, offset);
     	List<ActivityVM> vms = new ArrayList<>();
 		for(Activity activity : activities){
 			ActivityVM vm = new ActivityVM(activity);

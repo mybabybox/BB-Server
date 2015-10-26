@@ -4,6 +4,7 @@ import models.Activity;
 
 public class ActivityVM {
 	public Long id;
+	public Long createdDate;
 	public String activityType;
 	public Long actor;
 	public String actorName;
@@ -17,6 +18,7 @@ public class ActivityVM {
 	
 	public ActivityVM(Activity activity) {
 		this.id = activity.id;
+		this.createdDate = activity.getCreatedDate().getTime();
 		this.activityType = activity.activityType.name();
         this.actor = activity.actor;
         this.actorName = activity.actorName;

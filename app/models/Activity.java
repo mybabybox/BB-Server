@@ -178,7 +178,7 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 		}
 	}
 
-	public static List<Activity> getAllActivities(Long userId, Long offset) {
+	public static List<Activity> getActivities(Long userId, Long offset) {
 		// increment notification counter for the recipient
 		if (offset == 0) {
 			NotificationCounter.readActivitiesCount(userId);
