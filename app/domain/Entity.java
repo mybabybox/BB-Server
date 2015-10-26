@@ -15,7 +15,7 @@ import play.db.jpa.Transactional;
 public class Entity
 {
   @Embedded
-  @AttributeOverrides({@javax.persistence.AttributeOverride(name="createdBy", column=@javax.persistence.Column(name="CREATED_BY")), @javax.persistence.AttributeOverride(name="createdDate", column=@javax.persistence.Column(name="CREATED_DATE")), @javax.persistence.AttributeOverride(name="updatedBy", column=@javax.persistence.Column(name="UPDATED_BY")), @javax.persistence.AttributeOverride(name="updatedDate", column=@javax.persistence.Column(name="UPDATED_DATE"))})
+  @AttributeOverrides({@javax.persistence.AttributeOverride(name="createdDate", column=@javax.persistence.Column(name="CREATED_DATE")), @javax.persistence.AttributeOverride(name="updatedDate", column=@javax.persistence.Column(name="UPDATED_DATE"))})
   public AuditFields auditFields;
   
   public Entity()
@@ -23,24 +23,10 @@ public class Entity
     this.auditFields = new AuditFields();
   }
   
-  public void setCreatedBy(String createdBy)
-  {
-      if (auditFields != null) {
-        this.auditFields.setCreatedBy(createdBy);
-      }
-  }
-  
   public void setCreatedDate(Date createdDate)
   {
       if (auditFields != null) {
         this.auditFields.setCreatedDate(createdDate);
-      }
-  }
-  
-  public void setUpdatedBy(String updatedBy)
-  {
-      if (auditFields != null) {
-        this.auditFields.setUpdatedBy(updatedBy);
       }
   }
   
@@ -52,27 +38,11 @@ public class Entity
   }
   
   @JsonIgnore
-  public String getCreatedBy() {
-      if (this.auditFields != null) {
-          return this.auditFields.getCreatedBy();
-      }
-      return "";
-  }
-  
-  @JsonIgnore
   public Date getCreatedDate() {
       if (this.auditFields != null) {
           return this.auditFields.getCreatedDate();
       }
       return null;
-  }
-  
-  @JsonIgnore
-  public String getUpdatedBy() {
-      if (this.auditFields != null) {
-          return this.auditFields.getUpdatedBy();
-      }
-      return "";
   }
   
   @JsonIgnore
@@ -85,8 +55,6 @@ public class Entity
   
   @Transactional
   public void save() {
-      //setCreatedBy(Application.getLocalUserName());
-      //setCreatedDate(new Date());
       JPA.em().persist(this);
       JPA.em().flush();
       postSave();
@@ -99,8 +67,6 @@ public class Entity
   
   @Transactional
   public void merge() {
-      //setUpdatedBy(Application.getLocalUserName());
-      //setUpdatedDate(new Date());
       JPA.em().merge(this);
   }
   

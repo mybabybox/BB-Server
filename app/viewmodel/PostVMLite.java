@@ -3,13 +3,15 @@ package viewmodel;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import common.cache.CalcServer;
-
 import models.Folder;
 import models.Post;
 import models.User;
 
 public class PostVMLite {
 	@JsonProperty("id") public Long id;
+	@JsonProperty("ownerId") public Long ownerId;
+    @JsonProperty("ownerName") public String ownerName;
+    
 	@JsonProperty("title") public String title;
 	@JsonProperty("price") public double price;
 	@JsonProperty("sold") public boolean sold;
@@ -28,10 +30,12 @@ public class PostVMLite {
 	
 	// admin fields
 	@JsonProperty("baseScore") public Long baseScore = 0L;
-	@JsonProperty("timeScore") public Long timeScore = 0L;
+	@JsonProperty("timeScore") public Double timeScore = 0D;
 
     public PostVMLite(Post post, User user) {
         this.id = post.id;
+        this.ownerId = post.owner.id;
+        this.ownerName = post.owner.displayName;
         this.title = post.title;
         this.price = post.price;
         this.sold = post.sold;
@@ -53,7 +57,7 @@ public class PostVMLite {
         
         if (user.isSuperAdmin()) {
 	        this.baseScore = post.baseScore;
-	        this.timeScore = CalcServer.calculateTimeScore(post);
+	        this.timeScore = post.timeScore;
         }
     }
     
@@ -65,6 +69,22 @@ public class PostVMLite {
         this.id = id;
     }
 
+    public Long getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(Long ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+    
     public String getTitle() {
         return title;
     }

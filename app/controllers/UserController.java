@@ -1,21 +1,27 @@
 package controllers;
 
+import handler.FeedHandler;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import models.Activity;
 import models.Collection;
 import models.Conversation;
 import models.Emoticon;
 import models.FollowSocialRelation;
+import models.GcmToken;
 import models.Location;
 import models.Message;
+import models.NotificationCounter;
 import models.Post;
 import models.Resource;
 import models.SiteTour;
@@ -33,15 +39,17 @@ import play.mvc.Http;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
 import service.SocialRelationHandler;
+import viewmodel.ActivityVM;
 import viewmodel.CollectionVM;
 import viewmodel.ConversationVM;
 import viewmodel.EmoticonVM;
 import viewmodel.MessageVM;
+import viewmodel.NotificationCounterVM;
 import viewmodel.PostVMLite;
 import viewmodel.ProfileVM;
 import viewmodel.UserVM;
 import viewmodel.UserVMLite;
-import common.cache.CalcServer;
+import common.model.FeedFilter.FeedType;
 import common.utils.ImageFileUtil;
 import common.utils.NanoSecondStopWatch;
 import domain.DefaultValues;
@@ -676,6 +684,29 @@ public class UserController extends Controller {
         	//return ok(views.html.babybox.web.profile.render(Json.stringify(Json.toJson(ProfileVM.profile(user,localUser))), Json.stringify(Json.toJson(new UserVM(localUser)))));
     }
     
+	@Transactional 
+	public static Result getHomeExploreFeed(Long offset) {
+		final User localUser = Application.getLocalUser(session());
+		if (!localUser.isLoggedIn()) {
+			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+			return notFound();
+		}
+		
+		List<PostVMLite> vms = FeedHandler.getPostVM(localUser.id, offset, localUser, FeedType.HOME_EXPLORE);
+		return ok(Json.toJson(vms));
+	}
+	
+	@Transactional 
+	public static Result getHomeFollowingFeed(Long offset) {
+		final User localUser = Application.getLocalUser(session());
+		if (!localUser.isLoggedIn()) {
+			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+			return notFound();
+		}
+		List<PostVMLite> vms = FeedHandler.getPostVM(localUser.id, offset, localUser, FeedType.HOME_FOLLOWING);
+		return ok(Json.toJson(vms));
+	}
+	
     @Transactional
     public static Result getUserPosts(Long id, Long offset) {
     	final User localUser = Application.getLocalUser(session());
@@ -683,18 +714,8 @@ public class UserController extends Controller {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
             return notFound();
         }
-        
-    	List<Long> postIds = CalcServer.getUserPostFeeds(id, offset.doubleValue());
-        if(postIds.size() == 0){
-			return ok(Json.toJson(postIds));
-		}
-        
-    	List<PostVMLite> vms = new ArrayList<>();
-		for(Post product : Post.getPosts(postIds)) {
-			PostVMLite vm = new PostVMLite(product, localUser);
-			vm.offset = product.getCreatedDate().getTime();
-			vms.add(vm);
-		}
+
+        List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.USER_POSTED);
 		return ok(Json.toJson(vms));
     }
     
@@ -740,7 +761,7 @@ public class UserController extends Controller {
             return notFound();
         }
         
-    	List<FollowSocialRelation> followings = FollowSocialRelation.getUserFollowings(id);
+    	List<FollowSocialRelation> followings = FollowSocialRelation.getUserFollowings(id, offset);
     	List<UserVMLite> userFollowings = new ArrayList<UserVMLite>();
     	
     	for (SocialRelation socialRelation : followings) {
@@ -759,11 +780,11 @@ public class UserController extends Controller {
             return notFound();
         }
         
-    	List<FollowSocialRelation> followings = FollowSocialRelation.getUserFollowers(id);
+    	List<FollowSocialRelation> followings = FollowSocialRelation.getUserFollowers(id, offset);
     	List<UserVMLite> userFollowers = new ArrayList<UserVMLite>();
     	
     	for(SocialRelation socialRelation : followings){
-    		User user = User.findById(socialRelation.target);
+    		User user = User.findById(socialRelation.actor);
     		UserVMLite uservm = new UserVMLite(user, localUser);
     		userFollowers.add(uservm);
     	}
@@ -778,17 +799,100 @@ public class UserController extends Controller {
             return notFound();
         }
         
-    	List<Long> postIds = CalcServer.getUserLikeFeeds(id, offset.doubleValue());
+        List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.USER_LIKED);
+		return ok(Json.toJson(vms));
+    }
+    
+    @Transactional
+    public static Result getNotificationCounter() {
+    	final User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
         
-        if(postIds.size() == 0){
-			return ok(Json.toJson(postIds));
-		}
-    	List<PostVMLite> vms = new ArrayList<>();
-		for (Post product : Post.getPosts(postIds)) {
-			PostVMLite vm = new PostVMLite(product, localUser);
-			vm.offset = product.getCreatedDate().getTime();
+        NotificationCounter counter = NotificationCounter.getNotificationCounter(localUser.id);
+        if (counter != null) {
+        	return ok(Json.toJson(new NotificationCounterVM(counter)));
+        }
+        return ok();
+    }
+    
+    @Transactional
+    public static Result readActivitiesCount() {
+    	final User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+        
+        NotificationCounter.readActivitiesCount(localUser.id);
+        return ok();
+    }
+    
+    @Transactional
+    public static Result readConversationsCount() {
+    	final User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+        
+        NotificationCounter.readConversationsCount(localUser.id);
+        return ok();
+    }
+    
+    @Transactional
+    public static Result getAllActivities(long offset){
+    	User localUser = Application.getLocalUser(session());
+    	if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+    	
+    	List<Activity> activities = Activity.getAllActivities(localUser.id, offset);
+    	List<ActivityVM> vms = new ArrayList<>();
+		for(Activity activity : activities){
+			ActivityVM vm = new ActivityVM(activity);
 			vms.add(vm);
 		}
 		return ok(Json.toJson(vms));
+	}
+    
+    @Transactional
+    public static Result markViewed(Long id){
+    	User localUser = Application.getLocalUser(session());
+    	if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+    	
+    	Activity activity = Activity.findById(id);
+    	if(activity.userId == localUser.id){
+    		activity.setViewed(true);
+    		activity.setUpdatedDate(new Date());
+    		activity.merge();
+    	}
+		return ok();
+	}
+    
+    @Transactional
+    public static Result saveGcmKey(String key, Long versionCode){
+        NanoSecondStopWatch sw = new NanoSecondStopWatch();
+        
+        User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+
+        GcmToken.createUpdateGcmKey(localUser.id, key, versionCode);
+        
+        sw.stop();
+        if (logger.underlyingLogger().isDebugEnabled()) {
+            logger.underlyingLogger().debug("[u="+localUser.getId()+"][gcmKey="+key+"][versionCode="+versionCode+"] saveGcmKey(). Took "+sw.getElapsedMS()+"ms");
+        }
+		return ok();
     }
+    
 }

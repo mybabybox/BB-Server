@@ -74,7 +74,9 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	public int numBuys = 0;
 	public int numViews = 0;
 	public int numChats = 0;
+	public Long baseScoreAdjust = 0L;
 	public Long baseScore = 0L;
+	public Double timeScore = 0D;
 
 	public DeviceType deviceType;
 
@@ -292,8 +294,8 @@ public class Post extends SocialObject implements Likeable, Commentable {
 					 "select p from Post p where "+
 							 "p.id in ("+StringUtil.collectionToString(postIds, ",")+") and "+
 							 "p.deleted = false ORDER BY FIELD(p.id,"+StringUtil.collectionToString(postIds, ",")+")");
-			 query.setFirstResult(offset * DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT);
-			 query.setMaxResults(DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT);
+			 query.setFirstResult(offset * CalcServer.FEED_RETRIEVAL_COUNT);
+			 query.setMaxResults(CalcServer.FEED_RETRIEVAL_COUNT);
 			 return (List<Post>) query.getResultList();
 		} catch (NoResultException nre) {
 			return null;

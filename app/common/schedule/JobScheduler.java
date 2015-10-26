@@ -26,18 +26,30 @@ public class JobScheduler {
     }
 
     /**
+     * 
      * @param schedulerId
      * @param intervalMs
      * @param jobTask
      */
     public void schedule(String schedulerId, long intervalMs, Runnable jobTask) {
+        schedule(schedulerId, intervalMs, TimeUnit.MILLISECONDS, jobTask);
+    }
+
+    /**
+     * 
+     * @param schedulerId
+     * @param interval
+     * @param timeUnit
+     * @param jobTask
+     */
+    public void schedule(String schedulerId, long interval, TimeUnit timeUnit, Runnable jobTask) {
         ActorSystem actorSystem = Akka.system();
         try {
-            FiniteDuration initialDelay = Duration.create(0, TimeUnit.MILLISECONDS);
-            FiniteDuration interval = Duration.create(intervalMs, TimeUnit.MILLISECONDS);
+            FiniteDuration initialDelay = Duration.create(0, timeUnit);
+            FiniteDuration intervalDuration = Duration.create(interval, timeUnit);
 
             actorSystem.scheduler().schedule(
-                    initialDelay, interval,
+                    initialDelay, intervalDuration,
                     jobTask, actorSystem.dispatcher());
         } catch (Exception e) {
             logger.underlyingLogger().error("Error in schedule", e);

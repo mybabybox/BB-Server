@@ -59,4 +59,16 @@ public class LikeSocialRelation extends SocialRelation {
 		}
     	return new ArrayList<>();
     }
+    
+    public static List<LikeSocialRelation> getPostLikedUsers(Long id){
+    	Query q = JPA.em().createQuery(
+    			"Select sr from LikeSocialRelation sr where target = ?1 and targetType = ?2 and actorType = ?3");
+		q.setParameter(1, id);
+		q.setParameter(2, SocialObjectType.POST);
+		q.setParameter(3, SocialObjectType.USER);
+		if (q.getResultList().size() > 0){
+			return q.getResultList(); 
+		}
+    	return new ArrayList<>();
+    }
 }

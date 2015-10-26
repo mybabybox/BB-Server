@@ -16,8 +16,6 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 
-import common.thread.ThreadLocalOverride;
-import babybox.shopping.social.SocialActivity;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import domain.AuditListener;
@@ -96,9 +94,6 @@ public abstract class SocialRelation extends domain.Entity implements Serializab
 	public Long targetOwner;
 	@Transient
 	public String actorname;
-	
-	@Transient
-	protected boolean isPostSave = true;
 
 	abstract public Action getAction();
 
@@ -176,26 +171,6 @@ public abstract class SocialRelation extends domain.Entity implements Serializab
 			sa.actionType = this.actionType;
 			sa.merge();
 		}
-	}
-	
-	@Override
-	public void delete() {
-	    Notification notification = Notification.findBySocialActionId(this.id);
-        if (notification != null) {
-            notification.delete();
-        }
-        super.delete();
-	}
-	
-	@Override
-	public void postSave() {
-		if (isPostSave) {
-            if (ThreadLocalOverride.isCommandRunning()) {
-                logger.underlyingLogger().info("Activity is ignored for: "+this.id);
-            } else {
-	            SocialActivity.handle(this);
-            }
-        }
 	}
 	
 	public SocialObject getTargetObject(){

@@ -18,8 +18,8 @@ public class ConversationVM {
 	@JsonProperty("postSold") public Boolean postSold;
 	@JsonProperty("userId") public Long userId;
 	@JsonProperty("userName") public String userName;
-	@JsonProperty("lastMessageDate") public Long lastMessageDate;
 	@JsonProperty("lastMessage") public String lastMessage;
+	@JsonProperty("lastMessageDate") public Long lastMessageDate;
 	@JsonProperty("unread") public Long unread = 0L;
 	
 	public ConversationVM(Conversation conversation, User localUser) {
@@ -32,8 +32,8 @@ public class ConversationVM {
 		this.postSold = post.sold;
 		this.userId = otherUser.id;
 		this.userName = otherUser.displayName;
-		this.lastMessageDate = conversation.getUpdatedDate().getTime();
-		this.lastMessage = conversation.lastMesage;
+		this.lastMessage = conversation.lastMessage;
+		this.lastMessageDate = conversation.lastMessageDate.getTime();
 		this.unread = conversation.getUnreadCount(localUser);
 		
 		Long[] images = Folder.getResources(post.folder);

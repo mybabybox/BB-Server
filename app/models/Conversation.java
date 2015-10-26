@@ -8,6 +8,7 @@ import java.util.TreeSet;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -17,8 +18,10 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
 
+import common.utils.StringUtil;
 import play.data.validation.Constraints.Required;
 import play.db.jpa.JPA;
+import domain.AuditListener;
 import domain.Creatable;
 import domain.DefaultValues;
 import domain.Updatable;
@@ -46,6 +49,7 @@ import domain.Updatable;
  *
  */
 @Entity
+@EntityListeners(AuditListener.class)
 public class Conversation extends domain.Entity implements Serializable, Creatable, Updatable {
     private static final play.api.Logger logger = play.api.Logger.apply(Conversation.class);
     
@@ -65,7 +69,9 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	@ManyToOne
 	public Post post;
 
-	public String lastMesage;
+	public String lastMessage;
+
+	public Date lastMessageDate;
 	
 	public Date user1ReadDate;
 	
@@ -90,6 +96,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		this.post = post;
 		this.user1 = user;
 		this.user2 = post.owner;
+		this.lastMessageDate = new Date();
 	}
 
 	public User otherUser(User user) {
@@ -100,13 +107,19 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	    }
 	}
 	
+	public static Message newMessage(Long conversationId, User sender, String body) {
+		Conversation conversation = Conversation.findById(conversationId);
+		return conversation.addMessage(sender, body);
+	}
+	
 	public Message addMessage(User sender, String body) {
 		Date now = new Date();
 		Message message = new Message();
 		message.body = body;
 		message.sender = sender;
 		message.conversation = this;
-		message.conversation.lastMesage = trimLastMessage(body);
+		message.conversation.lastMessage = trimLastMessage(body);
+		message.conversation.lastMessageDate = now;
 		message.setCreatedDate(now);
 		message.save();
 		this.messages.add(message);
@@ -115,9 +128,19 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		if (this.user1 == sender) {
 			setReadDate(this.user1);
 			this.user2NumMessages++;
+			
+			// first message, increment conversationsCount for receiver
+			if (this.user2NumMessages == 1) {
+				NotificationCounter.incrementConversationsCount(this.user2.id);
+			}
 		} else {
 			setReadDate(this.user2);
 			this.user1NumMessages++;
+			
+			// first message, increment conversationsCount for receiver
+			if (this.user1NumMessages == 1) {
+			    NotificationCounter.incrementConversationsCount(this.user1.id);
+			}
 		}
 		this.save();
 		
@@ -184,8 +207,8 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	public static List<Conversation> findUserConversations(User user, int latest) {
 		Query q = JPA.em().createQuery(
 		        "SELECT c from Conversation c where deleted = 0 and (" + 
-		        "(user1 = ?1 and (user1ArchiveDate < UPDATED_DATE or user1ArchiveDate is null)) or " + 
-		        "(user2 = ?1 and (user2ArchiveDate < UPDATED_DATE or user2ArchiveDate is null)) ) order by UPDATED_DATE desc");
+		        "(user1 = ?1 and (user1ArchiveDate < lastMessageDate or user1ArchiveDate is null)) or " + 
+		        "(user2 = ?1 and (user2ArchiveDate < lastMessageDate or user2ArchiveDate is null)) ) order by lastMessageDate desc");
 		q.setParameter(1, user);
 		
 		try {
@@ -198,8 +221,8 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	public static List<Conversation> findPostConversations(Post post, User user, int latest) {
 		Query q = JPA.em().createQuery(
 				"SELECT c from Conversation c where deleted = 0 and post = ?1 and (" + 
-				        "(user1 = ?2 and (user1ArchiveDate < UPDATED_DATE or user1ArchiveDate is null)) or " + 
-				        "(user2 = ?2 and (user2ArchiveDate < UPDATED_DATE or user2ArchiveDate is null)) ) order by UPDATED_DATE desc");
+				        "(user1 = ?2 and (user1ArchiveDate < lastMessageDate or user1ArchiveDate is null)) or " + 
+				        "(user2 = ?2 and (user2ArchiveDate < lastMessageDate or user2ArchiveDate is null)) ) order by lastMessageDate desc");
 		q.setParameter(1, post);
 		q.setParameter(2, user);
 		
@@ -225,9 +248,13 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		conversation.setUpdatedDate(now);
 		conversation.setReadDate(user);		// New conversation always opened by buyer
 		conversation.save();
+		
+		post.numChats++;      // new conversation for post
+		
 		return conversation;
 	}
 
+	// obsolete, should NEVER use
 	public String getLastMessage(User user) {
 		Query q = JPA.em().createQuery(
 		        "SELECT m FROM Message m WHERE m.CREATED_DATE = (SELECT MAX(CREATED_DATE) FROM Message WHERE conversation_id = ?1 and deleted = 0) and m.CREATED_DATE > ?2 and m.deleted = 0");
@@ -265,19 +292,18 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	public static Conversation findById(Long id) {
 		Query q = JPA.em().createQuery("SELECT c FROM Conversation c where id = ?1 and deleted = 0");
         q.setParameter(1, id);
-        return (Conversation) q.getSingleResult();
-	}
-
-	public static Message newMessage(Long conversationId, User sender, String body) {
-		Conversation conversation = Conversation.findById(conversationId);
-		return conversation.addMessage(sender, body);
+        try {
+            return (Conversation) q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
 	}
 
 	public boolean isReadBy(User user) {
 		if (this.user1 == user) {
-			return this.user1ReadDate == null || (this.user1ReadDate.getTime() >= this.getUpdatedDate().getTime());
+			return user1ReadDate == null || (user1ReadDate.getTime() >= lastMessageDate.getTime());
 		} else { 
-			return this.user2ReadDate == null || (this.user2ReadDate.getTime() >= this.getUpdatedDate().getTime());
+			return user2ReadDate == null || (user2ReadDate.getTime() >= lastMessageDate.getTime());
 		}
 	}
 	
@@ -289,8 +315,8 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	public static Long getUnreadConversationCount(Long userId) {
         Query q = JPA.em().createQuery(
                 "Select count(c) from Conversation c where c.deleted = 0 and (" + 
-                        "(c.user1.id = ?1 and c.user1NumMessages > 0 and (c.user1ReadDate < UPDATED_DATE or c.user1ReadDate is null)) or " + 
-                        "(c.user2.id = ?1 and c.user2NumMessages > 0 and (c.user2ReadDate < UPDATED_DATE or c.user2ReadDate is null)) )");
+                        "(c.user1.id = ?1 and c.user1NumMessages > 0 and (c.user1ReadDate < lastMessageDate or c.user1ReadDate is null)) or " + 
+                        "(c.user2.id = ?1 and c.user2NumMessages > 0 and (c.user2ReadDate < lastMessageDate or c.user2ReadDate is null)) )");
         q.setParameter(1, userId);
         Long ret = (Long) q.getSingleResult();
         return ret;
@@ -306,21 +332,36 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	public void markDelete() {
 		logger.underlyingLogger().debug("[conv="+this.id+"] markDelete");
 		
-		Query q = JPA.em().createQuery("update Message set deleted = 1 where conversation_id = ?1");
-		q.setParameter(1, this.id);
-		q.executeUpdate();
-		q = JPA.em().createQuery("update Conversation set deleted = 1 where id = ?1");
-        q.setParameter(1, id);
-        q.executeUpdate();
+		try {
+			Query q = JPA.em().createQuery("update Message set deleted = 1 where conversation_id = ?1");
+			q.setParameter(1, this.id);
+			q.executeUpdate();
+			
+			q = JPA.em().createQuery("update Conversation set deleted = 1 where id = ?1");
+	        q.setParameter(1, id);
+	        q.executeUpdate();
+		} catch (Exception e) {
+			logger.underlyingLogger().error("Failed to mark delete conversation conv="+this.id, e);
+		}
 	}
 	
 	private void setReadDate(User user) {
 		logger.underlyingLogger().debug("[conv="+this.id+"][u="+user.id+"] setReadTime");
 		
 		if (this.user1 == user) {
+		    // unread messages, decrement conversationsCount
+		    if (this.user1NumMessages > 0) {
+		        NotificationCounter.decrementConversationsCount(user1.id);
+		    }
+		    
             this.user1ReadDate = new Date();
             this.user1NumMessages = 0;
 	    } else {
+	        // unread messages, decrement conversationsCount
+            if (this.user2NumMessages > 0) {
+                NotificationCounter.decrementConversationsCount(user2.id);
+            }
+            
             this.user2ReadDate = new Date();
             this.user2NumMessages = 0;
 	    }
@@ -329,10 +370,20 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	private void setArchiveDate(User user){
 		logger.underlyingLogger().debug("[conv="+this.id+"][u="+user.id+"] setArchiveTime");
 		
-	    if (this.user1 == user) {
+		if (this.user1 == user) {
+		    // unread messages, decrement conversationsCount
+            if (this.user1NumMessages > 0) {
+                NotificationCounter.decrementConversationsCount(user1.id);
+            }
+            
             this.user1ArchiveDate = new Date();
             this.user1NumMessages = 0;
 	    } else {
+	        // unread messages, decrement conversationsCount
+            if (this.user2NumMessages > 0) {
+                NotificationCounter.decrementConversationsCount(user2.id);
+            }
+            
             this.user2ArchiveDate = new Date();
             this.user2NumMessages = 0;
 	    }
@@ -348,9 +399,9 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		}
 		
 		if (this.user1 == user) {
-			return user1ArchiveDate != null && user1ArchiveDate.getTime() >= getUpdatedDate().getTime();	
+			return user1ArchiveDate != null && user1ArchiveDate.getTime() >= lastMessageDate.getTime();	
 		} else {
-			return user2ArchiveDate != null && user2ArchiveDate.getTime() >= getUpdatedDate().getTime();
+			return user2ArchiveDate != null && user2ArchiveDate.getTime() >= lastMessageDate.getTime();
 		}
 	}
 	
@@ -363,12 +414,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	}
 	
 	private String trimLastMessage(String message) {
-		//message = removeEmoticons(message);	// no need remove emoticons now...
-		int count = DefaultValues.CONVERSATION_LAST_MESSAGE_COUNT;
-		if (message.length() <= count) {
-			return message;
-		}
-		return message.substring(0, count + 1) + " ...";
+		return StringUtil.shortMessage(message);
 	}
 	
 	private String removeEmoticons(String message) {

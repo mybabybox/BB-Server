@@ -57,7 +57,6 @@ public class Comment extends SocialObject implements Comparable<Comment>, Likeab
         q.setParameter(1, id);
         return (Comment) q.getSingleResult();
     }
-
     
     @Override
     public int compareTo(Comment o) {

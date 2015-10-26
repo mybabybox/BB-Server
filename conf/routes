@@ -76,9 +76,12 @@ POST    /login/password/forgot      controllers.Signup.doForgotPassword
 
 
 # User Info Service
-GET     /get-user-info                              controllers.UserController.getUserInfo
-GET     /about-user                                 controllers.UserController.aboutUser
-POST    /updateUserProfileData                      controllers.UserController.updateUserProfileData
+GET     /get-user-info              controllers.UserController.getUserInfo
+GET     /about-user                 controllers.UserController.aboutUser
+POST    /updateUserProfileData      controllers.UserController.updateUserProfileData
+
+# Gcm
+POST	/save-gcm-key/:key/:versionCode            controllers.UserController.saveGcmKey(key:String, versionCode:Long)
 
 # Conversation
 GET     /get-all-conversations                      controllers.UserController.getAllConversations()
@@ -95,8 +98,9 @@ GET		/get-category-popular-feed/:id/:postType/:offset		controllers.ProductContro
 GET		/get-category-newest-feed/:id/:postType/:offset			controllers.ProductController.getCategoryNewestFeed(id :Long, postType: String, offset: Long)
 GET		/get-category-price-low-high-feed/:id/:postType/:offset	controllers.ProductController.getCategoryPriceLowHighFeed(id :Long, postType: String, offset: Long)
 GET		/get-category-price-high-low-feed/:id/:postType/:offset	controllers.ProductController.getCategoryPriceHighLowFeed(id :Long, postType: String, offset: Long)
-GET		/get-home-explore-feed/:offset							controllers.ProductController.getHomeExploreFeed(offset: Long)
-GET     /get-home-following-feed/:offset                        controllers.ProductController.getHomeFollowingFeed(offset: Long)
+GET		/get-home-explore-feed/:offset							controllers.UserController.getHomeExploreFeed(offset: Long)
+GET     /get-home-following-feed/:offset                        controllers.UserController.getHomeFollowingFeed(offset: Long)
+GET		/get-suggested-products/:id								controllers.ProductController.getSuggestedProducts(id :Long)						
 
 POST	/post/new		 		             		controllers.ProductController.createProductWeb
 POST	/mobile/post/new		 		            controllers.ProductController.createProductMobile
@@ -123,11 +127,16 @@ GET		/get-user/:id								controllers.UserController.getUserInfoById(id:Long)
 GET     /followings/:id/:offset						controllers.UserController.getFollowings(id: Long,offset:Long)
 GET     /followers/:id/:offset						controllers.UserController.getFollowers(id: Long,offset:Long)
 GET     /get-user-liked-feed/:id/:offset			controllers.UserController.getUserLikedPosts(id: Long,offset:Long)
+GET     /notification-counter                       controllers.UserController.getNotificationCounter
+GET     /read-activities-count                      controllers.UserController.readActivitiesCount
+GET     /read-conversations-count                   controllers.UserController.readConversationsCount
+GET		/get-all-activities/:offset							controllers.UserController.getAllActivities(offset :Long)
+GET		/mark-viewed/:id							controllers.UserController.markViewed(id :Long)
 
 # image upload
 POST    /image/upload-profile-photo                 controllers.UserController.uploadProfilePhoto
 POST    /image/upload-cover-photo                   controllers.UserController.uploadCoverPhoto
-POST    /image/upload-message-photo                 controllers.UserController.uploadMessagePhoto()
+POST    /image/upload-message-photo                 controllers.UserController.uploadMessagePhoto
 
 # image get
 GET     /image/get-profile-image                    controllers.UserController.getProfileImage

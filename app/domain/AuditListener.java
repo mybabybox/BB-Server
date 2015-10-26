@@ -1,6 +1,5 @@
 package domain;
 
-
 import com.google.common.base.Preconditions;
 import java.util.Date;
 import javax.persistence.PrePersist;
@@ -16,7 +15,6 @@ public class AuditListener
     {
       Date now = new Date();
       Creatable creatable = (Creatable)entity;
-      creatable.setCreatedBy("TODO");
       creatable.setCreatedDate(now);
     }
   }
@@ -29,7 +27,6 @@ public class AuditListener
     {
       Date now = new Date();
       Updatable updatable = (Updatable)entity;
-      updatable.setUpdatedBy("TODO");
       updatable.setUpdatedDate(now);
     }
   }

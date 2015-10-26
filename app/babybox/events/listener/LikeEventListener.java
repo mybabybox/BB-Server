@@ -1,7 +1,8 @@
 package babybox.events.listener;
 
-import java.util.Date;
-
+import mobile.GcmSender;
+import models.Activity;
+import models.Activity.ActivityType;
 import models.Post;
 import models.User;
 import babybox.events.map.LikeEvent;
@@ -10,6 +11,7 @@ import babybox.events.map.UnlikeEvent;
 import com.google.common.eventbus.Subscribe;
 
 import common.cache.CalcServer;
+import common.utils.StringUtil;
 
 public class LikeEventListener {
 	
@@ -18,9 +20,23 @@ public class LikeEventListener {
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
        	if (post.onLikedBy(user)) {
-	       	Long score = new Date().getTime();		// ideally use LikeSocialRelation.CREATED_DATE
-	       	CalcServer.calculateBaseScore(post);
-	       	CalcServer.addToLikeQueue(post.id, user.id, score.doubleValue());
+	       	CalcServer.addToCategoryPopularQueue(post);
+	       	CalcServer.addToLikeQueue(post, user);
+	       	
+	       	if (user.id != post.owner.id) {
+    	       	Activity activity = new Activity(
+    					ActivityType.LIKED, 
+    					post.owner.id,
+    					user.id,
+    					user.displayName,
+    					post.id,
+    					StringUtil.shortMessage(post.title));
+    	        activity.ensureUniqueAndCreate();
+    	        
+    	        //GCM Notification sender
+    	        System.out.println("LIKE");
+    	        GcmSender.sendNotification(post.owner.id, user.name+" Liked on your post "+post.title);
+	       	}
        	}
     }
 	
@@ -29,8 +45,8 @@ public class LikeEventListener {
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
        	if (post.onUnlikedBy(user)) {
-       		CalcServer.calculateBaseScore(post);
-       		CalcServer.removeFromLikeQueue(post.id, user.id);
+       	    CalcServer.addToCategoryPopularQueue(post);
+       		CalcServer.removeFromLikeQueue(post, user);
        	}
     }
 }
