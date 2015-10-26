@@ -179,7 +179,7 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 	}
 
 	public static List<Activity> getActivities(Long userId, Long offset) {
-		Query q = JPA.em().createQuery("SELECT a FROM Activity a where userId = ? and deleted = false");
+		Query q = JPA.em().createQuery("SELECT a FROM Activity a where userId = ?1 and deleted = false order by CREATED_DATE desc");
 		q.setFirstResult((int) (offset * DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT));
 		q.setMaxResults(DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT);
 		q.setParameter(1, userId);

@@ -176,7 +176,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 
 	public List<Message> getMessages(User user, Long offset) {
 		Query q = JPA.em().createQuery(
-				"SELECT m from Message m where conversation_id = ?1 and CREATED_DATE > ?2 and m.deleted = 0 order by CREATED_DATE desc ");
+				"SELECT m from Message m where conversation_id = ?1 and CREATED_DATE > ?2 and m.deleted = 0 order by CREATED_DATE desc");
 		q.setParameter(1, this);
 
 		if (this.user1 == user) {
