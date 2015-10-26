@@ -819,26 +819,26 @@ public class UserController extends Controller {
     }
     
     @Transactional
-    public static Result readActivitiesCount() {
+    public static Result resetActivitiesCount() {
     	final User localUser = Application.getLocalUser(session());
         if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
             return notFound();
         }
         
-        NotificationCounter.readActivitiesCount(localUser.id);
+        NotificationCounter.resetActivitiesCount(localUser.id);
         return ok();
     }
     
     @Transactional
-    public static Result readConversationsCount() {
+    public static Result resetConversationsCount() {
     	final User localUser = Application.getLocalUser(session());
         if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
             return notFound();
         }
         
-        NotificationCounter.readConversationsCount(localUser.id);
+        NotificationCounter.resetConversationsCount(localUser.id);
         return ok();
     }
     
@@ -860,6 +860,9 @@ public class UserController extends Controller {
 			activity.viewed = true;
 			activity.save();
 		}
+		
+		resetActivitiesCount();
+		
 		return ok(Json.toJson(vms));
 	}
     
