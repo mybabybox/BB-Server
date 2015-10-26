@@ -260,13 +260,13 @@ public class CalcServer {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
 		logger.underlyingLogger().debug("buildUserFollowingQueue starts");
 		
-		List<Long> followings = getUserFollowingFeeds(userId, 0L);
+		List<Long> followings = getUserFollowingFeeds(userId);
 		for (Long followingUser : followings){
 			Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.USER_POSTED,followingUser), 0L);
 			for (String value : values) {
 				try {
 					Long postId = Long.parseLong(value);
-					JedisCache.cache().putToSortedSet(getKey(FeedType.HOME_FOLLOWING,userId), getScore(getKey(FeedType.USER_POSTED, followingUser), postId) , postId.toString());
+					JedisCache.cache().putToSortedSet(getKey(FeedType.HOME_FOLLOWING,userId), getScore(getKey(FeedType.USER_POSTED, followingUser), postId), postId.toString());
 				} catch (Exception e) {
 				}
 			}
@@ -427,8 +427,8 @@ public class CalcServer {
 
 	}
 	
-	public static List<Long> getUserFollowingFeeds(Long id, Long offset) {
-		Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.USER_FOLLOWING,id), offset);
+	public static List<Long> getUserFollowingFeeds(Long id) {
+		Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.USER_FOLLOWING,id), 0L);
         final List<Long> userIds = new ArrayList<>();
         for (String value : values) {
             try {

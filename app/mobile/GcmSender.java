@@ -12,7 +12,7 @@ public class GcmSender {
 
     public static final String MESSAGE_KEY = "message";
     
-    public static final String AUTHORIZATION_KEY = Play.application().configuration().getString("gcm.authorization.key");
+    public static final String API_SERVER_KEY = Play.application().configuration().getString("gcm.api.server.key");
     
     private static final int TTL = 30;
     private static final int RETRIES = 2;
@@ -28,7 +28,7 @@ public class GcmSender {
 
     private static boolean sendToGcm(Long userId, String regId, String msg) {
         try {
-            Sender sender = new Sender(AUTHORIZATION_KEY);
+            Sender sender = new Sender(API_SERVER_KEY);
             Message message = new Message.Builder().timeToLive(TTL)
                     .collapseKey(MESSAGE_KEY)
                     .delayWhileIdle(true)
@@ -37,8 +37,7 @@ public class GcmSender {
             Result result = sender.send(message, regId, RETRIES);
             logger.underlyingLogger().info("[u="+userId+"] Gcm send result("+regId+"): "+result);
             return true;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.underlyingLogger().error("[u="+userId+"] Error in Gcm send", e);
             System.out.println("exception in gcm");
             return false;

@@ -12,8 +12,12 @@ import common.model.FeedFilter.FeedType;
 
 public class FeedHandler {
 	
+    private static boolean filterSold = false;
+    
 	public static List<PostVMLite> getPostVM(Long id, Long offset,
 			User localUser, FeedType feedType) {
+	    
+	    filterSold = false;
 		List<Long> postIds = new ArrayList<>();
 		switch (feedType) {
 			case HOME_EXPLORE:
@@ -22,6 +26,7 @@ public class FeedHandler {
 				
 			case HOME_FOLLOWING:
 				postIds = CalcServer.getHomeFollowingFeed(id, offset.doubleValue());
+				filterSold = true;
 				break;
 		
 			case CATEGORY_POPULAR:
@@ -59,14 +64,16 @@ public class FeedHandler {
 		}
 		
 		List<PostVMLite> vms = new ArrayList<>();
-		
-		
 		if(postIds.size() == 0){
 			return vms;
 		}
 		
 		List<Post> posts =  Post.getPosts(postIds);
-		for(Post post : posts) {
+		for (Post post : posts) {
+		    if (filterSold && post.sold) {
+		        continue;
+		    }
+		    
 			PostVMLite vm = new PostVMLite(post, localUser);
 			//TODO: offset is bad name , need to change it to proper name.
 			vm.offset = CalcServer.getScore(CalcServer.getKey(feedType, id), post.id).longValue();

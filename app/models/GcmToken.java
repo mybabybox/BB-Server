@@ -52,8 +52,9 @@ public class GcmToken extends domain.Entity {
     ///////////////////////// Find APIs /////////////////////////
 	public static GcmToken findByUserId(Long userId) {
 		try { 
-			Query q = JPA.em().createQuery("SELECT g FROM GcmToken g where userId = ?1 and deleted = false order by CREATED_DATE desc limit 1");
+			Query q = JPA.em().createQuery("SELECT g FROM GcmToken g where userId = ?1 and deleted = false order by CREATED_DATE desc");
 			q.setParameter(1, userId);
+			q.setMaxResults(1);
 			return (GcmToken) q.getSingleResult();
 		} catch (NoResultException e) {
 			return null;

@@ -19,7 +19,7 @@ object ApplicationBuild extends Build {
     "org.hamcrest" % "hamcrest-all" % "1.3",
     "joda-time" % "joda-time" % "2.3",
     "com.google.guava" % "guava" % "12.0",
-    "be.objectify"  %%  "deadbolt-java"     % "2.1-RC2",
+    "be.objectify"  %%  "deadbolt-java" % "2.1-RC2",
     "com.feth" %% "play-easymail" % "0.3-SNAPSHOT",
     "org.mindrot" % "jbcrypt" % "0.3m",
     "org.apache.httpcomponents" % "httpclient" % "4.2.5",
