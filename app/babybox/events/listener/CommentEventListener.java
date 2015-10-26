@@ -33,8 +33,10 @@ public class CommentEventListener {
                     post.owner.id,
                     true,
                     user.id, 
+                    user.id,
                     user.name,
                     comment.id,
+                    post.getImage(), 
                     StringUtil.shortMessage(comment.body));
             activity.ensureUniqueAndCreate();
         }
@@ -61,8 +63,10 @@ public class CommentEventListener {
                     c.owner.id,
                     false, 
                     user.id, 
+                    user.id, 
                     user.name,
                     comment.id,
+                    post.getImage(), 
                     StringUtil.shortMessage(comment.body));
             activity.ensureUniqueAndCreate();
             

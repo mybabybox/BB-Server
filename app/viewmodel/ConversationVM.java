@@ -36,7 +36,7 @@ public class ConversationVM {
 		this.lastMessageDate = conversation.lastMessageDate.getTime();
 		this.unread = conversation.getUnreadCount(localUser);
 		
-		Long[] images = Folder.getResources(post.folder);
+		Long[] images = post.getImages();
         if (images != null && images.length > 0) {
         	this.postImage = images[0];
         }

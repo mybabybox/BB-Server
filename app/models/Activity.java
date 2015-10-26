@@ -1,7 +1,6 @@
 package models;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -46,6 +45,8 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 	
 	public Long actor;
 
+	public Long actorImage;
+	
 	public String actorName;
 
 	@Enumerated(EnumType.STRING)
@@ -53,6 +54,8 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 
 	public Long target;
 
+	public Long targetImage;
+	
 	public String targetName;
 	
 	@Enumerated(EnumType.STRING)
@@ -76,13 +79,16 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 	public Activity() {}
 	
 	public Activity(ActivityType activityType, Long userId, Boolean userIsOwner,  
-			Long actor, String actorName, Long target, String targetName) {
+			Long actor, Long actorImage, String actorName,  
+			Long target, Long targetImage, String targetName) {
 		this.activityType = activityType;
 		this.userId = userId;
 		this.userIsOwner = userIsOwner;
 		this.actor = actor;
+		this.actorImage = actorImage;
 		this.actorName = actorName;
 		this.target = target;
+		this.targetImage = targetImage;
 		this.targetName = targetName;
 		setActorTargetType();
 	}
@@ -136,15 +142,13 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 	@Transactional
 	public boolean ensureUniqueAndCreate() {
 		Activity activity = getActivity();
-		System.out.println(activity);
+		
 		if (activity == null) {
-			System.out.println("save");
 			this.save();
 			return true;
 		} else {
-			System.out.println("merge");
-			activity.setCreatedDate(new Date());
-			activity.merge();
+			//activity.setCreatedDate(new Date());
+			//activity.merge();
 			return false;
 		}
 	}
@@ -230,6 +234,14 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 		this.actorName = actorName;
 	}
 
+	public long getActorImage() {
+        return actorImage;
+    }
+    
+    public void setActorImage(Long actorImage) {
+        this.actorImage = actorImage;
+    }
+    
 	public SocialObjectType getActorType() {
 		return actorType;
 	}
@@ -254,10 +266,18 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
         this.targetName = targetName;
     }
 
+    public Long getTargetImage() {
+        return targetImage;
+    }
+    
+    public void setTargetImage(Long targetImage) {
+        this.targetImage = targetImage;
+    }
+    
 	public SocialObjectType getTargetType() {
         return targetType;
     }
-
+    
     public void setTargetType(SocialObjectType targetType) {
         this.targetType = targetType;
     }

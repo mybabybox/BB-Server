@@ -1,6 +1,5 @@
 package viewmodel;
 
-import models.Folder;
 import models.Message;
 
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -21,10 +20,10 @@ public class MessageVM {
 		this.senderId = message.sender.id;
 		this.body = message.body;
 		
-		Long[] images = Folder.getResources(message.folder);
-        if (images != null && images.length > 0) {
+		Long image = message.getImage();
+        if (image != null) {
         	this.hasImage = true;
-        	this.image = images[0];
+        	this.image = image;
         }
 	}
 }

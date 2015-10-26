@@ -30,7 +30,9 @@ public class FollowEventListener {
     					user.id,
     					false, 
     					localUser.id,
+    					localUser.id,
     					localUser.displayName,
+    					user.id,
     					user.id,
     					user.displayName);
     			activity.ensureUniqueAndCreate();

@@ -37,6 +37,18 @@ public class Message extends SocialObject implements Comparable<Message> {
 		return conversation.otherUser(sender);
 	}
 
+	public Long getImage() {
+        Long[] images = getImages();
+        if (images != null && images.length > 0) {
+            return images[0];
+        }
+        return null;
+    }
+    
+    public Long[] getImages() {
+        return Folder.getResources(folder);
+    }
+    
 	@Override
 	public int compareTo(Message o) {
 		 return this.getUpdatedDate().compareTo(o.getUpdatedDate());

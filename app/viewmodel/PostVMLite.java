@@ -2,8 +2,6 @@ package viewmodel;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
-import common.cache.CalcServer;
-import models.Folder;
 import models.Post;
 import models.User;
 
@@ -49,7 +47,7 @@ public class PostVMLite {
         
         this.isLiked = post.isLikedBy(user);
         
-        Long[] images = Folder.getResources(post.folder);
+        Long[] images = post.getImages();
         if (images != null && images.length > 0) {
         	this.hasImage = true;
         	this.images = images;

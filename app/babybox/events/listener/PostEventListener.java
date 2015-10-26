@@ -28,8 +28,10 @@ public class PostEventListener {
 				user.id,
 				true, 
 				user.id,
+				user.id,
 				user.displayName,
 				post.id,
+				post.getImage(), 
 				StringUtil.shortMessage(post.title));
         activity.ensureUniqueAndCreate();
         */
