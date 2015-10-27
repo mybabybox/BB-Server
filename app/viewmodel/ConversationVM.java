@@ -1,7 +1,6 @@
 package viewmodel;
 
 import models.Conversation;
-import models.Folder;
 import models.Post;
 import models.User;
 
@@ -19,6 +18,7 @@ public class ConversationVM {
 	@JsonProperty("userId") public Long userId;
 	@JsonProperty("userName") public String userName;
 	@JsonProperty("lastMessage") public String lastMessage;
+	@JsonProperty("lastMessageHasImage") public Boolean lastMessageHasImage;
 	@JsonProperty("lastMessageDate") public Long lastMessageDate;
 	@JsonProperty("unread") public Long unread = 0L;
 	
@@ -33,6 +33,7 @@ public class ConversationVM {
 		this.userId = otherUser.id;
 		this.userName = otherUser.displayName;
 		this.lastMessage = conversation.lastMessage;
+		this.lastMessageHasImage = conversation.lastMessageHasImage;
 		this.lastMessageDate = conversation.lastMessageDate.getTime();
 		this.unread = conversation.getUnreadCount(localUser);
 		

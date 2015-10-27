@@ -70,6 +70,8 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	public Post post;
 
 	public String lastMessage;
+	
+	public Boolean lastMessageHasImage = false;
 
 	public Date lastMessageDate;
 	
@@ -119,6 +121,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		message.sender = sender;
 		message.conversation = this;
 		message.conversation.lastMessage = trimLastMessage(body);
+		message.conversation.lastMessageHasImage = message.getImage() != null;
 		message.conversation.lastMessageDate = now;
 		message.setCreatedDate(now);
 		message.save();
