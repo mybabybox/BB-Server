@@ -35,7 +35,7 @@ public class CommentEventListener {
                     user.id, 
                     user.id,
                     user.name,
-                    comment.id,
+                    post.id,
                     post.getImage(), 
                     StringUtil.shortMessage(comment.body));
             activity.ensureUniqueAndCreate();
@@ -65,7 +65,7 @@ public class CommentEventListener {
                     user.id, 
                     user.id, 
                     user.name,
-                    comment.id,
+                    post.id,
                     post.getImage(), 
                     StringUtil.shortMessage(comment.body));
             activity.ensureUniqueAndCreate();
