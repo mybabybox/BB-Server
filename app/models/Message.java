@@ -64,6 +64,10 @@ public class Message extends SocialObject implements Comparable<Message> {
 		ensureAlbumExist(owner);
 		Resource photo = this.folder.addFile(source, SocialObjectType.MESSAGE_PHOTO);
 		photo.save();
+		
+		conversation.lastMessageHasImage = true;
+		conversation.save();
+		
 		return photo;
 	}
 	    
