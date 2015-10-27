@@ -6,7 +6,6 @@ import models.Post;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
-import org.joda.time.Weeks;
 
 import play.Play;
 import common.utils.NanoSecondStopWatch;

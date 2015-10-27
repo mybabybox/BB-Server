@@ -24,7 +24,7 @@ public class CommentEventListener {
 		Comment comment = (Comment) map.get("comment");
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
-		CalcServer.addToCategoryPopularQueue(post);
+		CalcServer.recalcScoreAndAddToCategoryPopularQueue(post);
 		
 		// first of all, send to post owner
         if (user.id != post.owner.id) {
@@ -78,6 +78,6 @@ public class CommentEventListener {
 	public void recordDeleteCommentEventInDB(DeleteCommentEvent map) {
 		Comment comment = (Comment) map.get("comment");
 		Post post = (Post) map.get("post");
-		CalcServer.addToCategoryPopularQueue(post);
+		CalcServer.recalcScoreAndAddToCategoryPopularQueue(post);
 	}
 }

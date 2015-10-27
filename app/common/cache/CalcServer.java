@@ -199,16 +199,29 @@ public class CalcServer {
 		return formula.computeTimeScore(post);
 	}
 
-	public static void addToCategoryPopularQueue(Post post) {
+	public static void recalcScoreAndAddToCategoryPopularQueue(Post post) {
+	    addToCategoryPopularQueue(post);
+	}
+	
+	private static void addToCategoryPopularQueue(Post post) {
+	    if (post.sold) {
+            return;
+        }
         Double timeScore = calculateTimeScore(post, true);
         JedisCache.cache().putToSortedSet(getKey(FeedType.CATEGORY_POPULAR,post.category.id),  timeScore, post.id.toString());
     }
 	
 	private static void addToCategoryNewestQueue(Post post) {
+	    if (post.sold) {
+            return;
+        }
 		JedisCache.cache().putToSortedSet(getKey(FeedType.CATEGORY_NEWEST,post.category.id), post.getCreatedDate().getTime() , post.id.toString());
 	}
 
 	private static void addToCategoryPriceLowHighQueue(Post post) {
+	    if (post.sold) {
+            return;
+        }
 		JedisCache.cache().putToSortedSet(getKey(FeedType.CATEGORY_PRICE_LOW_HIGH,post.category.id), post.price * FEED_SCORE_HIGH_BASE + post.id , post.id.toString());
 	}
 	
@@ -401,7 +414,7 @@ public class CalcServer {
 
 	}
 	
-	public static List<Long> getUserPostFeeds(Long id, Double offset) {
+	public static List<Long> getUserPostedFeeds(Long id, Double offset) {
 		Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.USER_POSTED,id), offset);
         final List<Long> postIds = new ArrayList<>();
         for (String value : values) {
@@ -414,7 +427,7 @@ public class CalcServer {
 
 	}
 	
-	public static List<Long> getUserLikeFeeds(Long id, Double offset) {
+	public static List<Long> getUserLikedFeeds(Long id, Double offset) {
 		Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.USER_LIKED,id), offset);
         final List<Long> postIds = new ArrayList<>();
         for (String value : values) {
@@ -444,13 +457,11 @@ public class CalcServer {
 		if(!JedisCache.cache().exists(getKey(FeedType.PRODUCT_SUGGEST, id))){
 			buildSuggestedProductQueue(id);
 		}
-		System.out.println("PRODUCT_SUGGEST");
+		
 		Set<String> values = JedisCache.cache().getSortedSetDsc(getKey(FeedType.PRODUCT_SUGGEST, id) , 0L);
-		System.out.println("size :: "+values.size());
         final List<Long> postIds = new ArrayList<>();
         for (String value : values) {
             try {
-            	System.out.println(" :: "+value);
                 postIds.add(Long.parseLong(value));
             } catch (Exception e) {
             }
@@ -515,11 +526,11 @@ public class CalcServer {
 		JedisCache.cache().removeMemberFromSortedSet(getKey(FeedType.USER_FOLLOWING,userId), followingUserId.toString());
 	}
 
-	public static void addToPostQueue(Post post, User user){
+	public static void addToUserPostedQueue(Post post, User user){
 		JedisCache.cache().putToSortedSet(getKey(FeedType.USER_POSTED,user.id), post.getCreatedDate().getTime(), post.id.toString());
 	}
 	
-	public static void removeFromPostQueue(Post post, User user){
+	public static void removeFromUserPostedQueue(Post post, User user){
 		JedisCache.cache().removeMemberFromSortedSet(getKey(FeedType.USER_POSTED,user.id), post.id.toString());
 	}
 
@@ -530,7 +541,7 @@ public class CalcServer {
 	 */
 	public static void removeFromUserQueues(Post post, User user) {
 	    removeFromLikeQueue(post, user);
-	    removeFromPostQueue(post, user);
+	    removeFromUserPostedQueue(post, user);
 	}
 	
 	public static Double getScore(String key, Long postId){
