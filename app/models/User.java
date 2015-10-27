@@ -967,7 +967,7 @@ public class User extends SocialObject implements Subject, Followable {
 	}
 
 	public List<Conversation> findConversations() {
-		return Conversation.findUserConversations(this, DefaultValues.CONVERSATION_COUNT);
+		return Conversation.findUserConversations(this);
 	}
 
 	public Conversation findConversationWith(User u) {

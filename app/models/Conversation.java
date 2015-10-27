@@ -121,6 +121,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		message.sender = sender;
 		message.conversation = this;
 		message.conversation.lastMessage = trimLastMessage(body);
+		message.conversation.lastMessageHasImage = false;
 		message.conversation.lastMessageDate = now;
 		message.setCreatedDate(now);
 		message.save();
@@ -198,15 +199,15 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		}
 		
 		try {
-			q.setFirstResult((int) (offset * DefaultValues.CONVERSATION_MESSAGE_COUNT));
-			q.setMaxResults(DefaultValues.CONVERSATION_MESSAGE_COUNT);
+			q.setFirstResult((int) (offset * DefaultValues.CONVERSATION_MESSAGES_COUNT));
+			q.setMaxResults(DefaultValues.CONVERSATION_MESSAGES_COUNT);
 			return (List<Message>) q.getResultList();
 		} catch (NoResultException e) {
 			return null;
 		}
 	}
 	
-	public static List<Conversation> findUserConversations(User user, int latest) {
+	public static List<Conversation> findUserConversations(User user) {
 		Query q = JPA.em().createQuery(
 		        "SELECT c from Conversation c where deleted = 0 and (" + 
 		        "(user1 = ?1 and (user1ArchiveDate < lastMessageDate or user1ArchiveDate is null)) or " + 
@@ -214,13 +215,14 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		q.setParameter(1, user);
 		
 		try {
-			return q.setMaxResults(latest).getResultList();
+		    q.setMaxResults(DefaultValues.MAX_CONVERSATIONS_COUNT);   // safety measure as no infinite scroll
+			return q.getResultList();
 		} catch (NoResultException e) {
 			return null;
 		}
 	}
 	
-	public static List<Conversation> findPostConversations(Post post, User user, int latest) {
+	public static List<Conversation> findPostConversations(Post post, User user) {
 		Query q = JPA.em().createQuery(
 				"SELECT c from Conversation c where deleted = 0 and post = ?1 and (" + 
 				        "(user1 = ?2 and (user1ArchiveDate < lastMessageDate or user1ArchiveDate is null)) or " + 
@@ -229,7 +231,8 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		q.setParameter(2, user);
 		
 		try {
-			return q.setMaxResults(latest).getResultList();
+		    q.setMaxResults(DefaultValues.MAX_CONVERSATIONS_COUNT);   // safety measure as no infinite scroll
+			return q.getResultList();
 		} catch (NoResultException e) {
 			return null;
 		}
