@@ -41,6 +41,7 @@ import play.Play;
 import play.data.format.Formats;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
+import views.html.defaultpages.notFound;
 import babybox.shopping.social.exception.SocialObjectNotLikableException;
 import be.objectify.deadbolt.core.models.Permission;
 import be.objectify.deadbolt.core.models.Role;
@@ -348,7 +349,7 @@ public class User extends SocialObject implements Subject, Followable {
 	public Post createProduct(String name, String body, Category category, Double price) {
 		if (Strings.isNullOrEmpty(name) || 
 				Strings.isNullOrEmpty(body) || category == null || price == -1D) {
-			logger.underlyingLogger().warn("Missing parameters to createPost");
+			logger.underlyingLogger().warn("Missing parameters to createProduct");
 			return null;
 		}
 		
@@ -360,6 +361,23 @@ public class User extends SocialObject implements Subject, Followable {
 		
 		return post;
 	}
+	
+	@Transactional
+    public Post editProduct(Post post, String name, String body, Category category, Double price) {
+	    if (Strings.isNullOrEmpty(name) || 
+                Strings.isNullOrEmpty(body) || category == null || price == -1D) {
+            logger.underlyingLogger().warn("Missing parameters to editProduct");
+            return null;
+        }
+        
+        post.name = name;
+        post.body = body;
+        post.category = category;
+        post.price = price;
+        post.merge();
+        
+        return post;
+    }
 	
 	@Transactional
 	public void deleteProduct(Post post) {

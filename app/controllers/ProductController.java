@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import babybox.events.handler.EventHandler;
 import babybox.shopping.social.exception.SocialObjectNotCommentableException;
 import models.Category;
 import models.Collection;
@@ -54,7 +53,7 @@ public class ProductController extends Controller{
 	}
 	
 	@Transactional
-	public static Result createProductMobile() {
+	public static Result createProduct() {
 		List<FilePart> images = Application.parseAttachments("image", DefaultValues.MAX_POST_IMAGES);
 	    
 		Http.MultipartFormData multipartFormData = request().body().asMultipartFormData();
@@ -85,8 +84,13 @@ public class ProductController extends Controller{
 			return notFound();
 		}
 		
+		Category category = Category.findById(catId);
+        if (category == null) {
+            return notFound();
+        }
+        
 		try {
-			Post newPost = localUser.createProduct(title, body, Category.findById(catId), price);
+			Post newPost = localUser.createProduct(title, body, category, price);
 			if (newPost == null) {
 				return badRequest("Failed to create product. Invalid parameters.");
 			}
@@ -110,6 +114,75 @@ public class ProductController extends Controller{
 		
 		return badRequest();
 	}
+	
+	@Transactional
+    public static Result editProductWeb() {
+        DynamicForm dynamicForm = DynamicForm.form().bindFromRequest();
+        List<FilePart> images = request().body().asMultipartFormData().getFiles();
+        String postId = dynamicForm.get("postId");
+        String catId = dynamicForm.get("catId");
+        String title = dynamicForm.get("title");
+        String body = dynamicForm.get("body");
+        String price = dynamicForm.get("price");
+        return editProduct(Long.parseLong(postId), title, body, Long.parseLong(catId), Double.parseDouble(price));
+    }
+    
+    @Transactional
+    public static Result editProduct() {
+        List<FilePart> images = Application.parseAttachments("image", DefaultValues.MAX_POST_IMAGES);
+        
+        Http.MultipartFormData multipartFormData = request().body().asMultipartFormData();
+        String postIdStr = multipartFormData.asFormUrlEncoded().get("postId")[0];
+        String catIdStr = multipartFormData.asFormUrlEncoded().get("catId")[0];
+        String title = multipartFormData.asFormUrlEncoded().get("title")[0];
+        String body = multipartFormData.asFormUrlEncoded().get("body")[0];
+        String priceStr = multipartFormData.asFormUrlEncoded().get("price")[0];
+        
+        Long postId = -1L;
+        try {
+            postId = Long.parseLong(postIdStr);
+        } catch (NumberFormatException e) {
+        }
+        
+        Long catId = -1L;
+        try {
+            catId = Long.parseLong(catIdStr);
+        } catch (NumberFormatException e) {
+        }
+        
+        Double price = -1D;
+        try {
+            price = Double.parseDouble(priceStr);
+        } catch (NumberFormatException e) {
+        }
+        return editProduct(postId, title, body, catId, price);
+    }
+
+    private static Result editProduct(Long postId, String title, String body, Long catId, Double price) {
+        final User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+        
+        Post post = Post.findById(postId);
+        if (post == null) {
+            return notFound();
+        }
+        
+        Category category = Category.findById(catId);
+        if (category == null) {
+            return notFound();
+        }
+        
+        Post newPost = localUser.editProduct(post, title, body, category, price);
+        if (newPost == null) {
+            return badRequest("Failed to edit product. Invalid parameters.");
+        }
+        
+        ResponseStatusVM response = new ResponseStatusVM(SocialObjectType.POST, newPost.id, localUser.id, true);
+        return ok(Json.toJson(response));
+    }
 
 	@Transactional
 	public static Result createCollection() {

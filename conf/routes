@@ -102,8 +102,10 @@ GET		/get-home-explore-feed/:offset							controllers.UserController.getHomeExpl
 GET     /get-home-following-feed/:offset                        controllers.UserController.getHomeFollowingFeed(offset: Long)
 GET		/get-suggested-products/:id								controllers.ProductController.getSuggestedProducts(id :Long)						
 
-POST	/post/new		 		             		controllers.ProductController.createProductWeb
-POST	/mobile/post/new		 		            controllers.ProductController.createProductMobile
+POST    /post/new                                   controllers.ProductController.createProduct
+POST	/web/post/new		 		             	controllers.ProductController.createProductWeb
+POST    /post/edit                                  controllers.ProductController.editProduct
+POST    /web/post/edit                              controllers.ProductController.editProductWeb
 GET     /get-all-feed-products       				controllers.ProductController.getAllFeedProducts
 GET     /get-all-similar-products       			controllers.ProductController.getAllSimilarProducts
 GET     /product/:id            		     		controllers.ProductController.product(id:Long)
