@@ -54,19 +54,35 @@ public class NotificationCounter extends domain.Entity implements Serializable, 
 	
 	public static void resetActivitiesCount(Long userId) {
 		NotificationCounter counter = getNotificationCounter(userId);
-		if (counter != null) {
+		if (counter != null && counter.activitiesCount != 0L) {
 			counter.activitiesCount = 0L;
 			counter.save();
 		}
 	}
 	
 	public static void resetConversationsCount(Long userId) {
-		NotificationCounter counter = getNotificationCounter(userId);
-		if (counter != null) {
-			counter.conversationsCount = 0L;
-			counter.save();
-		}
-	}
+        NotificationCounter counter = getNotificationCounter(userId);
+        if (counter != null && counter.conversationsCount != 0L) {
+            counter.conversationsCount = 0L;
+            counter.save();
+        }
+    }
+	
+	public static void setActivitiesCount(Long userId, Long count) {
+        NotificationCounter counter = getNotificationCounter(userId);
+        if (counter != null && counter.activitiesCount != count) {
+            counter.activitiesCount = count;
+            counter.save();
+        }
+    }
+    
+	public static void setConversationsCount(Long userId, Long count) {
+        NotificationCounter counter = getNotificationCounter(userId);
+        if (counter != null && counter.conversationsCount != count) {
+            counter.conversationsCount = count;
+            counter.save();
+        }
+    }
 	
 	public static void incrementActivitiesCount(Long userId) {
 		NotificationCounter counter = NotificationCounter.getNotificationCounter(userId);

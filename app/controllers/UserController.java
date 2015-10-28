@@ -526,32 +526,39 @@ public class UserController extends Controller {
         Conversation.archiveConversation(id, localUser);
         return ok();
     }
-	
-	private static List<ConversationVM> getAllConversations(User localUser) {
-		List<ConversationVM> vms = new ArrayList<>();
-		List<Conversation> conversations = localUser.findConversations();
-		if (conversations != null) {
-			for (Conversation conversation : conversations) {
-				// archived, dont show
-				if (conversation.isArchivedBy(localUser)) {
-					continue;
-				}
-
-				ConversationVM vm = new ConversationVM(conversation, localUser);
-				vms.add(vm);
-			}
-		}
-		
-		return vms;	
-	}
 
 	@Transactional
 	public static Result getAllConversations() {
         NanoSecondStopWatch sw = new NanoSecondStopWatch();
 
 		final User localUser = Application.getLocalUser(session());
-		List<ConversationVM> vms = getAllConversations(localUser);
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
 
+		List<ConversationVM> vms = new ArrayList<>();
+        List<Conversation> conversations = localUser.findConversations();
+        if (conversations != null) {
+            Long count = 0L;
+            for (Conversation conversation : conversations) {
+                // archived, dont show
+                if (conversation.isArchivedBy(localUser)) {
+                    continue;
+                }
+
+                ConversationVM vm = new ConversationVM(conversation, localUser);
+                vms.add(vm);
+                
+                if (vm.unread > 0) {
+                    count++;
+                }
+            }
+            NotificationCounter.setConversationsCount(localUser.id, count);
+        } else {
+            NotificationCounter.resetConversationsCount(localUser.id);            
+        }
+        
         sw.stop();
         logger.underlyingLogger().info("[u="+localUser.id+"] getAllConversations. Took "+sw.getElapsedMS()+"ms");
 		return ok(Json.toJson(vms));
@@ -562,6 +569,11 @@ public class UserController extends Controller {
         NanoSecondStopWatch sw = new NanoSecondStopWatch();
 
 		final User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+        
 		Conversation conversation = Conversation.findById(id);
 		if (conversation == null) {
 			return notFound();
