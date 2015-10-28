@@ -8,6 +8,7 @@ import babybox.events.handler.EventHandler;
 import babybox.events.map.CommentEvent;
 import babybox.events.map.DeleteCommentEvent;
 import babybox.events.map.DeletePostEvent;
+import babybox.events.map.EditPostEvent;
 import babybox.events.map.FollowEvent;
 import babybox.events.map.LikeEvent;
 import babybox.events.map.PostEvent;
@@ -40,7 +41,7 @@ public class SocialRelationHandler {
 	}
 	
 	public static void recordEditPost(Post post, Category category){
-		DeletePostEvent postEvent = new DeletePostEvent();
+		EditPostEvent postEvent = new EditPostEvent();
 		postEvent.put("post", post);
 		postEvent.put("category", category);
 		EventHandler.getInstance().getEventBus().post(postEvent);
