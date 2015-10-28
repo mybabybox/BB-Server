@@ -20,22 +20,24 @@ public class LikeEventListener {
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
        	if (post.onLikedBy(user)) {
-	       	CalcServer.addToCategoryPopularQueue(post);
+	       	CalcServer.recalcScoreAndAddToCategoryPopularQueue(post);
 	       	CalcServer.addToLikeQueue(post, user);
 	       	
 	       	if (user.id != post.owner.id) {
     	       	Activity activity = new Activity(
     					ActivityType.LIKED, 
     					post.owner.id,
+    					true, 
+    					user.id,
     					user.id,
     					user.displayName,
     					post.id,
+    					post.getImage(),
     					StringUtil.shortMessage(post.title));
     	        activity.ensureUniqueAndCreate();
     	        
-    	        //GCM Notification sender
-    	        System.out.println("LIKE");
-    	        GcmSender.sendNotification(post.owner.id, user.name+" Liked on your post "+post.title);
+    	        // GCM Notification sender
+    	        GcmSender.sendNotification(post.owner.id, user.name+" Liked on your post - "+post.title);
 	       	}
        	}
     }
@@ -45,7 +47,7 @@ public class LikeEventListener {
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
        	if (post.onUnlikedBy(user)) {
-       	    CalcServer.addToCategoryPopularQueue(post);
+       	    CalcServer.recalcScoreAndAddToCategoryPopularQueue(post);
        		CalcServer.removeFromLikeQueue(post, user);
        	}
     }

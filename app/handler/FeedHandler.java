@@ -46,11 +46,11 @@ public class FeedHandler {
 				break;
 			
 			case USER_LIKED:
-				postIds = CalcServer.getUserLikeFeeds(id, offset.doubleValue());
+				postIds = CalcServer.getUserLikedFeeds(id, offset.doubleValue());
 				break;
 			
 			case USER_POSTED:
-				postIds = CalcServer.getUserPostFeeds(id, offset.doubleValue());
+				postIds = CalcServer.getUserPostedFeeds(id, offset.doubleValue());
 				break;
 				
 			case PRODUCT_SUGGEST:

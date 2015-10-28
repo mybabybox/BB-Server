@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -527,32 +526,39 @@ public class UserController extends Controller {
         Conversation.archiveConversation(id, localUser);
         return ok();
     }
-	
-	private static List<ConversationVM> getAllConversations(User localUser) {
-		List<ConversationVM> vms = new ArrayList<>();
-		List<Conversation> conversations = localUser.findConversations();
-		if (conversations != null) {
-			for (Conversation conversation : conversations) {
-				// archived, dont show
-				if (conversation.isArchivedBy(localUser)) {
-					continue;
-				}
-
-				ConversationVM vm = new ConversationVM(conversation, localUser);
-				vms.add(vm);
-			}
-		}
-		
-		return vms;	
-	}
 
 	@Transactional
 	public static Result getAllConversations() {
         NanoSecondStopWatch sw = new NanoSecondStopWatch();
 
 		final User localUser = Application.getLocalUser(session());
-		List<ConversationVM> vms = getAllConversations(localUser);
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
 
+		List<ConversationVM> vms = new ArrayList<>();
+        List<Conversation> conversations = localUser.findConversations();
+        if (conversations != null) {
+            Long count = 0L;
+            for (Conversation conversation : conversations) {
+                // archived, dont show
+                if (conversation.isArchivedBy(localUser)) {
+                    continue;
+                }
+
+                ConversationVM vm = new ConversationVM(conversation, localUser);
+                vms.add(vm);
+                
+                if (vm.unread > 0) {
+                    count++;
+                }
+            }
+            NotificationCounter.setConversationsCount(localUser.id, count);
+        } else {
+            NotificationCounter.resetConversationsCount(localUser.id);            
+        }
+        
         sw.stop();
         logger.underlyingLogger().info("[u="+localUser.id+"] getAllConversations. Took "+sw.getElapsedMS()+"ms");
 		return ok(Json.toJson(vms));
@@ -563,6 +569,11 @@ public class UserController extends Controller {
         NanoSecondStopWatch sw = new NanoSecondStopWatch();
 
 		final User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+        
 		Conversation conversation = Conversation.findById(id);
 		if (conversation == null) {
 			return notFound();
@@ -819,61 +830,55 @@ public class UserController extends Controller {
     }
     
     @Transactional
-    public static Result readActivitiesCount() {
+    public static Result resetActivitiesCount() {
     	final User localUser = Application.getLocalUser(session());
         if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
             return notFound();
         }
         
-        NotificationCounter.readActivitiesCount(localUser.id);
+        NotificationCounter.resetActivitiesCount(localUser.id);
         return ok();
     }
     
     @Transactional
-    public static Result readConversationsCount() {
+    public static Result resetConversationsCount() {
     	final User localUser = Application.getLocalUser(session());
         if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
             return notFound();
         }
         
-        NotificationCounter.readConversationsCount(localUser.id);
+        NotificationCounter.resetConversationsCount(localUser.id);
         return ok();
     }
     
     @Transactional
-    public static Result getAllActivities(long offset){
+    public static Result getActivities(Long offset){
     	User localUser = Application.getLocalUser(session());
     	if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
             return notFound();
         }
     	
-    	List<Activity> activities = Activity.getAllActivities(localUser.id, offset);
+    	// TODO: make it infinite scroll
+    	List<Activity> activities = Activity.getActivities(localUser.id);
     	List<ActivityVM> vms = new ArrayList<>();
-		for(Activity activity : activities){
+		for (Activity activity : activities) {
 			ActivityVM vm = new ActivityVM(activity);
 			vms.add(vm);
+			
+			// mark read
+			activity.viewed = true;
+			activity.save();
 		}
-		return ok(Json.toJson(vms));
-	}
-    
-    @Transactional
-    public static Result markViewed(Long id){
-    	User localUser = Application.getLocalUser(session());
-    	if (!localUser.isLoggedIn()) {
-            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
-            return notFound();
+		
+		// increment notification counter for the recipient
+        if (offset == 0) {
+            resetActivitiesCount();
         }
-    	
-    	Activity activity = Activity.findById(id);
-    	if(activity.userId == localUser.id){
-    		activity.setViewed(true);
-    		activity.setUpdatedDate(new Date());
-    		activity.merge();
-    	}
-		return ok();
+        
+		return ok(Json.toJson(vms));
 	}
     
     @Transactional

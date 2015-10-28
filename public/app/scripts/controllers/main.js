@@ -197,7 +197,7 @@ babybox.controller('CreateProductController',function($scope, $location, $http, 
 		.success(function () {
 			usSpinnerService.spin('載入中...');
 			$upload.upload({
-				url: '/post/new',
+				url: '/web/post/new',
 				method: 'POST',
 				file: $scope.selectedFiles,
 				data: newPostVM,

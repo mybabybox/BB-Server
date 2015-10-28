@@ -1,7 +1,6 @@
 package models;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -42,8 +41,12 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 	@Required
 	public Long userId;
 
+	public Boolean userIsOwner = false;
+	
 	public Long actor;
 
+	public Long actorImage;
+	
 	public String actorName;
 
 	@Enumerated(EnumType.STRING)
@@ -51,8 +54,10 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 
 	public Long target;
 
+	public Long targetImage;
+	
 	public String targetName;
-
+	
 	@Enumerated(EnumType.STRING)
 	public SocialObjectType targetType;
 
@@ -61,7 +66,7 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 	public Boolean deleted = false;
 
 	@Enumerated(EnumType.STRING)
-	public ActivityType actvityType;
+	public ActivityType activityType;
 
 	public static enum ActivityType {
 		NEW_POST,
@@ -71,21 +76,25 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 		SOLD
 	}
 
-	public Activity(){}
-
-	public Activity(ActivityType activityType, Long userId, 
-			Long actor, String actorName, Long target, String targetName) {
-		this.actvityType = activityType;
+	public Activity() {}
+	
+	public Activity(ActivityType activityType, Long userId, Boolean userIsOwner,  
+			Long actor, Long actorImage, String actorName,  
+			Long target, Long targetImage, String targetName) {
+		this.activityType = activityType;
 		this.userId = userId;
+		this.userIsOwner = userIsOwner;
 		this.actor = actor;
+		this.actorImage = actorImage;
 		this.actorName = actorName;
 		this.target = target;
+		this.targetImage = targetImage;
 		this.targetName = targetName;
 		setActorTargetType();
 	}
 
 	private void setActorTargetType() {
-		switch (this.actvityType) {
+		switch (this.activityType) {
 		case NEW_POST:
 			this.actorType = SocialObjectType.USER;
 			this.targetType = SocialObjectType.POST;
@@ -133,15 +142,13 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 	@Transactional
 	public boolean ensureUniqueAndCreate() {
 		Activity activity = getActivity();
-		System.out.println(activity);
+		
 		if (activity == null) {
-			System.out.println("save");
 			this.save();
 			return true;
 		} else {
-			System.out.println("merge");
-			activity.setCreatedDate(new Date());
-			activity.merge();
+			//activity.setCreatedDate(new Date());
+			//activity.merge();
 			return false;
 		}
 	}
@@ -175,13 +182,19 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 		}
 	}
 
-	public static List<Activity> getAllActivities(Long userId, Long offset) {
-		// increment notification counter for the recipient
-		if (offset == 0) {
-			NotificationCounter.readActivitiesCount(userId);
-		}
-
-		Query q = JPA.em().createQuery("SELECT a FROM Activity a where userId = ? and deleted = false");
+	public static List<Activity> getActivities(Long userId) {
+        Query q = JPA.em().createQuery("SELECT a FROM Activity a where userId = ?1 and deleted = false order by CREATED_DATE desc");
+        q.setMaxResults(DefaultValues.MAX_ACTIVITIES_COUNT);    // safety measure as no infinite scroll
+        q.setParameter(1, userId);
+        try {
+            return (List<Activity>) q.getResultList();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+	
+	public static List<Activity> getActivities(Long userId, Long offset) {
+		Query q = JPA.em().createQuery("SELECT a FROM Activity a where userId = ?1 and deleted = false order by CREATED_DATE desc");
 		q.setFirstResult((int) (offset * DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT));
 		q.setMaxResults(DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT);
 		q.setParameter(1, userId);
@@ -208,29 +221,21 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 		this.userId = userId;
 	}
 
-	public SocialObjectType getTargetType() {
-		return targetType;
-	}
+	public Boolean getUserIsOwner() {
+        return userIsOwner;
+    }
 
-	public void setTargetType(SocialObjectType targetType) {
-		this.targetType = targetType;
-	}
-
-	public Long getTarget() {
-		return target;
-	}
-
-	public void setTarget(Long target) {
-		this.target = target;
-	}
+    public void setUserIsOwner(Boolean userIsOwner) {
+        this.userIsOwner = userIsOwner;
+    }
 
 	public long getActor() {
 		return actor;
 	}
-
-	public void setActor(long actor) {
-		this.actor = actor;
-	}
+	
+	public void setActor(Long actor) {
+        this.actor = actor;
+    }
 
 	public String getActorName() {
 		return actorName;
@@ -240,6 +245,14 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 		this.actorName = actorName;
 	}
 
+	public long getActorImage() {
+        return actorImage;
+    }
+    
+    public void setActorImage(Long actorImage) {
+        this.actorImage = actorImage;
+    }
+    
 	public SocialObjectType getActorType() {
 		return actorType;
 	}
@@ -248,13 +261,37 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 		this.actorType = actorType;
 	}
 
-	public String getTargetName() {
-		return targetName;
-	}
+	public Long getTarget() {
+        return target;
+    }
 
-	public void setTargetName(String targetName) {
-		this.targetName = targetName;
-	}
+    public void setTarget(Long target) {
+        this.target = target;
+    }
+    
+    public String getTargetName() {
+        return targetName;
+    }
+
+    public void setTargetName(String targetName) {
+        this.targetName = targetName;
+    }
+
+    public Long getTargetImage() {
+        return targetImage;
+    }
+    
+    public void setTargetImage(Long targetImage) {
+        this.targetImage = targetImage;
+    }
+    
+	public SocialObjectType getTargetType() {
+        return targetType;
+    }
+    
+    public void setTargetType(SocialObjectType targetType) {
+        this.targetType = targetType;
+    }
 
 	public Boolean isViewed() {
 		return viewed;
@@ -264,11 +301,11 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 		this.viewed = viewed;
 	}
 
-	public ActivityType getActvityType() {
-		return actvityType;
+	public ActivityType getActivityType() {
+		return activityType;
 	}
 
-	public void setActvityType(ActivityType actvityType) {
-		this.actvityType = actvityType;
+	public void setActivityType(ActivityType activityType) {
+		this.activityType = activityType;
 	}
 }

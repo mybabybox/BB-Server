@@ -102,8 +102,10 @@ GET		/get-home-explore-feed/:offset							controllers.UserController.getHomeExpl
 GET     /get-home-following-feed/:offset                        controllers.UserController.getHomeFollowingFeed(offset: Long)
 GET		/get-suggested-products/:id								controllers.ProductController.getSuggestedProducts(id :Long)						
 
-POST	/post/new		 		             		controllers.ProductController.createProductWeb
-POST	/mobile/post/new		 		            controllers.ProductController.createProductMobile
+POST    /post/new                                   controllers.ProductController.createProduct
+POST	/web/post/new		 		             	controllers.ProductController.createProductWeb
+POST    /post/edit                                  controllers.ProductController.editProduct
+POST    /web/post/edit                              controllers.ProductController.editProductWeb
 GET     /get-all-feed-products       				controllers.ProductController.getAllFeedProducts
 GET     /get-all-similar-products       			controllers.ProductController.getAllSimilarProducts
 GET     /product/:id            		     		controllers.ProductController.product(id:Long)
@@ -128,10 +130,9 @@ GET     /followings/:id/:offset						controllers.UserController.getFollowings(id
 GET     /followers/:id/:offset						controllers.UserController.getFollowers(id: Long,offset:Long)
 GET     /get-user-liked-feed/:id/:offset			controllers.UserController.getUserLikedPosts(id: Long,offset:Long)
 GET     /notification-counter                       controllers.UserController.getNotificationCounter
-GET     /read-activities-count                      controllers.UserController.readActivitiesCount
-GET     /read-conversations-count                   controllers.UserController.readConversationsCount
-GET		/get-all-activities/:offset							controllers.UserController.getAllActivities(offset :Long)
-GET		/mark-viewed/:id							controllers.UserController.markViewed(id :Long)
+GET     /reset-activities-count                     controllers.UserController.resetActivitiesCount
+GET     /reset-conversations-count                  controllers.UserController.resetConversationsCount
+GET		/get-activities/:offset				    	controllers.UserController.getActivities(offset:Long)
 
 # image upload
 POST    /image/upload-profile-photo                 controllers.UserController.uploadProfilePhoto

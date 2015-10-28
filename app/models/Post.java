@@ -186,6 +186,18 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		}
 	}
 
+	public Long getImage() {
+	    Long[] images = getImages();
+        if (images != null && images.length > 0) {
+            return images[0];
+        }
+        return null;
+	}
+	
+	public Long[] getImages() {
+	    return Folder.getResources(folder);
+	}
+	
 	///////////////////// Query APIs /////////////////////
 	public static Post findById(Long id) {
 		try {
@@ -303,6 +315,6 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	}
 	
 	public List<Conversation> findConversations() {
-		return Conversation.findPostConversations(this, this.owner, DefaultValues.CONVERSATION_COUNT);
+		return Conversation.findPostConversations(this, this.owner);
 	}
 }

@@ -19,16 +19,19 @@ public class PostEventListener {
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
 		CalcServer.addToCategoryQueues(post);
-		CalcServer.addToPostQueue(post, user);
+		CalcServer.addToUserPostedQueue(post, user);
 		
 		/*
 		// Need to query followers as recipients
 		Activity activity = new Activity(
 				ActivityType.NEW_POST, 
 				user.id,
+				true, 
+				user.id,
 				user.id,
 				user.displayName,
 				post.id,
+				post.getImage(), 
 				StringUtil.shortMessage(post.title));
         activity.ensureUniqueAndCreate();
         */

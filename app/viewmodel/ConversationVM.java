@@ -1,7 +1,6 @@
 package viewmodel;
 
 import models.Conversation;
-import models.Folder;
 import models.Post;
 import models.User;
 
@@ -15,10 +14,12 @@ public class ConversationVM {
 	@JsonProperty("postImage") public Long postImage;
 	@JsonProperty("postTitle") public String postTitle;
 	@JsonProperty("postPrice") public Long postPrice;
+	@JsonProperty("postOwner") public Boolean postOwner;
 	@JsonProperty("postSold") public Boolean postSold;
 	@JsonProperty("userId") public Long userId;
 	@JsonProperty("userName") public String userName;
 	@JsonProperty("lastMessage") public String lastMessage;
+	@JsonProperty("lastMessageHasImage") public Boolean lastMessageHasImage;
 	@JsonProperty("lastMessageDate") public Long lastMessageDate;
 	@JsonProperty("unread") public Long unread = 0L;
 	
@@ -29,14 +30,16 @@ public class ConversationVM {
 		this.postId = post.id;
 		this.postTitle = post.title;
 		this.postPrice = post.price.longValue();
+		this.postOwner = post.owner.id == localUser.id;
 		this.postSold = post.sold;
 		this.userId = otherUser.id;
 		this.userName = otherUser.displayName;
 		this.lastMessage = conversation.lastMessage;
+		this.lastMessageHasImage = conversation.lastMessageHasImage;
 		this.lastMessageDate = conversation.lastMessageDate.getTime();
 		this.unread = conversation.getUnreadCount(localUser);
 		
-		Long[] images = Folder.getResources(post.folder);
+		Long[] images = post.getImages();
         if (images != null && images.length > 0) {
         	this.postImage = images[0];
         }
