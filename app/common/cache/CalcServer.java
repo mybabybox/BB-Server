@@ -491,9 +491,13 @@ public class CalcServer {
 	}
 	
 	public static void removeFromCategoryQueues(Post post){
-		removeMemberFromPriceLowHighPostQueue(post.id, post.category.id);
-		removeMemberFromNewestPostQueue(post.id, post.category.id);
-		removeMemberFromPopularPostQueue(post.id, post.category.id);
+		removeFromCategoryQueues(post, post.category);
+	}
+	
+	public static void removeFromCategoryQueues(Post post, Category category){
+	    removeMemberFromPriceLowHighPostQueue(post.id, category.id);
+        removeMemberFromNewestPostQueue(post.id, category.id);
+        removeMemberFromPopularPostQueue(post.id, category.id);
 	}
 	
 	public static void removeMemberFromPriceLowHighPostQueue(Long postId, Long categoryId){

@@ -1,5 +1,6 @@
 package service;
 
+import models.Category;
 import models.Comment;
 import models.Post;
 import models.User;
@@ -7,6 +8,7 @@ import babybox.events.handler.EventHandler;
 import babybox.events.map.CommentEvent;
 import babybox.events.map.DeleteCommentEvent;
 import babybox.events.map.DeletePostEvent;
+import babybox.events.map.EditPostEvent;
 import babybox.events.map.FollowEvent;
 import babybox.events.map.LikeEvent;
 import babybox.events.map.PostEvent;
@@ -38,12 +40,19 @@ public class SocialRelationHandler {
 		EventHandler.getInstance().getEventBus().post(postEvent);
 	}
 	
-	public static void recordDeletePost(Post post, User localUser){
-		DeletePostEvent postEvent = new DeletePostEvent();
-		postEvent.put("user", localUser);
+	public static void recordEditPost(Post post, Category category){
+		EditPostEvent postEvent = new EditPostEvent();
 		postEvent.put("post", post);
+		postEvent.put("category", category);
 		EventHandler.getInstance().getEventBus().post(postEvent);
 	}
+	
+	public static void recordDeletePost(Post post, User localUser){
+        DeletePostEvent postEvent = new DeletePostEvent();
+        postEvent.put("user", localUser);
+        postEvent.put("post", post);
+        EventHandler.getInstance().getEventBus().post(postEvent);
+    }
 	
 	public static void recordFollowUser(User localUser, User user){
 		FollowEvent followEvent = new FollowEvent();

@@ -1,10 +1,12 @@
 package babybox.events.listener;
 
 import models.Activity;
+import models.Category;
 import models.Post;
 import models.User;
 import models.Activity.ActivityType;
 import babybox.events.map.DeletePostEvent;
+import babybox.events.map.EditPostEvent;
 import babybox.events.map.PostEvent;
 
 import com.google.common.eventbus.Subscribe;
@@ -35,6 +37,14 @@ public class PostEventListener {
 				StringUtil.shortMessage(post.title));
         activity.ensureUniqueAndCreate();
         */
+    }
+	
+	@Subscribe
+    public void recordEditPostEventOnCalcServer(EditPostEvent map){
+        Post post = (Post) map.get("post");
+        Category category = (Category) map.get("category");
+        CalcServer.removeFromCategoryQueues(post, category);
+        CalcServer.addToCategoryQueues(post);
     }
 	
 	@Subscribe
