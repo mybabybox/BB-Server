@@ -33,6 +33,7 @@ import viewmodel.UserVM;
 import common.model.FeedFilter.FeedType;
 import common.utils.HtmlUtil;
 import common.utils.ImageFileUtil;
+import common.utils.NanoSecondStopWatch;
 import controllers.Application.DeviceType;
 import domain.DefaultValues;
 import domain.SocialObjectType;
@@ -78,6 +79,8 @@ public class ProductController extends Controller{
 	}
 
 	private static Result createProduct(String title, String body, Long catId, Double price, List<FilePart> images, DeviceType deviceType) {
+	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
+	    
 		final User localUser = Application.getLocalUser(session());
 		if (!localUser.isLoggedIn()) {
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
@@ -107,6 +110,12 @@ public class ProductController extends Controller{
 			
 			SocialRelationHandler.recordCreatePost(newPost, localUser);
 			ResponseStatusVM response = new ResponseStatusVM(SocialObjectType.POST, newPost.id, localUser.id, true);
+			
+			sw.stop();
+	        if (logger.underlyingLogger().isDebugEnabled()) {
+	            logger.underlyingLogger().debug("[u="+localUser.getId()+"] createProduct(). Took "+sw.getElapsedMS()+"ms");
+	        }
+	        
 			return ok(Json.toJson(response));
 		} catch (IOException e) {
 			logger.underlyingLogger().error("Error in createProduct", e);
@@ -118,7 +127,6 @@ public class ProductController extends Controller{
 	@Transactional
     public static Result editProductWeb() {
         DynamicForm dynamicForm = DynamicForm.form().bindFromRequest();
-        List<FilePart> images = request().body().asMultipartFormData().getFiles();
         String postId = dynamicForm.get("postId");
         String catId = dynamicForm.get("catId");
         String title = dynamicForm.get("title");
@@ -129,8 +137,6 @@ public class ProductController extends Controller{
     
     @Transactional
     public static Result editProduct() {
-        List<FilePart> images = Application.parseAttachments("image", DefaultValues.MAX_POST_IMAGES);
-        
         Http.MultipartFormData multipartFormData = request().body().asMultipartFormData();
         String postIdStr = multipartFormData.asFormUrlEncoded().get("postId")[0];
         String catIdStr = multipartFormData.asFormUrlEncoded().get("catId")[0];
@@ -159,6 +165,8 @@ public class ProductController extends Controller{
     }
 
     private static Result editProduct(Long postId, String title, String body, Long catId, Double price) {
+        NanoSecondStopWatch sw = new NanoSecondStopWatch();
+        
         final User localUser = Application.getLocalUser(session());
         if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
@@ -175,12 +183,18 @@ public class ProductController extends Controller{
             return notFound();
         }
         
-        Post newPost = localUser.editProduct(post, title, body, category, price);
-        if (newPost == null) {
+        Post editPost = localUser.editProduct(post, title, body, category, price);
+        if (editPost == null) {
             return badRequest("Failed to edit product. Invalid parameters.");
         }
         
-        ResponseStatusVM response = new ResponseStatusVM(SocialObjectType.POST, newPost.id, localUser.id, true);
+        ResponseStatusVM response = new ResponseStatusVM(SocialObjectType.POST, editPost.id, localUser.id, true);
+        
+        sw.stop();
+        if (logger.underlyingLogger().isDebugEnabled()) {
+            logger.underlyingLogger().debug("[u="+localUser.getId()+"] editProduct(). Took "+sw.getElapsedMS()+"ms");
+        }
+        
         return ok(Json.toJson(response));
     }
 
