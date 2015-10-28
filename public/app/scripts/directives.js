@@ -1,8 +1,8 @@
 'use strict';
 
-var minibean = angular.module('minibean');
+var babybox = angular.module('babybox');
 
-minibean.directive('adsFactor', function($window, $compile) {
+babybox.directive('adsFactor', function($window, $compile) {
     return {
         restrict: 'A',
         template: '',
@@ -62,7 +62,7 @@ minibean.directive('adsFactor', function($window, $compile) {
  *     </li>
  * </ul>
  */
-minibean.filter('objFilter', function() {
+babybox.filter('objFilter', function() {
     return function(items, filter, exact) {
         if (!filter){
             return items;
@@ -86,7 +86,7 @@ minibean.filter('objFilter', function() {
 /**
  * trustAsHtml
  */
-minibean.filter('to_trusted', ['$sce', function($sce){
+babybox.filter('to_trusted', ['$sce', function($sce){
     return function(text) {
         return $sce.trustAsHtml(text);
     };
@@ -96,7 +96,7 @@ minibean.filter('to_trusted', ['$sce', function($sce){
  * A generic confirmation for risky actions.
  * Usage: Add attributes: ng-really-message="Are you sure"? ng-really-click="takeAction()" function
  */
-minibean.directive('ngConfirmClick', [function() {
+babybox.directive('ngConfirmClick', [function() {
     return {
         restrict: 'A',
         link: function(scope, element, attrs) {
@@ -148,7 +148,7 @@ minibean.directive('ngConfirmClick', [function() {
 /**
  * Use this directive 'valid-file' together with 'required' for input type='file'. 
  */
-minibean.directive('validFile',function(){
+babybox.directive('validFile',function(){
     return {
         require:'ngModel',
         link:function(scope,el,attrs,ngModel){

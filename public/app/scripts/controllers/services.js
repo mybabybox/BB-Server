@@ -2,7 +2,6 @@
 
 var babybox = angular.module('babybox');
 
-
 babybox.service('feedService',function($resource){
     this.getFeedProduct = $resource(
             '/get-all-feed-products',
@@ -39,7 +38,6 @@ babybox.service('collecctionService',function($resource){
             }
     );
 });
-
 
 babybox.service('userService',function($resource){
     this.getUserProduct = $resource(
@@ -110,8 +108,7 @@ babybox.service('viewService',function($resource){
 
 
 /*
-
-minibean.service('adminService',function($resource){
+babybox.service('adminService',function($resource){
     this.campaignJoiners = $resource(
             '/admin/get-campaign-joiners/:id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -128,7 +125,7 @@ minibean.service('adminService',function($resource){
     );
 });
 
-minibean.service('frontpageService',function($resource){
+babybox.service('frontpageService',function($resource){
     this.pnNewsFeeds = $resource(
             '/get-pnnewsfeeds/:offset',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -201,7 +198,7 @@ minibean.service('frontpageService',function($resource){
     );
 });
 
-minibean.service('headerBarMetadataService',function($resource){
+babybox.service('headerBarMetadataService',function($resource){
 	this.headerBardata = $resource(
 			'/get-headerBar-data',
 	        {alt:'json',callback:'JSON_CALLBACK'},
@@ -211,7 +208,7 @@ minibean.service('headerBarMetadataService',function($resource){
  	);
 });
 
-minibean.service('userSettingsService',function($resource){
+babybox.service('userSettingsService',function($resource){
     this.privacySettings = $resource(
             '/get-privacy-settings',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -228,7 +225,7 @@ minibean.service('userSettingsService',function($resource){
     );    
 });
 
-minibean.service('announcementsService',function($resource) {
+babybox.service('announcementsService',function($resource) {
     this.getGeneralAnnouncements = $resource(
             '/get-general-announcements',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -246,7 +243,7 @@ minibean.service('announcementsService',function($resource) {
     );
 });
 
-minibean.service('todayWeatherInfoService',function($resource) {
+babybox.service('todayWeatherInfoService',function($resource) {
     this.getTodayWeatherInfo = $resource(
             '/get-today-weather-info',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -256,7 +253,7 @@ minibean.service('todayWeatherInfoService',function($resource) {
     );
 });
 
-minibean.service('gameService',function($resource) {
+babybox.service('gameService',function($resource) {
     this.signInForToday = $resource(
             '/sign-in-for-today',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -308,7 +305,7 @@ minibean.service('gameService',function($resource) {
     );
 });
 
-minibean.service('locationService',function($resource){
+babybox.service('locationService',function($resource){
     this.allDistricts = $resource(
             '/get-all-districts',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -318,7 +315,7 @@ minibean.service('locationService',function($resource){
     );
 });
 
-minibean.service('postLandingService',function($resource){
+babybox.service('postLandingService',function($resource){
     this.postLanding = $resource(
             '/post-landing/:id/:communityId',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -328,7 +325,7 @@ minibean.service('postLandingService',function($resource){
     );
 });
 
-minibean.service('qnaLandingService',function($resource){
+babybox.service('qnaLandingService',function($resource){
     this.qnaLanding = $resource(
             '/qna-landing/:id/:communityId',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -338,7 +335,7 @@ minibean.service('qnaLandingService',function($resource){
     );
 });
 
-minibean.service('searchService',function($resource){
+babybox.service('searchService',function($resource){
     this.userSearch = $resource(
             '/user-search?query=:q',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -348,7 +345,7 @@ minibean.service('searchService',function($resource){
     );
 });
 
-minibean.service('sendInvitation',function($resource){
+babybox.service('sendInvitation',function($resource){
     this.inviteFriend = $resource(
             '/send-invite?id=:id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -358,7 +355,7 @@ minibean.service('sendInvitation',function($resource){
     );
 });
 
-minibean.service('unFriendService',function($resource){
+babybox.service('unFriendService',function($resource){
     this.doUnfriend = $resource(
             '/un-friend?id=:id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -368,7 +365,7 @@ minibean.service('unFriendService',function($resource){
     );
 });
 
-minibean.service('applicationInfoService',function($resource){
+babybox.service('applicationInfoService',function($resource){
     this.ApplicationInfo = $resource(
             '/get-application-info',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -378,7 +375,7 @@ minibean.service('applicationInfoService',function($resource){
     );
 });
 
-minibean.service('userInfoService',function($resource){
+babybox.service('userInfoService',function($resource){
     this.UserInfo = $resource(
             '/get-user-info',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -403,7 +400,7 @@ minibean.service('userInfoService',function($resource){
     );
 });
 
-minibean.service('acceptFriendRequestService',function($resource){
+babybox.service('acceptFriendRequestService',function($resource){
     this.acceptFriendRequest = $resource(
             '/accept-friend-request?friend_id=:id&notify_id=:notify_id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -413,7 +410,7 @@ minibean.service('acceptFriendRequestService',function($resource){
     );
 });
 
-minibean.service('acceptJoinRequestService',function($resource){
+babybox.service('acceptJoinRequestService',function($resource){
     this.acceptJoinRequest = $resource(
             '/accept-join-request/:member_id/:group_id/:notify_id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -431,7 +428,7 @@ minibean.service('acceptJoinRequestService',function($resource){
     );
 });
 
-minibean.service('notificationMarkReadService',function($resource){
+babybox.service('notificationMarkReadService',function($resource){
     this.markAsRead = $resource(
             '/mark-as-read/:notify_ids',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -449,7 +446,7 @@ minibean.service('notificationMarkReadService',function($resource){
     );
 });
 
-minibean.service('userAboutService',function($resource){
+babybox.service('userAboutService',function($resource){
     this.UserAbout = $resource(
             '/about-user',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -459,7 +456,7 @@ minibean.service('userAboutService',function($resource){
     );
 });
 
-minibean.service('profilePhotoModal',function( $modal){
+babybox.service('profilePhotoModal',function( $modal){
     
     this.OpenModal = function(arg, successCallback) {
         this.instance = $modal.open(arg);
@@ -472,7 +469,7 @@ minibean.service('profilePhotoModal',function( $modal){
     }
 });
 
-minibean.service('editCommunityPageService',function($resource){
+babybox.service('editCommunityPageService',function($resource){
     this.EditCommunityPage = $resource(
             '/edit-community/:id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -482,7 +479,7 @@ minibean.service('editCommunityPageService',function($resource){
     );
 });
 
-minibean.service('membersWidgetService',function($resource){
+babybox.service('membersWidgetService',function($resource){
     this.NewCommunityMembers = $resource(
             '/get-new-community-members/:id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -492,7 +489,7 @@ minibean.service('membersWidgetService',function($resource){
     );
 });
 
-minibean.service('unJoinedCommunityWidgetService',function($resource){
+babybox.service('unJoinedCommunityWidgetService',function($resource){
     this.UnJoinedCommunities = $resource(
             '/get-unjoined-communities',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -502,7 +499,7 @@ minibean.service('unJoinedCommunityWidgetService',function($resource){
     );
 });
 
-minibean.service('sendJoinRequest',function($resource){
+babybox.service('sendJoinRequest',function($resource){
     this.sendRequest = $resource(
             '/send-request?id=:id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -512,7 +509,7 @@ minibean.service('sendJoinRequest',function($resource){
     );
 });
 
-minibean.service('friendsService',function($resource){
+babybox.service('friendsService',function($resource){
     this.MyFriendsForUtility = $resource(
             '/get-my-friends-for-utility',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -554,7 +551,7 @@ minibean.service('friendsService',function($resource){
     );
 });
 
-minibean.service('sendJoinRequest',function($resource){
+babybox.service('sendJoinRequest',function($resource){
     this.sendRequest = $resource(
             '/send-request?id=:id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -564,7 +561,7 @@ minibean.service('sendJoinRequest',function($resource){
     );
 });
 
-minibean.service('communitiesDiscoverService',function($resource){
+babybox.service('communitiesDiscoverService',function($resource){
     this.getSocialCommunityCategoriesMap = $resource(
             '/get-social-community-categories-map?indexOnly=:indexOnly',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -616,7 +613,7 @@ minibean.service('communitiesDiscoverService',function($resource){
     );
 });
 
-minibean.service('communityWidgetService',function($resource){
+babybox.service('communityWidgetService',function($resource){
     this.MyCommunities = $resource(
             '/get-my-communities',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -626,7 +623,7 @@ minibean.service('communityWidgetService',function($resource){
     );
 });
 
-minibean.service('communityWidgetByUserService',function($resource){
+babybox.service('communityWidgetByUserService',function($resource){
     this.UserCommunities = $resource(
             '/get-user-communities/:id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -636,7 +633,7 @@ minibean.service('communityWidgetByUserService',function($resource){
     );
 });
 
-minibean.service('profileService',function($resource){
+babybox.service('profileService',function($resource){
     this.Profile = $resource(
             '/profile/:id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -646,7 +643,7 @@ minibean.service('profileService',function($resource){
     );
 });
 
-minibean.service('communitySearchPageService',function($resource){
+babybox.service('communitySearchPageService',function($resource){
     this.GetPostsFromIndex = $resource(
             '/searchForPosts/index/:query/:community_id/:offset',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -656,7 +653,7 @@ minibean.service('communitySearchPageService',function($resource){
     );
 });
 
-minibean.service('communityPageService',function($resource){
+babybox.service('communityPageService',function($resource){
     this.Community = $resource(
             '/community/:id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -698,7 +695,7 @@ minibean.service('communityPageService',function($resource){
     );
 });
 
-minibean.service('postManagementService',function($resource){
+babybox.service('postManagementService',function($resource){
     this.deletePost = $resource(
             '/delete-post/:postId',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -732,7 +729,7 @@ minibean.service('postManagementService',function($resource){
     );
 });
 
-minibean.service('communityJoinService',function($resource){
+babybox.service('communityJoinService',function($resource){
     this.sendJoinRequest = $resource(
             '/community/join/:id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -750,7 +747,7 @@ minibean.service('communityJoinService',function($resource){
     );
 });
 
-minibean.service('iconsService',function($resource){
+babybox.service('iconsService',function($resource){
     this.getCommunityIcons = $resource(
             '/image/getCommunityIcons',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -768,7 +765,7 @@ minibean.service('iconsService',function($resource){
     );
 });
 
-minibean.service('searchMembersService',function($resource){
+babybox.service('searchMembersService',function($resource){
     this.getUnjoinedUsers = $resource(
             '/getAllUnjoinedMembers/:id/:query',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -786,7 +783,7 @@ minibean.service('searchMembersService',function($resource){
     );
 });
 
-minibean.service('bookmarkService', function($resource) {
+babybox.service('bookmarkService', function($resource) {
     this.bookmarkPost = $resource(
             '/bookmark-post/:post_id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -868,7 +865,7 @@ minibean.service('bookmarkService', function($resource) {
     );
 });
     
-minibean.service('likeFrameworkService', function($resource) {
+babybox.service('likeFrameworkService', function($resource) {
 
     this.hitWantAnswerOnQnA = $resource(
             '/want-ans/:post_id',
@@ -967,7 +964,7 @@ minibean.service('likeFrameworkService', function($resource) {
     );
 });
 
-minibean.service('communityQnAPageService',function($resource){
+babybox.service('communityQnAPageService',function($resource){
     this.InitialQuestions = $resource(
             '/communityQnA/questions/:id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -984,7 +981,7 @@ minibean.service('communityQnAPageService',function($resource){
     );
 });
 
-minibean.service('tagwordService',function($resource){
+babybox.service('tagwordService',function($resource){
     this.HotArticlesTagwords = $resource(
             '/get-hot-articles-tagwords',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -1008,7 +1005,7 @@ minibean.service('tagwordService',function($resource){
     );
 });
 
-minibean.service('pkViewService',function($resource){
+babybox.service('pkViewService',function($resource){
     this.pkViewInfo = $resource(
             '/get-pkview-info/:id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -1039,7 +1036,7 @@ minibean.service('pkViewService',function($resource){
     );
 });
     
-minibean.service('campaignService',function($resource){
+babybox.service('campaignService',function($resource){
     this.campaignInfo = $resource(
             '/get-campaign-info/:id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -1056,7 +1053,7 @@ minibean.service('campaignService',function($resource){
     );
 });
 
-minibean.service('schoolsService',function($resource){
+babybox.service('schoolsService',function($resource){
 	this.pnInfo = $resource(
             '/get-pn-info/:id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -1185,7 +1182,7 @@ minibean.service('schoolsService',function($resource){
     );
 });
 
-minibean.service('articleService',function($resource){
+babybox.service('articleService',function($resource){
     this.AllArticleCategories = $resource(
             '/get-all-article-categories',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -1251,7 +1248,7 @@ minibean.service('articleService',function($resource){
     );
 });
 
-minibean.service('showImageService',function($resource){
+babybox.service('showImageService',function($resource){
     this.getImage = $resource(
             '/get-image-url/:id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -1261,7 +1258,7 @@ minibean.service('showImageService',function($resource){
     );
 });
 
-minibean.service('articleCommentsService',function($resource){
+babybox.service('articleCommentsService',function($resource){
     this.comments = $resource(
             '/ArticleComments/:id',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -1271,7 +1268,7 @@ minibean.service('articleCommentsService',function($resource){
     );
 });
 
-minibean.service('myMagazineNewsFeedService',function($resource){
+babybox.service('myMagazineNewsFeedService',function($resource){
     this.NewsFeeds = $resource(
             '/get-my-businessfeeds/:offset',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -1281,7 +1278,7 @@ minibean.service('myMagazineNewsFeedService',function($resource){
     );
 });
 
-minibean.service('newsFeedService',function($resource){
+babybox.service('newsFeedService',function($resource){
     this.NewsFeeds = $resource(
             '/get-newsfeeds/:offset',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -1291,7 +1288,7 @@ minibean.service('newsFeedService',function($resource){
     );
 });
       
-minibean.service('userNewsFeedService',function($resource){
+babybox.service('userNewsFeedService',function($resource){
 
     this.NewsFeedsPosts = $resource(
             '/get-user-newsfeeds-posts/:offset/:id',
@@ -1310,7 +1307,7 @@ minibean.service('userNewsFeedService',function($resource){
     );
 });
 
-minibean.service('myBookmarksService',function($resource){
+babybox.service('myBookmarksService',function($resource){
     this.bookmarkedPosts = $resource(
             '/get-bookmarked-posts/:offset',
             {alt:'json',callback:'JSON_CALLBACK'},
@@ -1360,7 +1357,7 @@ minibean.service('myBookmarksService',function($resource){
     );
 });
 
-minibean.service('conversationService',function($resource){
+babybox.service('conversationService',function($resource){
     this.allConversations = $resource(
         '/get-all-conversations',
         {alt:'json',callback:'JSON_CALLBACK'},
@@ -1394,7 +1391,7 @@ minibean.service('conversationService',function($resource){
     );
 });
 
-minibean.service('getMessageService',function($resource){
+babybox.service('getMessageService',function($resource){
     this.getMessages = $resource(
         '/get-messages/:id/:offset',
         {alt:'json',callback:'JSON_CALLBACK'},
@@ -1404,7 +1401,7 @@ minibean.service('getMessageService',function($resource){
     );
 });
 
-minibean.service('searchFriendService',function($resource){
+babybox.service('searchFriendService',function($resource){
     this.userSearch = $resource(
         '/user-friend-search?query=:q',
         {alt:'json',callback:'JSON_CALLBACK'},
@@ -1414,7 +1411,7 @@ minibean.service('searchFriendService',function($resource){
     );
 });
 
-minibean.service('magazineNewsFeedService',function($resource){
+babybox.service('magazineNewsFeedService',function($resource){
     this.NewsFeeds = $resource(
             '/get-businessfeeds/:offset/:cat',
             {alt:'json',callback:'JSON_CALLBACK'},

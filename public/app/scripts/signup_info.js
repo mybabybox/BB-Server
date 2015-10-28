@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    minibean = this;
+	babybox = this;
     
     // selection hooks
     this.onChangeParentType = function() {
@@ -13,7 +13,7 @@ $(document).ready(function() {
             $("#child5_row").hide()
         } else {
             $("#num_children_row").show();
-            minibean.onChangeNumChildren();
+            babybox.onChangeNumChildren();
         }
     }
     $("input:radio[name='parent_type']").change(this.onChangeParentType);

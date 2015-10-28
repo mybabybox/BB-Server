@@ -460,7 +460,7 @@ public abstract class PlayAuthenticate {
 
 	private static AuthUser signupUser(final AuthUser u) throws AuthException {
 	    if (Application.isOverDailySignupLimit()) {
-	        throw new AuthException("十分抱歉! 由於小萌豆是新平台，為了提供最好的體驗給每個用戶，我們預設了每日新登記用戶上限。現在已超出登記上限，請遲些回來重試。");
+	        throw new AuthException("十分抱歉! 由於 babybox是新平台，為了提供最好的體驗給每個用戶，我們預設了每日新登記用戶上限。現在已超出登記上限，請遲些回來重試。");
 	    }
 	    
 	    // Email must be unique 

@@ -161,7 +161,7 @@ babybox.config(['$httpProvider', function($httpProvider) {
            };
     });
     
-//minibean.config(['$httpProvider', function($httpProvider) {
+//babybox.config(['$httpProvider', function($httpProvider) {
 //    if (!$httpProvider.defaults.headers.get) {
 //        $httpProvider.defaults.headers.get = {};    
 //    }
