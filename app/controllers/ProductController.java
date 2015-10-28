@@ -113,7 +113,7 @@ public class ProductController extends Controller{
 			
 			sw.stop();
 	        if (logger.underlyingLogger().isDebugEnabled()) {
-	            logger.underlyingLogger().debug("[u="+localUser.getId()+"] createProduct(). Took "+sw.getElapsedMS()+"ms");
+	            logger.underlyingLogger().debug("[u="+localUser.getId()+"][p="+newPost.id+"] createProduct(). Took "+sw.getElapsedMS()+"ms");
 	        }
 	        
 			return ok(Json.toJson(response));
@@ -178,6 +178,7 @@ public class ProductController extends Controller{
             return notFound();
         }
         
+        Category oldCategory = post.category;
         Category category = Category.findById(catId);
         if (category == null) {
             return notFound();
@@ -188,11 +189,15 @@ public class ProductController extends Controller{
             return badRequest("Failed to edit product. Invalid parameters.");
         }
         
+        // category changed, handle event
+        if (catId != oldCategory.id) {
+            SocialRelationHandler.recordEditPost(editPost, oldCategory);
+        }
         ResponseStatusVM response = new ResponseStatusVM(SocialObjectType.POST, editPost.id, localUser.id, true);
         
         sw.stop();
         if (logger.underlyingLogger().isDebugEnabled()) {
-            logger.underlyingLogger().debug("[u="+localUser.getId()+"] editProduct(). Took "+sw.getElapsedMS()+"ms");
+            logger.underlyingLogger().debug("[u="+localUser.getId()+"][p="+postId+"] editProduct(). Took "+sw.getElapsedMS()+"ms");
         }
         
         return ok(Json.toJson(response));

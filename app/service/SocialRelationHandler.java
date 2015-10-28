@@ -1,5 +1,6 @@
 package service;
 
+import models.Category;
 import models.Comment;
 import models.Post;
 import models.User;
@@ -38,12 +39,19 @@ public class SocialRelationHandler {
 		EventHandler.getInstance().getEventBus().post(postEvent);
 	}
 	
-	public static void recordDeletePost(Post post, User localUser){
+	public static void recordEditPost(Post post, Category category){
 		DeletePostEvent postEvent = new DeletePostEvent();
-		postEvent.put("user", localUser);
 		postEvent.put("post", post);
+		postEvent.put("category", category);
 		EventHandler.getInstance().getEventBus().post(postEvent);
 	}
+	
+	public static void recordDeletePost(Post post, User localUser){
+        DeletePostEvent postEvent = new DeletePostEvent();
+        postEvent.put("user", localUser);
+        postEvent.put("post", post);
+        EventHandler.getInstance().getEventBus().post(postEvent);
+    }
 	
 	public static void recordFollowUser(User localUser, User user){
 		FollowEvent followEvent = new FollowEvent();
