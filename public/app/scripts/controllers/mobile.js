@@ -1,8 +1,8 @@
 /*'use strict';
 
-var minibean = angular.module('minibean');
+var babybox = angular.module('babybox');
 
-minibean.controller('SlidingMenuController', function($scope, $routeParams, $location, userInfoService, articleService){
+babybox.controller('SlidingMenuController', function($scope, $routeParams, $location, userInfoService, articleService){
     
     //
     // sliding menu control

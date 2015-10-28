@@ -231,7 +231,7 @@ babybox.controller('CreateProductController',function($scope, $location, $http, 
 
 
 /*
-minibean.controller('PrivacySettingsController', function($scope, $http, userSettingsService, usSpinnerService) {
+babybox.controller('PrivacySettingsController', function($scope, $http, userSettingsService, usSpinnerService) {
 
     $scope.privacyFormData = userSettingsService.privacySettings.get();
     $scope.privacySettingsSaved = false;
@@ -248,7 +248,7 @@ minibean.controller('PrivacySettingsController', function($scope, $http, userSet
     }
 });
 
-minibean.controller('UserAboutController',function($routeParams, $scope, $http, userAboutService, locationService, profilePhotoModal, usSpinnerService) {
+babybox.controller('UserAboutController',function($routeParams, $scope, $http, userAboutService, locationService, profilePhotoModal, usSpinnerService) {
 
 	$scope.get_header_metaData();
 
@@ -329,7 +329,7 @@ minibean.controller('UserAboutController',function($routeParams, $scope, $http, 
 	}
 });
 
-minibean.controller('EditCommunityController',function($scope,$q, $location,$routeParams, $http, usSpinnerService, iconsService, editCommunityPageService, $upload, profilePhotoModal){
+babybox.controller('EditCommunityController',function($scope,$q, $location,$routeParams, $http, usSpinnerService, iconsService, editCommunityPageService, $upload, profilePhotoModal){
 
 	$scope.submitBtn = "儲存";
 	$scope.community = editCommunityPageService.EditCommunityPage.get({id:$routeParams.id}, 
@@ -375,7 +375,7 @@ minibean.controller('EditCommunityController',function($scope,$q, $location,$rou
 
 });
 
-minibean.controller('CreateCommunityController',function($scope, $location, $http, $upload, $validator, iconsService, usSpinnerService){
+babybox.controller('CreateCommunityController',function($scope, $location, $http, $upload, $validator, iconsService, usSpinnerService){
 
 	$scope.formData = {};
 	$scope.selectedFiles =[];
@@ -430,7 +430,7 @@ minibean.controller('CreateCommunityController',function($scope, $location, $htt
 	}
 });
 
-minibean.controller('UserProfileController',function($scope, $routeParams, $location, profileService, friendsService, sendInvitation, unFriendService){
+babybox.controller('UserProfileController',function($scope, $routeParams, $location, profileService, friendsService, sendInvitation, unFriendService){
 
     $scope.get_header_metaData();
 
@@ -471,7 +471,7 @@ minibean.controller('UserProfileController',function($scope, $routeParams, $loca
 	$scope.profile = profileService.Profile.get({id:$routeParams.id});
 });
 
-minibean.controller('SearchPageController', function($scope, $routeParams, communityPageService, $http, communitySearchPageService, usSpinnerService){
+babybox.controller('SearchPageController', function($scope, $routeParams, communityPageService, $http, communitySearchPageService, usSpinnerService){
 
 	$scope.highlightText="";
 	$scope.highlightQuery = "";
@@ -520,7 +520,7 @@ minibean.controller('SearchPageController', function($scope, $routeParams, commu
 
 });
 
-minibean.controller('PostLandingController', function($scope, $routeParams, $http, $upload, $timeout, $validator, 
+babybox.controller('PostLandingController', function($scope, $routeParams, $http, $upload, $timeout, $validator, 
 		postFactory, postLandingService, communityPageService, postManagementService, usSpinnerService) {
 
 	$scope.get_header_metaData();
@@ -721,7 +721,7 @@ minibean.controller('PostLandingController', function($scope, $routeParams, $htt
 
 });
 
-minibean.controller('QnALandingController', function($scope, $routeParams, $http, $timeout, $upload, $validator, 
+babybox.controller('QnALandingController', function($scope, $routeParams, $http, $timeout, $upload, $validator, 
 		postFactory, qnaLandingService, communityPageService, postManagementService, usSpinnerService) {
 
     $scope.get_header_metaData();
@@ -939,7 +939,7 @@ minibean.controller('QnALandingController', function($scope, $routeParams, $http
     }
 });
 
-minibean.controller('CommunityPageController', function($scope, $routeParams, $interval, profilePhotoModal, 
+babybox.controller('CommunityPageController', function($scope, $routeParams, $interval, profilePhotoModal, 
 		pkViewFactory, communityPageService, communityJoinService, pkViewService, searchMembersService, usSpinnerService){
 
     $scope.get_header_metaData();
@@ -1084,7 +1084,7 @@ minibean.controller('CommunityPageController', function($scope, $routeParams, $i
 
 });
 
-minibean.controller('CommunityPostController', function($scope, $routeParams, $http, $upload, $timeout, profilePhotoModal,
+babybox.controller('CommunityPostController', function($scope, $routeParams, $http, $upload, $timeout, profilePhotoModal,
 		postFactory, communityPageService, postManagementService, communityJoinService, usSpinnerService){
 
     var firstBatchLoaded = false;
@@ -1365,7 +1365,7 @@ minibean.controller('CommunityPostController', function($scope, $routeParams, $h
 
 });
 
-minibean.controller('CommunityQnAController',function($scope, postFactory, postManagementService, communityQnAPageService, usSpinnerService ,$timeout, $routeParams, $http,  $upload, $validator){
+babybox.controller('CommunityQnAController',function($scope, postFactory, postManagementService, communityQnAPageService, usSpinnerService ,$timeout, $routeParams, $http,  $upload, $validator){
 
     var firstBatchLoaded = false;
     var time = 0;
@@ -1669,7 +1669,7 @@ minibean.controller('CommunityQnAController',function($scope, postFactory, postM
 	}
 });
 
-minibean.controller('UserConversationController',function($scope, $http, $filter, $timeout, $upload, $location, $routeParams, $sce, searchFriendService, usSpinnerService, getMessageService, conversationService) {
+babybox.controller('UserConversationController',function($scope, $http, $filter, $timeout, $upload, $location, $routeParams, $sce, searchFriendService, usSpinnerService, getMessageService, conversationService) {
 
 	$scope.get_header_metaData();
 

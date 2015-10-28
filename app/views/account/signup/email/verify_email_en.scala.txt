@@ -1,7 +1,7 @@
 @(verificationUrl: String, token: String, name: String, email: String)
 @name 您好!
 
-您已成功登記成為 miniBean 小萌豆會員，請立即按以下連結完成登記:
+您已成功登記成為 babybox會員，請立即按以下連結完成登記:
 @verificationUrl
 
-miniBean 小萌豆 - 所有媽媽爸爸的分享社群
+babybox - Everymom is a Seller!
