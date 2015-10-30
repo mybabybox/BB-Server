@@ -108,7 +108,7 @@ public class ProductController extends Controller{
 			// set device
 			newPost.deviceType = deviceType;
 			
-			SocialRelationHandler.recordCreatePost(newPost, localUser);
+			SocialRelationHandler.recordNewPost(newPost, localUser);
 			ResponseStatusVM response = new ResponseStatusVM(SocialObjectType.POST, newPost.id, localUser.id, true);
 			
 			sw.stop();
@@ -373,7 +373,7 @@ public class ProductController extends Controller{
 			DeviceType deviceType = Application.parseDeviceType(form.get("deviceType"));
 			comment.deviceType = deviceType;
 			
-			SocialRelationHandler.recordCreateComment(comment, post, localUser);
+			SocialRelationHandler.recordNewComment(comment, post);
 			ResponseStatusVM response = new ResponseStatusVM(SocialObjectType.COMMENT, comment.id, comment.owner.id, true);
 			return ok(Json.toJson(response));
 		} catch (SocialObjectNotCommentableException e) {

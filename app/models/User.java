@@ -983,10 +983,6 @@ public class User extends SocialObject implements Subject, Followable {
 		return Conversation.findByUsers(this, u);
 	}
 
-	public void startChat(Post post, User user) {
-		Conversation.openConversation(post, user);
-	}
-
 	public Long getUnreadConversationCount() {
 		return Conversation.getUnreadConversationCount(this.id);
 	}

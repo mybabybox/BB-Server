@@ -7,7 +7,6 @@ import models.Activity;
 import models.Comment;
 import models.Post;
 import models.Activity.ActivityType;
-import models.User;
 import babybox.events.map.CommentEvent;
 import babybox.events.map.DeleteCommentEvent;
 
@@ -23,18 +22,17 @@ public class CommentEventListener {
 	public void recordCommentEventInDB(CommentEvent map){
 		Comment comment = (Comment) map.get("comment");
 		Post post = (Post) map.get("post");
-		User user = (User) map.get("user");
 		CalcServer.recalcScoreAndAddToCategoryPopularQueue(post);
 		
 		// first of all, send to post owner
-        if (user.id != post.owner.id) {
+        if (comment.owner.id != post.owner.id) {
             Activity activity = new Activity(
                     ActivityType.NEW_COMMENT, 
                     post.owner.id,
                     true,
-                    user.id, 
-                    user.id,
-                    user.name,
+                    comment.owner.id, 
+                    comment.owner.id,
+                    comment.owner.name,
                     post.id,
                     post.getImage(), 
                     StringUtil.shortMessage(comment.body));
@@ -48,7 +46,7 @@ public class CommentEventListener {
 		    // 2. skip comment owner
 		    // 3. remove duplicates
 		    if (c.owner.id == post.owner.id || 
-		            c.owner.id == user.id || 
+		            c.owner.id == comment.owner.id || 
 		            commenterIds.contains(c.owner.id)) {
 		        continue;
 		    }
@@ -62,9 +60,9 @@ public class CommentEventListener {
                     ActivityType.NEW_COMMENT, 
                     c.owner.id,
                     false, 
-                    user.id, 
-                    user.id, 
-                    user.name,
+                    comment.owner.id, 
+                    comment.owner.id, 
+                    comment.owner.name,
                     post.id,
                     post.getImage(), 
                     StringUtil.shortMessage(comment.body));
