@@ -47,8 +47,8 @@ public class CommentEventListener {
 		    // 1. skip post owner here, sent already
 		    // 2. skip comment owner
 		    // 3. remove duplicates
-		    if (user.id == post.owner.id || 
-		            user.id == c.owner.id || 
+		    if (c.owner.id == post.owner.id || 
+		            c.owner.id == user.id || 
 		            commenterIds.contains(c.owner.id)) {
 		        continue;
 		    }
