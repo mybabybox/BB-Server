@@ -12,7 +12,7 @@ import be.objectify.deadbolt.core.models.Permission;
  * Deadbolt2
  */
 @Entity
-public class UserPermission  implements Permission {
+public class UserPermission implements Permission {
 	/**
 	 * 
 	 */

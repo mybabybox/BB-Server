@@ -3,6 +3,7 @@ package viewmodel;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import controllers.Application;
+import models.Setting;
 import models.User;
 
 public class UserVM extends UserVMLite {
@@ -13,6 +14,7 @@ public class UserVM extends UserVMLite {
     @JsonProperty("gender") public String gender;
     @JsonProperty("aboutMe") public String aboutMe;
     @JsonProperty("location") public LocationVM location;
+    @JsonProperty("setting") public SettingVM setting;
     @JsonProperty("isMobile") public boolean isMobile = false;
 
     // admin readyonly fields
@@ -40,6 +42,7 @@ public class UserVM extends UserVMLite {
             this.birthYear = user.userInfo.birthYear;
             this.aboutMe = user.userInfo.aboutMe;
             this.location = new LocationVM(user.userInfo.location);
+            this.setting = new SettingVM(Setting.findByUserId(user.id));
         }
         this.isMobile = Application.isMobileUser();
         

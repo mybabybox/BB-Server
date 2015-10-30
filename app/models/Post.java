@@ -220,7 +220,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 
 	public static List<Post> getUserPosts(Long id) {
 		try {
-			Query q = JPA.em().createQuery("SELECT p FROM Post p where owner = ? and deleted = false");
+			Query q = JPA.em().createQuery("SELECT p FROM Post p where owner = ?1 and deleted = false");
 			q.setParameter(1, User.findById(id));
 			return (List<Post>) q.getResultList();
 		} catch (NoResultException nre) {
@@ -280,7 +280,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 
 	public static List<Post> getPostsByCategory(Category category) {
 		try {
-			Query q = JPA.em().createQuery("SELECT p FROM Post p where category = ? and deleted = false");
+			Query q = JPA.em().createQuery("SELECT p FROM Post p where category = ?1 and deleted = false");
 			q.setParameter(1,category);
 			return (List<Post>) q.getResultList();
 		} catch (NoResultException nre) {

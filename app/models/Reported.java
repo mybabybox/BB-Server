@@ -1,6 +1,6 @@
 package models;
 
-import java.util.Date;
+import java.io.Serializable;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -8,16 +8,12 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import play.data.DynamicForm;
-import play.db.jpa.JPA;
-import play.db.jpa.Transactional;
 import domain.SocialObjectType;
 
 @Entity
-public class ReportedObject {
+public class Reported extends domain.Entity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -34,7 +30,7 @@ public class ReportedObject {
         SPAM,
         UNAUTHORIZED_AD,
         INAPPROPRIATE,
-        COMPROMISED;
+        COMPROMISED
     }
     
     @Enumerated(EnumType.STRING)
@@ -42,12 +38,12 @@ public class ReportedObject {
     
     public Long reportedBy;
     
-    public ReportedObject() {
-        this.reportedDate = new Date();
+    public Reported() {
     }
     
-    public ReportedObject(DynamicForm form, Long userID) {
+    public Reported(DynamicForm form, Long userID) {
         this();
+        
         String socialObjectID = form.get("socialObjectID");
         String objectType = form.get("objectType");
         String reportType = form.get("reportType");
@@ -111,43 +107,11 @@ public class ReportedObject {
         this.reportType = ReportType.valueOf(reportType);
     }
 
-    public Date getReportedDate() {
-        return reportedDate;
-    }
-
-    public void setReportedDate(Date reportedDate) {
-        this.reportedDate = reportedDate;
-    }
-
     public Long getReportedBy() {
         return reportedBy;
     }
 
     public void setReportedBy(Long reportedBy) {
         this.reportedBy = reportedBy;
-    }
-
-    @Temporal(TemporalType.TIMESTAMP)
-    public Date reportedDate;
-
-    @Transactional
-    public void save() {
-        JPA.em().persist(this);
-        JPA.em().flush();     
-    }
-      
-    @Transactional
-    public void delete() {
-        JPA.em().remove(this);
-    }
-    
-    @Transactional
-    public void merge() {
-        JPA.em().merge(this);
-    }
-    
-    @Transactional
-    public void refresh() {
-        JPA.em().refresh(this);
     }
 }
