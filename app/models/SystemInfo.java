@@ -26,9 +26,9 @@ public class SystemInfo {
     
     public Date serverRunTime;
     
-	public String androidVersion;
+	public String androidVersion = "1";
 	
-	public String iosVersion;
+	public String iosVersion = "1";
 	
 	private static SystemInfo systemInfo;
 	
