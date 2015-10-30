@@ -1,6 +1,7 @@
 package babybox.events.handler;
 
 import babybox.events.listener.CommentEventListener;
+import babybox.events.listener.ConversationEventListener;
 import babybox.events.listener.FollowEventListener;
 import babybox.events.listener.LikeEventListener;
 import babybox.events.listener.PostEventListener;
@@ -12,12 +13,13 @@ import com.google.common.eventbus.EventBus;
 public class EventHandler {
 
 	Class [] listeners = {
-			LikeEventListener.class, 
+	        LikeEventListener.class, 
 			FollowEventListener.class, 
 			ViewEventListener.class,
 			CommentEventListener.class,
 			PostEventListener.class,
-			SoldEventListener.class
+			SoldEventListener.class,
+			ConversationEventListener.class
 			};
 	
 	private static EventHandler eventHandler = new EventHandler();

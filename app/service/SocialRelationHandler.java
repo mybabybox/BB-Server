@@ -91,10 +91,10 @@ public class SocialRelationHandler {
 		EventHandler.getInstance().getEventBus().post(soldEvent);
 	}
 	
-	public static void recordNewConversation(Conversation conversation, User localUser){
+	public static void recordNewConversation(Conversation conversation, Post post){
 	    ConversationEvent conversationEvent = new ConversationEvent();
 	    conversationEvent.put("conversation", conversation);
-	    conversationEvent.put("user", localUser);
+	    conversationEvent.put("post", post);
         EventHandler.getInstance().getEventBus().post(conversationEvent);
 	}
 	

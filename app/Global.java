@@ -193,15 +193,11 @@ public class Global extends GlobalSettings {
             }
         }
 
-        ThreadLocalOverride.setIsServerStartingUp(true);
-        
         // data first time bootstrap
         DataBootstrap.bootstrap();
         
         // cache warm up
         CalcServer.warmUpActivity();
-        
-        ThreadLocalOverride.setIsServerStartingUp(false);
 	}
 
 	@Override

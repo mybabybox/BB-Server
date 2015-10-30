@@ -41,6 +41,8 @@ public class CalcServer {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
 		logger.underlyingLogger().debug("warmUpActivity starts");
 		
+		ThreadLocalOverride.setIsServerStartingUp(true);
+		
 		buildCategoryQueues();
 		buildUserQueue();
 		buildPostQueue();
@@ -52,6 +54,10 @@ public class CalcServer {
 							@Override
 							public void invoke() throws Throwable {
 								buildCategoryPopularQueues();
+								
+								if (ThreadLocalOverride.isServerStartingUp()) {
+								    ThreadLocalOverride.setIsServerStartingUp(false);
+								}
 							}
 						});
 					}

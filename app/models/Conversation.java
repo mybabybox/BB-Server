@@ -263,7 +263,9 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		conversation.save();
 		
 		post.numChats++;      // new conversation for post
-		SocialRelationHandler.recordNewConversation(conversation, localUser);
+		post.save();
+		
+		SocialRelationHandler.recordNewConversation(conversation, post);
 		
 		return conversation;
 	}
