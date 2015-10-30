@@ -206,9 +206,8 @@ public class ProductController extends Controller{
 	@Transactional
 	public static Result createCollection() {
 		final User localUser = Application.getLocalUser(session());
-		DynamicForm form1 = DynamicForm.form().bindFromRequest();	
-		Category category = Category.findById(Long.parseLong(form1.get("category")));
-		Collection newCollection = localUser.createCollection(form1.get("name"), form1.get("description"), category);
+		DynamicForm form = DynamicForm.form().bindFromRequest();	
+		Collection newCollection = localUser.createCollection(form.get("name"), form.get("description"));
 		if (newCollection == null) {
 			return badRequest("Failed to create Collection. Invalid parameters.");
 		}

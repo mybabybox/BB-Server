@@ -16,19 +16,19 @@ public class GcmToken extends domain.Entity {
     
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
+	public Long id;
 
 	@Required
-	private Long userId;
+	public Long userId;
 	
 	@Required
-	private String regId;
+	public String regId;
 	
 	@Required
-	private Long versionCode;
+	public Long versionCode;
 	
 	@Required
-	private Boolean deleted = false;
+	public Boolean deleted = false;
 
     /**
      * Ctor

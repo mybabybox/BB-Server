@@ -17,6 +17,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import common.utils.StringUtil;
 import play.data.validation.Constraints.Required;
@@ -73,14 +75,19 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	
 	public Boolean lastMessageHasImage = false;
 
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date lastMessageDate;
 	
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date user1ReadDate;
 	
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date user2ReadDate;
 	
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date user1ArchiveDate;
 	
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date user2ArchiveDate;
 	
 	public int user1NumMessages = 0;

@@ -13,6 +13,7 @@ import javax.crypto.spec.SecretKeySpec;
 import models.Category;
 import models.Location;
 import models.SecurityRole;
+import models.Setting;
 import models.TermsAndConditions;
 import models.User;
 import models.UserChild;
@@ -419,8 +420,7 @@ public class Application extends Controller {
 	@Transactional
 	public static Result doLogin() {
 		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
-		final Form<MyLogin> filledForm = MyUsernamePasswordAuthProvider.LOGIN_FORM
-				.bindFromRequest();
+		final Form<MyLogin> filledForm = MyUsernamePasswordAuthProvider.LOGIN_FORM.bindFromRequest();
 		if (filledForm.hasErrors()) {
 			// User did not fill everything properly
 			flash(FLASH_ERROR_KEY, "登入電郵或密碼錯誤");
@@ -511,8 +511,9 @@ public class Application extends Controller {
     public static Result initNewUser() {
     	final User user = getLocalUser(session());
     	
-    	String promoCode = session().get(SESSION_PROMOCODE);
-    	// GameAccountReferral.processAnyReferral(promoCode, user);
+    	//String promoCode = session().get(SESSION_PROMOCODE);
+    	
+    	//GameAccountReferral.processAnyReferral(promoCode, user);
 
         //GameAccount.setPointsForSignUp(user);
 
@@ -522,7 +523,7 @@ public class Application extends Controller {
         
         user.setNewUser(false);
         
-        return UserController.getUserInfo();
+        return ok();
     }
     
 	@Transactional

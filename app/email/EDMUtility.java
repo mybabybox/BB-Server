@@ -41,20 +41,6 @@ public class EDMUtility {
 		sendMail("BabyBox Invitation", body, email);
 	}
 
-//	public void requestRedemptionMail(String userName) {
-//		//final boolean isSecure = getConfiguration().getBoolean(SETTING_KEY_VERIFICATION_LINK_SECURE);
-//	    //final String url = routes.Signup.verify(token).absoluteURL(ctx.request(), isSecure);
-//
-//		final String text = getEmailTemplate(
-//				"views.html.account.email.redemption_mail", userName);
-//		final String html = getEmailTemplate(
-//				"views.html.account.email.redemption_mail", userName);
-//
-//		Body body =  new Body(text, html);
-//
-//		sendMail("request For redemption", body, Play.application().configuration().getString("smtp.user"));
-//	}
-
     /**
      * @param subject
      * @param bodyText

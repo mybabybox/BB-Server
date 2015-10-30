@@ -41,7 +41,6 @@ import play.Play;
 import play.data.format.Formats;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
-import views.html.defaultpages.notFound;
 import babybox.shopping.social.exception.SocialObjectNotLikableException;
 import be.objectify.deadbolt.core.models.Permission;
 import be.objectify.deadbolt.core.models.Role;
@@ -62,7 +61,6 @@ import common.image.FaceFinder;
 import common.utils.DateTimeUtil;
 import common.utils.ImageFileUtil;
 import common.utils.NanoSecondStopWatch;
-import domain.DefaultValues;
 import domain.Followable;
 import domain.SocialObjectType;
 
@@ -107,10 +105,6 @@ public class User extends SocialObject implements Subject, Followable {
 	@OneToOne
 	@JsonIgnore
 	public FbUserInfo fbUserInfo;
-
-	@OneToMany
-	@JsonIgnore
-	public List<FbUserFriend> fbUserFriends;
 
 	// stats
 
@@ -199,7 +193,7 @@ public class User extends SocialObject implements Subject, Followable {
 		this.displayName = displayName;
 		this.name = firstName;
 	}
-
+	
 	public void likesOn(SocialObject target)
 			throws SocialObjectNotLikableException {
 		target.onLikedBy(this);
@@ -562,12 +556,12 @@ public class User extends SocialObject implements Subject, Followable {
 			FbUserInfo fbUserInfo = new FbUserInfo(fbAuthUser);
 			fbUserInfo.save();
 
-			// TODO - keith
-			// save FbUserFriend here
-
 			user.fbLogin = true;
 			user.fbUserInfo = fbUserInfo;
 			user.emailValidated = fbAuthUser.isVerified();
+			
+			// save fb friends
+			saveFbFriends(authUser, user);
 		}
 
 		user.save();
@@ -576,9 +570,6 @@ public class User extends SocialObject implements Subject, Followable {
 		//user.saveManyToManyAssociations("roles");
 		//user.saveManyToManyAssociations("permissions");
 
-		if (authUser instanceof FacebookAuthUser) {
-			saveFbFriends(authUser, user);
-		}
 		return user;
 	}
 
@@ -1018,21 +1009,16 @@ public class User extends SocialObject implements Subject, Followable {
 		return noLoginUser;
 	}
 
-	public Collection createCollection(String name, String description,
-			Category category) {
-		Collection collection = new Collection(this, name, description, category);
-		collection.save();
-		this.numCollections++;
-		return collection;
-	}
-
 	public Collection createCollection(String name) {
-		Collection collection = new Collection(this, name);
+	    return createCollection(name, "");
+	}
+	   
+	public Collection createCollection(String name, String description) {
+		Collection collection = new Collection(this, name, description);
 		collection.save();
 		this.numCollections++;
 		return collection;
 	}
-
 
 	@Override
 	public boolean onFollow(User user) {
@@ -1136,7 +1122,7 @@ public class User extends SocialObject implements Subject, Followable {
 
 	public List<Post> getUserPosts() {
 		try {
-			Query q = JPA.em().createQuery("SELECT p FROM Post p where owner = ? and deleted = false");
+			Query q = JPA.em().createQuery("SELECT p FROM Post p where owner = ?1 and deleted = false");
 			q.setParameter(1, this);
 			return (List<Post>) q.getResultList();
 		} catch (NoResultException nre) {
