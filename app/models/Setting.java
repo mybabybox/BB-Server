@@ -31,12 +31,7 @@ public class Setting extends domain.Entity implements Serializable {
     @ManyToOne
 	public NotificationSetting notificationSetting;
 	
-	public String androidVersion;
-	
-	public String iosVersion;
-	
-	public Setting(Long userId) {
-	    this.userId = userId;
+	public Setting() {
 	}
 	
 	public static Setting findById(Long id) {
@@ -59,7 +54,8 @@ public class Setting extends domain.Entity implements Serializable {
             NotificationSetting notificationSetting = new NotificationSetting();
             notificationSetting.save();
 
-            Setting setting = new Setting(userId);
+            Setting setting = new Setting();
+            setting.userId = userId;
             setting.notificationSetting = notificationSetting;
             setting.save();
             return setting;
