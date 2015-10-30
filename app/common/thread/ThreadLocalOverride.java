@@ -1,5 +1,7 @@
 package common.thread;
 
+import models.SystemInfo;
+
 /**
  * Global triggers.
  */
@@ -21,6 +23,12 @@ public class ThreadLocalOverride {
 
     public static void setIsServerStartingUp(boolean value) {
     	isServerStartingUp.set(value);
+    	
+    	if (value) {
+    	    SystemInfo.recordServerStartTime();
+    	} else {
+    	    SystemInfo.recordServerRunTime();
+    	}
     }
 
     public static boolean isServerStartingUp() {

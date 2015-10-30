@@ -27,6 +27,8 @@ public class NotificationSetting extends domain.Entity implements Serializable {
 	
 	public Boolean emailNewComment = false;
 	
+	public Boolean emailNewPromotions = true;
+	
 	public Boolean pushNewConversation = true;
 	
 	public Boolean pushNewComment = true;

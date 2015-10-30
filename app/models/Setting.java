@@ -31,10 +31,6 @@ public class Setting extends domain.Entity implements Serializable {
     @ManyToOne
 	public NotificationSetting notificationSetting;
 	
-	public String androidVersion;
-	
-	public String iosVersion;
-	
 	public Setting() {
 	}
 	

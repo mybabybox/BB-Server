@@ -42,7 +42,9 @@ public class UserVM extends UserVMLite {
             this.birthYear = user.userInfo.birthYear;
             this.aboutMe = user.userInfo.aboutMe;
             this.location = new LocationVM(user.userInfo.location);
-            this.setting = new SettingVM(Setting.findByUserId(user.id));
+            if (user.id == localUser.id) {
+                this.setting = new SettingVM(Setting.findByUserId(user.id));
+            }
         }
         this.isMobile = Application.isMobileUser();
         

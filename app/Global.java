@@ -120,9 +120,6 @@ public class Global extends GlobalSettings {
                     init();
                 }
             });
-
-            // bootstrap community feed Redis lists
-            //FeedProcessor.bootstrapCommunityLevelFeed();
         } else {
             logger.underlyingLogger().info("[Global.init()] Disabled");
         }
