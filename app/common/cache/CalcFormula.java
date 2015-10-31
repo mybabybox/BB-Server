@@ -8,6 +8,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Days;
 
 import play.Play;
+import common.thread.ThreadLocalOverride;
 import common.utils.NanoSecondStopWatch;
 
 /**
@@ -25,14 +26,22 @@ public class CalcFormula {
 	
 	public Long computeBaseScore(Post post) {
 	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
-        logger.underlyingLogger().debug("calculateBaseScore for p="+post.id);
+        logger.underlyingLogger().debug("computeBaseScore for p="+post.id);
+        if (!ThreadLocalOverride.isServerStartingUp()) {
+            logger.underlyingLogger().debug("     numComments="+post.numComments);
+            logger.underlyingLogger().debug("     numViews="+post.numViews);
+            logger.underlyingLogger().debug("     numLikes="+post.numLikes);
+            logger.underlyingLogger().debug("     numChats="+post.numChats);
+            logger.underlyingLogger().debug("     numBuys="+post.numBuys);
+            logger.underlyingLogger().debug("     baseScoreAdjust="+post.baseScoreAdjust);
+        }
         
         post.baseScore = (long) (
                 post.numComments 
                 + 2 * post.numViews 
                 + 2 * post.numLikes 
-                + 3 * post.numChats 
-                + 4 * post.numBuys 
+                + 5 * post.numChats 
+                + 5 * post.numBuys 
                 + FEED_SCORE_COMPUTE_BASE);
         
         if (post.baseScoreAdjust != null) {
@@ -48,7 +57,7 @@ public class CalcFormula {
 	
 	public Double computeTimeScore(Post post) {
 	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
-        logger.underlyingLogger().debug("calculateTimeScore for p="+post.id+" date=" + post.getCreatedDate() + " baseScore="+post.baseScore);
+        logger.underlyingLogger().debug("computeTimeScore for p="+post.id+" date=" + post.getCreatedDate() + " baseScore="+post.baseScore);
         
         Double timeScore = (double) Math.max(post.baseScore, 1);
         Double timeDiff = Math.abs(Days.daysBetween(new DateTime(post.getCreatedDate()), new DateTime()).getDays()) / 7D;

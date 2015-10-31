@@ -23,6 +23,7 @@ import javax.persistence.TemporalType;
 import common.utils.StringUtil;
 import play.data.validation.Constraints.Required;
 import play.db.jpa.JPA;
+import service.SocialRelationHandler;
 import domain.AuditListener;
 import domain.Creatable;
 import domain.DefaultValues;
@@ -245,23 +246,26 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		}
 	}
 
-	public static Conversation openConversation(Post post, User user) {
-		if (post == null || user == null) {
+	public static Conversation openConversation(Post post, User localUser) {
+		if (post == null || localUser == null) {
 			return null;
 		}
 		
-		Conversation conversation = getConversation(post, user);
+		Conversation conversation = getConversation(post, localUser);
 		if (conversation != null) {
 			return conversation;
 		}
 		
 		Date now = new Date();
-		conversation = new Conversation(post, user);
+		conversation = new Conversation(post, localUser);
 		conversation.setUpdatedDate(now);
-		conversation.setReadDate(user);		// New conversation always opened by buyer
+		conversation.setReadDate(localUser);		// New conversation always opened by buyer
 		conversation.save();
 		
 		post.numChats++;      // new conversation for post
+		post.save();
+		
+		SocialRelationHandler.recordNewConversation(conversation, post);
 		
 		return conversation;
 	}

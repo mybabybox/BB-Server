@@ -217,11 +217,11 @@ public class User extends SocialObject implements Subject, Followable {
 		ensureAlbumPhotoProfileExist();
 
 		// Pre-process file to have face centered.
-		BufferedImage croppedImage = FaceFinder.getSquarePictureWithFace(file);
+		//BufferedImage croppedImage = FaceFinder.getSquarePictureWithFace(file);
+		BufferedImage croppedImage = ImageFileUtil.cropImageFile(file);
 		ImageFileUtil.writeFileWithImage(file, croppedImage);
 
-		Resource newPhoto = this.albumPhotoProfile.addFile(file,
-				SocialObjectType.PROFILE_PHOTO);
+		Resource newPhoto = this.albumPhotoProfile.addFile(file, SocialObjectType.PROFILE_PHOTO);
 		this.albumPhotoProfile.setHighPriorityFile(newPhoto);
 		newPhoto.save();
 
@@ -231,15 +231,15 @@ public class User extends SocialObject implements Subject, Followable {
 		return newPhoto;
 	}
 
-	public Resource setCoverPhoto(File source) throws IOException {
+	public Resource setCoverPhoto(File file) throws IOException {
 		ensureCoverPhotoProfileExist();
 
 		// Pre-process file to have face centered.
-		BufferedImage croppedImage = FaceFinder.getRectPictureWithFace(source, 2.29d);
-		ImageFileUtil.writeFileWithImage(source, croppedImage);
+		BufferedImage croppedImage = FaceFinder.getRectPictureWithFace(file, 2.29d);
+		//BufferedImage croppedImage = ImageFileUtil.readImageFile(file);
+		ImageFileUtil.writeFileWithImage(file, croppedImage);
 
-		Resource cover_photo = this.albumCoverProfile.addFile(source,
-				SocialObjectType.COVER_PHOTO);
+		Resource cover_photo = this.albumCoverProfile.addFile(file, SocialObjectType.COVER_PHOTO);
 		this.albumCoverProfile.setHighPriorityFile(cover_photo);
 		cover_photo.save();
 		return cover_photo;
@@ -515,14 +515,13 @@ public class User extends SocialObject implements Subject, Followable {
 		user.lastLogin = new Date();
 		user.totalLogin = 1L;
 		user.fbLogin = false;
-
+		user.emailValidated = true;
+		
 		if (authUser instanceof EmailIdentity) {
 			final EmailIdentity identity = (EmailIdentity) authUser;
 			user.email = identity.getEmail();
-			user.emailValidated = false;
+			//user.emailValidated = false;
 		}
-		
-		user.emailValidated = true;
 
 		/* 
 		 * User name inherited from SocialObject and it's being used 
@@ -558,7 +557,8 @@ public class User extends SocialObject implements Subject, Followable {
 
 			user.fbLogin = true;
 			user.fbUserInfo = fbUserInfo;
-			user.emailValidated = fbAuthUser.isVerified();
+			//user.emailValidated = fbAuthUser.isVerified();
+			user.save();
 			
 			// save fb friends
 			saveFbFriends(authUser, user);
@@ -981,10 +981,6 @@ public class User extends SocialObject implements Subject, Followable {
 
 	public Conversation findConversationWith(User u) {
 		return Conversation.findByUsers(this, u);
-	}
-
-	public void startChat(Post post, User user) {
-		Conversation.openConversation(post, user);
 	}
 
 	public Long getUnreadConversationCount() {

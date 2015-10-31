@@ -380,18 +380,18 @@ public class DataBootstrap {
         name = "玩具教材";
         desc = "玩具教材";
         createCategory(name, desc, "/assets/app/images/category/cat_toys.jpg", 2);
-        
-        name = "嬰兒食品";
-        desc = "嬰兒食品";
-        createCategory(name, desc, "/assets/app/images/category/cat_food.jpg", 3);
-        
+               
         name = "BB用品";
         desc = "BB用品";
-        createCategory(name, desc, "/assets/app/images/category/cat_utils.jpg", 4);
+        createCategory(name, desc, "/assets/app/images/category/cat_utils.jpg", 3);
         
         name = "生活家居";
         desc = "生活家居";
-        createCategory(name, desc, "/assets/app/images/category/cat_home.jpg", 5);
+        createCategory(name, desc, "/assets/app/images/category/cat_home.jpg", 4);
+        
+        name = "奶粉尿片";
+        desc = "奶粉尿片";
+        createCategory(name, desc, "/assets/app/images/category/cat_diaper.jpg", 5);
         
         name = "其它";
         desc = "其它";
