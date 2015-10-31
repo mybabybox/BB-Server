@@ -1,8 +1,8 @@
 package common.utils;
 
 import net.coobird.thumbnailator.Thumbnails;
+import net.coobird.thumbnailator.Thumbnails.Builder;
 import net.coobird.thumbnailator.geometry.Positions;
-
 import play.Play;
 
 import javax.imageio.ImageIO;
@@ -29,16 +29,8 @@ public class ImageFileUtil {
     }
 
     public static File copyImageFileToTemp(File file, String fileName) throws IOException {
-    	BufferedImage img = ImageIO.read(file);
-    	int width = img.getWidth();
-    	int height = img.getHeight();
-    	int dimension = (width < height)? width : height;
-    	
         final File fileTo = new File(IMAGE_TEMP_PATH+fileName);
-        Thumbnails.of(file)
-        	.size(dimension, dimension)
-        	.crop(Positions.TOP_CENTER)
-        	.toFile(fileTo);
+        crop(file).toFile(fileTo);
         //FileUtils.copyFile(file, fileTo);
         return fileTo;
     }
@@ -52,10 +44,25 @@ public class ImageFileUtil {
         }
         ImageIO.write(image, ext, file);
     }
-    
+
     public static BufferedImage readImageFile(File file) throws IOException {
-    	// !!! Don't use ImageIO to read image file as it ignores EXIF information which may needs rotation
-    	//return ImageIO.read(file);    	
-    	return Thumbnails.of(file).scale(1).asBufferedImage();
+        // !!! Don't use ImageIO to read image file as it ignores EXIF information which may needs rotation
+        //return ImageIO.read(file);        
+        return Thumbnails.of(file).scale(1).asBufferedImage();
+    }
+    
+    public static BufferedImage cropImageFile(File file) throws IOException {
+        return crop(file).asBufferedImage();
+    }
+    
+    private static Builder<File> crop(File file) throws IOException {
+        BufferedImage img = ImageIO.read(file);
+        int width = img.getWidth();
+        int height = img.getHeight();
+        int dimension = (width < height)? width : height;
+        
+        return Thumbnails.of(file)
+                .size(dimension, dimension)
+                .crop(Positions.CENTER);
     }
 }
