@@ -559,6 +559,7 @@ public class User extends SocialObject implements Subject, Followable {
 			user.fbLogin = true;
 			user.fbUserInfo = fbUserInfo;
 			user.emailValidated = fbAuthUser.isVerified();
+			user.save();
 			
 			// save fb friends
 			saveFbFriends(authUser, user);
