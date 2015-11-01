@@ -39,7 +39,7 @@ public class PostVMLite {
         this.price = post.price;
         this.sold = post.sold;
         this.postType = post.postType.toString();
-        if (this.conditionType != null) {
+        if (post.conditionType != null) {
             this.conditionType = post.conditionType.toString();
         }
         
@@ -144,7 +144,7 @@ public class PostVMLite {
     }
     
     public String getConditionType() {
-        return postType;
+        return conditionType;
     }
     
     public void setConditionType(String conditionType) {
