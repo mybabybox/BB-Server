@@ -9,6 +9,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.joda.time.DateTime;
+
 import models.Category;
 import models.FollowSocialRelation;
 import models.LikeSocialRelation;
@@ -31,7 +33,8 @@ public class CalcServer {
 	public static final Long FEED_HOME_COUNT_MAX = Play.application().configuration().getLong("feed.home.count.max");
 	public static final Long FEED_CATEGORY_EXPOSURE_MIN = Play.application().configuration().getLong("feed.category.exposure.min");
 	public static final int FEED_SCORE_RANDOMIZE_PERCENT = Play.application().configuration().getInt("feed.score.randomize.percent");
-	public static final int FEED_EXPIRY = Play.application().configuration().getInt("feed.expiry");
+	public static final int FEED_SNAPSHOT_EXPIRY = Play.application().configuration().getInt("feed.snapshot.expiry");
+	public static final int FEED_SOLD_CLEANUP_DAYS = Play.application().configuration().getInt("feed.sold.cleanup.days");
 	public static final int FEED_RETRIEVAL_COUNT = DefaultValues.FEED_INFINITE_SCROLL_COUNT;
 	
 	private static CalcFormula formula = new CalcFormula();
@@ -41,28 +44,27 @@ public class CalcServer {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
 		logger.underlyingLogger().debug("warmUpActivity starts");
 		
-		ThreadLocalOverride.setIsServerStartingUp(true);
-		
 		buildCategoryQueues();
 		buildUserQueue();
 		buildPostQueue();
+		buildCategoryPopularQueues();
 		
-		JobScheduler.getInstance().schedule("buildCategoryPopularQueue", FEED_SCORE_COMPUTE_SCHEDULE, TimeUnit.HOURS,
+		JobScheduler.getInstance().schedule(
+		        "buildCategoryPopularQueue", 
+		        FEED_SCORE_COMPUTE_SCHEDULE,  // initial delay 
+		        FEED_SCORE_COMPUTE_SCHEDULE,  // interval
+		        TimeUnit.HOURS,
 				new Runnable() {
 					public void run() {
 						JPA.withTransaction(new play.libs.F.Callback0() {
 							@Override
 							public void invoke() throws Throwable {
 								buildCategoryPopularQueues();
-								
-								if (ThreadLocalOverride.isServerStartingUp()) {
-								    ThreadLocalOverride.setIsServerStartingUp(false);
-								}
 							}
 						});
 					}
 				});
-		
+        
 		sw.stop();
 		logger.underlyingLogger().debug("warmUpActivity completed. Took "+sw.getElapsedSecs()+"s");
 	}
@@ -261,7 +263,7 @@ public class CalcServer {
 				JedisCache.cache().putToSortedSet(getKey(FeedType.HOME_EXPLORE,user.id), Math.random() * FEED_SCORE_HIGH_BASE, postId.toString());
 			}
 		}
-		JedisCache.cache().expire(getKey(FeedType.HOME_EXPLORE,user.id), FEED_EXPIRY);
+		JedisCache.cache().expire(getKey(FeedType.HOME_EXPLORE,user.id), FEED_SNAPSHOT_EXPIRY);
 		
 		sw.stop();
 		logger.underlyingLogger().debug("buildUserExploreQueue completed. Took "+sw.getElapsedSecs()+"s");
@@ -290,7 +292,7 @@ public class CalcServer {
 				}
 			}
 		}
-		JedisCache.cache().expire(getKey(FeedType.HOME_FOLLOWING,userId), FEED_EXPIRY);
+		JedisCache.cache().expire(getKey(FeedType.HOME_FOLLOWING,userId), FEED_SNAPSHOT_EXPIRY);
 		
 		sw.stop();
 		logger.underlyingLogger().debug("buildUserFollowingQueue completed. Took "+sw.getElapsedSecs()+"s");
@@ -320,7 +322,7 @@ public class CalcServer {
 			JedisCache.cache().putToSortedSet(getKey(FeedType.PRODUCT_SUGGEST, productId), Math.random() * FEED_SCORE_HIGH_BASE, postId.toString());
 		}
 		
-		JedisCache.cache().expire(getKey(FeedType.PRODUCT_SUGGEST, productId), FEED_EXPIRY);
+		JedisCache.cache().expire(getKey(FeedType.PRODUCT_SUGGEST, productId), FEED_SNAPSHOT_EXPIRY);
 		
 		sw.stop();
 		logger.underlyingLogger().debug("buildSuggestedProductQueue completed. Took "+sw.getElapsedSecs()+"s");
@@ -398,7 +400,7 @@ public class CalcServer {
             } catch (Exception e) {
             }
         }
-        JedisCache.cache().expire(getKey(FeedType.HOME_EXPLORE,id), FEED_EXPIRY);
+        JedisCache.cache().expire(getKey(FeedType.HOME_EXPLORE,id), FEED_SNAPSHOT_EXPIRY);
         return postIds;
 
 	}
@@ -415,7 +417,7 @@ public class CalcServer {
             } catch (Exception e) {
             }
         }
-        JedisCache.cache().expire(getKey(FeedType.HOME_FOLLOWING,id), FEED_EXPIRY);
+        JedisCache.cache().expire(getKey(FeedType.HOME_FOLLOWING,id), FEED_SNAPSHOT_EXPIRY);
         return postIds;
 
 	}
@@ -472,7 +474,7 @@ public class CalcServer {
             } catch (Exception e) {
             }
         }
-        JedisCache.cache().expire(getKey(FeedType.PRODUCT_SUGGEST, id), FEED_EXPIRY);
+        JedisCache.cache().expire(getKey(FeedType.PRODUCT_SUGGEST, id), FEED_SNAPSHOT_EXPIRY);
         return postIds;
 
 	}
@@ -565,4 +567,10 @@ public class CalcServer {
 		}
 		return feedType+":"+keyId;
 	}
+	
+	public static void cleanupSoldPosts() {
+        DateTime daysBefore = (new DateTime()).minusDays(FEED_SOLD_CLEANUP_DAYS);
+        
+        //CalcServer.removeFromCategoryQueues(post);
+    }
 }

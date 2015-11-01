@@ -148,6 +148,23 @@ public class Global extends GlobalSettings {
         );
         */
     	
+        // schedule to purge sold posts daily at 5:00am HKT
+        JobScheduler.getInstance().schedule("cleanupSoldPosts", "0 00 5 ? * *",
+            new Runnable() {
+                public void run() {
+                    try {
+                       JPA.withTransaction(new play.libs.F.Callback0() {
+                            public void invoke() {
+                                CalcServer.cleanupSoldPosts();
+                            }
+                        });
+                    } catch (Exception e) {
+                        logger.underlyingLogger().error("Error in cleanupSoldPosts", e);
+                    }
+                }
+            }
+        );
+        
         // schedule to purge Activity daily at 4:00am HKT
         JobScheduler.getInstance().schedule("purgeActivity", "0 00 4 ? * *",
             new Runnable() {
@@ -164,7 +181,6 @@ public class Global extends GlobalSettings {
                 }
             }
         );
-		
 
         // schedule to check command every 2 min.
         JobScheduler.getInstance().schedule("commandCheck", 120000,
@@ -193,11 +209,15 @@ public class Global extends GlobalSettings {
             }
         }
 
+        ThreadLocalOverride.setIsServerStartingUp(true);
+        
         // data first time bootstrap
         DataBootstrap.bootstrap();
         
         // cache warm up
         CalcServer.warmUpActivity();
+        
+        ThreadLocalOverride.setIsServerStartingUp(false);
 	}
 
 	@Override

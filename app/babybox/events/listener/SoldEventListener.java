@@ -18,6 +18,7 @@ public class SoldEventListener {
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
 		if (post.onSold(user)) {
+		    // NOTE: sold posts purged by daily scheduler at 5am HKT !!
 			CalcServer.removeFromCategoryQueues(post);
 			
 			/*
