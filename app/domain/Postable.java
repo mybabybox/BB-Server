@@ -1,6 +1,8 @@
 package domain;
 
 import babybox.shopping.social.exception.SocialObjectNotPostableException;
+import models.Post;
+import models.Post.PostType;
 import models.SocialObject;
 import models.User;
 
