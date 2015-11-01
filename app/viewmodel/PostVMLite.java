@@ -39,7 +39,9 @@ public class PostVMLite {
         this.price = post.price;
         this.sold = post.sold;
         this.postType = post.postType.toString();
-        this.conditionType = post.conditionType.toString();
+        if (this.conditionType != null) {
+            this.conditionType = post.conditionType.toString();
+        }
         
         this.numLikes = post.numLikes;
         this.numChats = post.numChats;

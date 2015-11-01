@@ -131,7 +131,9 @@ public class ProductController extends Controller{
         String title = dynamicForm.get("title");
         String body = dynamicForm.get("body");
         String price = dynamicForm.get("price");
-        return editProduct(Long.parseLong(postId), title, body, Long.parseLong(catId), Double.parseDouble(price));
+        String conditionType = dynamicForm.get("conditionType");
+        return editProduct(Long.parseLong(postId), title, body, Long.parseLong(catId), 
+                Double.parseDouble(price), Post.parseConditionType(conditionType));
     }
     
     @Transactional
@@ -142,6 +144,7 @@ public class ProductController extends Controller{
         String title = multipartFormData.asFormUrlEncoded().get("title")[0];
         String body = multipartFormData.asFormUrlEncoded().get("body")[0];
         String priceStr = multipartFormData.asFormUrlEncoded().get("price")[0];
+        String conditionType = multipartFormData.asFormUrlEncoded().get("conditionType")[0];
         
         Long postId = -1L;
         try {
@@ -160,10 +163,13 @@ public class ProductController extends Controller{
             price = Double.parseDouble(priceStr);
         } catch (NumberFormatException e) {
         }
-        return editProduct(postId, title, body, catId, price);
+        
+        return editProduct(postId, title, body, catId, price, Post.parseConditionType(conditionType));
     }
 
-    private static Result editProduct(Long postId, String title, String body, Long catId, Double price) {
+    private static Result editProduct(Long postId, String title, String body, Long catId, 
+            Double price, Post.ConditionType conditionType) {
+        
         NanoSecondStopWatch sw = new NanoSecondStopWatch();
         
         final User localUser = Application.getLocalUser(session());
@@ -183,7 +189,7 @@ public class ProductController extends Controller{
             return notFound();
         }
         
-        Post editPost = localUser.editProduct(post, title, body, category, price);
+        Post editPost = localUser.editProduct(post, title, body, category, price, conditionType);
         if (editPost == null) {
             return badRequest("Failed to edit product. Invalid parameters.");
         }

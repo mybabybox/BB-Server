@@ -92,14 +92,6 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	    NEW_WITHOUT_TAG,
 	    USED
 	}
-
-	public static ConditionType parseConditionType(String conditionType) {
-        try {
-            return Enum.valueOf(ConditionType.class, conditionType);
-        } catch (Exception e) {
-            return null;
-        }
-    }
 	
 	/**
 	 * Ctor
@@ -128,6 +120,14 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		this.objectType = SocialObjectType.POST;
 		this.deviceType = deviceType;
 	}
+	
+	public static ConditionType parseConditionType(String conditionType) {
+        try {
+            return Enum.valueOf(ConditionType.class, conditionType);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 	
 	@Override
 	public boolean onLikedBy(User user) {

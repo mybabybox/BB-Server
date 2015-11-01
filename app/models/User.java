@@ -359,7 +359,9 @@ public class User extends SocialObject implements Subject, Followable {
 	}
 	
 	@Transactional
-    public Post editProduct(Post post, String title, String body, Category category, Double price) {
+    public Post editProduct(Post post, String title, String body, Category category, 
+            Double price, Post.ConditionType conditionType) {
+	    
 	    if (Strings.isNullOrEmpty(title) ||
 	            post == null || Strings.isNullOrEmpty(body) || category == null || price == -1D) {
             logger.underlyingLogger().warn("Missing parameters to editProduct");
@@ -370,6 +372,7 @@ public class User extends SocialObject implements Subject, Followable {
         post.body = body;
         post.category = category;
         post.price = price;
+        post.conditionType = conditionType;
         post.merge();
         
         return post;
