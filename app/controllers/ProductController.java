@@ -14,6 +14,7 @@ import models.Collection;
 import models.Comment;
 import models.Conversation;
 import models.Post;
+import models.Post.ConditionType;
 import models.Resource;
 import models.User;
 import play.data.DynamicForm;
@@ -49,20 +50,21 @@ public class ProductController extends Controller{
 	    String title = dynamicForm.get("title");
 	    String body = dynamicForm.get("body");
 	    String price = dynamicForm.get("price");
+	    String conditionType = dynamicForm.get("conditionType");
 	    String deviceType = dynamicForm.get("deviceType");
-		return createProduct(title, body, Long.parseLong(catId), Double.parseDouble(price), images, Application.parseDeviceType(deviceType));
+		return createProduct(title, body, Long.parseLong(catId), Double.parseDouble(price), Post.parseConditionType(conditionType), images, Application.parseDeviceType(deviceType));
 	}
 	
 	@Transactional
 	public static Result createProduct() {
-		List<FilePart> images = Application.parseAttachments("image", DefaultValues.MAX_POST_IMAGES);
-	    
 		Http.MultipartFormData multipartFormData = request().body().asMultipartFormData();
 		String catIdStr = multipartFormData.asFormUrlEncoded().get("catId")[0];
 	    String title = multipartFormData.asFormUrlEncoded().get("title")[0];
 	    String body = multipartFormData.asFormUrlEncoded().get("body")[0];
 	    String priceStr = multipartFormData.asFormUrlEncoded().get("price")[0];
+	    String conditionType = multipartFormData.asFormUrlEncoded().get("conditionType")[0];
 	    String deviceType = multipartFormData.asFormUrlEncoded().get("deviceType")[0];
+	    List<FilePart> images = Application.parseAttachments("image", DefaultValues.MAX_POST_IMAGES);
 	    
 	    Long catId = -1L;
 	    try {
@@ -75,10 +77,10 @@ public class ProductController extends Controller{
 	    	price = Double.parseDouble(priceStr);
 	    } catch (NumberFormatException e) {
 	    }
-		return createProduct(title, body, catId, price, images, Application.parseDeviceType(deviceType));
+		return createProduct(title, body, catId, price, Post.parseConditionType(conditionType), images, Application.parseDeviceType(deviceType));
 	}
 
-	private static Result createProduct(String title, String body, Long catId, Double price, List<FilePart> images, DeviceType deviceType) {
+	private static Result createProduct(String title, String body, Long catId, Double price, ConditionType conditionType, List<FilePart> images, DeviceType deviceType) {
 	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
 	    
 		final User localUser = Application.getLocalUser(session());
@@ -93,20 +95,17 @@ public class ProductController extends Controller{
         }
         
 		try {
-			Post newPost = localUser.createProduct(title, body, category, price);
+			Post newPost = localUser.createProduct(title, body, category, price, conditionType, deviceType);
 			if (newPost == null) {
 				return badRequest("Failed to create product. Invalid parameters.");
 			}
 			
-			for (FilePart image : images){
+			for (FilePart image : images) {
 				String fileName = image.getFilename();
 				File file = image.getFile();
 				File fileTo = ImageFileUtil.copyImageFileToTemp(file, fileName);
 				newPost.addPostPhoto(fileTo);
 			}
-			
-			// set device
-			newPost.deviceType = deviceType;
 			
 			SocialRelationHandler.recordNewPost(newPost, localUser);
 			ResponseStatusVM response = new ResponseStatusVM(SocialObjectType.POST, newPost.id, localUser.id, true);

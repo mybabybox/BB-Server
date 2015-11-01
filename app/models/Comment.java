@@ -10,13 +10,13 @@ import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.Query;
 
+import models.Post.PostType;
 import common.utils.StringUtil;
 import controllers.Application.DeviceType;
 import play.data.validation.Constraints.Required;
 import play.db.jpa.JPA;
 import domain.Creatable;
 import domain.Likeable;
-import domain.PostType;
 
 /**
  * A Comment by an User on a SocialObject (Post only)

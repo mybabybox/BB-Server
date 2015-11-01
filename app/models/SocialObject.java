@@ -15,6 +15,7 @@ import babybox.shopping.social.exception.SocialObjectNotCommentableException;
 import babybox.shopping.social.exception.SocialObjectNotFollowableException;
 import babybox.shopping.social.exception.SocialObjectNotLikableException;
 import babybox.shopping.social.exception.SocialObjectNotPostableException;
+import models.Post.PostType;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -26,7 +27,6 @@ import com.google.common.base.Objects;
 import domain.AuditListener;
 import domain.Commentable;
 import domain.Creatable;
-import domain.PostType;
 import domain.SocialObjectType;
 import domain.Updatable;
 

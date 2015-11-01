@@ -27,7 +27,6 @@ import controllers.Application.DeviceType;
 import domain.Commentable;
 import domain.DefaultValues;
 import domain.Likeable;
-import domain.PostType;
 import domain.SocialObjectType;
 
 /**
@@ -60,6 +59,9 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	@Enumerated(EnumType.STRING)
 	public PostType postType;
 	
+	@Enumerated(EnumType.STRING)
+    public ConditionType conditionType;
+	
 	@OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
 	@OrderBy("CREATED_DATE")
 	@JsonIgnore
@@ -79,13 +81,32 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	public Double timeScore = 0D;
 
 	public DeviceType deviceType;
+	
+	public static enum PostType {
+	    PRODUCT,
+	    STORY
+	}
+	
+	public static enum ConditionType {
+	    NEW_WITH_TAG,
+	    NEW_WITHOUT_TAG,
+	    USED
+	}
 
+	public static ConditionType parseConditionType(String conditionType) {
+        try {
+            return Enum.valueOf(ConditionType.class, conditionType);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+	
 	/**
 	 * Ctor
 	 */
 	public Post() {}
 
-	public Post(User owner, String title, String body, Category category) {
+	public Post(User owner, String title, String body, Category category, DeviceType deviceType) {
 		this.owner = owner;
 		this.title = title;
 		this.body = body;
@@ -93,16 +114,19 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		this.price = 0.0;
 		this.postType = PostType.STORY;
 		this.objectType = SocialObjectType.POST;
+		this.deviceType = deviceType;
 	}
 
-	public Post(User owner, String title, String body, Category category, Double price) {
+	public Post(User owner, String title, String body, Category category, Double price, ConditionType conditionType, DeviceType deviceType) {
 		this.owner = owner;
 		this.title = title;
 		this.body = body;
 		this.category = category;
 		this.price = price;
 		this.postType = PostType.PRODUCT;
+		this.conditionType = conditionType;
 		this.objectType = SocialObjectType.POST;
+		this.deviceType = deviceType;
 	}
 	
 	@Override

@@ -30,6 +30,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import models.Post.ConditionType;
 import models.TokenAction.Type;
 
 import org.codehaus.jackson.JsonNode;
@@ -61,6 +62,7 @@ import common.image.FaceFinder;
 import common.utils.DateTimeUtil;
 import common.utils.ImageFileUtil;
 import common.utils.NanoSecondStopWatch;
+import controllers.Application.DeviceType;
 import domain.Followable;
 import domain.SocialObjectType;
 
@@ -340,14 +342,14 @@ public class User extends SocialObject implements Subject, Followable {
     }
 	
 	@Transactional
-	public Post createProduct(String title, String body, Category category, Double price) {
+	public Post createProduct(String title, String body, Category category, Double price, ConditionType conditionType, DeviceType deviceType) {
 		if (Strings.isNullOrEmpty(title) || 
 				Strings.isNullOrEmpty(body) || category == null || price == -1D) {
 			logger.underlyingLogger().warn("Missing parameters to createProduct");
 			return null;
 		}
 		
-		Post post = new Post(this, title, body, category, price);
+		Post post = new Post(this, title, body, category, price, conditionType, deviceType);
 		post.save();
 		
 		recordPostProduct(this, post);
