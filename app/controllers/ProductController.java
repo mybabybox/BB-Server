@@ -238,7 +238,7 @@ public class ProductController extends Controller{
 
 	@Transactional
 	public static Result getAllFeedProducts() {
-		return ok(Json.toJson(getPostVMsFromPosts(Post.getAllUnsoldPosts())));
+		return ok(Json.toJson(getPostVMsFromPosts(Post.getEligiblePostsForFeeds())));
 	}
 
 	private static List<PostVMLite> getPostVMsFromPosts(List<Post> posts) {

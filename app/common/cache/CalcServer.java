@@ -148,10 +148,7 @@ public class CalcServer {
         logger.underlyingLogger().debug("buildCategoryQueues starts");
         
 		clearCategoryQueues();
-		for (Post post : Post.getAllUnsoldPosts()) {
-		    if (post.soldMarked) {
-		        continue;
-		    }
+		for (Post post : Post.getEligiblePostsForFeeds()) {
 		    addToCategoryPriceLowHighQueue(post);
 		    addToCategoryNewestQueue(post);
 		    addToCategoryPopularQueue(post);
@@ -165,10 +162,7 @@ public class CalcServer {
 	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
         logger.underlyingLogger().debug("buildCategoryPopularQueue starts");
         
-		for (Post post : Post.getAllUnsoldPosts()) {
-		    if (post.soldMarked) {
-		        continue;
-		    }
+		for (Post post : Post.getEligiblePostsForFeeds()) {
 			addToCategoryPopularQueue(post);
 		}
 		
@@ -177,8 +171,11 @@ public class CalcServer {
 	}
 	
 	private static void buildPostQueues() {
-		for (Post post : Post.getAllUnsoldPosts()) {
+		for (Post post : Post.getEligiblePostsForFeeds()) {
 			clearPostQueues(post);
+			if (post.sold) {
+                continue;
+            }
 		    buildProductLikedUserQueue(post);
 		}
 	}
