@@ -3,6 +3,7 @@ package models;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -16,6 +17,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Query;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
@@ -69,8 +72,13 @@ public class Post extends SocialObject implements Likeable, Commentable {
 
 	public Double price = 0.0;
 
-	public boolean sold;
+	public boolean sold = false;
 	
+	public boolean soldMarked = false;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+    public Date soldDate;
+    
 	public int numComments = 0;
 	public int numLikes = 0;
 	public int numBuys = 0;
@@ -233,9 +241,9 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		}
 	}
 
-	public static List<Post> getAllPosts() {
+	public static List<Post> getAllUnsoldPosts() {
 		try {
-			Query q = JPA.em().createQuery("SELECT p FROM Post p where deleted = false");
+			Query q = JPA.em().createQuery("SELECT p FROM Post p where sold = false and deleted = false");
 			return (List<Post>) q.getResultList();
 		} catch (NoResultException nre) {
 			return null;
@@ -289,7 +297,12 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	}
 
 	public boolean onSold(User user) {
+	    if (this.sold) {
+	        return false;
+	    }
+	    
 		this.sold = true;
+		this.soldDate = new Date();
 		this.save();
 		return true;
 	}
@@ -336,6 +349,18 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		} catch (NoResultException nre) {
 			return null;
 		}
+	}
+	
+	public static List<Post> getUnmarkedSoldPostsAfter(Date date) {
+	    try {
+    	    Query query = JPA.em().createQuery("Select p from Post p where sold = ?1 and soldMarked = ?2 and soldDate < ?3");
+            query.setParameter(1, true);
+            query.setParameter(2, false);
+            query.setParameter(3, date);
+            return (List<Post>) query.getResultList();
+	    } catch (NoResultException nre) {
+            return null;
+        }
 	}
 	
 	public List<Conversation> findConversations() {

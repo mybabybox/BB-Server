@@ -52,6 +52,7 @@ public class PostEventListener {
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
 		CalcServer.removeFromCategoryQueues(post);
-		CalcServer.removeFromUserQueues(post, post.owner);
+		CalcServer.removeFromUserPostedQueue(post, post.owner);
+		CalcServer.removeFromAllUsersLikedQueues(post);
     }
 }

@@ -9,6 +9,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import javax.persistence.Query;
+
 import org.joda.time.DateTime;
 
 import models.Category;
@@ -45,9 +47,8 @@ public class CalcServer {
 		logger.underlyingLogger().debug("warmUpActivity starts");
 		
 		buildCategoryQueues();
-		buildUserQueue();
-		buildPostQueue();
-		buildCategoryPopularQueues();
+		buildUserQueues();
+		buildPostQueues();
 		
 		JobScheduler.getInstance().schedule(
 		        "buildCategoryPopularQueue", 
@@ -97,7 +98,7 @@ public class CalcServer {
 		return formula.computeBaseScore(post);
 	}
 	
-	private static void buildUserQueue() {
+	private static void buildUserQueues() {
 		for(User user : User.getEligibleUserForFeed()){
 			clearUserQueues(user);
 			buildUserPostedQueue(user);
@@ -147,12 +148,13 @@ public class CalcServer {
         logger.underlyingLogger().debug("buildCategoryQueues starts");
         
 		clearCategoryQueues();
-		for (Post post : Post.getAllPosts()) {
-		    if (post.sold) {
+		for (Post post : Post.getAllUnsoldPosts()) {
+		    if (post.soldMarked) {
 		        continue;
 		    }
 		    addToCategoryPriceLowHighQueue(post);
 		    addToCategoryNewestQueue(post);
+		    addToCategoryPopularQueue(post);
 		}
 		
 		sw.stop();
@@ -163,8 +165,8 @@ public class CalcServer {
 	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
         logger.underlyingLogger().debug("buildCategoryPopularQueue starts");
         
-		for (Post post : Post.getAllPosts()) {
-		    if (post.sold) {
+		for (Post post : Post.getAllUnsoldPosts()) {
+		    if (post.soldMarked) {
 		        continue;
 		    }
 			addToCategoryPopularQueue(post);
@@ -174,12 +176,9 @@ public class CalcServer {
         logger.underlyingLogger().debug("buildCategoryPopularQueue completed. Took "+sw.getElapsedSecs()+"s");
 	}
 	
-	private static void buildPostQueue() {
-		for (Post post : Post.getAllPosts()) {
+	private static void buildPostQueues() {
+		for (Post post : Post.getAllUnsoldPosts()) {
 			clearPostQueues(post);
-			if (post.sold) {
-		        continue;
-		    }
 		    buildProductLikedUserQueue(post);
 		}
 	}
@@ -546,14 +545,16 @@ public class CalcServer {
 		JedisCache.cache().removeMemberFromSortedSet(getKey(FeedType.USER_POSTED,user.id), post.id.toString());
 	}
 
-	/**
-	 * Remove deleted products from owner posted and liked feeds
-	 * Remove deleted products from other users liked feeds (query from db)
-	 * @param postId
-	 */
-	public static void removeFromUserQueues(Post post, User user) {
-	    removeFromLikeQueue(post, user);
-	    removeFromUserPostedQueue(post, user);
+	public static void removeFromAllUsersLikedQueues(Post post) {
+	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
+        logger.underlyingLogger().debug("removeFromAllUsersLikedQueues starts");
+        
+        for (SocialRelation socialRelation : LikeSocialRelation.getPostLikedUsers(post.id)) {
+            JedisCache.cache().removeMemberFromSortedSet(getKey(FeedType.USER_LIKED,socialRelation.actor), post.id.toString());
+        }
+        
+        sw.stop();
+        logger.underlyingLogger().debug("removeFromAllUsersLikedQueues completed. Took "+sw.getElapsedSecs()+"s");
 	}
 	
 	public static Double getScore(String key, Long postId){
@@ -570,7 +571,12 @@ public class CalcServer {
 	
 	public static void cleanupSoldPosts() {
         DateTime daysBefore = (new DateTime()).minusDays(FEED_SOLD_CLEANUP_DAYS);
-        
-        //CalcServer.removeFromCategoryQueues(post);
+        List<Post> soldPosts = Post.getUnmarkedSoldPostsAfter(daysBefore.toDate());
+        if (soldPosts != null) {
+            for (Post soldPost : soldPosts) {
+                CalcServer.removeFromCategoryQueues(soldPost);
+                soldPost.soldMarked = true;
+            }
+        }
     }
 }
