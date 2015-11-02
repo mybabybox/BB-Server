@@ -243,7 +243,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 
 	public static List<Post> getEligiblePostsForFeeds() {
 		try {
-			Query q = JPA.em().createQuery("SELECT p FROM Post p where soldMarked = false and deleted = false");
+			Query q = JPA.em().createQuery("SELECT p FROM Post p where deleted = false");
 			return (List<Post>) q.getResultList();
 		} catch (NoResultException nre) {
 			return null;
