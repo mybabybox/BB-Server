@@ -3,6 +3,7 @@ package babybox.events.listener;
 import java.util.HashSet;
 import java.util.Set;
 
+import mobile.GcmSender;
 import models.Activity;
 import models.Comment;
 import models.Post;
@@ -37,6 +38,9 @@ public class CommentEventListener {
                     post.getImage(), 
                     StringUtil.shortMessage(comment.body));
             activity.ensureUniqueAndCreate();
+            
+            //GCM
+            GcmSender.sendNotification(post.owner.id, comment.owner.name+" commented on your post - "+post.title);
         }
         
 		// fan out to all commenters

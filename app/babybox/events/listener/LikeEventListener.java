@@ -35,9 +35,6 @@ public class LikeEventListener {
     					post.getImage(),
     					StringUtil.shortMessage(post.title));
     	        activity.ensureUniqueAndCreate();
-    	        
-    	        // GCM Notification sender
-    	        GcmSender.sendNotification(post.owner.id, user.name+" Liked on your post - "+post.title);
 	       	}
        	}
     }
