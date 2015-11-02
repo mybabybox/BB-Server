@@ -19,7 +19,7 @@ public class SoldEventListener {
 		User user = (User) map.get("user");
 		if (post.onSold(user)) {
 		    // NOTE: sold posts purged by daily scheduler at 5am HKT !!
-			CalcServer.removeFromCategoryQueues(post);
+			//CalcServer.removeFromCategoryQueues(post);
 			
 			/*
 			// Need to query chat users as recipients
