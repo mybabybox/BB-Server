@@ -20,6 +20,7 @@ import javax.persistence.Query;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import mobile.GcmSender;
 import common.utils.StringUtil;
 import play.data.validation.Constraints.Required;
 import play.db.jpa.JPA;

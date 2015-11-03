@@ -9,8 +9,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import javax.persistence.Query;
-
 import org.joda.time.DateTime;
 
 import models.Category;
