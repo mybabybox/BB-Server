@@ -2,7 +2,9 @@ package models;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -24,6 +26,7 @@ import mobile.GcmSender;
 import common.utils.StringUtil;
 import play.data.validation.Constraints.Required;
 import play.db.jpa.JPA;
+import play.libs.Json;
 import service.SocialRelationHandler;
 import domain.AuditListener;
 import domain.Creatable;
@@ -137,6 +140,9 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		this.messages.add(message);
 		
 		this.setUpdatedDate(now);
+		Map<String, String> map = new HashMap<>();
+		map.put("message", sender.name+" : "+body);
+		map.put("messageType", "conversation");
 		if (this.user1 == sender) {
 			setReadDate(this.user1);
 			this.user2NumMessages++;
@@ -147,7 +153,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 			}
 			
 			 //GCM
-	        GcmSender.sendNotification(this.user2.id, sender.name+" : "+body);
+	        GcmSender.sendNotification(this.user2.id, Json.stringify(Json.toJson(map)));
 		} else {
 			setReadDate(this.user2);
 			this.user1NumMessages++;
@@ -158,7 +164,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 			}
 			
 			 //GCM
-	        GcmSender.sendNotification(this.user1.id, sender.name+" : "+body);
+	        GcmSender.sendNotification(this.user1.id, Json.stringify(Json.toJson(map)));
 		}
 		this.save();
 		
