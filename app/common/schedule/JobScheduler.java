@@ -32,20 +32,21 @@ public class JobScheduler {
      * @param jobTask
      */
     public void schedule(String schedulerId, long intervalMs, Runnable jobTask) {
-        schedule(schedulerId, intervalMs, TimeUnit.MILLISECONDS, jobTask);
+        schedule(schedulerId, 0L, intervalMs, TimeUnit.MILLISECONDS, jobTask);
     }
 
     /**
      * 
      * @param schedulerId
+     * @param initial
      * @param interval
      * @param timeUnit
      * @param jobTask
      */
-    public void schedule(String schedulerId, long interval, TimeUnit timeUnit, Runnable jobTask) {
+    public void schedule(String schedulerId, Long initial, long interval, TimeUnit timeUnit, Runnable jobTask) {
         ActorSystem actorSystem = Akka.system();
         try {
-            FiniteDuration initialDelay = Duration.create(0, timeUnit);
+            FiniteDuration initialDelay = Duration.create(initial, timeUnit);
             FiniteDuration intervalDuration = Duration.create(interval, timeUnit);
 
             actorSystem.scheduler().schedule(

@@ -43,7 +43,7 @@ public class HtmlUtil {
                 result = result.replace(urlRef, "<a href=\""+urlRef+"\" target=\"_blank\">"+urlDisplay+"</a>");
             }
         }
-        return processEmoticons(result);
+        return result;
     }
 
     /**

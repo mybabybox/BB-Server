@@ -20,6 +20,7 @@ import javax.persistence.Query;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import mobile.GcmSender;
 import common.utils.StringUtil;
 import play.data.validation.Constraints.Required;
 import play.db.jpa.JPA;
@@ -144,6 +145,9 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 			if (this.user2NumMessages == 1) {
 				NotificationCounter.incrementConversationsCount(this.user2.id);
 			}
+			
+			 //GCM
+	        GcmSender.sendNotification(this.user2.id, sender.name+" : "+body);
 		} else {
 			setReadDate(this.user2);
 			this.user1NumMessages++;
@@ -152,6 +156,9 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 			if (this.user1NumMessages == 1) {
 			    NotificationCounter.incrementConversationsCount(this.user1.id);
 			}
+			
+			 //GCM
+	        GcmSender.sendNotification(this.user1.id, sender.name+" : "+body);
 		}
 		this.save();
 		

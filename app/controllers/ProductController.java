@@ -238,7 +238,7 @@ public class ProductController extends Controller{
 
 	@Transactional
 	public static Result getAllFeedProducts() {
-		return ok(Json.toJson(getPostVMsFromPosts(Post.getAllPosts())));
+		return ok(Json.toJson(getPostVMsFromPosts(Post.getEligiblePostsForFeeds())));
 	}
 
 	private static List<PostVMLite> getPostVMsFromPosts(List<Post> posts) {
@@ -258,7 +258,7 @@ public class ProductController extends Controller{
 	
 	@Transactional
 	public static Result getAllSimilarProducts() {
-		return ok(Json.toJson(getPostVMsFromPosts(Post.getAllPosts())));
+		return ok();
 	}
 
 	@Transactional
@@ -352,6 +352,10 @@ public class ProductController extends Controller{
         }
 		
 		Post post = Post.findById(id);
+		if (post == null) {
+		    return notFound();
+		}
+		
 		if (post.owner.id == localUser.id || localUser.isSuperAdmin()) {
 			SocialRelationHandler.recordSoldPost(post, localUser);
 		}

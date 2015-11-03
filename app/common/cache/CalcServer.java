@@ -9,6 +9,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.joda.time.DateTime;
+
 import models.Category;
 import models.FollowSocialRelation;
 import models.LikeSocialRelation;
@@ -31,7 +33,8 @@ public class CalcServer {
 	public static final Long FEED_HOME_COUNT_MAX = Play.application().configuration().getLong("feed.home.count.max");
 	public static final Long FEED_CATEGORY_EXPOSURE_MIN = Play.application().configuration().getLong("feed.category.exposure.min");
 	public static final int FEED_SCORE_RANDOMIZE_PERCENT = Play.application().configuration().getInt("feed.score.randomize.percent");
-	public static final int FEED_EXPIRY = Play.application().configuration().getInt("feed.expiry");
+	public static final int FEED_SNAPSHOT_EXPIRY = Play.application().configuration().getInt("feed.snapshot.expiry");
+	public static final int FEED_SOLD_CLEANUP_DAYS = Play.application().configuration().getInt("feed.sold.cleanup.days");
 	public static final int FEED_RETRIEVAL_COUNT = DefaultValues.FEED_INFINITE_SCROLL_COUNT;
 	
 	private static CalcFormula formula = new CalcFormula();
@@ -41,28 +44,26 @@ public class CalcServer {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
 		logger.underlyingLogger().debug("warmUpActivity starts");
 		
-		ThreadLocalOverride.setIsServerStartingUp(true);
-		
 		buildCategoryQueues();
-		buildUserQueue();
-		buildPostQueue();
+		buildUserQueues();
+		buildPostQueues();
 		
-		JobScheduler.getInstance().schedule("buildCategoryPopularQueue", FEED_SCORE_COMPUTE_SCHEDULE, TimeUnit.HOURS,
+		JobScheduler.getInstance().schedule(
+		        "buildCategoryPopularQueue", 
+		        FEED_SCORE_COMPUTE_SCHEDULE,  // initial delay 
+		        FEED_SCORE_COMPUTE_SCHEDULE,  // interval
+		        TimeUnit.HOURS,
 				new Runnable() {
 					public void run() {
 						JPA.withTransaction(new play.libs.F.Callback0() {
 							@Override
 							public void invoke() throws Throwable {
 								buildCategoryPopularQueues();
-								
-								if (ThreadLocalOverride.isServerStartingUp()) {
-								    ThreadLocalOverride.setIsServerStartingUp(false);
-								}
 							}
 						});
 					}
 				});
-		
+        
 		sw.stop();
 		logger.underlyingLogger().debug("warmUpActivity completed. Took "+sw.getElapsedSecs()+"s");
 	}
@@ -95,7 +96,7 @@ public class CalcServer {
 		return formula.computeBaseScore(post);
 	}
 	
-	private static void buildUserQueue() {
+	private static void buildUserQueues() {
 		for(User user : User.getEligibleUserForFeed()){
 			clearUserQueues(user);
 			buildUserPostedQueue(user);
@@ -145,12 +146,13 @@ public class CalcServer {
         logger.underlyingLogger().debug("buildCategoryQueues starts");
         
 		clearCategoryQueues();
-		for (Post post : Post.getAllPosts()) {
-		    if (post.sold) {
-		        continue;
-		    }
+		for (Post post : Post.getEligiblePostsForFeeds()) {
+		    if (post.soldMarked) {
+                continue;
+            }
 		    addToCategoryPriceLowHighQueue(post);
 		    addToCategoryNewestQueue(post);
+		    addToCategoryPopularQueue(post);
 		}
 		
 		sw.stop();
@@ -161,10 +163,10 @@ public class CalcServer {
 	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
         logger.underlyingLogger().debug("buildCategoryPopularQueue starts");
         
-		for (Post post : Post.getAllPosts()) {
-		    if (post.sold) {
-		        continue;
-		    }
+		for (Post post : Post.getEligiblePostsForFeeds()) {
+		    if (post.soldMarked) {
+                continue;
+            }
 			addToCategoryPopularQueue(post);
 		}
 		
@@ -172,12 +174,12 @@ public class CalcServer {
         logger.underlyingLogger().debug("buildCategoryPopularQueue completed. Took "+sw.getElapsedSecs()+"s");
 	}
 	
-	private static void buildPostQueue() {
-		for (Post post : Post.getAllPosts()) {
+	private static void buildPostQueues() {
+		for (Post post : Post.getEligiblePostsForFeeds()) {
 			clearPostQueues(post);
 			if (post.sold) {
-		        continue;
-		    }
+                continue;
+            }
 		    buildProductLikedUserQueue(post);
 		}
 	}
@@ -210,7 +212,7 @@ public class CalcServer {
 	}
 	
 	private static void addToCategoryPopularQueue(Post post) {
-	    if (post.sold) {
+	    if (post.soldMarked) {
             return;
         }
         Double timeScore = calculateTimeScore(post, true);
@@ -218,14 +220,14 @@ public class CalcServer {
     }
 	
 	private static void addToCategoryNewestQueue(Post post) {
-	    if (post.sold) {
+	    if (post.soldMarked) {
             return;
         }
 		JedisCache.cache().putToSortedSet(getKey(FeedType.CATEGORY_NEWEST,post.category.id), post.getCreatedDate().getTime() , post.id.toString());
 	}
 
 	private static void addToCategoryPriceLowHighQueue(Post post) {
-	    if (post.sold) {
+	    if (post.soldMarked) {
             return;
         }
 		JedisCache.cache().putToSortedSet(getKey(FeedType.CATEGORY_PRICE_LOW_HIGH,post.category.id), post.price * FEED_SCORE_HIGH_BASE + post.id , post.id.toString());
@@ -261,7 +263,7 @@ public class CalcServer {
 				JedisCache.cache().putToSortedSet(getKey(FeedType.HOME_EXPLORE,user.id), Math.random() * FEED_SCORE_HIGH_BASE, postId.toString());
 			}
 		}
-		JedisCache.cache().expire(getKey(FeedType.HOME_EXPLORE,user.id), FEED_EXPIRY);
+		JedisCache.cache().expire(getKey(FeedType.HOME_EXPLORE,user.id), FEED_SNAPSHOT_EXPIRY);
 		
 		sw.stop();
 		logger.underlyingLogger().debug("buildUserExploreQueue completed. Took "+sw.getElapsedSecs()+"s");
@@ -290,7 +292,7 @@ public class CalcServer {
 				}
 			}
 		}
-		JedisCache.cache().expire(getKey(FeedType.HOME_FOLLOWING,userId), FEED_EXPIRY);
+		JedisCache.cache().expire(getKey(FeedType.HOME_FOLLOWING,userId), FEED_SNAPSHOT_EXPIRY);
 		
 		sw.stop();
 		logger.underlyingLogger().debug("buildUserFollowingQueue completed. Took "+sw.getElapsedSecs()+"s");
@@ -320,7 +322,7 @@ public class CalcServer {
 			JedisCache.cache().putToSortedSet(getKey(FeedType.PRODUCT_SUGGEST, productId), Math.random() * FEED_SCORE_HIGH_BASE, postId.toString());
 		}
 		
-		JedisCache.cache().expire(getKey(FeedType.PRODUCT_SUGGEST, productId), FEED_EXPIRY);
+		JedisCache.cache().expire(getKey(FeedType.PRODUCT_SUGGEST, productId), FEED_SNAPSHOT_EXPIRY);
 		
 		sw.stop();
 		logger.underlyingLogger().debug("buildSuggestedProductQueue completed. Took "+sw.getElapsedSecs()+"s");
@@ -398,7 +400,7 @@ public class CalcServer {
             } catch (Exception e) {
             }
         }
-        JedisCache.cache().expire(getKey(FeedType.HOME_EXPLORE,id), FEED_EXPIRY);
+        JedisCache.cache().expire(getKey(FeedType.HOME_EXPLORE,id), FEED_SNAPSHOT_EXPIRY);
         return postIds;
 
 	}
@@ -415,7 +417,7 @@ public class CalcServer {
             } catch (Exception e) {
             }
         }
-        JedisCache.cache().expire(getKey(FeedType.HOME_FOLLOWING,id), FEED_EXPIRY);
+        JedisCache.cache().expire(getKey(FeedType.HOME_FOLLOWING,id), FEED_SNAPSHOT_EXPIRY);
         return postIds;
 
 	}
@@ -472,7 +474,7 @@ public class CalcServer {
             } catch (Exception e) {
             }
         }
-        JedisCache.cache().expire(getKey(FeedType.PRODUCT_SUGGEST, id), FEED_EXPIRY);
+        JedisCache.cache().expire(getKey(FeedType.PRODUCT_SUGGEST, id), FEED_SNAPSHOT_EXPIRY);
         return postIds;
 
 	}
@@ -544,14 +546,16 @@ public class CalcServer {
 		JedisCache.cache().removeMemberFromSortedSet(getKey(FeedType.USER_POSTED,user.id), post.id.toString());
 	}
 
-	/**
-	 * Remove deleted products from owner posted and liked feeds
-	 * Remove deleted products from other users liked feeds (query from db)
-	 * @param postId
-	 */
-	public static void removeFromUserQueues(Post post, User user) {
-	    removeFromLikeQueue(post, user);
-	    removeFromUserPostedQueue(post, user);
+	public static void removeFromAllUsersLikedQueues(Post post) {
+	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
+        logger.underlyingLogger().debug("removeFromAllUsersLikedQueues starts");
+        
+        for (SocialRelation socialRelation : LikeSocialRelation.getPostLikedUsers(post.id)) {
+            JedisCache.cache().removeMemberFromSortedSet(getKey(FeedType.USER_LIKED,socialRelation.actor), post.id.toString());
+        }
+        
+        sw.stop();
+        logger.underlyingLogger().debug("removeFromAllUsersLikedQueues completed. Took "+sw.getElapsedSecs()+"s");
 	}
 	
 	public static Double getScore(String key, Long postId){
@@ -565,4 +569,15 @@ public class CalcServer {
 		}
 		return feedType+":"+keyId;
 	}
+	
+	public static void cleanupSoldPosts() {
+        DateTime daysBefore = (new DateTime()).minusDays(FEED_SOLD_CLEANUP_DAYS);
+        List<Post> soldPosts = Post.getUnmarkedSoldPostsAfter(daysBefore.toDate());
+        if (soldPosts != null) {
+            for (Post soldPost : soldPosts) {
+                CalcServer.removeFromCategoryQueues(soldPost);
+                soldPost.soldMarked = true;
+            }
+        }
+    }
 }
