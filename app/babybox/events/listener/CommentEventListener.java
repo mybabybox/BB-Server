@@ -40,7 +40,7 @@ public class CommentEventListener {
             activity.ensureUniqueAndCreate();
             
             //GCM
-            GcmSender.sendNotification(post.owner.id, comment.owner.name+" commented on your product:\n"+post.title);
+            GcmSender.sendNotification(post.owner.id, comment.owner.name+" commented on your product: "+post.title);
         }
         
 		// fan out to all commenters
