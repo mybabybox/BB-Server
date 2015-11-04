@@ -567,11 +567,19 @@ public class ProductController extends Controller{
         }
         
         Post post = Post.findById(id);
-        if (post != null) {
-            post.baseScoreAdjust += DefaultValues.DEFAULT_ADJUST_POST_SCORE;
-            post.save();
+        if (post == null) {
+            return notFound();
         }
-	    return ok();
+        
+        post.baseScoreAdjust += DefaultValues.DEFAULT_ADJUST_POST_SCORE;
+        post.save();
+        
+        SocialRelationHandler.recordTouchPost(post, localUser);
+        
+        if (logger.underlyingLogger().isDebugEnabled()) {
+            logger.underlyingLogger().debug("[u="+localUser.getId()+"][p="+post.id+"] adjustUpPostScore()");
+        }
+	    return ok(DefaultValues.DEFAULT_ADJUST_POST_SCORE+"");
 	}
 	
 	@Transactional
@@ -583,11 +591,19 @@ public class ProductController extends Controller{
         }
         
         Post post = Post.findById(id);
-        if (post != null) {
-            post.baseScoreAdjust -= DefaultValues.DEFAULT_ADJUST_POST_SCORE;
-            post.save();
+        if (post == null) {
+            return notFound();
         }
-        return ok();
+        
+        post.baseScoreAdjust -= DefaultValues.DEFAULT_ADJUST_POST_SCORE;
+        post.save();
+        
+        SocialRelationHandler.recordTouchPost(post, localUser);
+        
+        if (logger.underlyingLogger().isDebugEnabled()) {
+            logger.underlyingLogger().debug("[u="+localUser.getId()+"][p="+post.id+"] adjustDownPostScore()");
+        }
+        return ok(-DefaultValues.DEFAULT_ADJUST_POST_SCORE+"");
     }
 
 	@Transactional
@@ -599,9 +615,17 @@ public class ProductController extends Controller{
         }
         
         Post post = Post.findById(id);
-        if (post != null) {
-            post.baseScoreAdjust = 0L;
-            post.save();
+        if (post == null) {
+            return notFound();
+        }
+        
+        post.baseScoreAdjust = 0L;
+        post.save();
+
+        SocialRelationHandler.recordTouchPost(post, localUser);
+        
+        if (logger.underlyingLogger().isDebugEnabled()) {
+            logger.underlyingLogger().debug("[u="+localUser.getId()+"][p="+post.id+"] resetAdjustPostScore()");
         }
         return ok();
     }
