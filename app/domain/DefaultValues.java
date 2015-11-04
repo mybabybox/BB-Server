@@ -26,6 +26,8 @@ public class DefaultValues {
     public static final int ACTIVITY_NEW_COMMENT_MAX_FAN_OUT = 100;
     public static final int MAX_ACTIVITIES_COUNT = 100;
     
+    public static final int DEFAULT_ADJUST_POST_SCORE = 10;
+    
     public static Map<String, String> PARENT_BIRTH_YEARS = new LinkedHashMap<String, String>();
     public static Map<String, String> CHILD_BIRTH_YEARS = new LinkedHashMap<String, String>();
     
