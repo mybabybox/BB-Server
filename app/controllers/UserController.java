@@ -37,6 +37,7 @@ import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
+import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
 import service.SocialRelationHandler;
 import viewmodel.ActivityVM;
@@ -136,25 +137,15 @@ public class UserController extends Controller {
         }
 		logger.underlyingLogger().info("STS [u="+localUser.id+"] uploadProfilePhoto");
 
-		File file = HttpUtil.getMultipartFormDataFile(request().body().asMultipartFormData(), "profile-photo");
-		String fileName = file.getName();
+		FilePart image = HttpUtil.getMultipartFormDataFile(request().body().asMultipartFormData(), "profile-photo");
+		String fileName = image.getFilename();
 	    try {
-            File fileTo = ImageFileUtil.copyImageFileToTemp(file, fileName);
+            File fileTo = ImageFileUtil.copyImageFileToTemp(image.getFile(), fileName);
 			localUser.setPhotoProfile(fileTo);
 		} catch (IOException e) {
 		    logger.underlyingLogger().error("Error in uploadProfilePhoto", e);
 			return badRequest();
 		}
-	    completeHomeTour();
-		return ok();
-	}
-	
-	@Transactional
-	public static Result uploadProfilePhotoMobile() {
-		final User localUser = Application.getLocalUser(session());
-		File file = HttpUtil.getMultipartFormDataFile(request().body().asMultipartFormData(), "club_image");
-		String fileName = file.getName();
-		logger.underlyingLogger().info("STS [u="+localUser.id+"] uploadProfilePhotoMobile - "+fileName);
 	    completeHomeTour();
 		return ok();
 	}
@@ -169,10 +160,10 @@ public class UserController extends Controller {
 		
 		logger.underlyingLogger().info("STS [u="+localUser.id+"] uploadCoverPhoto");
 
-		File file = HttpUtil.getMultipartFormDataFile(request().body().asMultipartFormData(), "profile-photo");
-		String fileName = file.getName();
+		FilePart image = HttpUtil.getMultipartFormDataFile(request().body().asMultipartFormData(), "profile-photo");
+		String fileName = image.getFilename();
 	    try {
-	    	File fileTo = ImageFileUtil.copyImageFileToTemp(file, fileName);
+	    	File fileTo = ImageFileUtil.copyImageFileToTemp(image.getFile(), fileName);
 			localUser.setCoverPhoto(fileTo);
 		} catch (IOException e) {
 		    logger.underlyingLogger().error("Error in uploadCoverPhoto", e);
@@ -500,10 +491,11 @@ public class UserController extends Controller {
 		    
 	        Message message = Conversation.newMessage(conversationId, localUser, body, system);
 	        
-	        List<File> images = HttpUtil.getMultipartFormDataFiles(multipartFormData, "image", DefaultValues.MAX_MESSAGE_IMAGES);
-	        for (File image : images){
-				String fileName = image.getName();
-				File fileTo = ImageFileUtil.copyImageFileToTemp(image, fileName);
+	        List<FilePart> images = HttpUtil.getMultipartFormDataFiles(multipartFormData, "image", DefaultValues.MAX_MESSAGE_IMAGES);
+	        for (FilePart image : images){
+				String fileName = image.getFilename();
+				File file = image.getFile();
+				File fileTo = ImageFileUtil.copyImageFileToTemp(file, fileName);
 				message.addMessagePhoto(fileTo, localUser);
 			}
 	        
@@ -627,10 +619,9 @@ public class UserController extends Controller {
         	Long messageId = Long.valueOf(form.get("messageId"));
         	Message message = Message.findById(Long.valueOf(messageId));
         	
-	        File file = HttpUtil.getMultipartFormDataFile(request().body().asMultipartFormData(), "send-photo0");
-	        String fileName = file.getName();
-	        
-            File fileTo = ImageFileUtil.copyImageFileToTemp(file, fileName);
+	        FilePart image = HttpUtil.getMultipartFormDataFile(request().body().asMultipartFormData(), "send-photo0");
+	        String fileName = image.getFilename();
+            File fileTo = ImageFileUtil.copyImageFileToTemp(image.getFile(), fileName);
             Long id = message.addMessagePhoto(fileTo,localUser).id;
             return ok(id.toString());
         } catch (NumberFormatException e) {

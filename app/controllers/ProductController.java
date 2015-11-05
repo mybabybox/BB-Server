@@ -52,11 +52,7 @@ public class ProductController extends Controller{
 	    String price = dynamicForm.get("price");
 	    String conditionType = dynamicForm.get("conditionType");
 	    String deviceType = dynamicForm.get("deviceType");
-	    List<FilePart> files = request().body().asMultipartFormData().getFiles();
-	    List<File> images = new ArrayList<>();
-	    for (FilePart file : files) {
-	        images.add(file.getFile());
-	    }
+	    List<FilePart> images = request().body().asMultipartFormData().getFiles();
 		return createProduct(title, body, Long.parseLong(catId), Double.parseDouble(price), Post.parseConditionType(conditionType), images, Application.parseDeviceType(deviceType));
 	}
 	
@@ -69,7 +65,7 @@ public class ProductController extends Controller{
 	    Double price = HttpUtil.getMultipartFormDataDouble(multipartFormData, "price");
 	    String conditionType = HttpUtil.getMultipartFormDataString(multipartFormData, "conditionType");
 	    String deviceType = HttpUtil.getMultipartFormDataString(multipartFormData, "deviceType");
-	    List<File> files = HttpUtil.getMultipartFormDataFiles(multipartFormData, "image", DefaultValues.MAX_POST_IMAGES);
+	    List<FilePart> images = HttpUtil.getMultipartFormDataFiles(multipartFormData, "image", DefaultValues.MAX_POST_IMAGES);
 	    
 	    if (catId == null) {
 	        catId = -1L;
@@ -78,10 +74,10 @@ public class ProductController extends Controller{
 	    if (price == null) {
 	        price = -1D;
 	    }
-		return createProduct(title, body, catId, price, Post.parseConditionType(conditionType), files, Application.parseDeviceType(deviceType));
+		return createProduct(title, body, catId, price, Post.parseConditionType(conditionType), images, Application.parseDeviceType(deviceType));
 	}
 
-	private static Result createProduct(String title, String body, Long catId, Double price, ConditionType conditionType, List<File> images, DeviceType deviceType) {
+	private static Result createProduct(String title, String body, Long catId, Double price, ConditionType conditionType, List<FilePart> images, DeviceType deviceType) {
 	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
 	    
 		final User localUser = Application.getLocalUser(session());
@@ -101,9 +97,9 @@ public class ProductController extends Controller{
 				return badRequest("Failed to create product. Invalid parameters.");
 			}
 			
-			for (File image : images) {
-				String fileName = image.getName();
-				File fileTo = ImageFileUtil.copyImageFileToTemp(image, fileName);
+			for (FilePart image : images) {
+				String fileName = image.getFilename();
+				File fileTo = ImageFileUtil.copyImageFileToTemp(image.getFile(), fileName);
 				newPost.addPostPhoto(fileTo);
 			}
 			
