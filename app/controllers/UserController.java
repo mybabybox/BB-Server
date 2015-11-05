@@ -37,7 +37,6 @@ import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
-import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
 import service.SocialRelationHandler;
 import viewmodel.ActivityVM;
@@ -52,6 +51,7 @@ import viewmodel.ProfileVM;
 import viewmodel.UserVM;
 import viewmodel.UserVMLite;
 import common.model.FeedFilter.FeedType;
+import common.utils.HttpUtil;
 import common.utils.ImageFileUtil;
 import common.utils.NanoSecondStopWatch;
 import domain.DefaultValues;
@@ -136,10 +136,8 @@ public class UserController extends Controller {
         }
 		logger.underlyingLogger().info("STS [u="+localUser.id+"] uploadProfilePhoto");
 
-		FilePart picture = request().body().asMultipartFormData().getFile("profile-photo");
-		String fileName = picture.getFilename();
-
-	    File file = picture.getFile();
+		File file = HttpUtil.getMultipartFormDataFile(request().body().asMultipartFormData(), "profile-photo");
+		String fileName = file.getName();
 	    try {
             File fileTo = ImageFileUtil.copyImageFileToTemp(file, fileName);
 			localUser.setPhotoProfile(fileTo);
@@ -154,11 +152,9 @@ public class UserController extends Controller {
 	@Transactional
 	public static Result uploadProfilePhotoMobile() {
 		final User localUser = Application.getLocalUser(session());
-		FilePart picture = request().body().asMultipartFormData().getFile("club_image");
-		String fileName = picture.getFilename();
+		File file = HttpUtil.getMultipartFormDataFile(request().body().asMultipartFormData(), "club_image");
+		String fileName = file.getName();
 		logger.underlyingLogger().info("STS [u="+localUser.id+"] uploadProfilePhotoMobile - "+fileName);
-		request().body().asMultipartFormData().getFile("club_image");
-	    File file = picture.getFile();
 	    completeHomeTour();
 		return ok();
 	}
@@ -173,10 +169,8 @@ public class UserController extends Controller {
 		
 		logger.underlyingLogger().info("STS [u="+localUser.id+"] uploadCoverPhoto");
 
-		FilePart picture = request().body().asMultipartFormData().getFile("profile-photo");
-		String fileName = picture.getFilename();
-	    
-	    File file = picture.getFile();
+		File file = HttpUtil.getMultipartFormDataFile(request().body().asMultipartFormData(), "profile-photo");
+		String fileName = file.getName();
 	    try {
 	    	File fileTo = ImageFileUtil.copyImageFileToTemp(file, fileName);
 			localUser.setCoverPhoto(fileTo);
@@ -495,24 +489,21 @@ public class UserController extends Controller {
         
         try {
 	        Http.MultipartFormData multipartFormData = request().body().asMultipartFormData();
-			Long conversationId = Long.parseLong(multipartFormData.asFormUrlEncoded().get("conversationId")[0]);
-		    String body = multipartFormData.asFormUrlEncoded().get("body")[0];
-		    String systemStr = multipartFormData.asFormUrlEncoded().get("system")[0];
-		    String deviceType = multipartFormData.asFormUrlEncoded().get("deviceType")[0];
+			Long conversationId = HttpUtil.getMultipartFormDataLong(multipartFormData, "conversationId");
+		    String body = HttpUtil.getMultipartFormDataString(multipartFormData, "body");
+		    Boolean system = HttpUtil.getMultipartFormDataBoolean(multipartFormData, "system");
+		    String deviceType = HttpUtil.getMultipartFormDataString(multipartFormData, "deviceType");
 	        
-		    boolean system = false;
-		    try {
-		        system = Boolean.valueOf(systemStr);
-		    } catch (Exception e) {
+		    if (system == null) {
+		        system = false;
 		    }
 		    
 	        Message message = Conversation.newMessage(conversationId, localUser, body, system);
 	        
-	        List<FilePart> images = Application.parseAttachments("image", DefaultValues.MAX_MESSAGE_IMAGES);
-	        for (FilePart image : images){
-				String fileName = image.getFilename();
-				File file = image.getFile();
-				File fileTo = ImageFileUtil.copyImageFileToTemp(file, fileName);
+	        List<File> images = HttpUtil.getMultipartFormDataFiles(multipartFormData, "image", DefaultValues.MAX_MESSAGE_IMAGES);
+	        for (File image : images){
+				String fileName = image.getName();
+				File fileTo = ImageFileUtil.copyImageFileToTemp(image, fileName);
 				message.addMessagePhoto(fileTo, localUser);
 			}
 	        
@@ -636,10 +627,9 @@ public class UserController extends Controller {
         	Long messageId = Long.valueOf(form.get("messageId"));
         	Message message = Message.findById(Long.valueOf(messageId));
         	
-	        FilePart picture = request().body().asMultipartFormData().getFile("send-photo0");
-	        String fileName = picture.getFilename();
+	        File file = HttpUtil.getMultipartFormDataFile(request().body().asMultipartFormData(), "send-photo0");
+	        String fileName = file.getName();
 	        
-	        File file = picture.getFile();
             File fileTo = ImageFileUtil.copyImageFileToTemp(file, fileName);
             Long id = message.addMessagePhoto(fileTo,localUser).id;
             return ok(id.toString());

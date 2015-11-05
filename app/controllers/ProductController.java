@@ -33,6 +33,7 @@ import viewmodel.ResponseStatusVM;
 import viewmodel.UserVM;
 import common.model.FeedFilter.FeedType;
 import common.utils.HtmlUtil;
+import common.utils.HttpUtil;
 import common.utils.ImageFileUtil;
 import common.utils.NanoSecondStopWatch;
 import controllers.Application.DeviceType;
@@ -45,42 +46,42 @@ public class ProductController extends Controller{
 	@Transactional
 	public static Result createProductWeb() {
 		DynamicForm dynamicForm = DynamicForm.form().bindFromRequest();
-		List<FilePart> images = request().body().asMultipartFormData().getFiles();
 		String catId = dynamicForm.get("catId");
 	    String title = dynamicForm.get("title");
 	    String body = dynamicForm.get("body");
 	    String price = dynamicForm.get("price");
 	    String conditionType = dynamicForm.get("conditionType");
 	    String deviceType = dynamicForm.get("deviceType");
+	    List<FilePart> files = request().body().asMultipartFormData().getFiles();
+	    List<File> images = new ArrayList<>();
+	    for (FilePart file : files) {
+	        images.add(file.getFile());
+	    }
 		return createProduct(title, body, Long.parseLong(catId), Double.parseDouble(price), Post.parseConditionType(conditionType), images, Application.parseDeviceType(deviceType));
 	}
 	
 	@Transactional
 	public static Result createProduct() {
-		Http.MultipartFormData multipartFormData = request().body().asMultipartFormData();
-		String catIdStr = multipartFormData.asFormUrlEncoded().get("catId")[0];
-	    String title = multipartFormData.asFormUrlEncoded().get("title")[0];
-	    String body = multipartFormData.asFormUrlEncoded().get("body")[0];
-	    String priceStr = multipartFormData.asFormUrlEncoded().get("price")[0];
-	    String conditionType = multipartFormData.asFormUrlEncoded().get("conditionType")[0];
-	    String deviceType = multipartFormData.asFormUrlEncoded().get("deviceType")[0];
-	    List<FilePart> images = Application.parseAttachments("image", DefaultValues.MAX_POST_IMAGES);
+	    Http.MultipartFormData multipartFormData = request().body().asMultipartFormData();
+        Long catId = HttpUtil.getMultipartFormDataLong(multipartFormData, "catId");
+        String title = HttpUtil.getMultipartFormDataString(multipartFormData, "title");
+	    String body = HttpUtil.getMultipartFormDataString(multipartFormData, "body");
+	    Double price = HttpUtil.getMultipartFormDataDouble(multipartFormData, "price");
+	    String conditionType = HttpUtil.getMultipartFormDataString(multipartFormData, "conditionType");
+	    String deviceType = HttpUtil.getMultipartFormDataString(multipartFormData, "deviceType");
+	    List<File> files = HttpUtil.getMultipartFormDataFiles(multipartFormData, "image", DefaultValues.MAX_POST_IMAGES);
 	    
-	    Long catId = -1L;
-	    try {
-	    	catId = Long.parseLong(catIdStr);
-	    } catch (NumberFormatException e) {
+	    if (catId == null) {
+	        catId = -1L;
 	    }
 	    
-	    Double price = -1D;
-	    try {
-	    	price = Double.parseDouble(priceStr);
-	    } catch (NumberFormatException e) {
+	    if (price == null) {
+	        price = -1D;
 	    }
-		return createProduct(title, body, catId, price, Post.parseConditionType(conditionType), images, Application.parseDeviceType(deviceType));
+		return createProduct(title, body, catId, price, Post.parseConditionType(conditionType), files, Application.parseDeviceType(deviceType));
 	}
 
-	private static Result createProduct(String title, String body, Long catId, Double price, ConditionType conditionType, List<FilePart> images, DeviceType deviceType) {
+	private static Result createProduct(String title, String body, Long catId, Double price, ConditionType conditionType, List<File> images, DeviceType deviceType) {
 	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
 	    
 		final User localUser = Application.getLocalUser(session());
@@ -100,10 +101,9 @@ public class ProductController extends Controller{
 				return badRequest("Failed to create product. Invalid parameters.");
 			}
 			
-			for (FilePart image : images) {
-				String fileName = image.getFilename();
-				File file = image.getFile();
-				File fileTo = ImageFileUtil.copyImageFileToTemp(file, fileName);
+			for (File image : images) {
+				String fileName = image.getName();
+				File fileTo = ImageFileUtil.copyImageFileToTemp(image, fileName);
 				newPost.addPostPhoto(fileTo);
 			}
 			
@@ -139,31 +139,24 @@ public class ProductController extends Controller{
     @Transactional
     public static Result editProduct() {
         Http.MultipartFormData multipartFormData = request().body().asMultipartFormData();
-        String postIdStr = multipartFormData.asFormUrlEncoded().get("postId")[0];
-        String catIdStr = multipartFormData.asFormUrlEncoded().get("catId")[0];
-        String title = multipartFormData.asFormUrlEncoded().get("title")[0];
-        String body = multipartFormData.asFormUrlEncoded().get("body")[0];
-        String priceStr = multipartFormData.asFormUrlEncoded().get("price")[0];
-        String conditionType = multipartFormData.asFormUrlEncoded().get("conditionType")[0];
+        Long postId = HttpUtil.getMultipartFormDataLong(multipartFormData, "postId");
+        Long catId = HttpUtil.getMultipartFormDataLong(multipartFormData, "catId");
+        String title = HttpUtil.getMultipartFormDataString(multipartFormData, "title");
+        String body = HttpUtil.getMultipartFormDataString(multipartFormData, "body");
+        Double price = HttpUtil.getMultipartFormDataDouble(multipartFormData, "price");
+        String conditionType = HttpUtil.getMultipartFormDataString(multipartFormData, "conditionType");
         
-        Long postId = -1L;
-        try {
-            postId = Long.parseLong(postIdStr);
-        } catch (NumberFormatException e) {
+        if (postId == null) {
+            postId = -1L;
         }
-        
-        Long catId = -1L;
-        try {
-            catId = Long.parseLong(catIdStr);
-        } catch (NumberFormatException e) {
+
+        if (catId == null) {
+            catId = -1L;
         }
-        
-        Double price = -1D;
-        try {
-            price = Double.parseDouble(priceStr);
-        } catch (NumberFormatException e) {
+
+        if (price == null) {
+            price = -1D;
         }
-        
         return editProduct(postId, title, body, catId, price, Post.parseConditionType(conditionType));
     }
 
