@@ -97,20 +97,6 @@ public class Application extends Controller {
 		}
 	}
 	
-	public static List<FilePart> parseAttachments(String prefix, int count) {
-		//List<FilePart> files = request().body().asMultipartFormData().getFiles();
-		Http.MultipartFormData multipartFormData = request().body().asMultipartFormData();
-		List<FilePart> files = new ArrayList<>();
-		for(int i = 0; i < count; i++){
-			if (multipartFormData.getFile(prefix+i) != null){
-				files.add(multipartFormData.getFile(prefix+i));
-			} else {
-				break;
-			}
-		}
-		return files;
-	}
-	
 	@Transactional
     public static Result index() {
         return mainHome();

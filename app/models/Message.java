@@ -23,7 +23,7 @@ public class Message extends SocialObject implements Comparable<Message> {
 	@Required
 	@ManyToOne
 	public Conversation conversation;
-	  
+
 	@Required
 	@ManyToOne
 	public User sender;
