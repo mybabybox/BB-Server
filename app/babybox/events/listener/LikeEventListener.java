@@ -1,6 +1,5 @@
 package babybox.events.listener;
 
-import mobile.GcmSender;
 import models.Activity;
 import models.Activity.ActivityType;
 import models.Post;

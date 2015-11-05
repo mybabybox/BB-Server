@@ -7,6 +7,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
 import domain.SocialObjectType;
@@ -55,9 +56,13 @@ public class Message extends SocialObject implements Comparable<Message> {
 	}
 
 	public static Message findById(Long id) {
-		 Query q = JPA.em().createQuery("SELECT m FROM Message m where id = ?1 and deleted = 0");
-	     q.setParameter(1, id);
-	     return (Message) q.getSingleResult();
+	    try {
+            Query q = JPA.em().createQuery("SELECT m FROM Message m where id = ?1 and deleted = 0");
+            q.setParameter(1, id);
+            return (Message) q.getSingleResult();
+	    } catch (NoResultException e) {
+            return null;
+        }
 	}
 	
 	public Resource addMessagePhoto(File source, User owner) throws IOException {

@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
 import org.apache.commons.io.FileUtils;
@@ -116,9 +117,13 @@ public class Resource extends SocialObject {
 
     ///////////////////////// SQL Query /////////////////////////
 	public static Resource findById(Long id) {
-		Query q = JPA.em().createQuery("SELECT r FROM Resource r where id = ?1");
-		q.setParameter(1, id);
-		return (Resource) q.getSingleResult();
+	    try {
+    		Query q = JPA.em().createQuery("SELECT r FROM Resource r where id = ?1");
+    		q.setParameter(1, id);
+    		return (Resource) q.getSingleResult();
+	    } catch (NoResultException e) {
+            return null;
+        }
 	}
 	
 	public static List<Resource> findAllResourceOfFolder(Long id) {

@@ -108,8 +108,8 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	
 	public Conversation(Post post, User user) {
 		this.post = post;
-		this.user1 = user;
-		this.user2 = post.owner;
+		this.user1 = user;        // user1 = buyer
+		this.user2 = post.owner;  // user2 = seller
 		this.lastMessageDate = new Date();
 	}
 

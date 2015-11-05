@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
 import models.Post.PostType;
@@ -53,9 +54,13 @@ public class Comment extends SocialObject implements Comparable<Comment>, Likeab
     }
 
     public static Comment findById(Long id) {
-        Query q = JPA.em().createQuery("SELECT c FROM Comment c where id = ?1 and deleted = false");
-        q.setParameter(1, id);
-        return (Comment) q.getSingleResult();
+        try {
+            Query q = JPA.em().createQuery("SELECT c FROM Comment c where id = ?1 and deleted = false");
+            q.setParameter(1, id);
+            return (Comment) q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
     
     @Override

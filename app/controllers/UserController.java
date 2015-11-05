@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.Map;
 import models.Activity;
 import models.Collection;
 import models.Conversation;
+import models.ConversationOrder;
 import models.Emoticon;
 import models.FollowSocialRelation;
 import models.GcmToken;
@@ -40,6 +42,7 @@ import play.mvc.Result;
 import service.SocialRelationHandler;
 import viewmodel.ActivityVM;
 import viewmodel.CollectionVM;
+import viewmodel.ConversationOrderVM;
 import viewmodel.ConversationVM;
 import viewmodel.EmoticonVM;
 import viewmodel.MessageVM;
@@ -882,6 +885,127 @@ public class UserController extends Controller {
 	}
     
     @Transactional
+    public static Result newConversationOrder(Long conversationId) {
+        NanoSecondStopWatch sw = new NanoSecondStopWatch();
+        
+        User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+        
+        Conversation conversation = Conversation.findById(conversationId);
+        if (conversation == null) {
+            logger.underlyingLogger().error(String.format("[conv=%d] Conversation not found", conversationId));
+            return notFound();
+        }
+        
+        ConversationOrder order = ConversationOrder.getActiveOrder(conversation);
+        if (order == null || order.isOrderClosed()) {
+            if (order != null) {
+                order.active = false;
+                order.save();
+            }
+            ConversationOrder newOrder = new ConversationOrder(conversation);
+            newOrder.save();
+            
+            sw.stop();
+            if (logger.underlyingLogger().isDebugEnabled()) {
+                logger.underlyingLogger().debug("[u="+localUser.getId()+"][conv="+conversation.id+"][order="+newOrder.id+"] newConversationOrder(). Took "+sw.getElapsedMS()+"ms");
+            }
+            return ok(Json.toJson(new ConversationOrderVM(newOrder, localUser)));
+        }
+        return badRequest();
+    }
+    
+    @Transactional
+    public static Result cancelConversationOrder(Long id) {
+        NanoSecondStopWatch sw = new NanoSecondStopWatch();
+        
+        User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+        
+        ConversationOrder order = ConversationOrder.findById(id);
+        if (!order.active) {
+            return badRequest();
+        }
+        
+        if (order != null && order.offered && !order.isOrderClosed()) {
+            order.cancelled = true;
+            order.cancelDate = new Date();
+            order.save();
+            
+            sw.stop();
+            if (logger.underlyingLogger().isDebugEnabled()) {
+                logger.underlyingLogger().debug("[u="+localUser.getId()+"][conv="+order.conversation.id+"][order="+order.id+"] cancelConversationOrder(). Took "+sw.getElapsedMS()+"ms");
+            }
+            return ok(Json.toJson(new ConversationOrderVM(order, localUser)));
+        }
+        return badRequest();
+    }
+    
+    @Transactional
+    public static Result acceptConversationOrder(Long id) {
+        NanoSecondStopWatch sw = new NanoSecondStopWatch();
+        
+        User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+        
+        ConversationOrder order = ConversationOrder.findById(id);
+        if (!order.active) {
+            return badRequest();
+        }
+        
+        if (order != null && order.offered && !order.cancelled && !order.isOrderClosed()) {
+            order.accepted = true;
+            order.acceptDate = new Date();
+            order.save();
+            
+            sw.stop();
+            if (logger.underlyingLogger().isDebugEnabled()) {
+                logger.underlyingLogger().debug("[u="+localUser.getId()+"][conv="+order.conversation.id+"][order="+order.id+"] acceptConversationOrder(). Took "+sw.getElapsedMS()+"ms");
+            }
+            return ok(Json.toJson(new ConversationOrderVM(order, localUser)));
+        }
+        return badRequest();
+    }
+    
+    @Transactional
+    public static Result declineConversationOrder(Long id) {
+        NanoSecondStopWatch sw = new NanoSecondStopWatch();
+        
+        User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+        
+        ConversationOrder order = ConversationOrder.findById(id);
+        if (!order.active) {
+            return badRequest();
+        }
+        
+        if (order != null && order.offered && !order.cancelled && !order.isOrderClosed()) {
+            order.declined = true;
+            order.declineDate = new Date();
+            order.save();
+            
+            sw.stop();
+            if (logger.underlyingLogger().isDebugEnabled()) {
+                logger.underlyingLogger().debug("[u="+localUser.getId()+"][conv="+order.conversation.id+"][order="+order.id+"] declineConversationOrder(). Took "+sw.getElapsedMS()+"ms");
+            }
+            return ok(Json.toJson(new ConversationOrderVM(order, localUser)));
+        }
+        return badRequest();
+    }
+    
+    @Transactional
     public static Result saveGcmKey(String key, Long versionCode){
         NanoSecondStopWatch sw = new NanoSecondStopWatch();
         
@@ -899,5 +1023,4 @@ public class UserController extends Controller {
         }
 		return ok();
     }
-    
 }

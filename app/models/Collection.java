@@ -48,14 +48,13 @@ public class Collection extends SocialObject {
         }
 	}
 	
-	  public static Collection findById(Long id) {
-	        try { 
-	            Query q = JPA.em().createQuery("SELECT u FROM Collection u where id = ?1 and deleted = false");
-	            q.setParameter(1, id);
-	            return (Collection) q.getSingleResult();
-	        } catch (NoResultException e) {
-	            return null;
-	        }
-	    }
-
+    public static Collection findById(Long id) {
+        try { 
+            Query q = JPA.em().createQuery("SELECT u FROM Collection u where id = ?1 and deleted = false");
+            q.setParameter(1, id);
+            return (Collection) q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
 }
