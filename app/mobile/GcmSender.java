@@ -16,6 +16,11 @@ public class GcmSender {
     
     private static final int TTL = 30;
     private static final int RETRIES = 2;
+    
+    public static enum NotificationType {
+        CONVERSATION,
+        COMMENT
+    }
 
     public static void sendNotification(Long userId, String msg){
         GcmToken gcmToken = GcmToken.findByUserId(userId);

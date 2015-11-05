@@ -557,4 +557,76 @@ public class ProductController extends Controller{
 		}
 		return badRequest();
 	}
+	
+	@Transactional
+	public static Result adjustUpPostScore(Long id) {
+	    final User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+        
+        Post post = Post.findById(id);
+        if (post == null) {
+            return notFound();
+        }
+        
+        post.baseScoreAdjust += DefaultValues.DEFAULT_ADJUST_POST_SCORE;
+        post.save();
+        
+        SocialRelationHandler.recordTouchPost(post, localUser);
+        
+        if (logger.underlyingLogger().isDebugEnabled()) {
+            logger.underlyingLogger().debug("[u="+localUser.getId()+"][p="+post.id+"] adjustUpPostScore()");
+        }
+	    return ok(DefaultValues.DEFAULT_ADJUST_POST_SCORE+"");
+	}
+	
+	@Transactional
+	public static Result adjustDownPostScore(Long id) {
+	    final User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+        
+        Post post = Post.findById(id);
+        if (post == null) {
+            return notFound();
+        }
+        
+        post.baseScoreAdjust -= DefaultValues.DEFAULT_ADJUST_POST_SCORE;
+        post.save();
+        
+        SocialRelationHandler.recordTouchPost(post, localUser);
+        
+        if (logger.underlyingLogger().isDebugEnabled()) {
+            logger.underlyingLogger().debug("[u="+localUser.getId()+"][p="+post.id+"] adjustDownPostScore()");
+        }
+        return ok(-DefaultValues.DEFAULT_ADJUST_POST_SCORE+"");
+    }
+
+	@Transactional
+    public static Result resetAdjustPostScore(Long id) {
+	    final User localUser = Application.getLocalUser(session());
+        if (!localUser.isLoggedIn()) {
+            logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+            return notFound();
+        }
+        
+        Post post = Post.findById(id);
+        if (post == null) {
+            return notFound();
+        }
+        
+        post.baseScoreAdjust = 0L;
+        post.save();
+
+        SocialRelationHandler.recordTouchPost(post, localUser);
+        
+        if (logger.underlyingLogger().isDebugEnabled()) {
+            logger.underlyingLogger().debug("[u="+localUser.getId()+"][p="+post.id+"] resetAdjustPostScore()");
+        }
+        return ok();
+    }
 }

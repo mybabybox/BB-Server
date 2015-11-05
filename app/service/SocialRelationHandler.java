@@ -15,6 +15,7 @@ import babybox.events.map.FollowEvent;
 import babybox.events.map.LikeEvent;
 import babybox.events.map.PostEvent;
 import babybox.events.map.SoldEvent;
+import babybox.events.map.TouchEvent;
 import babybox.events.map.UnFollowEvent;
 import babybox.events.map.UnlikeEvent;
 import babybox.events.map.ViewEvent;
@@ -104,4 +105,11 @@ public class SocialRelationHandler {
 		viewEvent.put("user", localUser);
 		EventHandler.getInstance().getEventBus().post(viewEvent);
 	}
+	
+	public static void recordTouchPost(Post post, User localUser){
+	    TouchEvent touchEvent = new TouchEvent();
+	    touchEvent.put("post", post);
+	    touchEvent.put("user", localUser);
+        EventHandler.getInstance().getEventBus().post(touchEvent);
+    }
 }

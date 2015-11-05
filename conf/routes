@@ -119,6 +119,7 @@ POST	/product/add-to-collection					controllers.ProductController.addToCollectio
 GET		/post/:id									controllers.ProductController.getProductInfo(id:Long)
 GET     /post/delete/:id                            controllers.ProductController.deletePost(id:Long)
 GET     /comment/delete/:id                         controllers.ProductController.deleteComment(id:Long)
+GET     /comments/:postId/:offset                   controllers.ProductController.getPostComments(postId: Long,offset:Long)
 
 # User
 GET     /get-user-posted-feed/:id/:offset       	controllers.UserController.getUserPosts(id: Long, offset:Long)
@@ -169,4 +170,7 @@ GET     /add/story                                  controllers.Application.addS
 POST    /mobile/login                               controllers.Application.doMobileLogin
 POST    /authenticate/mobile/:provider              com.feth.play.module.pa.controllers.Authenticate.mobileAuthenticate(provider: String)
 
-GET		/comments/:postId/:offset 					controllers.ProductController.getPostComments(postId: Long,offset:Long)
+# admin
+GET     /adjust-up-post-score/:id                   controllers.ProductController.adjustUpPostScore(id:Long)
+GET     /adjust-down-post-score/:id                 controllers.ProductController.adjustDownPostScore(id:Long)
+GET     /reset-adjust-post-score/:id                controllers.ProductController.resetAdjustPostScore(id:Long)
