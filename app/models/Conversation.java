@@ -142,7 +142,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		this.setUpdatedDate(now);
 		Map<String, String> map = new HashMap<>();
 		map.put("message", sender.name+" : "+body);
-		map.put("messageType", "conversation");
+		map.put("messageType", GcmSender.NotificationType.CONVERSATION.name());
 		if (this.user1 == sender) {
 			setReadDate(this.user1);
 			this.user2NumMessages++;

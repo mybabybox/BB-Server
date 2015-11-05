@@ -7,6 +7,7 @@ import java.util.Set;
 
 import play.libs.Json;
 import mobile.GcmSender;
+import mobile.GcmSender.NotificationType;
 import models.Activity;
 import models.Comment;
 import models.Post;
@@ -45,7 +46,7 @@ public class CommentEventListener {
             //GCM
             Map<String, String> data = new HashMap<>();
             data.put("message", comment.owner.name+" commented on your product: "+post.title);
-            data.put("messageType", "comment");
+            data.put("messageType", GcmSender.NotificationType.COMMENT.name());
             data.put("postId", post.id.toString());
     		String msg = Json.stringify(Json.toJson(data));
     		
