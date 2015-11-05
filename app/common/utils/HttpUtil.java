@@ -9,31 +9,26 @@ import play.mvc.Http;
 import play.mvc.Http.MultipartFormData.FilePart;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HttpUtil {
 
-    public static List<File> getMultipartFormDataFiles(Http.MultipartFormData multipartFormData, String prefix, int count) {
-        List<File> files = new ArrayList<>();
+    public static List<FilePart> getMultipartFormDataFiles(Http.MultipartFormData multipartFormData, String prefix, int count) {
+        List<FilePart> fileParts = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            File file = getMultipartFormDataFile(multipartFormData, prefix+i);
-            if (file == null) {
+            FilePart filePart = getMultipartFormDataFile(multipartFormData, prefix+i);
+            if (filePart == null) {
                 break;
             }
-            files.add(file);
+            fileParts.add(filePart);
         }
-        return files;
+        return fileParts;
     }
     
-    public static File getMultipartFormDataFile(Http.MultipartFormData multipartFormData, String key) {
-        FilePart filePart = multipartFormData.getFile(key);
-        if (filePart != null) {
-            return filePart.getFile();
-        }
-        return null;
+    public static FilePart getMultipartFormDataFile(Http.MultipartFormData multipartFormData, String key) {
+        return multipartFormData.getFile(key);
     }
     
     public static String getMultipartFormDataString(Http.MultipartFormData multipartFormData, String key) {
