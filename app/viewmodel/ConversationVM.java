@@ -1,6 +1,7 @@
 package viewmodel;
 
 import models.Conversation;
+import models.ConversationOrder;
 import models.Post;
 import models.User;
 
@@ -22,6 +23,7 @@ public class ConversationVM {
 	@JsonProperty("lastMessageHasImage") public Boolean lastMessageHasImage;
 	@JsonProperty("lastMessageDate") public Long lastMessageDate;
 	@JsonProperty("unread") public Long unread = 0L;
+	@JsonProperty("order") public ConversationOrderVM order;
 	
 	public ConversationVM(Conversation conversation, User localUser) {
 		User otherUser = conversation.otherUser(localUser);
@@ -38,6 +40,11 @@ public class ConversationVM {
 		this.lastMessageHasImage = conversation.lastMessageHasImage;
 		this.lastMessageDate = conversation.lastMessageDate.getTime();
 		this.unread = conversation.getUnreadCount(localUser);
+		
+		ConversationOrder order = ConversationOrder.getActiveOrder(conversation);
+		if (order != null) {
+		    this.order = new ConversationOrderVM(order, localUser);		    
+		}
 		
 		Long[] images = post.getImages();
         if (images != null && images.length > 0) {

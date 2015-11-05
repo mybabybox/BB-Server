@@ -176,9 +176,6 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 			return (Activity) q.getSingleResult();
 		} catch (NoResultException e) {
 			return null;
-		} catch (Exception e) {
-			logger.underlyingLogger().error("Error in findById", e);
-			return null;
 		}
 	}
 

@@ -70,10 +70,7 @@ public class RedeemTransaction extends domain.Entity implements Serializable, Cr
 	        return (RedeemTransaction) q.getSingleResult();
 	    } catch (NoResultException e) {
 	    	return null;
-	    } catch (Exception e) {
-            logger.underlyingLogger().error("Error in findById", e);
-            return null;
-        }
+	    }
 	}
 	
 	@Transactional
