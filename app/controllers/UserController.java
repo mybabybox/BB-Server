@@ -497,9 +497,16 @@ public class UserController extends Controller {
 	        Http.MultipartFormData multipartFormData = request().body().asMultipartFormData();
 			Long conversationId = Long.parseLong(multipartFormData.asFormUrlEncoded().get("conversationId")[0]);
 		    String body = multipartFormData.asFormUrlEncoded().get("body")[0];
+		    String systemStr = multipartFormData.asFormUrlEncoded().get("system")[0];
 		    String deviceType = multipartFormData.asFormUrlEncoded().get("deviceType")[0];
 	        
-	        Message message = Conversation.newMessage(conversationId, localUser, body);
+		    boolean system = false;
+		    try {
+		        system = Boolean.valueOf(systemStr);
+		    } catch (Exception e) {
+		    }
+		    
+	        Message message = Conversation.newMessage(conversationId, localUser, body, system);
 	        
 	        List<FilePart> images = Application.parseAttachments("image", DefaultValues.MAX_MESSAGE_IMAGES);
 	        for (FilePart image : images){

@@ -121,15 +121,16 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 	    }
 	}
 	
-	public static Message newMessage(Long conversationId, User sender, String body) {
+	public static Message newMessage(Long conversationId, User sender, String body, boolean system) {
 		Conversation conversation = Conversation.findById(conversationId);
-		return conversation.addMessage(sender, body);
+		return conversation.addMessage(sender, body, system);
 	}
 	
-	public Message addMessage(User sender, String body) {
+	public Message addMessage(User sender, String body, boolean system) {
 		Date now = new Date();
 		Message message = new Message();
 		message.body = body;
+		message.system = system;
 		message.sender = sender;
 		message.conversation = this;
 		message.conversation.lastMessage = trimLastMessage(body);

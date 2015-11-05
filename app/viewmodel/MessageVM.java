@@ -12,6 +12,7 @@ public class MessageVM {
 	@JsonProperty("body") public String body;
 	@JsonProperty("hasImage") public boolean hasImage = false;
 	@JsonProperty("image") public Long image = -1L;
+	@JsonProperty("system") public boolean system = false;
 	
 	public MessageVM(Message message) {
 		this.id = message.id;
@@ -19,6 +20,7 @@ public class MessageVM {
 		this.senderName = message.sender.name;
 		this.senderId = message.sender.id;
 		this.body = message.body;
+		this.system = message.system;
 		
 		Long image = message.getImage();
         if (image != null) {
