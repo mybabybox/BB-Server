@@ -17,6 +17,7 @@ import play.db.jpa.Transactional;
  */
 @Entity
 public class SystemInfo {
+    private static final play.api.Logger logger = play.api.Logger.apply(SystemInfo.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -43,6 +44,11 @@ public class SystemInfo {
         try {
             Query q = JPA.em().createQuery("SELECT s FROM SystemInfo s");
             q.setMaxResults(1);
+            
+            if (q.getMaxResults() > 1) {
+                logger.underlyingLogger().error(q.getMaxResults()+" SystemInfo exists!!");
+            }
+            
             systemInfo = (SystemInfo) q.getSingleResult();
             return systemInfo;
         } catch (NoResultException e) {

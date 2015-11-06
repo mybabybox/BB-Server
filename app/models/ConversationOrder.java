@@ -68,11 +68,6 @@ public class ConversationOrder extends domain.Entity implements Serializable, Cr
 	@ManyToOne
     public User user2;                 // seller
 
-	public Boolean offered = false;    // by buyer
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	public Date offerDate;
-	
 	public Boolean cancelled = false;  // by buyer
     
     @Temporal(TemporalType.TIMESTAMP)
@@ -98,10 +93,16 @@ public class ConversationOrder extends domain.Entity implements Serializable, Cr
 		this.conversation = conversation;
 		this.user1 = conversation.user1;
 		this.user2 = conversation.user2;
-		this.offered = true;
-		this.offerDate = new Date();
 		this.active = true;
 	}
+	
+	@Override
+	public void preSave() {
+	}
+	
+	public boolean isOrderClosed() {
+        return this.cancelled || this.accepted || this.declined;
+    }
 	
 	public static ConversationOrder findById(Long id) {
 		try {
@@ -122,7 +123,7 @@ public class ConversationOrder extends domain.Entity implements Serializable, Cr
         q.setMaxResults(1);
         
         if (q.getMaxResults() > 1) {
-            logger.underlyingLogger().error("[conv="+conversation.id+"] has "+q.getMaxResults()+" active orders");
+            logger.underlyingLogger().error("[conv="+conversation.id+"] has "+q.getMaxResults()+" active orders!!");
         }
         
         try {
@@ -131,8 +132,4 @@ public class ConversationOrder extends domain.Entity implements Serializable, Cr
             return null;
         }
 	}
-	
-    public boolean isOrderClosed() {
-        return this.offered && (this.accepted || this.declined);
-    }
 }

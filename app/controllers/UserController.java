@@ -921,7 +921,7 @@ public class UserController extends Controller {
             return badRequest();
         }
         
-        if (order != null && order.offered && !order.isOrderClosed()) {
+        if (order != null && !order.isOrderClosed()) {
             order.cancelled = true;
             order.cancelDate = new Date();
             order.save();
@@ -950,7 +950,7 @@ public class UserController extends Controller {
             return badRequest();
         }
         
-        if (order != null && order.offered && !order.cancelled && !order.isOrderClosed()) {
+        if (order != null && !order.isOrderClosed()) {
             order.accepted = true;
             order.acceptDate = new Date();
             order.save();
@@ -979,7 +979,7 @@ public class UserController extends Controller {
             return badRequest();
         }
         
-        if (order != null && order.offered && !order.cancelled && !order.isOrderClosed()) {
+        if (order != null && !order.isOrderClosed()) {
             order.declined = true;
             order.declineDate = new Date();
             order.save();
