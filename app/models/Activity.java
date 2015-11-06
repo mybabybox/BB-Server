@@ -1,6 +1,7 @@
 package models;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -182,6 +183,7 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public static List<Activity> getActivities(Long userId) {
         Query q = JPA.em().createQuery("SELECT a FROM Activity a where userId = ?1 and deleted = false order by CREATED_DATE desc");
         q.setMaxResults(DefaultValues.MAX_ACTIVITIES_COUNT);    // safety measure as no infinite scroll
@@ -193,6 +195,7 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
         }
     }
 	
+	@SuppressWarnings("unchecked")
 	public static List<Activity> getActivities(Long userId, Long offset) {
 		Query q = JPA.em().createQuery("SELECT a FROM Activity a where userId = ?1 and deleted = false order by CREATED_DATE desc");
 		q.setFirstResult((int) (offset * DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT));

@@ -13,10 +13,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Query;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.codehaus.jackson.annotate.JsonIgnore;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import common.cache.CategoryCache;
-
 import domain.Likeable;
 import domain.Postable;
 import domain.SocialObjectType;
@@ -62,13 +62,10 @@ public class Category extends SocialObject implements Likeable, Postable, Compar
 		this.system = true;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static List<Category> loadCategories() {
-		try {
-            Query q = JPA.em().createQuery("SELECT c FROM Category c where deleted = 0 order by seq");
-            return (List<Category>) q.getResultList();
-        } catch (NoResultException nre) {
-            return null;
-        }
+		Query q = JPA.em().createQuery("SELECT c FROM Category c where deleted = 0 order by seq");
+		            return (List<Category>) q.getResultList();
     }
 
 	@Transactional
@@ -88,7 +85,7 @@ public class Category extends SocialObject implements Likeable, Postable, Compar
     }
 
 	public static List<Category> getAllCategories() {
-		return CategoryCache.getAllCategories();
+		return loadCategories();
 	}
 	
 	@Override

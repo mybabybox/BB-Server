@@ -1,8 +1,13 @@
 package controllers;
 
-import static play.data.Form.form;
-import models.SecurityRole;
 import models.User;
+import be.objectify.deadbolt.java.actions.Restrict;
+import be.objectify.deadbolt.java.actions.Group;
+import be.objectify.deadbolt.java.actions.SubjectPresent;
+
+import com.feth.play.module.pa.PlayAuthenticate;
+import com.feth.play.module.pa.user.AuthUser;
+
 import play.data.Form;
 import play.data.format.Formats.NonEmpty;
 import play.data.validation.Constraints.MinLength;
@@ -10,14 +15,11 @@ import play.data.validation.Constraints.Required;
 import play.i18n.Messages;
 import play.mvc.Controller;
 import play.mvc.Result;
-import be.objectify.deadbolt.java.actions.Group;
-import be.objectify.deadbolt.java.actions.Restrict;
-import be.objectify.deadbolt.java.actions.SubjectPresent;
 import providers.MyUsernamePasswordAuthProvider;
 import providers.MyUsernamePasswordAuthUser;
+import views.html.account.*;
 
-import com.feth.play.module.pa.PlayAuthenticate;
-import com.feth.play.module.pa.user.AuthUser;
+import static play.data.Form.form;
 
 public class Account extends Controller {
 
@@ -76,10 +78,10 @@ public class Account extends Controller {
 	@SubjectPresent
 	public static Result link() {
 		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
-		return ok(views.html.account.link.render());
+		return ok(link.render());
 	}
 
-	@Restrict(@Group(SecurityRole.USER))
+	@Restrict(@Group(Application.USER_ROLE))
 	public static Result verifyEmail() {
 		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
 		final User user = Application.getLocalUser(session());
@@ -98,29 +100,29 @@ public class Account extends Controller {
 					"playauthenticate.verify_email.error.set_email_first",
 					user.email));
 		}
-		return redirect(routes.Application.profile());
+		return Application.profile();
 	}
 
-	@Restrict(@Group(SecurityRole.USER))
+	@Restrict(@Group(Application.USER_ROLE))
 	public static Result changePassword() {
 		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
 		final User u = Application.getLocalUser(session());
 
 		if (!u.emailValidated) {
-			return ok(views.html.account.unverified.render());
+			return ok(unverified.render());
 		} else {
-			return ok(views.html.account.password_change.render(PASSWORD_CHANGE_FORM));
+			return ok(password_change.render(PASSWORD_CHANGE_FORM));
 		}
 	}
 
-	@Restrict(@Group(SecurityRole.USER))
+	@Restrict(@Group(Application.USER_ROLE))
 	public static Result doChangePassword() {
 		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
 		final Form<Account.PasswordChange> filledForm = PASSWORD_CHANGE_FORM
 				.bindFromRequest();
 		if (filledForm.hasErrors()) {
 			// User did not select whether to link or not link
-			return badRequest(views.html.account.password_change.render(filledForm));
+			return badRequest(password_change.render(filledForm));
 		} else {
 			final User user = Application.getLocalUser(session());
 			final String newPassword = filledForm.get().password;
@@ -138,9 +140,9 @@ public class Account extends Controller {
 		final AuthUser u = PlayAuthenticate.getLinkUser(session());
 		if (u == null) {
 			// account to link could not be found, silently redirect to login
-			return redirect(routes.Application.mainHome());
+			return Application.mainHome();
 		}
-		return ok(views.html.account.ask_link.render(ACCEPT_FORM, u));
+		return ok(ask_link.render(ACCEPT_FORM, u));
 	}
 
 	@SubjectPresent
@@ -149,13 +151,13 @@ public class Account extends Controller {
 		final AuthUser u = PlayAuthenticate.getLinkUser(session());
 		if (u == null) {
 			// account to link could not be found, silently redirect to login
-			return redirect(routes.Application.mainHome());
+			return Application.mainHome();
 		}
 
 		final Form<Accept> filledForm = ACCEPT_FORM.bindFromRequest();
 		if (filledForm.hasErrors()) {
 			// User did not select whether to link or not link
-			return badRequest(views.html.account.ask_link.render(filledForm, u));
+			return badRequest(ask_link.render(filledForm, u));
 		} else {
 			// User made a choice :)
 			final boolean link = filledForm.get().accept;
@@ -177,12 +179,12 @@ public class Account extends Controller {
 		final AuthUser bUser = PlayAuthenticate.getMergeUser(session());
 		if (bUser == null) {
 			// user to merge with could not be found, silently redirect to login
-			return redirect(routes.Application.mainHome());
+			return Application.mainHome();
 		}
 
 		// You could also get the local user object here via
 		// User.findByAuthUserIdentity(newUser)
-		return ok(views.html.account.ask_merge.render(ACCEPT_FORM, aUser, bUser));
+		return ok(ask_merge.render(ACCEPT_FORM, aUser, bUser));
 	}
 
 	@SubjectPresent
@@ -195,13 +197,13 @@ public class Account extends Controller {
 		final AuthUser bUser = PlayAuthenticate.getMergeUser(session());
 		if (bUser == null) {
 			// user to merge with could not be found, silently redirect to login
-			return redirect(routes.Application.mainHome());
+			return Application.mainHome();
 		}
 
 		final Form<Accept> filledForm = ACCEPT_FORM.bindFromRequest();
 		if (filledForm.hasErrors()) {
 			// User did not select whether to merge or not merge
-			return badRequest(views.html.account.ask_merge.render(filledForm, aUser, bUser));
+			return badRequest(ask_merge.render(filledForm, aUser, bUser));
 		} else {
 			// User made a choice :)
 			final boolean merge = filledForm.get().accept;

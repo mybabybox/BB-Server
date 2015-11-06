@@ -124,6 +124,7 @@ public abstract class SocialRelation extends domain.Entity implements Serializab
 		this.actorType = actor.objectType;
 	}
 	
+	@SuppressWarnings("unchecked")
     public List<SocialRelation> getSocialRelations() {
         Query q = JPA.em().createQuery(
         		"Select sr from " + getTableName() + " sr where actor = ?1 and actorType = ?2 and target = ?3 and targetType = ?4");
@@ -186,6 +187,7 @@ public abstract class SocialRelation extends domain.Entity implements Serializab
 		return null; 
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <T> T getTargetObject(Class<T> claszz){
 		String query = "Select c from " + claszz.getName() + " c where id = ?1 and deleted = false";
 		Query q = JPA.em().createQuery(query);
@@ -212,6 +214,7 @@ public abstract class SocialRelation extends domain.Entity implements Serializab
 		return null;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <T> T getActorObject(Class<T> claszz){
 		String query = "Select c from " + claszz.getName() + " c where id = ?1 and deleted = false";
 		Query q = JPA.em().createQuery(query);

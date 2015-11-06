@@ -4,7 +4,7 @@ import models.Conversation;
 import models.Post;
 import models.User;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ConversationVM {
 	private static final play.api.Logger logger = play.api.Logger.apply(ConversationVM.class);

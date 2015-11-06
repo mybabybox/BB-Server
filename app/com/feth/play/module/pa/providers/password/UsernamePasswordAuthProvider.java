@@ -5,6 +5,8 @@ import java.util.List;
 
 import play.Application;
 import play.data.Form;
+import play.db.jpa.JPA;
+import play.db.jpa.Transactional;
 import play.mvc.Call;
 import play.mvc.Http;
 import play.mvc.Http.Context;
@@ -23,7 +25,7 @@ import com.feth.play.module.pa.user.NameIdentity;
 public abstract class UsernamePasswordAuthProvider<R, UL extends UsernamePasswordAuthUser, US extends UsernamePasswordAuthUser, L extends UsernamePasswordAuthProvider.UsernamePassword, S extends UsernamePasswordAuthProvider.UsernamePassword>
 		extends AuthProvider {
 
-	protected static final String PROVIDER_KEY = "password";
+	public static final String PROVIDER_KEY = "password";
 
 	protected static final String SETTING_KEY_MAIL = "mail";
 
@@ -124,23 +126,23 @@ public abstract class UsernamePasswordAuthProvider<R, UL extends UsernamePasswor
 			case FB_USER_EXISTS:
 			    return onFbUserExists(context);
 			default:
-				throw new AuthException("登入電郵或密碼錯誤");
+				throw new AuthException("Something in login went wrong");
 			}
 		} else {
-			return PlayAuthenticate.getResolver().login(context.session()).url();
+			return PlayAuthenticate.getResolver().login().url();
 		}
 	}
 
 	protected String onWrongPassword(Context context) {
-        return PlayAuthenticate.getResolver().login(context.session()).url();
+        return PlayAuthenticate.getResolver().login().url();
     }
 	
 	protected String onLoginUserNotFound(Context context) {
-		return PlayAuthenticate.getResolver().login(context.session()).url();
+		return PlayAuthenticate.getResolver().login().url();
 	}
 
 	protected String onFbUserExists(Context context) {
-        return PlayAuthenticate.getResolver().login(context.session()).url();
+        return PlayAuthenticate.getResolver().login().url();
     }
 	   
 	public static Result handleLogin(final Context ctx) {
@@ -153,7 +155,9 @@ public abstract class UsernamePasswordAuthProvider<R, UL extends UsernamePasswor
 		return new SessionUsernamePasswordAuthUser(getKey(), id, expires);
 	}
 
+	@Transactional
 	public static Result handleSignup(final Context ctx) {
+		System.out.println("handleSignup :: "+JPA.em().isOpen());
 		return PlayAuthenticate.handleAuthentication(PROVIDER_KEY, ctx,
 				Case.SIGNUP);
 	}
@@ -218,7 +222,7 @@ public abstract class UsernamePasswordAuthProvider<R, UL extends UsernamePasswor
 	 */
 	protected Cancellable sendMail(final String subject, final Body body,
 			final String recipient) {
-		return sendMail(new Mail(subject, body, new String[] { recipient }));
+		return sendMail(new Mail(subject, body, recipient));
 	}
 
 	/**

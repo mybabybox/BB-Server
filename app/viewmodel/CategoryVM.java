@@ -1,8 +1,9 @@
 package viewmodel;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import models.Category;
 
-import org.codehaus.jackson.annotate.JsonProperty;
 
 public class CategoryVM {
 	@JsonProperty("id") public Long id;

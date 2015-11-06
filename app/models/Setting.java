@@ -44,13 +44,12 @@ public class Setting extends domain.Entity implements Serializable {
         }
     }
 	
-	@Transactional
-	public static Setting findByUserId(Long userId) {
+	public static Setting findByUserId(final Long userId) {
         try {
             Query q = JPA.em().createQuery("SELECT s FROM Setting s where userId = ?1");
             q.setParameter(1, userId);
             return (Setting) q.getSingleResult();
-        } catch (NoResultException nre) {
+        } catch (Throwable e) {
             NotificationSetting notificationSetting = new NotificationSetting();
             notificationSetting.save();
 
@@ -59,6 +58,6 @@ public class Setting extends domain.Entity implements Serializable {
             setting.notificationSetting = notificationSetting;
             setting.save();
             return setting;
-        }
+        } 
     }
 }

@@ -7,6 +7,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 import javax.persistence.NoResultException;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
@@ -15,7 +16,7 @@ import play.db.jpa.JPA;
 import domain.SocialObjectType;
 
 @Entity
-public class Collection extends SocialObject {
+public class Collection extends SocialObject{
 
 	@OneToMany(cascade=CascadeType.REMOVE, fetch = FetchType.LAZY)
 	public List<Post> products = new ArrayList<Post>();
@@ -23,6 +24,9 @@ public class Collection extends SocialObject {
 	@Column(length=2000)
 	public String description;
 	
+	@ManyToOne
+    public Category category;
+
 	public Collection() {
 		this.objectType = SocialObjectType.COLLECTION;
 	}
@@ -38,6 +42,7 @@ public class Collection extends SocialObject {
 		this.description = description;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static List<Collection> getUserProductCollections(Long id) {
 		try {
             Query q = JPA.em().createQuery("SELECT p FROM Collection p where owner = ?1 and deleted = false");

@@ -7,7 +7,7 @@
 # ~~~~
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /assets/*file               controllers.Assets.versioned(path="/public", file)
 
 GET     /sitemap.xml                controllers.Assets.at(path="/public",file="app/sitemap.xml")
 GET     /robots.txt                 controllers.Assets.at(path="/public",file="app/robots.txt")
@@ -44,7 +44,7 @@ GET     /init-new-user              controllers.Application.initNewUser
 
 GET     /logout                     com.feth.play.module.pa.controllers.Authenticate.logout
 GET     /authenticate/:provider     com.feth.play.module.pa.controllers.Authenticate.authenticate(provider: String)
-GET     /authenticatePopup/:provider    com.feth.play.module.pa.controllers.Authenticate.authenticatePopup(provider: String)
+#GET     /authenticatePopup/:provider    com.feth.play.module.pa.controllers.Authenticate.authenticatePopup(provider: String)
  
 GET     /signup                     controllers.Application.signup
 POST    /signup                     controllers.Application.doSignup
@@ -58,8 +58,8 @@ GET     /accounts/exists            controllers.Signup.exists
 GET     /accounts/password/reset/:token     controllers.Signup.resetPassword(token: String)
 POST    /accounts/password/reset            controllers.Signup.doResetPassword
 
-GET     /accounts/password/change   controllers.Account.changePassword
-POST    /accounts/password/change   controllers.Account.doChangePassword
+GET    /accounts/password/change    controllers.Account.changePassword
+POST   /accounts/password/change    controllers.Account.doChangePassword
 
 GET     /accounts/verify            controllers.Account.verifyEmail
 
@@ -71,8 +71,8 @@ POST    /accounts/link              controllers.Account.doLink
 GET     /accounts/merge             controllers.Account.askMerge
 POST    /accounts/merge             controllers.Account.doMerge
 
-GET     /login/password/forgot      controllers.Signup.forgotPassword(email: String ?= "")
-POST    /login/password/forgot      controllers.Signup.doForgotPassword
+GET     /login/password/forgot     controllers.Signup.forgotPassword(email: String ?= "")
+POST    /login/password/forgot     controllers.Signup.doForgotPassword
 
 
 # User Info Service
@@ -94,13 +94,13 @@ POST    /message/new                                controllers.UserController.n
 GET     /get-unread-message-count                   controllers.UserController.getUnreadMessageCount()
 
 # Product
-GET		/get-category-popular-feed/:id/:postType/:offset		controllers.ProductController.getCategoryPopularFeed(id :Long, postType: String, offset: Long)
-GET		/get-category-newest-feed/:id/:postType/:offset			controllers.ProductController.getCategoryNewestFeed(id :Long, postType: String, offset: Long)
-GET		/get-category-price-low-high-feed/:id/:postType/:offset	controllers.ProductController.getCategoryPriceLowHighFeed(id :Long, postType: String, offset: Long)
-GET		/get-category-price-high-low-feed/:id/:postType/:offset	controllers.ProductController.getCategoryPriceHighLowFeed(id :Long, postType: String, offset: Long)
-GET		/get-home-explore-feed/:offset							controllers.UserController.getHomeExploreFeed(offset: Long)
-GET     /get-home-following-feed/:offset                        controllers.UserController.getHomeFollowingFeed(offset: Long)
-GET		/get-suggested-products/:id								controllers.ProductController.getSuggestedProducts(id :Long)						
+GET		/get-category-popular-feed/:id/:postType/:offset		@controllers.ProductController.getCategoryPopularFeed(id :Long, postType: String, offset: Long)
+GET		/get-category-newest-feed/:id/:postType/:offset			@controllers.ProductController.getCategoryNewestFeed(id :Long, postType: String, offset: Long)
+GET		/get-category-price-low-high-feed/:id/:postType/:offset	@controllers.ProductController.getCategoryPriceLowHighFeed(id :Long, postType: String, offset: Long)
+GET		/get-category-price-high-low-feed/:id/:postType/:offset	@controllers.ProductController.getCategoryPriceHighLowFeed(id :Long, postType: String, offset: Long)
+GET		/get-home-explore-feed/:offset							@controllers.UserController.getHomeExploreFeed(offset: Long)
+GET     /get-home-following-feed/:offset                        @controllers.UserController.getHomeFollowingFeed(offset: Long)
+GET		/get-suggested-products/:id								@controllers.ProductController.getSuggestedProducts(id :Long)						
 
 POST    /post/new                                   controllers.ProductController.createProduct()
 POST	/web/post/new		 		             	controllers.ProductController.createProductWeb()
@@ -121,14 +121,14 @@ GET     /post/delete/:id                            controllers.ProductControlle
 GET     /comment/delete/:id                         controllers.ProductController.deleteComment(id:Long)
 
 # User
-GET     /get-user-posted-feed/:id/:offset       	controllers.UserController.getUserPosts(id: Long, offset:Long)
+GET     /get-user-posted-feed/:id/:offset       	@controllers.UserController.getUserPosts(id: Long, offset:Long)
 GET     /collections/:id							controllers.UserController.getUserCollections(id: Long)
 GET     /follow-user/:id          					controllers.UserController.followUser(id:Long)
 GET     /unfollow-user/:id        					controllers.UserController.unfollowUser(id:Long)
 GET		/get-user/:id								controllers.UserController.getUserInfoById(id:Long)
 GET     /followings/:id/:offset						controllers.UserController.getFollowings(id: Long,offset:Long)
 GET     /followers/:id/:offset						controllers.UserController.getFollowers(id: Long,offset:Long)
-GET     /get-user-liked-feed/:id/:offset			controllers.UserController.getUserLikedPosts(id: Long,offset:Long)
+GET     /get-user-liked-feed/:id/:offset			@controllers.UserController.getUserLikedPosts(id: Long,offset:Long)
 GET     /notification-counter                       controllers.UserController.getNotificationCounter
 GET     /reset-activities-count                     controllers.UserController.resetActivitiesCount
 GET     /reset-conversations-count                  controllers.UserController.resetConversationsCount
@@ -170,3 +170,6 @@ POST    /mobile/login                               controllers.Application.doMo
 POST    /authenticate/mobile/:provider              com.feth.play.module.pa.controllers.Authenticate.mobileAuthenticate(provider: String)
 
 GET		/comments/:postId/:offset 					controllers.ProductController.getPostComments(postId: Long,offset:Long)
+
+
+GET    /test                              @controllers.Application.test

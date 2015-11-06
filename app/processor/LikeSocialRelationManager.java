@@ -5,7 +5,9 @@ import domain.SocialObjectType;
 import models.LikeSocialRelation;
 import models.User;
 import play.db.jpa.JPA;
+
 import javax.persistence.Query;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -23,7 +25,8 @@ public class LikeSocialRelationManager {
      * @param user
      * @param objIds
      */
-    public static Set<LikeSocialResult> getSocialRelationBy(User user, List<Long> objIds) {
+    @SuppressWarnings("unchecked")
+	public static Set<LikeSocialResult> getSocialRelationBy(User user, List<Long> objIds) {
         if (objIds == null || objIds.size() == 0) {
             return Collections.EMPTY_SET;
         }

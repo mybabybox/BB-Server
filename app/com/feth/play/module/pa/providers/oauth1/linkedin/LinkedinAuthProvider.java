@@ -2,30 +2,29 @@ package com.feth.play.module.pa.providers.oauth1.linkedin;
 
 import java.util.List;
 
-import com.feth.play.module.pa.controllers.Authenticate;
-import com.feth.play.module.pa.exceptions.AccessDeniedException;
-import org.codehaus.jackson.JsonNode;
-
 import play.Application;
-import play.api.libs.oauth.OAuthCalculator;
-import play.api.libs.oauth.RequestToken;
+import play.libs.oauth.OAuth.OAuthCalculator;
+import play.libs.oauth.OAuth.RequestToken;
+import play.mvc.Http;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.feth.play.module.pa.exceptions.AccessDeniedException;
 import com.feth.play.module.pa.exceptions.AccessTokenException;
 import com.feth.play.module.pa.exceptions.AuthException;
 import com.feth.play.module.pa.providers.oauth1.OAuth1AuthProvider;
-import play.mvc.Http;
+import com.google.inject.Inject;
 
 public class LinkedinAuthProvider extends
 		OAuth1AuthProvider<LinkedinAuthUser, LinkedinAuthInfo> {
 
-	static final String PROVIDER_KEY = "linkedin";
+	public static final String PROVIDER_KEY = "linkedin";
 
 	private static final String USER_INFO_URL_SETTING_KEY = "userInfoUrl";
 	private static final String USER_EMAIL_URL_SETTING_KEY = "userEmailUrl";
 
     public static final String OAUTH_ACCESS_DENIED= "user_refused";
 
-
+	@Inject
 	public LinkedinAuthProvider(final Application app) {
 		super(app);
 	}
@@ -60,15 +59,14 @@ public class LinkedinAuthProvider extends
 	}
 
 	@Override
-	protected LinkedinAuthInfo buildInfo(final RequestToken rtoken)
+	protected LinkedinAuthInfo buildInfo(final RequestToken requestToken)
 			throws AccessTokenException {
-		return new LinkedinAuthInfo(rtoken.token(), rtoken.secret());
+		return new LinkedinAuthInfo(requestToken.token, requestToken.secret);
 	}
 
     @Override
     protected void checkError(Http.Request request) throws AuthException {
-        final String error = Authenticate.getQueryString(request,
-                Constants.OAUTH_PROBLEM);
+        final String error = request.getQueryString(Constants.OAUTH_PROBLEM);
 
         if (error != null) {
             if (error.equals(OAUTH_ACCESS_DENIED)) {

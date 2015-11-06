@@ -8,6 +8,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Days;
 
 import play.Play;
+import play.db.jpa.JPA;
 import common.thread.ThreadLocalOverride;
 import common.utils.NanoSecondStopWatch;
 
@@ -25,6 +26,7 @@ public class CalcFormula {
 	public static final int FEED_SCORE_COMPUTE_DECAY_VELOCITY = Play.application().configuration().getInt("feed.score.compute.decay.velocity");
 	
 	public Long computeBaseScore(Post post) {
+		 
 	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
         logger.underlyingLogger().debug("computeBaseScore for p="+post.id);
         if (!ThreadLocalOverride.isServerStartingUp()) {
@@ -47,7 +49,7 @@ public class CalcFormula {
         if (post.baseScoreAdjust != null) {
             post.baseScore += post.baseScoreAdjust;     // can be negative
         }
-        post.save();
+        post.merge();
         
         sw.stop();
         logger.underlyingLogger().debug("computeBaseScore completed with baseScore="+post.baseScore+". Took "+sw.getElapsedSecs()+"s");

@@ -1,13 +1,18 @@
 package providers;
 
-import static play.data.Form.form;
+import akka.actor.Cancellable;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import com.feth.play.module.mail.Mailer.Mail;
+import com.feth.play.module.mail.Mailer.Mail.Body;
+import com.feth.play.module.pa.PlayAuthenticate;
+import com.feth.play.module.pa.providers.password.UsernamePasswordAuthProvider;
+import com.feth.play.module.pa.providers.password.UsernamePasswordAuthUser;
+import com.google.inject.Inject;
 
+import controllers.routes;
+import models.LinkedAccount;
+import models.TokenAction;
+import models.TokenAction.Type;
 import models.User;
 import play.Application;
 import play.Logger;
@@ -16,28 +21,26 @@ import play.data.validation.Constraints.Email;
 import play.data.validation.Constraints.MaxLength;
 import play.data.validation.Constraints.MinLength;
 import play.data.validation.Constraints.Required;
+import play.db.jpa.JPA;
+import play.db.jpa.Transactional;
 import play.i18n.Lang;
 import play.i18n.Messages;
 import play.mvc.Call;
 import play.mvc.Http.Context;
-import models.LinkedAccount;
-import models.TokenAction;
-import models.TokenAction.Type;
-import akka.actor.Cancellable;
 
-import com.feth.play.module.mail.Mailer.Mail;
-import com.feth.play.module.mail.Mailer.Mail.Body;
-import com.feth.play.module.pa.PlayAuthenticate;
-import com.feth.play.module.pa.providers.password.UsernamePasswordAuthProvider;
-import com.feth.play.module.pa.providers.password.UsernamePasswordAuthUser;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
-import controllers.routes;
+import static play.data.Form.form;
 
-public class MyUsernamePasswordAuthProvider extends 
-    UsernamePasswordAuthProvider<String, MyLoginUsernamePasswordAuthUser, MyUsernamePasswordAuthUser, MyUsernamePasswordAuthProvider.MyLogin, MyUsernamePasswordAuthProvider.MySignup> {
-    
-    private static play.api.Logger logger = play.api.Logger.apply(MyUsernamePasswordAuthProvider.class);
-    
+public class MyUsernamePasswordAuthProvider
+extends
+UsernamePasswordAuthProvider<String, MyLoginUsernamePasswordAuthUser, MyUsernamePasswordAuthUser, MyUsernamePasswordAuthProvider.MyLogin, MyUsernamePasswordAuthProvider.MySignup> {
+
+	private static play.api.Logger logger = play.api.Logger.apply(MyUsernamePasswordAuthProvider.class);
 	private static final String SETTING_KEY_VERIFICATION_LINK_SECURE = SETTING_KEY_MAIL
 			+ "." + "verificationLink.secure";
 	private static final String SETTING_KEY_PASSWORD_RESET_LINK_SECURE = SETTING_KEY_MAIL
@@ -74,18 +77,18 @@ public class MyUsernamePasswordAuthProvider extends
 		@Email
 		public String email;
 
-        public String getEmail() {
-            return email;
-        }
+		public String getEmail() {
+			return email;
+		}
 
-        public void setEmail(String email) {
-            this.email = email;
-        }
-    }
+		public void setEmail(String email) {
+			this.email = email;
+		}
+	}
 
 	public static class MyLogin extends MyIdentity
-			implements
-			com.feth.play.module.pa.providers.password.UsernamePasswordAuthProvider.UsernamePassword {
+	implements
+	com.feth.play.module.pa.providers.password.UsernamePasswordAuthProvider.UsernamePassword {
 
 		@Required
 		@MinLength(4)
@@ -101,7 +104,7 @@ public class MyUsernamePasswordAuthProvider extends
 		public String getPassword() {
 			return password;
 		}
-		
+
 		public void setPassword(String password) {
 			this.password = password;
 		}
@@ -116,7 +119,7 @@ public class MyUsernamePasswordAuthProvider extends
 
 		@Required
 		public String lname;
-		
+
 		@Required
 		public String fname;
 
@@ -156,6 +159,7 @@ public class MyUsernamePasswordAuthProvider extends
 	public static final Form<MySignup> SIGNUP_FORM = form(MySignup.class);
 	public static final Form<MyLogin> LOGIN_FORM = form(MyLogin.class);
 
+	@Inject
 	public MyUsernamePasswordAuthProvider(Application app) {
 		super(app);
 	}
@@ -171,7 +175,7 @@ public class MyUsernamePasswordAuthProvider extends
 	@Override
 	protected com.feth.play.module.pa.providers.password.UsernamePasswordAuthProvider.SignupResult signupUser(final MyUsernamePasswordAuthUser user) {
 		//final User u = User.findByUsernamePasswordIdentity(user);
-	    final User existingUser = User.findByEmail(user.getEmail());
+		final User existingUser = User.findByEmail(user.getEmail());
 		if (existingUser != null) {
 			if (existingUser.emailValidated) {
 				// This user exists, has its email validated and is active
@@ -189,7 +193,7 @@ public class MyUsernamePasswordAuthProvider extends
 		// if you return
 		// return SignupResult.USER_CREATED;
 		// then the user gets logged in directly
-		
+
 		// NOTE: Implement direct login after signup, no verification email neede!!!
 		//return SignupResult.USER_CREATED_UNVERIFIED;
 		return SignupResult.USER_CREATED;
@@ -198,16 +202,16 @@ public class MyUsernamePasswordAuthProvider extends
 	@Override
 	protected com.feth.play.module.pa.providers.password.UsernamePasswordAuthProvider.LoginResult loginUser(
 			final MyLoginUsernamePasswordAuthUser authUser) {
-	    
-	    // Bypass login
-	    if ("dev".equals(controllers.Application.APPLICATION_ENV) && 
-	            controllers.Application.LOGIN_BYPASS_ALL == true) {
-	        final User user = User.findByEmail(authUser.getEmail());
-	        if (user != null) {
-	            return LoginResult.USER_LOGGED_IN;
-	        }
-	        return LoginResult.NOT_FOUND;
-	    }
+
+		// Bypass login
+		if ("dev".equals(controllers.Application.APPLICATION_ENV) && 
+				controllers.Application.LOGIN_BYPASS_ALL == true) {
+			final User user = User.findByEmail(authUser.getEmail());
+			if (user != null) {
+				return LoginResult.USER_LOGGED_IN;
+			}
+			return LoginResult.NOT_FOUND;
+		}
 
 		final User u = User.findByUsernamePasswordIdentity(authUser);
 		if (u == null) {
@@ -263,7 +267,7 @@ public class MyUsernamePasswordAuthProvider extends
 		return new MyLoginUsernamePasswordAuthUser(login.getPassword(),
 				login.getEmail());
 	}
-	
+
 
 	@Override
 	protected MyLoginUsernamePasswordAuthUser transformAuthUser(final MyUsernamePasswordAuthUser authUser, final Context context) {
@@ -276,29 +280,29 @@ public class MyUsernamePasswordAuthProvider extends
 		return Messages.get("playauthenticate.password.verify_signup.subject");
 	}
 
-   @Override
-    protected String onWrongPassword(final Context context) {
-        context.flash().put(controllers.Application.FLASH_ERROR_KEY,
-                "登入電郵或密碼錯誤");
-                //Messages.get("playauthenticate.password.login.unknown_user_or_pw"));
-        return super.onLoginUserNotFound(context);
-    }
-	   
 	@Override
-	protected String onLoginUserNotFound(final Context context) {
+	protected String onWrongPassword(final Context context) {
 		context.flash().put(controllers.Application.FLASH_ERROR_KEY,
-		        "您輸入的電郵地址並沒有登記。請先登記帳戶或確認輸入無誤。");
-		        //Messages.get("playauthenticate.password.login.unknown_user_or_pw"));
+				"登入電郵或密碼錯誤");
+		//Messages.get("playauthenticate.password.login.unknown_user_or_pw"));
 		return super.onLoginUserNotFound(context);
 	}
 
 	@Override
-    protected String onFbUserExists(final Context context) {
-        context.flash().put(controllers.Application.FLASH_ERROR_KEY,
-                "您輸入的電郵地址不正確。如果您是用 Facebook 帳戶登記, 請按 '使用Facebook登入' 重試。");
-        return super.onLoginUserNotFound(context);
-    }
-	   
+	protected String onLoginUserNotFound(final Context context) {
+		context.flash().put(controllers.Application.FLASH_ERROR_KEY,
+				"您輸入的電郵地址並沒有登記。請先登記帳戶或確認輸入無誤。");
+		//Messages.get("playauthenticate.password.login.unknown_user_or_pw"));
+		return super.onLoginUserNotFound(context);
+	}
+
+	@Override
+	protected String onFbUserExists(final Context context) {
+		context.flash().put(controllers.Application.FLASH_ERROR_KEY,
+				"您輸入的電郵地址不正確。如果您是用 Facebook 帳戶登記, 請按 '使用Facebook登入' 重試。");
+		return super.onLoginUserNotFound(context);
+	}
+
 	@Override
 	protected Body getVerifyEmailMailingBody(final String token,
 			final MyUsernamePasswordAuthUser user, final Context ctx) {
@@ -306,8 +310,8 @@ public class MyUsernamePasswordAuthProvider extends
 		//final boolean isSecure = getConfiguration().getBoolean(SETTING_KEY_VERIFICATION_LINK_SECURE);
 		//final String url = routes.Signup.verify(token).absoluteURL(ctx.request(), isSecure);
 		String url = controllers.Application.APPLICATION_BASE_URL + routes.Signup.verify(token).url();
-		logger.underlyingLogger().info("["+user.getFirstName()+" "+user.getLastName()+"] getVerifyEmailMailingBody url="+url);
-		
+		//logger.underlyingLogger().info("["+user.getFirstName()+" "+user.getLastName()+"] getVerifyEmailMailingBody url="+url);
+
 		final Lang lang = Lang.preferred(ctx.request().acceptLanguages());
 		final String langCode = lang.code();
 
@@ -356,7 +360,7 @@ public class MyUsernamePasswordAuthProvider extends
 		//final String url = routes.Signup.resetPassword(token).absoluteURL(ctx.request(), isSecure);
 		String url = controllers.Application.APPLICATION_BASE_URL + routes.Signup.resetPassword(token).url();
 		logger.underlyingLogger().debug("[u="+user.getId()+"] getPasswordResetMailingBody url="+url);
-		
+
 		final Lang lang = Lang.preferred(ctx.request().acceptLanguages());
 		final String langCode = lang.code();
 
@@ -434,10 +438,10 @@ public class MyUsernamePasswordAuthProvider extends
 			final User user, final Context ctx) {
 
 		//final boolean isSecure = getConfiguration().getBoolean(SETTING_KEY_VERIFICATION_LINK_SECURE);
-	    //final String url = routes.Signup.verify(token).absoluteURL(ctx.request(), isSecure);
-	    String url = controllers.Application.APPLICATION_BASE_URL + routes.Signup.verify(token).url();
-	    logger.underlyingLogger().debug("[u="+user.getId()+"] getVerifyEmailMailingBodyAfterSignup url="+url);
-        
+		//final String url = routes.Signup.verify(token).absoluteURL(ctx.request(), isSecure);
+		String url = controllers.Application.APPLICATION_BASE_URL + routes.Signup.verify(token).url();
+		logger.underlyingLogger().debug("[u="+user.getId()+"] getVerifyEmailMailingBodyAfterSignup url="+url);
+
 		final Lang lang = Lang.preferred(ctx.request().acceptLanguages());
 		final String langCode = lang.code();
 
@@ -464,7 +468,7 @@ public class MyUsernamePasswordAuthProvider extends
 	private String getEmailName(final User user) {
 		return getEmailName(user.email, user.name);
 	}
-	
+
 	protected Cancellable sendMail(final Mail mail) {
 		if(mailer == null) return null;
 		return mailer.sendMail(mail);

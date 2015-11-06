@@ -8,7 +8,7 @@ import models.Post;
 import models.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CollectionVM {
 	public Long id;

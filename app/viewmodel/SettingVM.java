@@ -1,9 +1,9 @@
 package viewmodel;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import models.Setting;
 import models.SystemInfo;
-
-import org.codehaus.jackson.annotate.JsonProperty;
 
 public class SettingVM {
 	@JsonProperty("id") public long id;

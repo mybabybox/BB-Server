@@ -1,6 +1,6 @@
 package viewmodel;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import models.NotificationCounter;
 

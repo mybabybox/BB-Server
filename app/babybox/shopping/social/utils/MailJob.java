@@ -7,16 +7,23 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
+import play.Configuration;
 import play.libs.Akka;
 import scala.concurrent.duration.Duration;
 import akka.actor.Cancellable;
 import babybox.shopping.social.utils.MailJob.Mail.Body;
 
-import com.typesafe.plugin.MailerAPI;
-import com.typesafe.plugin.MailerPlugin;
+import com.feth.play.module.mail.Mailer;
+import com.feth.play.module.mail.Mailer.Mail;
+import com.feth.play.module.pa.PlayAuthenticate;
+
+import email.EDMUtility;
 
 public class MailJob implements Runnable {
 
+	protected static final String PROVIDER_KEY = "password";
+	protected static final String SETTING_KEY_MAIL = "mail";
+	
     private static final String MAIL_FROM = "info@baby-box.com.hk";
 
 	private final Mail mail;
@@ -36,6 +43,7 @@ public class MailJob implements Runnable {
 
 	public static Cancellable sendMail(final String subject, final Body body,
 			final String recipient) {
+		
 		final Mail mail = new Mail(subject, body, new String[] { recipient });
 		return sendMail(mail);
 	}
@@ -43,27 +51,48 @@ public class MailJob implements Runnable {
 	@Override
 	public void run() {
 		
-		final MailerAPI api = play.Play.application().plugin(MailerPlugin.class).email();
+		// TODO 
+		
+		Configuration config = PlayAuthenticate.getConfiguration().getConfig(PROVIDER_KEY).getConfig(
+				SETTING_KEY_MAIL);
+		Mailer mailer = Mailer.getCustomMailer(config);
+		
+		/*final MailerAPI api = play.Play.application().plugin(MailerPlugin.class).email();
         api.setCharset("UTF-8");
 		api.setSubject(mail.getSubject());
 		api.addRecipient(mail.getRecipients());
-		api.addFrom(mail.getFrom());
+		api.addFrom(mail.getFrom());*/
+		/*
+		com.feth.play.module.mail.Mailer.Mail api = new com.feth.play.module.mail.Mailer.Mail(mail.getSubject(), mail.getBody(), mail.getRecipients());
+		api.setFrom(mail.getFrom());
 
 		for (final Entry<String, List<String>> entry : mail
 				.getCustomHeaders().entrySet()) {
 			final String headerName = entry.getKey();
 			for (final String headerValue : entry.getValue()) {
-				api.addHeader(headerName, headerValue);
+				//api.addHeader(headerName, headerValue);
+				api.addCustomHeader(headerName, headerValue);
 			}
 		}
-
-		if (mail.getBody().isBoth()) {
-			api.send(mail.getBody().getText(), mail.getBody().getHtml());
+*/
+		/*if (mail.getBody().isBoth()) {
+			//api.send(mail.getBody().getText(), mail.getBody().getHtml());
+			api.body = mail.getBody().getText();
+			mailer.sendMail(api);
+			
+			api.body = mail.getBody().getHtml();
+			mailer.sendMail(api);
+			
 		} else if (mail.getBody().isText()) {
-			api.send(mail.getBody().getText());
+			//api.send(mail.getBody().getText());
+			api.body = mail.getBody().getText();
+			mailer.sendMail(api);
 		} else {
-			api.sendHtml(mail.getBody().getHtml());
-		}
+			//api.sendHtml(mail.getBody().getHtml());
+			api.body = mail.getBody().getHtml();
+			mailer.sendMail(api);
+		}*/
+		
 	}
 		
 	

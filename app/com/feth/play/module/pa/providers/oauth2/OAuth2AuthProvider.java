@@ -1,7 +1,13 @@
 package com.feth.play.module.pa.providers.oauth2;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import com.feth.play.module.pa.controllers.Authenticate;
+import com.feth.play.module.pa.exceptions.*;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -10,24 +16,26 @@ import org.apache.http.message.BasicNameValuePair;
 import play.Application;
 import play.Configuration;
 import play.Logger;
-import play.libs.WS;
-import play.libs.WS.Response;
+import play.i18n.Messages;
+import play.libs.ws.WS;
+import play.libs.ws.WSResponse;
+import play.libs.ws.WSRequest;
 import play.mvc.Http.Context;
 import play.mvc.Http.Request;
+import play.mvc.Http.Session;
 
 import com.feth.play.module.pa.PlayAuthenticate;
-import com.feth.play.module.pa.controllers.Authenticate;
-import com.feth.play.module.pa.exceptions.AccessDeniedException;
-import com.feth.play.module.pa.exceptions.AccessTokenException;
-import com.feth.play.module.pa.exceptions.AuthException;
-import com.feth.play.module.pa.exceptions.RedirectUriMismatch;
 import com.feth.play.module.pa.providers.ext.ExternalAuthProvider;
+import com.feth.play.module.pa.user.AuthUser;
 import com.feth.play.module.pa.user.AuthUserIdentity;
 
 public abstract class OAuth2AuthProvider<U extends AuthUserIdentity, I extends OAuth2AuthInfo>
 		extends ExternalAuthProvider {
 
-	public OAuth2AuthProvider(final Application app) {
+    private static final String STATE_TOKEN = "pa.oauth2.state";
+    protected static final String CONTENT_TYPE = "Content-Type";
+
+    public OAuth2AuthProvider(final Application app) {
 		super(app);
 	}
 
@@ -74,7 +82,7 @@ public abstract class OAuth2AuthProvider<U extends AuthUserIdentity, I extends O
 	}
 
 	protected String getAccessTokenParams(final Configuration c,
-			final String code, Request request) {
+			final String code, Request request) throws ResolverMissingException {
 		final List<NameValuePair> params = getParams(request, c);
 		params.add(new BasicNameValuePair(Constants.CLIENT_SECRET, c
 				.getString(SettingKeys.CLIENT_SECRET)));
@@ -85,19 +93,27 @@ public abstract class OAuth2AuthProvider<U extends AuthUserIdentity, I extends O
 		return URLEncodedUtils.format(params, "UTF-8");
 	}
 
+    protected Map<String, String> getHeaders() {
+        return Collections.<String, String>emptyMap();
+    }
+
 	protected I getAccessToken(final String code, final Request request)
-			throws AccessTokenException {
+            throws AccessTokenException, ResolverMissingException {
 		final Configuration c = getConfiguration();
 		final String params = getAccessTokenParams(c, code, request);
 		final String url = c.getString(SettingKeys.ACCESS_TOKEN_URL);
-		final Response r = WS.url(url)
-				.setHeader("Content-Type", "application/x-www-form-urlencoded")
-				.post(params).get(PlayAuthenticate.TIMEOUT);
+        final WSRequest wrh = WS.url(url);
+        wrh.setHeader(CONTENT_TYPE, "application/x-www-form-urlencoded");
+        for(final Map.Entry<String, String> header : getHeaders().entrySet()) {
+            wrh.setHeader(header.getKey(), header.getValue());
+        }
+
+		final WSResponse r = wrh.post(params).get(PlayAuthenticate.TIMEOUT);
 
 		return buildInfo(r);
 	}
 
-	protected abstract I buildInfo(final Response r)
+	protected abstract I buildInfo(final WSResponse r)
 			throws AccessTokenException;
 
 	protected I buildWithAccessInfo(String token) {
@@ -110,7 +126,7 @@ public abstract class OAuth2AuthProvider<U extends AuthUserIdentity, I extends O
 		final List<NameValuePair> params = getAuthParams(c, request, state);
 		return generateURI(c.getString(SettingKeys.AUTHORIZATION_URL), params);
 	}
-	
+
 	protected List<NameValuePair> getAuthParams(final Configuration c,
 			final Request request, final String state) throws AuthException {
 		final List<NameValuePair> params = getParams(request, c);
@@ -139,7 +155,7 @@ public abstract class OAuth2AuthProvider<U extends AuthUserIdentity, I extends O
 	}
 
 	protected List<NameValuePair> getParams(final Request request,
-			final Configuration c) {
+			final Configuration c) throws ResolverMissingException {
 		final List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair(Constants.CLIENT_ID, c
 				.getString(SettingKeys.CLIENT_ID)));
@@ -162,13 +178,10 @@ public abstract class OAuth2AuthProvider<U extends AuthUserIdentity, I extends O
 			Logger.debug("Returned with URL: '" + request.uri() + "'");
 		}
 
-		final String error = Authenticate.getQueryString(request,
-				getErrorParameterKey());
-
+		final String error = request.getQueryString(getErrorParameterKey());
 		// Attention: facebook does *not* support state that is non-ASCII - not
 		// even encoded.
-		final String state = Authenticate.getQueryString(request,
-				Constants.STATE);
+		final String state = Authenticate.getQueryString(Constants.STATE);
 
 		if (error != null) {
 			if (error.equals(Constants.ACCESS_DENIED)) {
@@ -183,28 +196,41 @@ public abstract class OAuth2AuthProvider<U extends AuthUserIdentity, I extends O
 			}
 		} else if (isCallbackRequest(context)) {
 			// second step in auth process
-			final String code = Authenticate
-					.getQueryString(request, Constants.CODE);
-			
+            final UUID storedState = PlayAuthenticate.getFromCache(context.session(), STATE_TOKEN);
+            if(storedState == null) {
+                Logger.warn("Cache either timed out, or you are using a setup with multiple servers and a non-shared cache implementation");
+                // we will just behave as if there was no auth, yet...
+                return generateRedirectUrl(context, request);
+            }
+            final String callbackState = request.getQueryString(Constants.STATE);
+            if(!storedState.equals(UUID.fromString(callbackState))) {
+                // the return callback may have been forged
+                throw new AuthException(Messages.get("playauthenticate.core.exception.oauth2.state_param_forged"));
+            }
+			final String code = request.getQueryString(Constants.CODE);
 			final I info = getAccessToken(code, request);
-			final AuthUserIdentity u = transform(info, state);
-			return u;
-			// System.out.println(accessToken.getAccessToken());
+            return transform(info, callbackState);
 		} else if (isWithAccessTokenRequest(context)) { 
 			final String  ACCESS_TOKEN = Authenticate
-					.getQueryString(request, Constants.ACCESS_TOKEN);
+					.getQueryString(Constants.ACCESS_TOKEN);
 			final I info = buildWithAccessInfo(ACCESS_TOKEN);
 			final AuthUserIdentity u = transform(info, state);
 			return u;
 		} else {
 			// no auth, yet
-			final String url = getAuthUrl(request, state);
-			Logger.debug("generated redirect URL for dialog: " + url);
-			return url;
+            return generateRedirectUrl(context, request);
 		}
 	}
-	
-	protected boolean isCallbackRequest(final Context context) {
+
+    private String generateRedirectUrl(Context context, Request request) throws AuthException {
+        final UUID state = UUID.randomUUID();
+        PlayAuthenticate.storeInCache(context.session(), STATE_TOKEN, state);
+        final String url = getAuthUrl(request, state.toString());
+        Logger.debug("generated redirect URL for dialog: " + url);
+        return url;
+    }
+
+    protected boolean isCallbackRequest(final Context context) {
 		return context.request().queryString().containsKey(Constants.CODE);
 	}
 
@@ -216,10 +242,15 @@ public abstract class OAuth2AuthProvider<U extends AuthUserIdentity, I extends O
 		return Constants.ERROR;
 	}
 
+    @Override
+    public void afterSave(final AuthUser user, final Object identity, final Session session) {
+        PlayAuthenticate.removeFromCache(session, STATE_TOKEN);
+    }
+
 	/**
 	 * This allows custom implementations to enrich an AuthUser object or
-	 * provide their own implementaion
-	 * 
+	 * provide their own implementation
+	 *
 	 * @param info
 	 * @param state
 	 * @return

@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import babybox.shopping.social.exception.SocialObjectNotCommentableException;
 import models.Category;
 import models.Collection;
@@ -31,6 +33,7 @@ import viewmodel.PostVM;
 import viewmodel.PostVMLite;
 import viewmodel.ResponseStatusVM;
 import viewmodel.UserVM;
+import common.cache.JedisCache;
 import common.model.FeedFilter.FeedType;
 import common.utils.HtmlUtil;
 import common.utils.ImageFileUtil;
@@ -40,6 +43,10 @@ import domain.DefaultValues;
 import domain.SocialObjectType;
 
 public class ProductController extends Controller{
+	
+	@Inject
+	JedisCache jedisCache;
+	
 	private static play.api.Logger logger = play.api.Logger.apply(ProductController.class);
 	
 	@Transactional
@@ -448,59 +455,59 @@ public class ProductController extends Controller{
 	}
 	
 	@Transactional 
-	public static Result getCategoryPopularFeed(Long id, String postType, Long offset){
+	public Result getCategoryPopularFeed(Long id, String postType, Long offset){
 		final User localUser = Application.getLocalUser(session());
 		if (!localUser.isLoggedIn()) {
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
 			return notFound();
 		}
 		
-		List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.CATEGORY_POPULAR);
+		List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.CATEGORY_POPULAR, jedisCache);
 		return ok(Json.toJson(vms));
 
 	}
 
 	@Transactional 
-	public static Result getCategoryNewestFeed(Long id, String postType, Long offset){
+	public Result getCategoryNewestFeed(Long id, String postType, Long offset){
 		final User localUser = Application.getLocalUser(session());
 		if (!localUser.isLoggedIn()) {
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
 			return notFound();
 		}
-		List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.CATEGORY_NEWEST);
+		List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.CATEGORY_NEWEST, jedisCache);
+		return ok(Json.toJson(vms));
+	}
+	
+	@Transactional()
+	public Result getCategoryPriceLowHighFeed(Long id, String postType, Long offset){
+		final User localUser = Application.getLocalUser(session());
+		if (!localUser.isLoggedIn()) {
+			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
+			return notFound();
+		}
+		List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.CATEGORY_PRICE_LOW_HIGH, jedisCache);
 		return ok(Json.toJson(vms));
 	}
 	
 	@Transactional 
-	public static Result getCategoryPriceLowHighFeed(Long id, String postType, Long offset){
+	public Result getCategoryPriceHighLowFeed(Long id, String postType, Long offset) {
 		final User localUser = Application.getLocalUser(session());
 		if (!localUser.isLoggedIn()) {
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
 			return notFound();
 		}
-		List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.CATEGORY_PRICE_LOW_HIGH);
+		List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.CATEGORY_PRICE_HIGH_LOW, jedisCache);
 		return ok(Json.toJson(vms));
 	}
 	
 	@Transactional 
-	public static Result getCategoryPriceHighLowFeed(Long id, String postType, Long offset) {
+	public Result getSuggestedProducts(Long id) {
 		final User localUser = Application.getLocalUser(session());
 		if (!localUser.isLoggedIn()) {
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
 			return notFound();
 		}
-		List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.CATEGORY_PRICE_HIGH_LOW);
-		return ok(Json.toJson(vms));
-	}
-	
-	@Transactional 
-	public static Result getSuggestedProducts(Long id) {
-		final User localUser = Application.getLocalUser(session());
-		if (!localUser.isLoggedIn()) {
-			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
-			return notFound();
-		}
-		List<PostVMLite> vms = FeedHandler.getPostVM(id, 0l, localUser, FeedType.PRODUCT_SUGGEST);
+		List<PostVMLite> vms = FeedHandler.getPostVM(id, 0l, localUser, FeedType.PRODUCT_SUGGEST, jedisCache);
 		return ok(Json.toJson(vms));
 	}
 	

@@ -18,7 +18,7 @@ import babybox.shopping.social.exception.SocialObjectNotPostableException;
 import models.Post.PostType;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import play.data.validation.Constraints.Required;
 

@@ -1,5 +1,8 @@
 import java.util.Arrays;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import models.Activity;
 import models.SecurityRole;
@@ -9,27 +12,30 @@ import play.Application;
 import play.GlobalSettings;
 import play.Play;
 import play.db.jpa.JPA;
+import play.libs.Akka;
 import play.mvc.Call;
 import play.mvc.Http.RequestHeader;
 import play.mvc.Http.Session;
 import play.mvc.Result;
 import play.mvc.Results;
+import redis.clients.jedis.JedisPool;
 import babybox.events.handler.EventHandler;
 
 import com.feth.play.module.pa.PlayAuthenticate;
 import com.feth.play.module.pa.PlayAuthenticate.Resolver;
 import com.feth.play.module.pa.exceptions.AccessDeniedException;
 import com.feth.play.module.pa.exceptions.AuthException;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 import common.cache.CalcServer;
+import common.cache.JedisCache;
 import common.schedule.CommandChecker;
 import common.schedule.JobScheduler;
 import common.thread.ThreadLocalOverride;
 import controllers.routes;
+import scala.concurrent.duration.FiniteDuration;
 
-/**
- *
- */
 public class Global extends GlobalSettings {
     private static final play.api.Logger logger = play.api.Logger.apply("application");
 
@@ -41,7 +47,7 @@ public class Global extends GlobalSettings {
      * @param app
      */
     public void onStart(Application app) {
-		
+		//jedisPool.getResource();
     	EventHandler.getInstance();
 		
         final boolean runBackgroundTasks = Play.application().configuration().getBoolean(RUN_BACKGROUND_TASKS_PROP, false);
@@ -50,63 +56,59 @@ public class Global extends GlobalSettings {
             scheduleJobs();
         }
         
-        PlayAuthenticate.setResolver(new Resolver() {
-            @Override
-            public Call login(final Session session) {
-                // Your login page
-                return routes.Application.login();
-            }
+    	PlayAuthenticate.setResolver(new Resolver() {
 
-            @Override
-            public Call afterAuth(final Session session) {
-                // The user will be redirected to this page after authentication
-                // if no original URL was saved
-            	
+			@Override
+			public Call login() {
+				// Your login page
+				return routes.Application.login();
+			}
+
+			@Override
+			public Call afterAuth() {
+				// The user will be redirected to this page after authentication
+				// if no original URL was saved
             	// reset last login time
-            	final User user = controllers.Application.getLocalUser(session);
-    		    user.setLastLogin(new Date());
     		    
                 //return routes.Application.mainHome();
                 return routes.Application.mainHome();
-            }
+			}
 
-            @Override
-            public Call afterLogout(final Session session) {
-                return routes.Application.mainHome();
-            }
+			@Override
+			public Call afterLogout() {
+				return routes.Application.index();
+			}
 
-            @Override
-            public Call auth(final String provider) {
-                // You can provide your own authentication implementation,
-                // however the default should be sufficient for most cases
-                return com.feth.play.module.pa.controllers.routes.Authenticate
-                        .authenticate(provider);
-            }
-
-            @Override
-            public Call onException(final AuthException e) {
-                if (e instanceof AccessDeniedException) {
-                    return routes.Signup
-                            .oAuthDenied(((AccessDeniedException) e)
-                                    .getProviderKey());
-                }
-
-                // more custom problem handling here...
-                return super.onException(e);
-            }
+			@Override
+			public Call auth(final String provider) {
+				// You can provide your own authentication implementation,
+				// however the default should be sufficient for most cases
+				return com.feth.play.module.pa.controllers.routes.Authenticate
+						.authenticate(provider);
+			}
 
 			@Override
 			public Call askMerge() {
-				// TODO Auto-generated method stub
-				return null;
+				return routes.Account.askMerge();
 			}
 
 			@Override
 			public Call askLink() {
-				// TODO Auto-generated method stub
-				return null;
+				return routes.Account.askLink();
 			}
-        });
+
+			@Override
+			public Call onException(final AuthException e) {
+				if (e instanceof AccessDeniedException) {
+					return routes.Signup
+							.oAuthDenied(((AccessDeniedException) e)
+									.getProviderKey());
+				}
+
+				// more custom problem handling here...
+				return super.onException(e);
+			}
+		});
 
 
         final boolean doDataBootstrap = Play.application().configuration().getBoolean(STARTUP_BOOTSTRAP_PROP, false);
@@ -117,9 +119,12 @@ public class Global extends GlobalSettings {
             JPA.withTransaction(new play.libs.F.Callback0() {
                 @Override
                 public void invoke() throws Throwable {
-                    init();
+                    //init();
                 }
             });
+
+            // bootstrap community feed Redis lists
+            //FeedProcessor.bootstrapCommunityLevelFeed();
         } else {
             logger.underlyingLogger().info("[Global.init()] Disabled");
         }
@@ -148,7 +153,7 @@ public class Global extends GlobalSettings {
         );
         */
     	
-        // schedule to purge sold posts daily at 5:00am HKT
+/*        // schedule to purge sold posts daily at 5:00am HKT
         JobScheduler.getInstance().schedule("cleanupSoldPosts", "0 00 5 ? * *",
             new Runnable() {
                 public void run() {
@@ -181,6 +186,7 @@ public class Global extends GlobalSettings {
                 }
             }
         );
+		
 
         // schedule to check command every 2 min.
         JobScheduler.getInstance().schedule("commandCheck", 120000,
@@ -198,6 +204,30 @@ public class Global extends GlobalSettings {
                 }
             }
         );
+*/    
+    	/*Akka.system().scheduler().scheduleOnce(
+                new FiniteDuration(30, TimeUnit.SECONDS),
+                new Runnable() {
+                    @Override
+                    public void run() {
+                    	System.out.println(" :: SCHEDULAR :: ");
+                    	routes.Application.test();
+                    }
+                },Akka.system().dispatcher());*/
+    	Akka.system().scheduler().scheduleOnce(
+    			new FiniteDuration(10, TimeUnit.SECONDS),
+    			new Runnable(){
+                    @Override
+                    public void run() {
+                    	try {
+                    		Unirest.get("http://localhost:9000/test").asString();
+                    	} catch (UnirestException e){
+                    		e.printStackTrace();
+                    	}
+                    }
+                },
+    			Akka.system().dispatcher());
+    
     }
 
 	private void init() {
@@ -215,23 +245,9 @@ public class Global extends GlobalSettings {
         DataBootstrap.bootstrap();
         
         // cache warm up
-        CalcServer.warmUpActivity();
+        //CalcServer.warmUpActivity();
         
         ThreadLocalOverride.setIsServerStartingUp(false);
 	}
 
-	@Override
-	public Result onBadRequest(RequestHeader request, String error) {
-	    return Results.badRequest(error);
-	}
-	
-	@Override
-    public Result onError(RequestHeader request, Throwable throwable) {
-        return Results.internalServerError(throwable.getMessage());
-    }
-	
-	@Override
-    public Result onHandlerNotFound(RequestHeader request) {
-        return Results.notFound(views.html.notFound404.render(request.path()));
-    }
 }

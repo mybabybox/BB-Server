@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import javax.inject.Inject;
 
 import models.Category;
 import models.Location;
@@ -27,6 +28,8 @@ import play.Routes;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.validation.ValidationError;
+import play.db.jpa.JPA;
+import play.db.jpa.JPAApi;
 import play.db.jpa.Transactional;
 import play.i18n.Messages;
 import play.libs.Json;
@@ -39,6 +42,7 @@ import providers.MyLoginUsernamePasswordAuthUser;
 import providers.MyUsernamePasswordAuthProvider;
 import providers.MyUsernamePasswordAuthProvider.MyLogin;
 import providers.MyUsernamePasswordAuthProvider.MySignup;
+import redis.clients.jedis.JedisPool;
 import viewmodel.ApplicationInfoVM;
 import viewmodel.CategoryVM;
 import viewmodel.UserVM;
@@ -53,18 +57,27 @@ import com.feth.play.module.pa.providers.password.UsernamePasswordAuthProvider;
 import com.feth.play.module.pa.providers.password.UsernamePasswordAuthUser;
 import com.feth.play.module.pa.user.AuthUser;
 
+import common.cache.CalcServer;
+import common.cache.JedisCache;
 import common.cache.LocationCache;
 import common.model.TargetGender;
 import common.utils.DateTimeUtil;
 import common.utils.UserAgentUtil;
 
 public class Application extends Controller {
+	
+	@Inject
+	public JedisPool jedisPool;
+	
+	@Inject
+	public JedisCache jedisCache;
+	
     private static final play.api.Logger logger = play.api.Logger.apply(Application.class);
 
     public static final String APPLICATION_ENV = 
             Play.application().configuration().getString("application.env", "dev");
     
-    public static final boolean LOGIN_BYPASS_ALL = 
+    public static final boolean LOGIN_BYPASS_ALL =
             Play.application().configuration().getBoolean("login.bypass.all", false);
     
     public static final String APPLICATION_BASE_URL = 
@@ -80,6 +93,7 @@ public class Application extends Controller {
     public static final String SESSION_PROMOCODE = "PROMO_CODE";
     public static final String FLASH_MESSAGE_KEY = "message";
 	public static final String FLASH_ERROR_KEY = "error";
+	public static final String USER_ROLE = "user";
 
 	public static enum DeviceType {
 		NA,
@@ -116,9 +130,6 @@ public class Application extends Controller {
         return mainHome();
     }	
 	
-	//
-	// Entry points
-	//
     
     @Transactional
     public static Result mainHome() {
@@ -130,9 +141,9 @@ public class Application extends Controller {
 		    return ok(views.html.signup_info.render(user));
 		}
 	    
-		if (user.isNewUser()) {
+		/*if (user.isNewUser()) {
 	        initNewUser();
-	    }
+	    }*/
 		
 	    return home();
     }
@@ -156,12 +167,15 @@ public class Application extends Controller {
 	    return ok();	    
     }
     
+	@Transactional
 	public static boolean isOverDailySignupThreshold() {
-        return User.getTodaySignupCount() >= SIGNUP_DAILY_THRESHOLD;
+					return User.getTodaySignupCount() >= SIGNUP_DAILY_THRESHOLD;
     }
     
     public static boolean isOverDailySignupLimit() {
-        return User.getTodaySignupCount() >= SIGNUP_DAILY_LIMIT;
+		System.out.println("isOverDailySignupLimit :: "+JPA.em().isOpen());
+					return User.getTodaySignupCount() >= SIGNUP_DAILY_LIMIT;
+        
     }
 
     @Transactional
@@ -190,11 +204,6 @@ public class Application extends Controller {
 		return home(localUser);
 	}
 
-	/**
-	 * 1. if user login first time
-	 *     i. bootstrap communities
-	 *     ii. welcome page
-	 */
 	public static Result home(User user) {
 	    return ok(views.html.babybox.web.home.render( Json.stringify(Json.toJson(new UserVM(user)))));
 	}
@@ -317,6 +326,8 @@ public class Application extends Controller {
 				return localUser;
 			} catch(Exception e) { 
 				logger.underlyingLogger().error("Failed to getLocalUser from mobile - " + userKey + " => " + decryptedValue, e);
+				System.out.println("Failed to getLocalUser from mobile - " + userKey + " => " + decryptedValue);
+				e.printStackTrace();
 				return null;
 			}
 		}
@@ -420,7 +431,8 @@ public class Application extends Controller {
 	@Transactional
 	public static Result doLogin() {
 		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
-		final Form<MyLogin> filledForm = MyUsernamePasswordAuthProvider.LOGIN_FORM.bindFromRequest();
+		final Form<MyLogin> filledForm = MyUsernamePasswordAuthProvider.LOGIN_FORM
+				.bindFromRequest();
 		if (filledForm.hasErrors()) {
 			// User did not fill everything properly
 			flash(FLASH_ERROR_KEY, "登入電郵或密碼錯誤");
@@ -511,9 +523,8 @@ public class Application extends Controller {
     public static Result initNewUser() {
     	final User user = getLocalUser(session());
     	
-    	//String promoCode = session().get(SESSION_PROMOCODE);
-    	
-    	//GameAccountReferral.processAnyReferral(promoCode, user);
+    	String promoCode = session().get(SESSION_PROMOCODE);
+    	// GameAccountReferral.processAnyReferral(promoCode, user);
 
         //GameAccount.setPointsForSignUp(user);
 
@@ -523,7 +534,7 @@ public class Application extends Controller {
         
         user.setNewUser(false);
         
-        return ok();
+        return UserController.getUserInfo();
     }
     
 	@Transactional
@@ -622,6 +633,7 @@ public class Application extends Controller {
             }
 
             logger.underlyingLogger().info("STS [email="+email+"] Native signup submitted");
+            System.out.println("App :: 636"+JPA.em().isOpen());
 			return UsernamePasswordAuthProvider.handleSignup(ctx());
 		}
 	}
@@ -718,6 +730,12 @@ public class Application extends Controller {
 		Category category = Category.findById(id);
 		CategoryVM categoryVM = new CategoryVM(category);
 		return ok(Json.toJson(categoryVM));
+	}
+	
+	@Transactional
+	public Result test(){
+		CalcServer.warmUpActivity(jedisCache);
+		return ok();
 	}
 	
 }

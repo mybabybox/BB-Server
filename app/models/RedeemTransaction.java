@@ -14,11 +14,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
-import domain.Creatable;
-import domain.Updatable;
 import play.data.validation.Constraints.Required;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
+import domain.Creatable;
+import domain.Updatable;
 
 @Entity
 public class RedeemTransaction extends domain.Entity implements Serializable, Creatable, Updatable {
@@ -76,6 +76,7 @@ public class RedeemTransaction extends domain.Entity implements Serializable, Cr
         }
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Transactional
     public static List<RedeemTransaction> getPendingRedeemTransactions(User user, Long objId, RedeemType redeemType) {
         Query q = JPA.em().createQuery("Select t from RedeemTransaction t where user = ?1 and objId = ?2 and redeemType = ?3 and transactionState <> ?4 and deleted = false");
@@ -90,6 +91,7 @@ public class RedeemTransaction extends domain.Entity implements Serializable, Cr
         }
     }
 	
+	@SuppressWarnings("unchecked")
 	@Transactional
     public static List<RedeemTransaction> getRedeemTransactions(Long objId, RedeemType redeemType) {
 		Query q = JPA.em().createQuery("Select t from RedeemTransaction t where objId = ?1 and redeemType = ?2 and deleted = false order by transactionState desc, CREATED_DATE");

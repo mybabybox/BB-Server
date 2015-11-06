@@ -1,6 +1,7 @@
 package models;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,7 +26,7 @@ public class LinkedAccount extends domain.Entity{
 	@Id @GeneratedValue(strategy=GenerationType.AUTO)
 	public Long id;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	public User user;
 
 	public String providerUserId;

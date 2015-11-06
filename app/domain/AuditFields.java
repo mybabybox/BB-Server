@@ -10,7 +10,6 @@ import javax.persistence.TemporalType;
 public class AuditFields {
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date createdDate;
-	
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedDate;
 

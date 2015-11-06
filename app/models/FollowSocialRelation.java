@@ -50,6 +50,7 @@ public class FollowSocialRelation extends SocialRelation {
 		return q.executeUpdate() > 0;
     }
 	
+	@SuppressWarnings("unchecked")
 	public static List<FollowSocialRelation> getUserFollowings(Long id) {
 		Query q = JPA.em().createQuery(
 				"Select sr from FollowSocialRelation sr where actor = ?1 and actorType = ?2 and targetType = ?3");
@@ -62,6 +63,7 @@ public class FollowSocialRelation extends SocialRelation {
     	return new ArrayList<>();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static List<FollowSocialRelation> getUserFollowings(Long id, Long offset) {
 		Query q = JPA.em().createQuery(
 				"Select sr from FollowSocialRelation sr where actor = ?1 and actorType = ?2 and targetType = ?3");
@@ -77,6 +79,7 @@ public class FollowSocialRelation extends SocialRelation {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static List<FollowSocialRelation> getUserFollowers(Long id) {
 		Query q = JPA.em().createQuery(
 				"Select sr from FollowSocialRelation sr where target = ?1 and actorType = ?2 and targetType = ?3");
@@ -89,6 +92,7 @@ public class FollowSocialRelation extends SocialRelation {
     	return new ArrayList<>();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static List<FollowSocialRelation> getUserFollowers(Long id, Long offset) {
 		Query q = JPA.em().createQuery(
 				"Select sr from FollowSocialRelation sr where target = ?1 and actorType = ?2 and targetType = ?3");

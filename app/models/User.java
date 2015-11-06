@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NoResultException;
@@ -33,10 +34,10 @@ import javax.persistence.criteria.Root;
 import models.Post.ConditionType;
 import models.TokenAction.Type;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import play.Play;
 import play.data.format.Formats;
@@ -62,6 +63,7 @@ import common.image.FaceFinder;
 import common.utils.DateTimeUtil;
 import common.utils.ImageFileUtil;
 import common.utils.NanoSecondStopWatch;
+import domain.DefaultValues;
 import controllers.Application.DeviceType;
 import domain.Followable;
 import domain.SocialObjectType;
@@ -71,16 +73,16 @@ public class User extends SocialObject implements Subject, Followable {
 	private static final play.api.Logger logger = play.api.Logger.apply(User.class);
 
 	private static final String STORAGE_USER_NOIMAGE = 
-            Play.application().configuration().getString("storage.user.noimage");
-	
+			Play.application().configuration().getString("storage.user.noimage");
+
 	private static final String STORAGE_USER_THUMBNAIL_NOIMAGE = 
-            Play.application().configuration().getString("storage.user.thumbnail.noimage");
-    
+			Play.application().configuration().getString("storage.user.thumbnail.noimage");
+
 	private static final String STORAGE_USER_COVER_NOIMAGE = 
-            Play.application().configuration().getString("storage.user.cover.noimage");
-    
+			Play.application().configuration().getString("storage.user.cover.noimage");
+
 	public static final Long NO_LOGIN_ID = -1L;
-	
+
 	private static User BB_ADMIN;
 
 	public static final String BB_ADMIN_NAME = "BabyBox 管理員";
@@ -108,16 +110,20 @@ public class User extends SocialObject implements Subject, Followable {
 	@JsonIgnore
 	public FbUserInfo fbUserInfo;
 
+	@OneToMany
+	@JsonIgnore
+	public List<FbUserFriend> fbUserFriends;
+
 	// stats
 
 	public Long numLikes = 0L;
-	
+
 	public Long numFollowings = 0L;
 
 	public Long numFollowers = 0L;
 
 	public Long numProducts = 0L;
-	
+
 	public Long numStories = 0L;
 
 	public Long numCollections = 0L;
@@ -140,11 +146,11 @@ public class User extends SocialObject implements Subject, Followable {
 	@JsonIgnore
 	public Long totalLogin = 0L;
 
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JsonIgnore
 	public List<SecurityRole> roles;
 
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JsonIgnore
 	public List<LinkedAccount> linkedAccounts;
 
@@ -195,7 +201,7 @@ public class User extends SocialObject implements Subject, Followable {
 		this.displayName = displayName;
 		this.name = firstName;
 	}
-	
+
 	public void likesOn(SocialObject target)
 			throws SocialObjectNotLikableException {
 		target.onLikedBy(this);
@@ -325,22 +331,22 @@ public class User extends SocialObject implements Subject, Followable {
 			this.merge();
 		}
 	}
-	
+
 	@Transactional
-    public Category createCategory(String name, String description, String icon, int seq) {
-		
-        if (Strings.isNullOrEmpty(name) || 
-        		Strings.isNullOrEmpty(description) || 
-                Strings.isNullOrEmpty(icon)) {
-            logger.underlyingLogger().warn("Missing parameters to createCategory");
-            return null;
-        }
-        
-        Category category = new Category(name, description, this, icon, seq);
-        category.save();
-        return category;
-    }
-	
+	public Category createCategory(String name, String description, String icon, int seq) {
+
+		if (Strings.isNullOrEmpty(name) || 
+				Strings.isNullOrEmpty(description) || 
+				Strings.isNullOrEmpty(icon)) {
+			logger.underlyingLogger().warn("Missing parameters to createCategory");
+			return null;
+		}
+
+		Category category = new Category(name, description, this, icon, seq);
+		category.save();
+		return category;
+	}
+
 	@Transactional
 	public Post createProduct(String title, String body, Category category, Double price, ConditionType conditionType, DeviceType deviceType) {
 		if (Strings.isNullOrEmpty(title) || 
@@ -348,44 +354,44 @@ public class User extends SocialObject implements Subject, Followable {
 			logger.underlyingLogger().warn("Missing parameters to createProduct");
 			return null;
 		}
-		
+
 		Post post = new Post(this, title, body, category, price, conditionType, deviceType);
 		post.save();
-		
+
 		recordPostProduct(this, post);
 		this.numProducts++;
-		
+
 		return post;
 	}
-	
+
 	@Transactional
-    public Post editProduct(Post post, String title, String body, Category category, 
-            Double price, Post.ConditionType conditionType) {
-	    
-	    if (Strings.isNullOrEmpty(title) ||
-	            post == null || Strings.isNullOrEmpty(body) || category == null || price == -1D) {
-            logger.underlyingLogger().warn("Missing parameters to editProduct");
-            return null;
-        }
-        
-        post.title = title;
-        post.body = body;
-        post.category = category;
-        post.price = price;
-        post.conditionType = conditionType;
-        post.merge();
-        
-        return post;
-    }
-	
+	public Post editProduct(Post post, String title, String body, Category category, 
+			Double price, Post.ConditionType conditionType) {
+
+		if (Strings.isNullOrEmpty(title) ||
+				post == null || Strings.isNullOrEmpty(body) || category == null || price == -1D) {
+			logger.underlyingLogger().warn("Missing parameters to editProduct");
+			return null;
+		}
+
+		post.title = title;
+		post.body = body;
+		post.category = category;
+		post.price = price;
+		post.conditionType = conditionType;
+		post.merge();
+
+		return post;
+	}
+
 	@Transactional
 	public void deleteProduct(Post post) {
-        post.deleted = true;
-        post.deletedBy = this;
-        post.save();
-        this.numProducts--;
+		post.deleted = true;
+		post.deletedBy = this;
+		post.save();
+		this.numProducts--;
 	}
-	
+
 	/**
 	 * create a folder with the type: IMG (contain only image Resource types)
 	 * 
@@ -426,7 +432,7 @@ public class User extends SocialObject implements Subject, Followable {
 		folders = new ArrayList<>();
 		return true;
 	}
-	
+
 	public static boolean existsByAuthUserIdentity(
 			final AuthUserIdentity identity) {
 		final Query exp;
@@ -447,6 +453,7 @@ public class User extends SocialObject implements Subject, Followable {
 		return q;
 	}
 
+	@Transactional
 	public static User findByAuthUserIdentity(final AuthUserIdentity identity) {
 		if (identity == null) {
 			return null;
@@ -460,7 +467,7 @@ public class User extends SocialObject implements Subject, Followable {
 			}
 			return findByUsernamePasswordIdentity((UsernamePasswordAuthUser) identity);
 		} else {
-			try {
+			try{
 				return (User) getAuthUserFind(identity).getSingleResult();
 			} catch(NoResultException e) {
 				return null;
@@ -475,8 +482,12 @@ public class User extends SocialObject implements Subject, Followable {
 	public static User findByUsernamePasswordIdentity(
 			final UsernamePasswordAuthUser identity) {
 		try {
-			return (User) getUsernamePasswordAuthUserFind(identity)
-					.getSingleResult();
+			Query q = JPA.em().createQuery(
+					"SELECT u FROM User u, IN (u.linkedAccounts) l where active = ?1 and email = ?2 and  l.providerKey = ?3 and u.deleted = false");
+			q.setParameter(1, true);
+			q.setParameter(2, identity.getEmail());
+			q.setParameter(3, identity.getProvider());
+			return (User) q.getSingleResult();
 		} catch (NoResultException e) {
 			return null;
 		} catch (Exception e) {
@@ -485,11 +496,9 @@ public class User extends SocialObject implements Subject, Followable {
 		}
 	}
 
-	@Transactional
 	@JsonIgnore
 	private static Query getUsernamePasswordAuthUserFind(
 			final UsernamePasswordAuthUser identity) {
-
 		Query q = JPA.em().createQuery(
 				"SELECT u FROM User u, IN (u.linkedAccounts) l where active = ?1 and email = ?2 and  l.providerKey = ?3 and u.deleted = false");
 		q.setParameter(1, true);
@@ -520,13 +529,14 @@ public class User extends SocialObject implements Subject, Followable {
 		user.lastLogin = new Date();
 		user.totalLogin = 1L;
 		user.fbLogin = false;
-		user.emailValidated = true;
-		
+
 		if (authUser instanceof EmailIdentity) {
 			final EmailIdentity identity = (EmailIdentity) authUser;
 			user.email = identity.getEmail();
-			//user.emailValidated = false;
+			user.emailValidated = false;
 		}
+
+		user.emailValidated = true;
 
 		/* 
 		 * User name inherited from SocialObject and it's being used 
@@ -557,30 +567,39 @@ public class User extends SocialObject implements Subject, Followable {
 
 		if (authUser instanceof FacebookAuthUser) {
 			final FacebookAuthUser fbAuthUser = (FacebookAuthUser) authUser;
-			FbUserInfo fbUserInfo = new FbUserInfo(fbAuthUser);
+			final FbUserInfo fbUserInfo = new FbUserInfo(fbAuthUser);
+
 			fbUserInfo.save();
+
+			// TODO - keith
+			// save FbUserFriend here
 
 			user.fbLogin = true;
 			user.fbUserInfo = fbUserInfo;
-			//user.emailValidated = fbAuthUser.isVerified();
-			user.save();
-			
-			// save fb friends
-			saveFbFriends(authUser, user);
+			user.emailValidated = fbAuthUser.isVerified();
 		}
+		try {
 
-		user.save();
+			user.save();
+		}catch(Throwable e){
+			e.printStackTrace();
+		}
 		user.linkedAccounts = Collections.singletonList(
 				LinkedAccount.create(authUser).addUser(user));
+
 		//user.saveManyToManyAssociations("roles");
 		//user.saveManyToManyAssociations("permissions");
 
+		if (authUser instanceof FacebookAuthUser) {
+			saveFbFriends(authUser, user);
+		}
+		System.out.println("user :: "+user);
 		return user;
 	}
 
 	private static void saveFbFriends(final AuthUser authUser, final User user) {
 		final FacebookAuthUser fbAuthUser = (FacebookAuthUser) authUser;
-		JsonNode frds = fbAuthUser.getFBFriends();
+		/*JsonNode frds = fbAuthUser.getFBFriends();
 
 		if (frds.has("data")) {
 			List<FbUserFriend> fbUserFriends = null;
@@ -595,7 +614,7 @@ public class User extends SocialObject implements Subject, Followable {
 			}
 			logger.underlyingLogger().info("[u="+user.id+"] saveFbFriends="+fbUserFriends.size());
 		}
-	}
+		 */	}
 
 	public static void merge(final AuthUser oldUser, final AuthUser newUser) {
 		User.findByAuthUserIdentity(oldUser).merge(
@@ -752,8 +771,8 @@ public class User extends SocialObject implements Subject, Followable {
 
 	@Transactional
 	public static Long getTodaySignupCount() {
+		System.out.println("getTodaySignupCount :: "+JPA.em().isOpen());
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
-
 		Query q = JPA.em().createQuery(
 				"SELECT count(u) FROM User u where " +  
 						"system = false and deleted = false and " + 
@@ -761,12 +780,12 @@ public class User extends SocialObject implements Subject, Followable {
 		q.setParameter(1, DateTimeUtil.getToday().toDate());
 		q.setParameter(2, DateTimeUtil.getTomorrow().toDate());
 		Long count = (Long)q.getSingleResult();
-
 		sw.stop();
 		logger.underlyingLogger().info("getTodaySignupCount="+count+". Took "+sw.getElapsedMS()+"ms");
 		return count;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Transactional
 	public static Pair<Integer,String> getAndroidTargetEdmUsers() {
 		StringBuilder sb = new StringBuilder();
@@ -897,12 +916,12 @@ public class User extends SocialObject implements Subject, Followable {
 	}
 
 	public List<UserChild> getChildren() {
-        return children;
-    }
+		return children;
+	}
 
-    public void setChildren(List<UserChild> children) {
-        this.children = children;
-    }
+	public void setChildren(List<UserChild> children) {
+		this.children = children;
+	}
 
 	public boolean isActive() {
 		return active;
@@ -1011,9 +1030,9 @@ public class User extends SocialObject implements Subject, Followable {
 	}
 
 	public Collection createCollection(String name) {
-	    return createCollection(name, "");
+		return createCollection(name, "");
 	}
-	   
+
 	public Collection createCollection(String name, String description) {
 		Collection collection = new Collection(this, name, description);
 		collection.save();
@@ -1021,12 +1040,13 @@ public class User extends SocialObject implements Subject, Followable {
 		return collection;
 	}
 
+
 	@Override
 	public boolean onFollow(User user) {
 		if (logger.underlyingLogger().isDebugEnabled()) {
 			logger.underlyingLogger().debug("[localUser="+this.id+"][u="+user.id+"] User onFollow");
 		}
-		
+
 		if (!isFollowing(user)) {
 			boolean followed = recordFollow(user);
 			if (followed) {
@@ -1045,7 +1065,7 @@ public class User extends SocialObject implements Subject, Followable {
 		if (logger.underlyingLogger().isDebugEnabled()) {
 			logger.underlyingLogger().debug("[localUser="+this.id+"][u="+user.id+"] User onUnFollow");
 		}
-		
+
 		if (isFollowing(user)) {
 			boolean unfollowed = 
 					FollowSocialRelation.unfollow(
@@ -1065,13 +1085,14 @@ public class User extends SocialObject implements Subject, Followable {
 	public boolean isFollowing(User user) {
 		return FollowSocialRelation.isFollowing(this.id, SocialObjectType.USER, user.id, SocialObjectType.USER);
 	}
-	
+
 	@JsonIgnore
 	public boolean isFollowedBy(User user) {
-		CalcServer.isFollowed(user.id, this.id);
+		//CalcServer.isFollowed(user.id, this.id);
 		return FollowSocialRelation.isFollowing(user.id, SocialObjectType.USER, this.id, SocialObjectType.USER);
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Collection> getUserCollection() {
 		try {
 			Query q = JPA.em().createQuery("SELECT c FROM Collection c where deleted = false and owner = ?");
@@ -1082,6 +1103,7 @@ public class User extends SocialObject implements Subject, Followable {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public Map<String, Long> getUserCategoriesForFeed() {
 		Query q = JPA.em().createNativeQuery("Select c.id, (count(p.id)/(Select count(*) from ViewSocialRelation vr where vr.actor = ?1))*100 "
 				+ "from ViewSocialRelation vsr, post p, category c "
@@ -1096,6 +1118,7 @@ public class User extends SocialObject implements Subject, Followable {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static List<User> getEligibleUserForFeed() {
 		//TODO filter-out eligible user
 		try {
@@ -1106,6 +1129,7 @@ public class User extends SocialObject implements Subject, Followable {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Post> getUserLikedPosts() {
 		try {
 			Query query = JPA.em().createQuery(
@@ -1121,6 +1145,7 @@ public class User extends SocialObject implements Subject, Followable {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Post> getUserPosts() {
 		try {
 			Query q = JPA.em().createQuery("SELECT p FROM Post p where owner = ?1 and deleted = false");

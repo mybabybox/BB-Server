@@ -1,19 +1,23 @@
 package common.cache;
 
-import play.Play;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-
-import com.typesafe.plugin.RedisPlugin;
-
-import common.serialize.JsonSerializer;
-import domain.DefaultValues;
-
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
 
-public class JedisCache {
+import models.Category;
+
+import com.google.inject.Singleton;
+
+import play.Play;
+import play.mvc.Controller;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import common.serialize.JsonSerializer;
+
+@Singleton
+public class JedisCache{
     private static final play.api.Logger logger = play.api.Logger.apply(JedisCache.class);
     
     private static final String SYS_PREFIX = Play.application().configuration().getString("keyprefix", "prod_");
@@ -31,7 +35,8 @@ public class JedisCache {
     public final static String TODAY_WEATHER_KEY = "TODAY_WEATHER";
     public static final String ARTICLE_SLIDER_PREFIX = SYS_PREFIX + "user_sc_";
     
-    private static JedisPool jedisPool;
+    @Inject
+    JedisPool jedisPool;
     
     private static JedisCache cache = new JedisCache();
     
@@ -40,25 +45,18 @@ public class JedisCache {
         ERROR
     }
     
-    public static JedisCache cache() {
-        return cache;
-    }
-    
-    private JedisCache() {
-    }
-    
     public void putObj(String key, Object object) {
         putObj(key, object, -1);
     }
     
     public void putObj(String key, Object object, int expire) {
         String json = JsonSerializer.serialize(object);
-        cache.put(key, json, expire);
+        put(key, json, expire);
     }
     
     public Object getObj(String key, Class<?> clazz) {
         Object object = null;
-        String json = cache.get(key);
+        String json = get(key);
         if (json == null) {
             return null;
         } else {
@@ -81,7 +79,7 @@ public class JedisCache {
                 return Status.ERROR;
             }
             if (expire != -1) {
-                cache.expire(key, expire);
+                expire(key, expire);
             }
             return Status.OK;
         } finally {
@@ -265,10 +263,10 @@ public class JedisCache {
         }
     }
     
-    private Jedis getResource() {
-    	if (jedisPool == null) {
+    public Jedis getResource() {
+    	/*if (jedisPool == null) {
     		jedisPool = play.Play.application().plugin(RedisPlugin.class).jedisPool();
-    	}
+    	}*/
         return jedisPool.getResource();
     }
     
@@ -277,4 +275,8 @@ public class JedisCache {
     		jedisPool.returnResource(j);
     	}
     }
+
+	public static JedisCache cache() {
+		return null;
+	}
 }

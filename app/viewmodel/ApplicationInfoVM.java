@@ -1,6 +1,6 @@
 package viewmodel;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ApplicationInfoVM {
     @JsonProperty("baseUrl") private String baseUrl;

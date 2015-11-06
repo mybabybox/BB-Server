@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,11 +21,13 @@ import javax.persistence.Query;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-
 import play.db.jpa.JPA;
 import babybox.shopping.social.exception.SocialObjectNotCommentableException;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import common.cache.CalcServer;
+import common.cache.JedisCache;
 import common.utils.StringUtil;
 import controllers.Application.DeviceType;
 import domain.Commentable;
@@ -44,7 +47,7 @@ import domain.SocialObjectType;
 @Entity
 public class Post extends SocialObject implements Likeable, Commentable {
 	private static final play.api.Logger logger = play.api.Logger.apply(Post.class);
-	
+
 	public String title;
 
 	@Column(length=2000)
@@ -61,10 +64,10 @@ public class Post extends SocialObject implements Likeable, Commentable {
 
 	@Enumerated(EnumType.STRING)
 	public PostType postType;
-	
+
 	@Enumerated(EnumType.STRING)
-    public ConditionType conditionType;
-	
+	public ConditionType conditionType;
+
 	@OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
 	@OrderBy("CREATED_DATE")
 	@JsonIgnore
@@ -73,12 +76,12 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	public Double price = 0.0;
 
 	public boolean sold = false;
-	
+
 	public boolean soldMarked = false;
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
-    public Date soldDate;
-    
+	public Date soldDate;
+
 	public int numComments = 0;
 	public int numLikes = 0;
 	public int numBuys = 0;
@@ -89,18 +92,18 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	public Double timeScore = 0D;
 
 	public DeviceType deviceType;
-	
+
 	public static enum PostType {
-	    PRODUCT,
-	    STORY
+		PRODUCT,
+		STORY
 	}
-	
+
 	public static enum ConditionType {
-	    NEW_WITH_TAG,
-	    NEW_WITHOUT_TAG,
-	    USED
+		NEW_WITH_TAG,
+		NEW_WITHOUT_TAG,
+		USED
 	}
-	
+
 	/**
 	 * Ctor
 	 */
@@ -128,15 +131,15 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		this.objectType = SocialObjectType.POST;
 		this.deviceType = deviceType;
 	}
-	
+
 	public static ConditionType parseConditionType(String conditionType) {
-        try {
-            return Enum.valueOf(ConditionType.class, conditionType);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-	
+		try {
+			return Enum.valueOf(ConditionType.class, conditionType);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 	@Override
 	public boolean onLikedBy(User user) {
 		if (!isLikedBy(user)) {
@@ -168,10 +171,11 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public boolean isLikedBy(User user){
-		return CalcServer.isLiked(user.id, this.id);
+		//return CalcServer.isLiked(user.id, this.id);
+		return false;
 	}
 
 	@Override
@@ -184,18 +188,18 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		int end = comments.size();
 		return comments.subList(start, end);
 	}
-	
+
 	public List<Comment> getPostComments(Long offset) {
 		double maxOffset = Math.floor((double) comments.size() / (double) DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT);
 		if (offset > maxOffset) {
 			return new ArrayList<>();
 		}
-		
+
 		int start = Long.valueOf(offset).intValue() * DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT;
 		int end = Math.min(start+DefaultValues.DEFAULT_INFINITE_SCROLL_COUNT, comments.size());
 		return comments.subList(start, end);
 	}
-	
+
 	public List<Comment> getComments() {
 		return comments;
 	}
@@ -219,17 +223,17 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	}
 
 	public Long getImage() {
-	    Long[] images = getImages();
-        if (images != null && images.length > 0) {
-            return images[0];
-        }
-        return null;
+		Long[] images = getImages();
+		if (images != null && images.length > 0) {
+			return images[0];
+		}
+		return null;
 	}
-	
+
 	public Long[] getImages() {
-	    return Folder.getResources(folder);
+		return Folder.getResources(folder);
 	}
-	
+
 	///////////////////// Query APIs /////////////////////
 	public static Post findById(Long id) {
 		try {
@@ -241,15 +245,14 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public static List<Post> getEligiblePostsForFeeds() {
-		try {
-			Query q = JPA.em().createQuery("SELECT p FROM Post p where deleted = false");
-			return (List<Post>) q.getResultList();
-		} catch (NoResultException nre) {
-			return null;
-		}
+		Query q = JPA.em().createQuery("SELECT p FROM Post p where deleted = false");
+		return (List<Post>) q.getResultList();
+		
 	}
 
+	@SuppressWarnings("unchecked")
 	public static List<Post> getUserPosts(Long id) {
 		try {
 			Query q = JPA.em().createQuery("SELECT p FROM Post p where owner = ?1 and deleted = false");
@@ -263,7 +266,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 	@Override
 	public SocialObject onComment(User user, String body) 
 			throws SocialObjectNotCommentableException {
-		
+
 		Comment comment = new Comment(this, user, body);
 		comment.objectType = SocialObjectType.COMMENT;
 		comment.save();
@@ -275,38 +278,38 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		this.comments.add(comment);
 		this.numComments++;
 		JPA.em().merge(this);
-		
-        // record for notifications
-        if (this.postType == PostType.PRODUCT) {
-            recordCommentProduct(user, comment);
-        } else if (this.postType == PostType.STORY) {
-            recordCommentStory(user, comment);
-        }
-        return comment;
+
+		// record for notifications
+		if (this.postType == PostType.PRODUCT) {
+			recordCommentProduct(user, comment);
+		} else if (this.postType == PostType.STORY) {
+			recordCommentStory(user, comment);
+		}
+		return comment;
 	}
 
 	@Override
 	public void onDeleteComment(User user, Comment comment)
 			throws SocialObjectNotCommentableException {
-		
-        this.comments.remove(comment);
-        comment.deleted = true;
-        comment.deletedBy = user;
-        comment.save();
-        this.numComments--;
+
+		this.comments.remove(comment);
+		comment.deleted = true;
+		comment.deletedBy = user;
+		comment.save();
+		this.numComments--;
 	}
 
 	public boolean onSold(User user) {
-	    if (this.sold) {
-	        return false;
-	    }
-	    
+		if (this.sold) {
+			return false;
+		}
+
 		this.sold = true;
 		this.soldDate = new Date();
 		this.save();
 		return true;
 	}
-	
+
 	public boolean onView(User user) {
 		boolean viewed = recordView(user);
 		if (viewed) {
@@ -315,6 +318,7 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		return viewed;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static List<Post> getPostsByCategory(Category category) {
 		try {
 			Query q = JPA.em().createQuery("SELECT p FROM Post p where category = ?1 and deleted = false");
@@ -325,44 +329,43 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		}
 	}
 
-	public static List<Post> getPosts(List<Long> postIds) {
-		try {
-			 Query query = JPA.em().createQuery(
-			            "select p from Post p where "+
-			            "p.id in ("+StringUtil.collectionToString(postIds, ",")+") and "+
-			            "p.deleted = false ORDER BY FIELD(p.id,"+StringUtil.collectionToString(postIds, ",")+")");
-			 return (List<Post>) query.getResultList();
-		} catch (NoResultException nre) {
-			return null;
-		}
+	@SuppressWarnings("unchecked")
+	public static List<Post> getPosts(final List<Long> postIds) {
+		Query query = JPA.em().createQuery(
+				"select p from Post p where "+
+						"p.id in ("+StringUtil.collectionToString(postIds, ",")+") and "+
+						"p.deleted = false ORDER BY FIELD(p.id,"+StringUtil.collectionToString(postIds, ",")+")");
+		return (List<Post>) query.getResultList();
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	public static List<Post> getPosts(List<Long> postIds, int offset) {
 		try {
-			 Query query = JPA.em().createQuery(
-					 "select p from Post p where "+
-							 "p.id in ("+StringUtil.collectionToString(postIds, ",")+") and "+
-							 "p.deleted = false ORDER BY FIELD(p.id,"+StringUtil.collectionToString(postIds, ",")+")");
-			 query.setFirstResult(offset * CalcServer.FEED_RETRIEVAL_COUNT);
-			 query.setMaxResults(CalcServer.FEED_RETRIEVAL_COUNT);
-			 return (List<Post>) query.getResultList();
+			Query query = JPA.em().createQuery(
+					"select p from Post p where "+
+							"p.id in ("+StringUtil.collectionToString(postIds, ",")+") and "+
+							"p.deleted = false ORDER BY FIELD(p.id,"+StringUtil.collectionToString(postIds, ",")+")");
+			query.setFirstResult(offset * CalcServer.FEED_RETRIEVAL_COUNT);
+			query.setMaxResults(CalcServer.FEED_RETRIEVAL_COUNT);
+			return (List<Post>) query.getResultList();
 		} catch (NoResultException nre) {
 			return null;
 		}
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	public static List<Post> getUnmarkedSoldPostsAfter(Date date) {
-	    try {
-    	    Query query = JPA.em().createQuery("Select p from Post p where sold = ?1 and soldMarked = ?2 and soldDate < ?3");
-            query.setParameter(1, true);
-            query.setParameter(2, false);
-            query.setParameter(3, date);
-            return (List<Post>) query.getResultList();
-	    } catch (NoResultException nre) {
-            return null;
-        }
+		try {
+			Query query = JPA.em().createQuery("Select p from Post p where sold = ?1 and soldMarked = ?2 and soldDate < ?3");
+			query.setParameter(1, true);
+			query.setParameter(2, false);
+			query.setParameter(3, date);
+			return (List<Post>) query.getResultList();
+		} catch (NoResultException nre) {
+			return null;
+		}
 	}
-	
+
 	public List<Conversation> findConversations() {
 		return Conversation.findPostConversations(this, this.owner);
 	}

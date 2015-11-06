@@ -2,7 +2,7 @@ package com.feth.play.module.pa.providers.openid;
 
 import java.util.Map;
 
-import play.libs.OpenID.UserInfo;
+import play.libs.openid.UserInfo;
 
 import com.feth.play.module.pa.providers.openid.OpenIdAuthProvider.SettingKeys;
 import com.feth.play.module.pa.user.AuthUser;
@@ -10,16 +10,16 @@ import com.feth.play.module.pa.user.AuthUser;
 public class OpenIdAuthUser extends AuthUser {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	private final String id;
 	private final Map<String, String> attributes;
 
-	public OpenIdAuthUser(final String id, final UserInfo u) {
-		this.id = id;
-		attributes = u.attributes;
+	public OpenIdAuthUser(final UserInfo u) {
+		this.id = u.id();
+		attributes = u.attributes();
 	}
 
 	@Override

@@ -1,11 +1,15 @@
 package security;
 
+import java.util.Optional;
+
 import models.User;
+import play.libs.F;
+import play.libs.F.Promise;
 import play.mvc.Http;
 import play.mvc.Result;
-import be.objectify.deadbolt.core.models.Subject;
 import be.objectify.deadbolt.java.AbstractDeadboltHandler;
 import be.objectify.deadbolt.java.DynamicResourceHandler;
+import be.objectify.deadbolt.core.models.Subject;
 
 import com.feth.play.module.pa.PlayAuthenticate;
 import com.feth.play.module.pa.user.AuthUserIdentity;
@@ -13,10 +17,10 @@ import com.feth.play.module.pa.user.AuthUserIdentity;
 public class MyDeadboltHandler extends AbstractDeadboltHandler {
 
 	@Override
-	public Result beforeAuthCheck(final Http.Context context) {
+	public Promise<Optional<Result>> beforeAuthCheck(final Http.Context context) {
 		if (PlayAuthenticate.isLoggedIn(context.session())) {
 			// user is logged in
-			return null;
+			return F.Promise.pure(Optional.empty());
 		} else {
 			// user is not logged in
 
@@ -29,29 +33,43 @@ public class MyDeadboltHandler extends AbstractDeadboltHandler {
 
 			context.flash().put("error",
 					"You need to log in first, to view '" + originalUrl + "'");
-			return redirect(PlayAuthenticate.getResolver().login(context.session()));
+            return F.Promise.promise(new F.Function0<Optional<Result>>()
+            {
+                @Override
+                public Optional<Result> apply() throws Throwable
+                {
+                    return Optional.ofNullable(redirect(PlayAuthenticate.getResolver().login()));
+                }
+            });
 		}
 	}
 
 	@Override
-	public Subject getSubject(final Http.Context context) {
+	public Promise<Optional<Subject>> getSubject(final Http.Context context) {
 		final AuthUserIdentity u = PlayAuthenticate.getUser(context);
 		// Caching might be a good idea here
-		return User.findByAuthUserIdentity(u);
+		return F.Promise.pure(Optional.ofNullable((Subject)User.findByAuthUserIdentity(u)));
 	}
 
 	@Override
-	public DynamicResourceHandler getDynamicResourceHandler(
+	public Promise<Optional<DynamicResourceHandler>> getDynamicResourceHandler(
 			final Http.Context context) {
-		return null;
+		return Promise.pure(Optional.empty());
 	}
 
 	@Override
-	public Result onAuthFailure(final Http.Context context,
+	public F.Promise<Result> onAuthFailure(final Http.Context context,
 			final String content) {
 		// if the user has a cookie with a valid user and the local user has
 		// been deactivated/deleted in between, it is possible that this gets
 		// shown. You might want to consider to sign the user out in this case.
-		return forbidden("Forbidden");
+        return F.Promise.promise(new F.Function0<Result>()
+        {
+            @Override
+            public Result apply() throws Throwable
+            {
+                return forbidden("Forbidden");
+            }
+        });
 	}
 }

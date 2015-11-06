@@ -1,24 +1,24 @@
 package com.feth.play.module.pa.providers.oauth2.google;
 
-import org.codehaus.jackson.JsonNode;
-
 import play.Application;
 import play.Logger;
-import play.libs.WS;
-import play.libs.WS.Response;
+import play.libs.ws.WS;
+import play.libs.ws.WSResponse;
 
-import com.feth.play.module.pa.PlayAuthenticate;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.feth.play.module.pa.exceptions.AccessTokenException;
 import com.feth.play.module.pa.exceptions.AuthException;
 import com.feth.play.module.pa.providers.oauth2.OAuth2AuthProvider;
+import com.google.inject.Inject;
 
 public class GoogleAuthProvider extends
 		OAuth2AuthProvider<GoogleAuthUser, GoogleAuthInfo> {
 
-	static final String PROVIDER_KEY = "google";
-	
+	public static final String PROVIDER_KEY = "google";
+
 	private static final String USER_INFO_URL_SETTING_KEY = "userInfoUrl";
 
+	@Inject
 	public GoogleAuthProvider(Application app) {
 		super(app);
 	}
@@ -34,11 +34,11 @@ public class GoogleAuthProvider extends
 
 		final String url = getConfiguration().getString(
 				USER_INFO_URL_SETTING_KEY);
-		final Response r = WS
+		final WSResponse r = WS
 				.url(url)
 				.setQueryParameter(OAuth2AuthProvider.Constants.ACCESS_TOKEN,
 						info.getAccessToken()).get()
-				.get(PlayAuthenticate.TIMEOUT);
+				.get(getTimeout());
 
 		final JsonNode result = r.asJson();
 		if (result.get(OAuth2AuthProvider.Constants.ERROR) != null) {
@@ -51,7 +51,7 @@ public class GoogleAuthProvider extends
 	}
 
 	@Override
-	protected GoogleAuthInfo buildInfo(final Response r)
+	protected GoogleAuthInfo buildInfo(final WSResponse r)
 			throws AccessTokenException {
 		final JsonNode n = r.asJson();
 		Logger.debug(n.toString());

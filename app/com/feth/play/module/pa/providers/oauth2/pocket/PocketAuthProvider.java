@@ -7,29 +7,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.feth.play.module.pa.exceptions.ResolverMissingException;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import play.Application;
 import play.Configuration;
-import play.libs.WS;
-import play.libs.WS.Response;
+import play.libs.ws.WS;
+import play.libs.ws.WSResponse;
 import play.mvc.Http.Request;
 
-import com.feth.play.module.pa.PlayAuthenticate;
 import com.feth.play.module.pa.exceptions.AccessTokenException;
 import com.feth.play.module.pa.exceptions.AuthException;
 import com.feth.play.module.pa.providers.oauth2.OAuth2AuthProvider;
 import com.feth.play.module.pa.user.AuthUserIdentity;
+import com.google.inject.Inject;
 
 public class PocketAuthProvider extends
 		OAuth2AuthProvider<PocketAuthUser, PocketAuthInfo> {
 
-	static final String PROVIDER_KEY = "pocket";
+	public static final String PROVIDER_KEY = "pocket";
 
+	@Inject
 	public PocketAuthProvider(Application app) {
 		super(app);
 	}
@@ -44,7 +46,7 @@ public class PocketAuthProvider extends
 		public static final String CONSUMER_KEY = "consumer_key";
 		public static final String REQUEST_TOKEN = "request_token";
 	}
-	
+
 	private static JsonNode encodeParamsAsJson(final List<NameValuePair> params) {
 		final Map<String, String> map = new HashMap<String, String>(params.size());
 		for (final NameValuePair nameValuePair : params) {
@@ -66,7 +68,7 @@ public class PocketAuthProvider extends
 	}
 
 	@Override
-	protected PocketAuthInfo buildInfo(final Response r)
+	protected PocketAuthInfo buildInfo(final WSResponse r)
 			throws AccessTokenException {
 		if (r.getStatus() >= 400) {
 			throw new AccessTokenException(r.asJson().asText());
@@ -102,10 +104,10 @@ public class PocketAuthProvider extends
 	private String getRequestToken(final Request request) throws AuthException {
 		final Configuration c = getConfiguration();
 		final List<NameValuePair> params = getRequestTokenParams(request, c);
-		final Response r = WS.url(c.getString(SettingKeys.REQUEST_TOKEN_URL))
+		final WSResponse r = WS.url(c.getString(SettingKeys.REQUEST_TOKEN_URL))
 				.setHeader("Content-Type", "application/json")
 				.setHeader("X-Accept", "application/json")
-				.post(encodeParamsAsJson(params)).get(PlayAuthenticate.TIMEOUT);
+				.post(encodeParamsAsJson(params)).get(getTimeout());
 
 		if (r.getStatus() >= 400) {
 			throw new AuthException(r.asJson().asText());
@@ -115,7 +117,7 @@ public class PocketAuthProvider extends
 	}
 
 	private List<NameValuePair> getRequestTokenParams(final Request request,
-			final Configuration c) {
+			final Configuration c) throws ResolverMissingException {
 		final List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair(PocketConstants.CONSUMER_KEY, c
 				.getString(SettingKeys.CONSUMER_KEY)));

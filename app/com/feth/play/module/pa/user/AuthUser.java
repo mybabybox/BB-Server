@@ -3,6 +3,8 @@ package com.feth.play.module.pa.user;
 import java.io.Serializable;
 import java.util.Locale;
 
+import org.apache.commons.lang3.LocaleUtils;
+
 public abstract class AuthUser implements AuthUserIdentity, Serializable {
 
 	/**
@@ -56,10 +58,10 @@ public abstract class AuthUser implements AuthUserIdentity, Serializable {
 	public static Locale getLocaleFromString(final String locale) {
 		if (locale != null && !locale.isEmpty()) {
 			try {
-				return org.apache.commons.lang3.LocaleUtils.toLocale(locale);
+				return LocaleUtils.toLocale(locale);
 			} catch (final java.lang.IllegalArgumentException iae) {
 				try {
-					return org.apache.commons.lang3.LocaleUtils.toLocale(locale.replace('-', '_'));
+					return LocaleUtils.toLocale(locale.replace('-', '_'));
 				} catch (final java.lang.IllegalArgumentException iae2) {
 					return null;
 				}

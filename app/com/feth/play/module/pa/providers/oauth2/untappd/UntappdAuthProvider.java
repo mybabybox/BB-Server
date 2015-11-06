@@ -2,21 +2,22 @@ package com.feth.play.module.pa.providers.oauth2.untappd;
 
 import java.util.List;
 
+import com.feth.play.module.pa.exceptions.ResolverMissingException;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.codehaus.jackson.JsonNode;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import play.Application;
 import play.Configuration;
 import play.Logger;
-import play.libs.WS;
-import play.libs.WS.Response;
+import play.libs.ws.WS;
+import play.libs.ws.WSResponse;
 import play.mvc.Http.Request;
 
-import com.feth.play.module.pa.PlayAuthenticate;
 import com.feth.play.module.pa.exceptions.AccessTokenException;
 import com.feth.play.module.pa.exceptions.AuthException;
 import com.feth.play.module.pa.providers.oauth2.OAuth2AuthProvider;
+import com.google.inject.Inject;
 
 /**
  * Auth provider for Untappd beer social network
@@ -25,7 +26,7 @@ import com.feth.play.module.pa.providers.oauth2.OAuth2AuthProvider;
 public class UntappdAuthProvider extends
 		OAuth2AuthProvider<UntappdAuthUser, UntappdAuthInfo> {
 
-	static final String PROVIDER_KEY = "untappd";
+	public static final String PROVIDER_KEY = "untappd";
 
 	private static final String USER_INFO_URL_SETTING_KEY = "userInfoUrl";
 
@@ -43,6 +44,7 @@ public class UntappdAuthProvider extends
 	// private static final String CALLBACK_URL =
 	// "http://localhost:9000/authenticate/untappd";
 
+	@Inject
 	public UntappdAuthProvider(final Application app) {
 		super(app);
 	}
@@ -59,11 +61,11 @@ public class UntappdAuthProvider extends
 		final String url = getConfiguration().getString(
 				USER_INFO_URL_SETTING_KEY);
 
-		final Response r = WS
+		final WSResponse r = WS
 				.url(url)
 				.setQueryParameter(OAuth2AuthProvider.Constants.ACCESS_TOKEN,
 						info.getAccessToken()).get()
-				.get(PlayAuthenticate.TIMEOUT);
+				.get(getTimeout());
 
 		final JsonNode result = r.asJson();
 		if (result.get(OAuth2AuthProvider.Constants.ERROR) != null) {
@@ -88,12 +90,12 @@ public class UntappdAuthProvider extends
 	}
 
 	protected UntappdAuthInfo getAccessToken(final String code,
-			final Request request) throws AccessTokenException {
+			final Request request) throws AccessTokenException, ResolverMissingException {
 		final Configuration c = getConfiguration();
 
 		final String url = c.getString(SettingKeys.ACCESS_TOKEN_URL);
 
-		final Response r = WS
+		final WSResponse r = WS
 				.url(url)
 				.setQueryParameter(Constants.CLIENT_ID,
 						c.getString(SettingKeys.CLIENT_ID))
@@ -103,14 +105,14 @@ public class UntappdAuthProvider extends
 				.setQueryParameter(Constants.CODE, code)
 				.setQueryParameter(getRedirectUriKey(), getRedirectUrl(request))
 				// we use GET here
-				.get().get(PlayAuthenticate.TIMEOUT);
+				.get().get(getTimeout());
 
 		return buildInfo(r);
 	}
 
 	@Override
 	protected List<NameValuePair> getParams(final Request request,
-			final Configuration c) {
+			final Configuration c) throws ResolverMissingException {
 		final List<NameValuePair> params = super.getParams(request, c);
 
 		params.add(new BasicNameValuePair(Constants.CLIENT_SECRET, c
@@ -119,7 +121,7 @@ public class UntappdAuthProvider extends
 	}
 
 	@Override
-	protected UntappdAuthInfo buildInfo(final Response r)
+	protected UntappdAuthInfo buildInfo(final WSResponse r)
 			throws AccessTokenException {
 		final JsonNode n = r.asJson();
 

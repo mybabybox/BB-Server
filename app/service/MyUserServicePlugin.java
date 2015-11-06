@@ -2,13 +2,16 @@ package service;
 
 import models.User;
 import play.Application;
+import play.db.jpa.JPA;
 
 import com.feth.play.module.pa.user.AuthUser;
 import com.feth.play.module.pa.user.AuthUserIdentity;
 import com.feth.play.module.pa.service.UserServicePlugin;
+import com.google.inject.Inject;
 
 public class MyUserServicePlugin extends UserServicePlugin {
 
+	@Inject
 	public MyUserServicePlugin(final Application app) {
 		super(app);
 	}
@@ -53,7 +56,8 @@ public class MyUserServicePlugin extends UserServicePlugin {
 	@Override
 	public AuthUser update(final AuthUser knownUser) {
 		// User logged in again, bump last login date
-		User.setLastLoginDate(knownUser);
+		
+		//User.setLastLoginDate(knownUser);
 		return knownUser;
 	}
 

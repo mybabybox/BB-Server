@@ -12,7 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import play.data.format.Formats;
 import play.db.jpa.JPA;
@@ -57,12 +57,13 @@ public class SiteTour  {
 	    this.completionTime = new Date();
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Transactional
     public static List<SiteTour> getSiteTours(Long userId) {
 	    Query q = JPA.em().createQuery("Select t from SiteTour t where userId = ?1");
         q.setParameter(1, userId);
         try {
-            return (List<SiteTour>)q.getResultList();
+            return (List<SiteTour>) q.getResultList();
         } catch (NoResultException e) {
             return null;
         }

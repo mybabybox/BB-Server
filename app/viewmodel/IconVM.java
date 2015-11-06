@@ -2,7 +2,7 @@ package viewmodel;
 
 import models.Icon;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class IconVM {
 	@JsonProperty("name") public String name;

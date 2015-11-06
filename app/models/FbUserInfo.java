@@ -10,6 +10,7 @@ import javax.persistence.Query;
 import com.feth.play.module.pa.providers.oauth2.facebook.FacebookAuthUser;
 
 import play.db.jpa.JPA;
+import play.db.jpa.Transactional;
 
 /**
  * https://developers.facebook.com/docs/graph-api/reference/v2.0/user
@@ -56,7 +57,8 @@ public class FbUserInfo {
         this.profilePic = fbAuthUser.getPicture();
         this.birthday = fbAuthUser.getBirthday();
         this.gender = fbAuthUser.getGender();
-        this.ageRange = fbAuthUser.getAgeRange();
+        // TODO
+       /* this.ageRange = fbAuthUser.getAgeRange();
         this.relationshipStatus = fbAuthUser.getRelationshipStatus();
         this.link = fbAuthUser.getProfileLink();
         this.timezone = fbAuthUser.getTimezone();
@@ -67,7 +69,7 @@ public class FbUserInfo {
         this.educationConcentration = fbAuthUser.getEducationConcentration();
         this.coverId = fbAuthUser.getCoverId();
         this.coverSource = fbAuthUser.getCoverSource();
-        this.coverOffsetY = fbAuthUser.getCoverOffsetY();
+        this.coverOffsetY = fbAuthUser.getCoverOffsetY();*/
     }
     
     public static FbUserInfo findByUserId(Long id) {

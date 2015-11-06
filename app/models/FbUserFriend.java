@@ -11,8 +11,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import play.db.jpa.JPA;
 
@@ -36,6 +36,7 @@ public class FbUserFriend {
 	public FbUserFriend() {
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static List<FbUserFriend> findByUserId(Long id) {
 		Query q = JPA.em().createQuery("SELECT fbuf FROM FbUserFriend fbuf where user_id = ?1");
 		q.setParameter(1, id);

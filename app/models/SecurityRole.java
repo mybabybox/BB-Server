@@ -12,6 +12,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import play.db.jpa.JPA;
+import play.db.jpa.Transactional;
 import be.objectify.deadbolt.core.models.Role;
 
 @Entity
@@ -40,11 +41,12 @@ public class SecurityRole extends domain.Entity implements Role {
 		return roleName;
 	}
 
-	public static SecurityRole findByRoleName(String roleName) {
-		Query q = JPA.em().createQuery("SELECT l from SecurityRole l where roleName = ?1");
-		q.setParameter(1, roleName);
+	public static SecurityRole findByRoleName(final String roleName) {
 		try {
-			return (SecurityRole) q.getSingleResult();
+					Query q = JPA.em().createQuery("SELECT l from SecurityRole l where roleName = ?1");
+					q.setParameter(1, roleName);
+					return (SecurityRole) q.getSingleResult();
+			
 		} catch(NoResultException e) {
 			return null;
 		}

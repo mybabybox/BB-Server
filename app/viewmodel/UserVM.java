@@ -1,6 +1,6 @@
 package viewmodel;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import controllers.Application;
 import models.Setting;
@@ -48,14 +48,14 @@ public class UserVM extends UserVMLite {
         }
         this.isMobile = Application.isMobileUser();
         
-        this.createdDate = user.getCreatedDate().getTime();
-        this.lastLogin = user.lastLogin.getTime();
+        //this.createdDate = user.getCreatedDate().getTime();
+        //this.lastLogin = user.lastLogin.getTime();
         this.totalLogin = user.totalLogin;
         this.isLoggedIn = user.isLoggedIn();
         this.isFbLogin = user.fbLogin;
         this.emailValidated = user.emailValidated;
         this.newUser = user.isNewUser();
-        this.isAdmin = user.isSuperAdmin();
+        //this.isAdmin = user.isSuperAdmin();
     }
 
     public Long getCreatedDate() {

@@ -2,7 +2,7 @@ package viewmodel;
 
 import models.Message;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class MessageVM {
 	@JsonProperty("id") public Long id;

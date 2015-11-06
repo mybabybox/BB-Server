@@ -8,8 +8,8 @@ import java.util.Map;
 import play.Application;
 import play.Configuration;
 import play.Logger;
-import play.Play;
 import play.Plugin;
+import play.mvc.Http.Session;
 import play.mvc.Http.Context;
 import play.mvc.Http.Request;
 
@@ -18,6 +18,7 @@ import com.feth.play.module.pa.exceptions.AuthException;
 import com.feth.play.module.pa.user.AuthUser;
 import com.feth.play.module.pa.user.SessionAuthUser;
 
+@SuppressWarnings("deprecation")
 public abstract class AuthProvider extends Plugin {
 
 	public abstract static class Registry {
@@ -78,6 +79,7 @@ public abstract class AuthProvider extends Plugin {
 		}
 
 		Registry.register(getKey(), this);
+		Logger.debug("Registered AuthProvider '" + getKey() + "'");
 	}
 
 	@Override
@@ -90,8 +92,8 @@ public abstract class AuthProvider extends Plugin {
 	}
 
 	protected String getAbsoluteUrl(final Request request) {
-	    //return PlayAuthenticate.getResolver().auth(getKey()).absoluteURL(request);
-	    return controllers.Application.APPLICATION_BASE_URL + PlayAuthenticate.getResolver().auth(getKey()).url();
+		return PlayAuthenticate.getResolver().auth(getKey())
+				.absoluteURL(request);
 	}
 
 	public abstract String getKey();
@@ -101,13 +103,12 @@ public abstract class AuthProvider extends Plugin {
 	}
 
 	/**
-	 * Returns either an AuthUser object or a String (URL)
-	 * 
+	 *
 	 * @param context
 	 * @param payload
 	 *            Some arbitrary payload that shall get passed into the
 	 *            authentication process
-	 * @return
+	 * @return either an AuthUser object or a String (URL)
 	 * @throws AuthException
 	 */
 	public abstract Object authenticate(final Context context,
@@ -123,4 +124,14 @@ public abstract class AuthProvider extends Plugin {
 
 	public abstract boolean isExternal();
 
+    /**
+     * This gets called after a successful 'save' operation of the UserService.
+     *
+     * @param user The user object
+     * @param identity The user identity returned fro, the save operation in the UserService
+     * @param session The session
+     */
+    public void afterSave(final AuthUser user, final Object identity, final Session session) {
+
+    }
 }

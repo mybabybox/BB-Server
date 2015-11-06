@@ -2,7 +2,7 @@ package viewmodel;
 
 import models.Emoticon;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class EmoticonVM {
 	public String name;

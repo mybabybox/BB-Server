@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import models.Activity;
 import models.Collection;
 import models.Conversation;
@@ -48,12 +50,17 @@ import viewmodel.PostVMLite;
 import viewmodel.ProfileVM;
 import viewmodel.UserVM;
 import viewmodel.UserVMLite;
+import common.cache.JedisCache;
 import common.model.FeedFilter.FeedType;
 import common.utils.ImageFileUtil;
 import common.utils.NanoSecondStopWatch;
 import domain.DefaultValues;
 
 public class UserController extends Controller {
+	
+	@Inject 
+	JedisCache jedisCache;
+	
     private static final play.api.Logger logger = play.api.Logger.apply(UserController.class);
     
     public static String getMobileUserKey(final play.mvc.Http.Request r, final Object key) {
@@ -696,37 +703,37 @@ public class UserController extends Controller {
     }
     
 	@Transactional 
-	public static Result getHomeExploreFeed(Long offset) {
+	public Result getHomeExploreFeed(Long offset) {
 		final User localUser = Application.getLocalUser(session());
 		if (!localUser.isLoggedIn()) {
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
 			return notFound();
 		}
 		
-		List<PostVMLite> vms = FeedHandler.getPostVM(localUser.id, offset, localUser, FeedType.HOME_EXPLORE);
+		List<PostVMLite> vms = FeedHandler.getPostVM(localUser.id, offset, localUser, FeedType.HOME_EXPLORE, jedisCache);
 		return ok(Json.toJson(vms));
 	}
 	
 	@Transactional 
-	public static Result getHomeFollowingFeed(Long offset) {
+	public Result getHomeFollowingFeed(Long offset) {
 		final User localUser = Application.getLocalUser(session());
 		if (!localUser.isLoggedIn()) {
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
 			return notFound();
 		}
-		List<PostVMLite> vms = FeedHandler.getPostVM(localUser.id, offset, localUser, FeedType.HOME_FOLLOWING);
+		List<PostVMLite> vms = FeedHandler.getPostVM(localUser.id, offset, localUser, FeedType.HOME_FOLLOWING, jedisCache);
 		return ok(Json.toJson(vms));
 	}
 	
     @Transactional
-    public static Result getUserPosts(Long id, Long offset) {
+    public Result getUserPosts(Long id, Long offset) {
     	final User localUser = Application.getLocalUser(session());
         if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
             return notFound();
         }
 
-        List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.USER_POSTED);
+        List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.USER_POSTED, jedisCache);
 		return ok(Json.toJson(vms));
     }
     
@@ -803,14 +810,14 @@ public class UserController extends Controller {
     }
     
     @Transactional
-    public static Result getUserLikedPosts(Long id, Long offset){
+    public Result getUserLikedPosts(Long id, Long offset){
     	final User localUser = Application.getLocalUser(session());
         if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
             return notFound();
         }
         
-        List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.USER_LIKED);
+        List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.USER_LIKED, jedisCache);
 		return ok(Json.toJson(vms));
     }
     

@@ -198,6 +198,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Message> getMessages(User user, Long offset) {
 		Query q = JPA.em().createQuery(
 				"SELECT m from Message m where conversation_id = ?1 and CREATED_DATE > ?2 and m.deleted = 0 order by CREATED_DATE desc");
@@ -228,6 +229,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static List<Conversation> findUserConversations(User user) {
 		Query q = JPA.em().createQuery(
 		        "SELECT c from Conversation c where deleted = 0 and (" + 
@@ -243,6 +245,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static List<Conversation> findPostConversations(Post post, User user) {
 		Query q = JPA.em().createQuery(
 				"SELECT c from Conversation c where deleted = 0 and post = ?1 and (" + 
@@ -446,6 +449,7 @@ public class Conversation extends domain.Entity implements Serializable, Creatab
 		return StringUtil.shortMessage(message);
 	}
 	
+	@SuppressWarnings("unused")
 	private String removeEmoticons(String message) {
 		return message.replaceAll("<img([^>]*)>", " ");
 	}

@@ -7,6 +7,8 @@ import play.Configuration;
 import play.Logger;
 import play.Play;
 import play.data.Form;
+import play.db.jpa.JPA;
+import play.db.jpa.Transactional;
 import play.i18n.Messages;
 import play.mvc.Call;
 import play.mvc.Controller;
@@ -27,7 +29,7 @@ import controllers.Application;
 
 public abstract class PlayAuthenticate {
 
-	private static final String SETTING_KEY_PLAY_AUTHENTICATE = "play-authenticate";
+	public static final String SETTING_KEY_PLAY_AUTHENTICATE = "play-authenticate";
 	private static final String SETTING_KEY_AFTER_AUTH_FALLBACK = "afterAuthFallback";
 	private static final String SETTING_KEY_AFTER_LOGOUT_FALLBACK = "afterLogoutFallback";
 	private static final String SETTING_KEY_ACCOUNT_MERGE_ENABLED = "accountMergeEnabled";
@@ -38,10 +40,10 @@ public abstract class PlayAuthenticate {
 
 		/**
 		 * This is the route to your login page
-		 * 
+		 *
 		 * @return
 		 */
-		public abstract Call login(final Session session);
+		public abstract Call login();
 
 		/**
 		 * Route to redirect to after authentication has been finished.
@@ -50,10 +52,10 @@ public abstract class PlayAuthenticate {
 		 * the setting
 		 * afterAuthFallback
 		 * You can use this to redirect to an external URL for example.
-		 * 
+		 *
 		 * @return
 		 */
-		public abstract Call afterAuth(final Session session);
+		public abstract Call afterAuth();
 
 		/**
 		 * This should usually point to the route where you registered
@@ -62,11 +64,11 @@ public abstract class PlayAuthenticate {
 		 * however you might provide your own authentication implementation if
 		 * you want to
 		 * and point it there
-		 * 
+		 *
 		 * @param provider
 		 *            The provider ID matching one of your registered providers
 		 *            in play.plugins
-		 * 
+		 *
 		 * @return a Call to follow
 		 */
 		public abstract Call auth(final String provider);
@@ -74,7 +76,7 @@ public abstract class PlayAuthenticate {
 		/**
 		 * If you set the accountAutoMerge setting to true, you might return
 		 * null for this.
-		 * 
+		 *
 		 * @return
 		 */
 		public abstract Call askMerge();
@@ -82,7 +84,7 @@ public abstract class PlayAuthenticate {
 		/**
 		 * If you set the accountAutoLink setting to true, you might return null
 		 * for this
-		 * 
+		 *
 		 * @return
 		 */
 		public abstract Call askLink();
@@ -93,10 +95,10 @@ public abstract class PlayAuthenticate {
 		 * the setting
 		 * afterLogoutFallback
 		 * You can use this to redirect to an external URL for example.
-		 * 
+		 *
 		 * @return
 		 */
-		public abstract Call afterLogout(final Session session);
+		public abstract Call afterLogout();
 
 		public Call onException(final AuthException e) {
 			return null;
@@ -138,7 +140,7 @@ public abstract class PlayAuthenticate {
 				.getConfig(SETTING_KEY_PLAY_AUTHENTICATE);
 	}
 
-	public static final Long TIMEOUT = 10l * 1000;
+	public static final long TIMEOUT = 10l * 1000;
 	private static final String MERGE_USER_KEY = null;
 	private static final String LINK_USER_KEY = null;
 
@@ -148,8 +150,8 @@ public abstract class PlayAuthenticate {
 
 	public static String storeOriginalUrl(final Http.Context context) {
 		String loginUrl = null;
-		if (PlayAuthenticate.getResolver().login(context.session()) != null) {
-			loginUrl = PlayAuthenticate.getResolver().login(context.session()).url();
+		if (PlayAuthenticate.getResolver().login() != null) {
+			loginUrl = PlayAuthenticate.getResolver().login().url();
 		} else {
 			Logger.warn("You should define a login call in the resolver");
 		}
@@ -170,11 +172,11 @@ public abstract class PlayAuthenticate {
 
 	public static void storeUser(final Session session, final AuthUser authUser) {
 
-	    // User logged in once more - wanna make some updates?
-        final AuthUser u = getUserService().update(authUser);
+		// User logged in once more - wanna make some updates?
+		final AuthUser u = getUserService().update(authUser);
 
-		session.put(USER_KEY, u.getId());
-		session.put(PROVIDER_KEY, u.getProvider());
+		session.put(PlayAuthenticate.USER_KEY, u.getId());
+		session.put(PlayAuthenticate.PROVIDER_KEY, u.getProvider());
 		if (u.expires() != AuthUser.NO_EXPIRATION) {
 			session.put(EXPIRES_KEY, Long.toString(u.expires()));
 		} else {
@@ -186,15 +188,15 @@ public abstract class PlayAuthenticate {
 		boolean ret = session.containsKey(USER_KEY) // user is set
 				&& session.containsKey(PROVIDER_KEY); // provider is set
 		ret &= AuthProvider.Registry.hasProvider(session.get(PROVIDER_KEY)); // this
-																				// provider
-																				// is
-																				// active
+		// provider
+		// is
+		// active
 		if (session.containsKey(EXPIRES_KEY)) {
 			// expiration is set
 			final long expires = getExpiration(session);
 			if (expires != AuthUser.NO_EXPIRATION) {
 				ret &= (new Date()).getTime() < expires; // and the session
-															// expires after now
+				// expires after now
 			}
 		}
 		return ret;
@@ -208,10 +210,8 @@ public abstract class PlayAuthenticate {
 		// shouldn't be in any more, but just in case lets kill it from the
 		// cookie
 		session.remove(ORIGINAL_URL);
-		System.out.println("Resolver :: "+ getResolver());
-		System.out.println("logout :: "+ SETTING_KEY_AFTER_LOGOUT_FALLBACK);
-		System.out.println("url :: "+getUrl(getResolver().afterLogout(session),SETTING_KEY_AFTER_LOGOUT_FALLBACK));
-		return Controller.redirect(getUrl(getResolver().afterLogout(session),
+
+		return Controller.redirect(getUrl(getResolver().afterLogout(),
 				SETTING_KEY_AFTER_LOGOUT_FALLBACK));
 	}
 
@@ -244,7 +244,7 @@ public abstract class PlayAuthenticate {
 		}
 		return null;
 	}
-	
+
 	public static AuthUser getUser(String string) {
 		String[] st = string.split("-");
 		String provider = st[0];
@@ -256,7 +256,7 @@ public abstract class PlayAuthenticate {
 			return null;
 		}
 	}
-	
+
 	public static AuthUser getUser(final Session session) {
 		final String provider = session.get(PROVIDER_KEY);
 		final String id = session.get(USER_KEY);
@@ -305,15 +305,11 @@ public abstract class PlayAuthenticate {
 		play.cache.Cache.set(getCacheKey(session, key), o);
 	}
 
-	public static Object removeFromCache(final Session session, final String key) {
-		final Object o = getFromCache(session, key);
-		
-		final String k = getCacheKey(session, key);
-		// TODO change on Play 2.1
-		play.cache.Cache.set(k, null, 0);
+	public static <T> T removeFromCache(final Session session, final String key) {
+		final T o = getFromCache(session, key);
 
-		// POST-2.0/
-		// play.cache.Cache.remove(k);
+		final String k = getCacheKey(session, key);
+		play.cache.Cache.remove(k);
 		return o;
 	}
 
@@ -322,8 +318,9 @@ public abstract class PlayAuthenticate {
 		return id + "_" + key;
 	}
 
-	public static Object getFromCache(final Session session, final String key) {
-		return play.cache.Cache.get(getCacheKey(session, key));
+	@SuppressWarnings("unchecked")
+	public static <T> T getFromCache(final Session session, final String key) {
+		return (T) play.cache.Cache.get(getCacheKey(session, key));
 	}
 
 	private static AuthUser getUserFromCache(final Session session,
@@ -367,15 +364,11 @@ public abstract class PlayAuthenticate {
 	}
 
 	private static String getJumpUrl(final Context ctx) {
-	    User localUser = Application.getLocalUser(ctx.session());
 		final String originalUrl = getOriginalUrl(ctx);
-		System.out.println("Context :: "+ctx);
-		System.out.println("getResolver() :: "+getResolver());
-		System.out.println("ctx.session() :: "+ctx.session());
-		if (originalUrl != null && !localUser.isNewUser()) {
+		if (originalUrl != null) {
 			return originalUrl;
 		} else {
-			return getUrl(getResolver().afterAuth(ctx.session()),
+			return getUrl(getResolver().afterAuth(),
 					SETTING_KEY_AFTER_AUTH_FALLBACK);
 		}
 	}
@@ -458,12 +451,14 @@ public abstract class PlayAuthenticate {
 		return loginAndRedirect(context, loginUser);
 	}
 
+	@Transactional
 	private static AuthUser signupUser(final AuthUser u) throws AuthException {
+		System.out.println(JPA.em().isOpen());
 	    if (Application.isOverDailySignupLimit()) {
 	        throw new AuthException("十分抱歉! 由於 babybox是新平台，為了提供最好的體驗給每個用戶，我們預設了每日新登記用戶上限。現在已超出登記上限，請遲些回來重試。");
 	    }
 	    
-	    // Email must be unique 
+	   /* // Email must be unique 
 	    if (u instanceof EmailIdentity) {
 	        final EmailIdentity identity = (EmailIdentity) u;
 	        final User existingUser = User.findByEmail(identity.getEmail());
@@ -471,7 +466,7 @@ public abstract class PlayAuthenticate {
 	            throw new AuthException("您輸入的Facebook電郵已經登記。請重試");
 	                    //Messages.get("playauthenticate.core.exception.signupuser_exists"));
 	        }
-	    }
+	    }*/
 	    
 		final AuthUser loginUser;
 		
@@ -484,8 +479,10 @@ public abstract class PlayAuthenticate {
 		return loginUser;
 	}
 
+	@Transactional
 	public static Result handleAuthentication(final String provider,
 			final Context context, final Object payload) {
+		System.out.println("handleAuthentication :: "+JPA.em().isOpen());
 		final AuthProvider ap = getProvider(provider);
 		if (ap == null) {
 			// Provider wasn't found and/or user was fooling with our stuff -
@@ -494,9 +491,9 @@ public abstract class PlayAuthenticate {
 			//		"playauthenticate.core.exception.provider_not_found",
 			//		provider));
 			final Form<MyLogin> filledForm = 
-                    MyUsernamePasswordAuthProvider.LOGIN_FORM.bindFromRequest();
-            play.mvc.Controller.flash("error", "Facebook登入電郵或密碼錯誤");
-            return play.mvc.Results.badRequest(views.html.login.render(filledForm, Application.isOverDailySignupThreshold()));
+					MyUsernamePasswordAuthProvider.LOGIN_FORM.bindFromRequest();
+			play.mvc.Controller.flash("error", "Facebook登入電郵或密碼錯誤");
+			return play.mvc.Results.badRequest(views.html.login.render(filledForm, Application.isOverDailySignupThreshold()));
 		}
 		try {
 			return handleAuthenticationByProvider(context, payload, ap);
@@ -505,118 +502,123 @@ public abstract class PlayAuthenticate {
 			if (c != null) {
 				return Controller.redirect(c);
 			} else {
-			    String message = e.getMessage();
+				String message = e.getMessage();
 				if (message == null) {
-				    message = "Facebook登入電郵或密碼錯誤";
+					message = "Facebook登入電郵或密碼錯誤";
 				}
 				final Form<MyLogin> filledForm = 
-                        MyUsernamePasswordAuthProvider.LOGIN_FORM.bindFromRequest();
-                play.mvc.Controller.flash("error", message);
-                return play.mvc.Results.badRequest(views.html.login.render(filledForm, Application.isOverDailySignupThreshold()));
+						MyUsernamePasswordAuthProvider.LOGIN_FORM.bindFromRequest();
+				play.mvc.Controller.flash("error", message);
+				return play.mvc.Results.badRequest(views.html.login.render(filledForm, Application.isOverDailySignupThreshold()));
 			}
 		}
 	}
 
+	@Transactional
 	public static Result handleAuthenticationByProvider(final Context context,
 			final Object payload, final AuthProvider ap) throws AuthException {
 		final Object o = ap.authenticate(context, payload);
-		if (o instanceof String) {
-			return Controller.redirect((String) o);
-		} else if (o instanceof AuthUser) {
+		System.out.println("handleAuthenticationByProvider :: "+JPA.em().isOpen());
+		try{
+			if (o instanceof String) {
+				return Controller.redirect((String) o);
+			} else if (o instanceof Result) {
+				return (Result) o;
+			} else if (o instanceof AuthUser) {
 
-			final AuthUser newUser = (AuthUser) o;
-			final Session session = context.session();
+				final AuthUser newUser = (AuthUser) o;
+				final Session session = context.session();
 
-			// We might want to do merging here:
-			// Adapted from:
-			// http://stackoverflow.com/questions/6666267/architecture-for-merging-multiple-user-accounts-together
-			// 1. The account is linked to a local account and no session
-			// cookie is present --> Login
-			// 2. The account is linked to a local account and a session
-			// cookie is present --> Merge
-			// 3. The account is not linked to a local account and no
-			// session cookie is present --> Signup
-			// 4. The account is not linked to a local account and a session
-			// cookie is present --> Linking Additional account
+				// We might want to do merging here:
+				// Adapted from:
+				// http://stackoverflow.com/questions/6666267/architecture-for-merging-multiple-user-accounts-together
+				// 1. The account is linked to a local account and no session
+				// cookie is present --> Login
+				// 2. The account is linked to a local account and a session
+				// cookie is present --> Merge
+				// 3. The account is not linked to a local account and no
+				// session cookie is present --> Signup
+				// 4. The account is not linked to a local account and a session
+				// cookie is present --> Linking Additional account
 
-			// get the user with which we are logged in - is null if we
-			// are
-			// not logged in (does NOT check expiration)
+				// get the user with which we are logged in - is null if we
+				// are
+				// not logged in (does NOT check expiration)
 
-			AuthUser oldUser = getUser(session);
+				AuthUser oldUser = getUser(session);
 
-			// checks if the user is logged in (also checks the expiration!)
-			boolean isLoggedIn = isLoggedIn(session);
+				// checks if the user is logged in (also checks the expiration!)
+				boolean isLoggedIn = isLoggedIn(session);
 
-			Object oldIdentity = null;
+				Object oldIdentity = null;
 
-			// check if local user still exists - it might have been
-			// deactivated/deleted,
-			// so this is a signup, not a link
-			if (isLoggedIn) {
-				oldIdentity = getUserService().getLocalIdentity(oldUser);
+				// check if local user still exists - it might have been
+				// deactivated/deleted,
+				// so this is a signup, not a link
+				if (isLoggedIn) {
+					oldIdentity = getUserService().getLocalIdentity(oldUser);
 				isLoggedIn &= oldIdentity != null;
-				if (!isLoggedIn) {
-					// if isLoggedIn is false here, then the local user has
-					// been deleted/deactivated
-					// so kill the session
-					logout(session);
-					oldUser = null;
+					if (!isLoggedIn) {
+						// if isLoggedIn is false here, then the local user has
+						// been deleted/deactivated
+						// so kill the session
+						logout(session);
+						oldUser = null;
+					}
 				}
-			}
 
-			// Bypass login
-			if ("dev".equals(controllers.Application.APPLICATION_ENV) && 
-                    controllers.Application.LOGIN_BYPASS_ALL == true && 
-                    !isLoggedIn) {
-                return loginAndRedirect(context, newUser);
-            }
-			
-			final Object loginIdentity = getUserService().getLocalIdentity(
-					newUser);
-			final boolean isLinked = loginIdentity != null;
+				// Bypass login
+				if ("dev".equals(controllers.Application.APPLICATION_ENV) && 
+						controllers.Application.LOGIN_BYPASS_ALL == true && 
+						!isLoggedIn) {
+					return loginAndRedirect(context, newUser);
+				}
 
-			final AuthUser loginUser;
-			if (isLinked && !isLoggedIn) {
-				// 1. -> Login
-				loginUser = newUser;
+				final Object loginIdentity = getUserService().getLocalIdentity(
+						newUser);
+				final boolean isLinked = loginIdentity != null;
+
+				final AuthUser loginUser;
+				if (isLinked && !isLoggedIn) {
+					// 1. -> Login
+					loginUser = newUser;
 
 			} else if (isLinked && isLoggedIn) {
 				// 2. -> Merge
 
-				// merge the two identities and return the AuthUser we want
-				// to use for the log in
-				if (isAccountMergeEnabled()
-						&& !loginIdentity.equals(oldIdentity)) {
-					// account merge is enabled
-					// and
-					// The currently logged in user and the one to log in
-					// are not the same, so shall we merge?
+					// merge the two identities and return the AuthUser we want
+					// to use for the log in
+					if (isAccountMergeEnabled()
+							&& !loginIdentity.equals(oldIdentity)) {
+						// account merge is enabled
+						// and
+						// The currently logged in user and the one to log in
+						// are not the same, so shall we merge?
 
-					if (isAccountAutoMerge()) {
-						// Account auto merging is enabled
-						loginUser = getUserService()
-								.merge(newUser, oldUser);
-					} else {
-						// Account auto merging is disabled - forward user
-						// to merge request page
-						final Call c = getResolver().askMerge();
-						if (c == null) {
-							throw new RuntimeException(
-									Messages.get(
-											"playauthenticate.core.exception.merge.controller_undefined",
-											SETTING_KEY_ACCOUNT_AUTO_MERGE));
+						if (isAccountAutoMerge()) {
+							// Account auto merging is enabled
+							loginUser = getUserService()
+									.merge(newUser, oldUser);
+						} else {
+							// Account auto merging is disabled - forward user
+							// to merge request page
+							final Call c = getResolver().askMerge();
+							if (c == null) {
+								throw new RuntimeException(
+										Messages.get(
+												"playauthenticate.core.exception.merge.controller_undefined",
+												SETTING_KEY_ACCOUNT_AUTO_MERGE));
+							}
+							storeMergeUser(newUser, session);
+							return Controller.redirect(c);
 						}
-						storeMergeUser(newUser, session);
-						return Controller.redirect(c);
+					} else {
+						// the currently logged in user and the new login belong
+						// to the same local user,
+						// or Account merge is disabled, so just change the log
+						// in to the new user
+						loginUser = newUser;
 					}
-				} else {
-					// the currently logged in user and the new login belong
-					// to the same local user,
-					// or Account merge is disabled, so just change the log
-					// in to the new user
-					loginUser = newUser;
-				}
 
 			} else if (!isLinked && !isLoggedIn) {
 				// 3. -> Signup
@@ -624,31 +626,44 @@ public abstract class PlayAuthenticate {
 			} else {
 				// !isLinked && isLoggedIn:
 
-				// 4. -> Link additional
-				if (isAccountAutoLink()) {
-					// Account auto linking is enabled
+					// 4. -> Link additional
+					if (isAccountAutoLink()) {
+						// Account auto linking is enabled
 
-					loginUser = getUserService().link(oldUser, newUser);
-				} else {
-					// Account auto linking is disabled - forward user to
-					// link suggestion page
-					final Call c = getResolver().askLink();
-					if (c == null) {
-						throw new RuntimeException(
-								Messages.get(
-										"playauthenticate.core.exception.link.controller_undefined",
-										SETTING_KEY_ACCOUNT_AUTO_LINK));
+						loginUser = getUserService().link(oldUser, newUser);
+					} else {
+						// Account auto linking is disabled - forward user to
+						// link suggestion page
+						final Call c = getResolver().askLink();
+						if (c == null) {
+							throw new RuntimeException(
+									Messages.get(
+											"playauthenticate.core.exception.link.controller_undefined",
+											SETTING_KEY_ACCOUNT_AUTO_LINK));
+						}
+						storeLinkUser(newUser, session);
+						return Controller.redirect(c);
 					}
-					storeLinkUser(newUser, session);
-					return Controller.redirect(c);
+
 				}
 
+				return loginAndRedirect(context, loginUser);
+			} else {
+				return Controller.internalServerError(Messages
+						.get("playauthenticate.core.exception.general"));
 			}
-
-			return loginAndRedirect(context, loginUser);
-		} else {
-			return Controller.internalServerError(Messages
-					.get("playauthenticate.core.exception.general"));
+		} catch (final AuthException e) {
+			final Call c = getResolver().onException(e);
+			if (c != null) {
+				return Controller.redirect(c);
+			} else {
+				final String message = e.getMessage();
+				if (message != null) {
+					return Controller.internalServerError(message);
+				} else {
+					return Controller.internalServerError();
+				}
+			}
 		}
 	}
 

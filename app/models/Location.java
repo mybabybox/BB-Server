@@ -183,12 +183,14 @@ public class Location  {
         return (Location)q.getSingleResult();
     }
     
+    @SuppressWarnings("unchecked")
     public static List<Location> getAllCountries() {
         Query q = JPA.em().createQuery("Select l from Location l where locationType = ?1");
         q.setParameter(1, LocationType.COUNTRY);
         return (List<Location>)q.getResultList();
     }
     
+    @SuppressWarnings("unchecked")
     public static List<Location> getStatesByCountry(long countryId) {
         Query q = JPA.em().createQuery("Select l from Location l where locationType = ?1 and parent_id = ?2");
         q.setParameter(1, LocationType.STATE);
@@ -196,6 +198,7 @@ public class Location  {
         return (List<Location>)q.getResultList();
     }
 
+    @SuppressWarnings("unchecked")
     public static List<Location> getCitiesByState(long stateId) {
         Query q = JPA.em().createQuery("Select l from Location l where locationType = ?1 and parent_id = ?2");
         q.setParameter(1, LocationType.CITY);
@@ -203,6 +206,7 @@ public class Location  {
         return (List<Location>)q.getResultList();
     }
     
+    @SuppressWarnings("unchecked")
     public static List<Location> getRegionsByCity(long cityId) {
         Query q = JPA.em().createQuery("Select l from Location l where locationType = ?1 and parent_id = ?2");
         q.setParameter(1, LocationType.REGION);
@@ -210,6 +214,7 @@ public class Location  {
         return (List<Location>)q.getResultList();
     }
     
+    @SuppressWarnings("unchecked")
     public static List<Location> getDistrictsByRegion(long regionId) {
         Query q = JPA.em().createQuery("Select l from Location l where locationType = ?1 and parent_id = ?2");
         q.setParameter(1, LocationType.DISTRICT);
@@ -217,6 +222,7 @@ public class Location  {
         return (List<Location>)q.getResultList();
     }
     
+    @SuppressWarnings("unchecked")
     public static List<Location> getAreasByDistrict(long districtId) {
         Query q = JPA.em().createQuery("Select l from Location l where locationType = ?1 and parent_id = ?2");
         q.setParameter(1, LocationType.AREA);
@@ -224,6 +230,7 @@ public class Location  {
         return (List<Location>)q.getResultList();
     }
     
+    @SuppressWarnings("unchecked")
     public static List<Location> getLocationsByArea(long areaId) {
         Query q = JPA.em().createQuery("Select l from Location l where locationType = ?1 and parent_id = ?2");
         q.setParameter(1, LocationType.LOCATION);
@@ -246,7 +253,8 @@ public class Location  {
     }
     
     // HONG KONG specific
-    
+
+    @SuppressWarnings("unchecked")
     public static List<Location> getHongKongDistricts() {
         Query q = JPA.em().createQuery("select l from Location l where locationType = ?1 and locationCode = ?2");
         q.setParameter(1, LocationType.DISTRICT);
@@ -254,6 +262,7 @@ public class Location  {
         return (List<Location>)q.getResultList();
     }
     
+    @SuppressWarnings("unchecked")
     public static List<Location> getHongKongRegions() {
         Query q = JPA.em().createQuery("select l from Location l where locationType = ?1 and locationCode = ?2");
         q.setParameter(1, LocationType.REGION);

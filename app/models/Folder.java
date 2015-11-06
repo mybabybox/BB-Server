@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 
@@ -51,7 +52,7 @@ public class Folder extends SocialObject implements Serializable, Creatable, Upd
 	@Lob
 	public String description;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "folder")
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "folder", fetch = FetchType.EAGER)
 	public List<Resource> resources = new ArrayList<Resource>();
 
 	@Override
