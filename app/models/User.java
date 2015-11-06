@@ -382,8 +382,8 @@ public class User extends SocialObject implements Subject, Followable {
 	public void deleteProduct(Post post) {
         post.deleted = true;
         post.deletedBy = this;
+        post.owner.numProducts--;
         post.save();
-        this.numProducts--;
 	}
 	
 	/**
