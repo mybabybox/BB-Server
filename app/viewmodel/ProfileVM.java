@@ -1,6 +1,7 @@
 package viewmodel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import common.cache.JedisCache;
 
 import models.Location;
 import models.User;
@@ -37,7 +38,7 @@ public class ProfileVM {
     public Long ac;
     public Long lc;
     
-    public static ProfileVM profile(User user, User localUser) {
+    public static ProfileVM profile(User user, User localUser, JedisCache jedisCache) {
         ProfileVM vm = new ProfileVM();
         vm.displayName = user.displayName;
         
@@ -60,7 +61,7 @@ public class ProfileVM {
         vm.numCollections = user.numCollections;
         vm.numFollowers = user.numFollowers;
         vm.numFollowings = user.numFollowings;
-        vm.isFollowdByUser = user.isFollowedBy(localUser);
+        vm.isFollowdByUser = user.isFollowedBy(localUser, jedisCache);
         return vm;
     }
 }

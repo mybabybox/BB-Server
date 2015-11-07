@@ -67,6 +67,9 @@ import common.utils.UserAgentUtil;
 public class Application extends Controller {
 	
 	@Inject
+	UserController userController;
+	
+	@Inject
 	public JedisPool jedisPool;
 	
 	@Inject
@@ -126,13 +129,13 @@ public class Application extends Controller {
 	}
 	
 	@Transactional
-    public static Result index() {
+    public Result index() {
         return mainHome();
     }	
 	
     
     @Transactional
-    public static Result mainHome() {
+    public Result mainHome() {
     	final User user = getLocalUser(session());
 		if (User.isLoggedIn(user) && user.userInfo == null) {
 		    if (user.fbLogin) {
@@ -141,9 +144,9 @@ public class Application extends Controller {
 		    return ok(views.html.signup_info.render(user));
 		}
 	    
-		/*if (user.isNewUser()) {
+		if (user.isNewUser()) {
 	        initNewUser();
-	    }*/
+	    }
 		
 	    return home();
     }
@@ -173,9 +176,7 @@ public class Application extends Controller {
     }
     
     public static boolean isOverDailySignupLimit() {
-		System.out.println("isOverDailySignupLimit :: "+JPA.em().isOpen());
-					return User.getTodaySignupCount() >= SIGNUP_DAILY_LIMIT;
-        
+        return User.getTodaySignupCount() >= SIGNUP_DAILY_LIMIT;
     }
 
     @Transactional
@@ -195,7 +196,7 @@ public class Application extends Controller {
 	}
 
 	@Transactional
-	public static Result home() {
+	public Result home() {
         final User localUser = getLocalUser(session());
 		if(!User.isLoggedIn(localUser)) {
 		    return login();
@@ -204,8 +205,8 @@ public class Application extends Controller {
 		return home(localUser);
 	}
 
-	public static Result home(User user) {
-	    return ok(views.html.babybox.web.home.render( Json.stringify(Json.toJson(new UserVM(user)))));
+	public Result home(User user) {
+	    return ok(views.html.babybox.web.home.render( Json.stringify(Json.toJson(new UserVM(user, jedisCache)))));
 	}
 	
 	@Transactional
@@ -326,8 +327,6 @@ public class Application extends Controller {
 				return localUser;
 			} catch(Exception e) { 
 				logger.underlyingLogger().error("Failed to getLocalUser from mobile - " + userKey + " => " + decryptedValue, e);
-				System.out.println("Failed to getLocalUser from mobile - " + userKey + " => " + decryptedValue);
-				e.printStackTrace();
 				return null;
 			}
 		}
@@ -520,11 +519,12 @@ public class Application extends Controller {
     }
     
     @Transactional
-    public static Result initNewUser() {
+    public Result initNewUser() {
     	final User user = getLocalUser(session());
     	
-    	String promoCode = session().get(SESSION_PROMOCODE);
-    	// GameAccountReferral.processAnyReferral(promoCode, user);
+    	//String promoCode = session().get(SESSION_PROMOCODE);
+    	
+    	//GameAccountReferral.processAnyReferral(promoCode, user);
 
         //GameAccount.setPointsForSignUp(user);
 
@@ -534,7 +534,7 @@ public class Application extends Controller {
         
         user.setNewUser(false);
         
-        return UserController.getUserInfo();
+        return userController.getUserInfo();
     }
     
 	@Transactional
@@ -633,7 +633,6 @@ public class Application extends Controller {
             }
 
             logger.underlyingLogger().info("STS [email="+email+"] Native signup submitted");
-            System.out.println("App :: 636"+JPA.em().isOpen());
 			return UsernamePasswordAuthProvider.handleSignup(ctx());
 		}
 	}
@@ -704,15 +703,15 @@ public class Application extends Controller {
 	//
 	
 	@Transactional
-	public static Result addProduct() {
+	public Result addProduct() {
 		User user = Application.getLocalUser(session());
-		return ok(views.html.babybox.web.add_product.render( Json.stringify(Json.toJson(new UserVM(user)))));
+		return ok(views.html.babybox.web.add_product.render( Json.stringify(Json.toJson(new UserVM(user, jedisCache)))));
 	}
 	
 	@Transactional
-	public static Result addStory() {
+	public Result addStory() {
 		User user = Application.getLocalUser(session());
-		return ok(views.html.babybox.web.add_story.render( Json.stringify(Json.toJson(new UserVM(user)))));
+		return ok(views.html.babybox.web.add_story.render( Json.stringify(Json.toJson(new UserVM(user, jedisCache)))));
 	}
 	
 	@Transactional
@@ -733,7 +732,7 @@ public class Application extends Controller {
 	}
 	
 	@Transactional
-	public Result test(){
+	public Result warmUpActivity(){
 		CalcServer.warmUpActivity(jedisCache);
 		return ok();
 	}

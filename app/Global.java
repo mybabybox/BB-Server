@@ -153,7 +153,7 @@ public class Global extends GlobalSettings {
         );
         */
     	
-/*        // schedule to purge sold posts daily at 5:00am HKT
+        // schedule to purge sold posts daily at 5:00am HKT
         JobScheduler.getInstance().schedule("cleanupSoldPosts", "0 00 5 ? * *",
             new Runnable() {
                 public void run() {
@@ -204,23 +204,14 @@ public class Global extends GlobalSettings {
                 }
             }
         );
-*/    
-    	/*Akka.system().scheduler().scheduleOnce(
-                new FiniteDuration(30, TimeUnit.SECONDS),
-                new Runnable() {
-                    @Override
-                    public void run() {
-                    	System.out.println(" :: SCHEDULAR :: ");
-                    	routes.Application.test();
-                    }
-                },Akka.system().dispatcher());*/
+    
     	Akka.system().scheduler().scheduleOnce(
     			new FiniteDuration(10, TimeUnit.SECONDS),
     			new Runnable(){
                     @Override
                     public void run() {
                     	try {
-                    		Unirest.get("http://localhost:9000/test").asString();
+                    		Unirest.get("http://localhost:9000/warmUpActivity").asString();
                     	} catch (UnirestException e){
                     		e.printStackTrace();
                     	}

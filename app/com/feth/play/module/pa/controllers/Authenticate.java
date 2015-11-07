@@ -24,7 +24,6 @@ public class Authenticate extends AuthenticateBase {
 	@Transactional
 	public static Result mobileAuthenticate(final String provider) {
 		noCache(response());
-		System.out.println("mobile Authenticate "+provider);
 		final String payload = request().getQueryString(PAYLOAD_KEY);
 		Result result = PlayAuthenticate.handleAuthentication(provider, ctx(), payload);
 		

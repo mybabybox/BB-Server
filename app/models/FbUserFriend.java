@@ -36,7 +36,6 @@ public class FbUserFriend {
 	public FbUserFriend() {
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static List<FbUserFriend> findByUserId(Long id) {
 		Query q = JPA.em().createQuery("SELECT fbuf FROM FbUserFriend fbuf where user_id = ?1");
 		q.setParameter(1, id);

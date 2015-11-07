@@ -57,7 +57,6 @@ public class SiteTour  {
 	    this.completionTime = new Date();
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Transactional
     public static List<SiteTour> getSiteTours(Long userId) {
 	    Query q = JPA.em().createQuery("Select t from SiteTour t where userId = ?1");

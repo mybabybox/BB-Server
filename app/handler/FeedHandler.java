@@ -77,7 +77,7 @@ public class FeedHandler {
 		        continue;
 		    }
 		    
-			PostVMLite vm = new PostVMLite(post, localUser);
+			PostVMLite vm = new PostVMLite(post, localUser, jedisCache);
 			//TODO: offset is bad name , need to change it to proper name.
 			vm.offset = CalcServer.getScore(CalcServer.getKey(feedType, id), post.id, jedisCache).longValue();
 			vms.add(vm);

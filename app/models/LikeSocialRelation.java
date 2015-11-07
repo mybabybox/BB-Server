@@ -48,7 +48,6 @@ public class LikeSocialRelation extends SocialRelation {
 		return q.executeUpdate() > 0;
     }
 	
-	@SuppressWarnings("unchecked")
     public static List<LikeSocialRelation> getUserLikedPosts(Long id){
     	Query q = JPA.em().createQuery(
     			"Select sr from LikeSocialRelation sr where actor = ?1 and actorType = ?2 and targetType = ?3");
@@ -61,7 +60,6 @@ public class LikeSocialRelation extends SocialRelation {
     	return new ArrayList<>();
     }
     
-	@SuppressWarnings("unchecked")
     public static List<LikeSocialRelation> getPostLikedUsers(Long id){
     	Query q = JPA.em().createQuery(
     			"Select sr from LikeSocialRelation sr where target = ?1 and targetType = ?2 and actorType = ?3");

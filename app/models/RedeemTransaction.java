@@ -76,7 +76,6 @@ public class RedeemTransaction extends domain.Entity implements Serializable, Cr
         }
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Transactional
     public static List<RedeemTransaction> getPendingRedeemTransactions(User user, Long objId, RedeemType redeemType) {
         Query q = JPA.em().createQuery("Select t from RedeemTransaction t where user = ?1 and objId = ?2 and redeemType = ?3 and transactionState <> ?4 and deleted = false");
@@ -91,7 +90,6 @@ public class RedeemTransaction extends domain.Entity implements Serializable, Cr
         }
     }
 	
-	@SuppressWarnings("unchecked")
 	@Transactional
     public static List<RedeemTransaction> getRedeemTransactions(Long objId, RedeemType redeemType) {
 		Query q = JPA.em().createQuery("Select t from RedeemTransaction t where objId = ?1 and redeemType = ?2 and deleted = false order by transactionState desc, CREATED_DATE");

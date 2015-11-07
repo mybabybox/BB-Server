@@ -18,11 +18,13 @@ import babybox.shopping.social.exception.SocialObjectNotPostableException;
 import models.Post.PostType;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import play.data.validation.Constraints.Required;
 
 import com.google.common.base.Objects;
+import common.cache.JedisCache;
 
 import domain.AuditListener;
 import domain.Commentable;

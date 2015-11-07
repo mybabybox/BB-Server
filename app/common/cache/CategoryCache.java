@@ -19,12 +19,10 @@ public class CategoryCache {
         categories = Category.loadCategories();
         for (Category category : categories) {
         	categoriesMap.put(category.id, category);
-        	System.out.println("getAllCategories :: "+category.id);
         }
     }
 
     public static List<Category> getAllCategories() {
-    	System.out.println("getAllCategories :: "+categories.size());
         return categories;
     }
     

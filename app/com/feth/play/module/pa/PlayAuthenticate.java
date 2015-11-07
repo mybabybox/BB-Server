@@ -453,7 +453,6 @@ public abstract class PlayAuthenticate {
 
 	@Transactional
 	private static AuthUser signupUser(final AuthUser u) throws AuthException {
-		System.out.println(JPA.em().isOpen());
 	    if (Application.isOverDailySignupLimit()) {
 	        throw new AuthException("十分抱歉! 由於 babybox是新平台，為了提供最好的體驗給每個用戶，我們預設了每日新登記用戶上限。現在已超出登記上限，請遲些回來重試。");
 	    }
@@ -482,7 +481,6 @@ public abstract class PlayAuthenticate {
 	@Transactional
 	public static Result handleAuthentication(final String provider,
 			final Context context, final Object payload) {
-		System.out.println("handleAuthentication :: "+JPA.em().isOpen());
 		final AuthProvider ap = getProvider(provider);
 		if (ap == null) {
 			// Provider wasn't found and/or user was fooling with our stuff -
@@ -518,7 +516,6 @@ public abstract class PlayAuthenticate {
 	public static Result handleAuthenticationByProvider(final Context context,
 			final Object payload, final AuthProvider ap) throws AuthException {
 		final Object o = ap.authenticate(context, payload);
-		System.out.println("handleAuthenticationByProvider :: "+JPA.em().isOpen());
 		try{
 			if (o instanceof String) {
 				return Controller.redirect((String) o);

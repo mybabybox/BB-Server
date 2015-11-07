@@ -244,11 +244,11 @@ public class ProductController extends Controller{
 	}
 
 	@Transactional
-	public static Result getAllFeedProducts() {
-		return ok(Json.toJson(getPostVMsFromPosts(Post.getEligiblePostsForFeeds())));
+	public Result getAllFeedProducts() {
+		return ok(Json.toJson(getPostVMsFromPosts(Post.getEligiblePostsForFeeds(), jedisCache)));
 	}
 
-	private static List<PostVMLite> getPostVMsFromPosts(List<Post> posts) {
+	private static List<PostVMLite> getPostVMsFromPosts(List<Post> posts, JedisCache jedisCache) {
 		final User localUser = Application.getLocalUser(session());
 		if (!localUser.isLoggedIn()) {
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
@@ -257,7 +257,7 @@ public class ProductController extends Controller{
 		
 		List<PostVMLite> vms = new ArrayList<>();
 		for (Post product : posts) {
-			PostVMLite vm = new PostVMLite(product, localUser);
+			PostVMLite vm = new PostVMLite(product, localUser, jedisCache);
 			vms.add(vm);
 		}
 		return vms;
@@ -299,13 +299,13 @@ public class ProductController extends Controller{
 	}
 
 	@Transactional
-	public static Result product(Long id) {
+	public Result product(Long id) {
 		final User localUser = Application.getLocalUser(session());
-		return ok(views.html.babybox.web.product.render(Json.stringify(Json.toJson(getProductInfoVM(id))), Json.stringify(Json.toJson(new UserVM(localUser)))));
+		return ok(views.html.babybox.web.product.render(Json.stringify(Json.toJson(getProductInfoVM(id))), Json.stringify(Json.toJson(new UserVM(localUser, jedisCache)))));
 	}
 	
 	@Transactional
-	public static Result getProductInfo(Long id) {
+	public Result getProductInfo(Long id) {
 		PostVM post = getProductInfoVM(id);
 		if (post == null) {
 			return notFound();
@@ -313,14 +313,14 @@ public class ProductController extends Controller{
 		return ok(Json.toJson(post));
 	}
 	
-	public static PostVM getProductInfoVM(Long id) {
+	public PostVM getProductInfoVM(Long id) {
 		User localUser = Application.getLocalUser(session());
 		Post post = Post.findById(id);
 		if (post == null) {
 			return null;
 		}
 		onView(id);
-		PostVM vm = new PostVM(post, localUser);
+		PostVM vm = new PostVM(post, localUser, jedisCache);
 		return vm;
 	}
 

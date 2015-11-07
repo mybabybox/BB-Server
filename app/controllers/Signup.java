@@ -236,7 +236,7 @@ public class Signup extends Controller {
 		}
 		
 		if (Application.getLocalUser(session()) != null) {
-			return Application.mainHome();
+			return redirect(routes.Application.mainHome());
 		} else {
 			return Application.login();
 		}

@@ -58,6 +58,7 @@ import com.feth.play.module.pa.user.FirstLastNameIdentity;
 import com.google.common.base.Strings;
 
 import common.cache.CalcServer;
+import common.cache.JedisCache;
 import common.collection.Pair;
 import common.image.FaceFinder;
 import common.utils.DateTimeUtil;
@@ -593,7 +594,6 @@ public class User extends SocialObject implements Subject, Followable {
 		if (authUser instanceof FacebookAuthUser) {
 			saveFbFriends(authUser, user);
 		}
-		System.out.println("user :: "+user);
 		return user;
 	}
 
@@ -771,7 +771,6 @@ public class User extends SocialObject implements Subject, Followable {
 
 	@Transactional
 	public static Long getTodaySignupCount() {
-		System.out.println("getTodaySignupCount :: "+JPA.em().isOpen());
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
 		Query q = JPA.em().createQuery(
 				"SELECT count(u) FROM User u where " +  
@@ -785,7 +784,6 @@ public class User extends SocialObject implements Subject, Followable {
 		return count;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Transactional
 	public static Pair<Integer,String> getAndroidTargetEdmUsers() {
 		StringBuilder sb = new StringBuilder();
@@ -1087,12 +1085,11 @@ public class User extends SocialObject implements Subject, Followable {
 	}
 
 	@JsonIgnore
-	public boolean isFollowedBy(User user) {
-		//CalcServer.isFollowed(user.id, this.id);
+	public boolean isFollowedBy(User user, JedisCache jedisCache) {
+		CalcServer.isFollowed(user.id, this.id, jedisCache);
 		return FollowSocialRelation.isFollowing(user.id, SocialObjectType.USER, this.id, SocialObjectType.USER);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Collection> getUserCollection() {
 		try {
 			Query q = JPA.em().createQuery("SELECT c FROM Collection c where deleted = false and owner = ?");
@@ -1103,7 +1100,6 @@ public class User extends SocialObject implements Subject, Followable {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public Map<String, Long> getUserCategoriesForFeed() {
 		Query q = JPA.em().createNativeQuery("Select c.id, (count(p.id)/(Select count(*) from ViewSocialRelation vr where vr.actor = ?1))*100 "
 				+ "from ViewSocialRelation vsr, post p, category c "
@@ -1118,7 +1114,6 @@ public class User extends SocialObject implements Subject, Followable {
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static List<User> getEligibleUserForFeed() {
 		//TODO filter-out eligible user
 		try {
@@ -1129,7 +1124,6 @@ public class User extends SocialObject implements Subject, Followable {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Post> getUserLikedPosts() {
 		try {
 			Query query = JPA.em().createQuery(
@@ -1145,7 +1139,6 @@ public class User extends SocialObject implements Subject, Followable {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Post> getUserPosts() {
 		try {
 			Query q = JPA.em().createQuery("SELECT p FROM Post p where owner = ?1 and deleted = false");

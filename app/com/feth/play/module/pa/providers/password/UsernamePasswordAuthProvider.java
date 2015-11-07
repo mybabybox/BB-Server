@@ -157,7 +157,6 @@ public abstract class UsernamePasswordAuthProvider<R, UL extends UsernamePasswor
 
 	@Transactional
 	public static Result handleSignup(final Context ctx) {
-		System.out.println("handleSignup :: "+JPA.em().isOpen());
 		return PlayAuthenticate.handleAuthentication(PROVIDER_KEY, ctx,
 				Case.SIGNUP);
 	}

@@ -122,7 +122,6 @@ public class Resource extends SocialObject {
 		return (Resource) q.getSingleResult();
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static List<Resource> findAllResourceOfFolder(Long id) {
 		Query q = JPA.em().createQuery("SELECT r FROM Resource r where folder.id = ?1");
 		q.setParameter(1, id);

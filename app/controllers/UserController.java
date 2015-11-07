@@ -89,7 +89,7 @@ public class UserController extends Controller {
     }
     
 	@Transactional
-	public static Result getUserInfo() {
+	public Result getUserInfo() {
 	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
 	    
 		final User localUser = Application.getLocalUser(session());
@@ -97,7 +97,7 @@ public class UserController extends Controller {
 			return notFound();
 		}
 		
-		UserVM userInfo = new UserVM(localUser);
+		UserVM userInfo = new UserVM(localUser, jedisCache);
 		
 		sw.stop();
         if (logger.underlyingLogger().isDebugEnabled()) {
@@ -107,7 +107,7 @@ public class UserController extends Controller {
 	}
 	
 	@Transactional
-	public static Result getUserInfoById(Long id) {
+	public Result getUserInfoById(Long id) {
 	    NanoSecondStopWatch sw = new NanoSecondStopWatch();
 	    
 		final User localUser = Application.getLocalUser(session());
@@ -116,7 +116,7 @@ public class UserController extends Controller {
 			return notFound();
 		}
 		
-		UserVM userVM = new UserVM(user, localUser);
+		UserVM userVM = new UserVM(user, localUser, jedisCache);
 		
 		sw.stop();
         if (logger.underlyingLogger().isDebugEnabled()) {
@@ -355,7 +355,7 @@ public class UserController extends Controller {
 	
     
     @Transactional
-    public static Result getProfile(Long id) {
+    public Result getProfile(Long id) {
     	NanoSecondStopWatch sw = new NanoSecondStopWatch();
 	    
     	User user = User.findById(id);
@@ -366,7 +366,7 @@ public class UserController extends Controller {
             logger.underlyingLogger().debug("[u="+user.getId()+"] getProfile(). Took "+sw.getElapsedMS()+"ms");
         }
 
-    	return ok(Json.toJson(ProfileVM.profile(user,localUser)));
+    	return ok(Json.toJson(ProfileVM.profile(user,localUser, jedisCache)));
     }
     
     @Transactional
@@ -688,7 +688,7 @@ public class UserController extends Controller {
 	}
   
     @Transactional
-    public static Result profile(Long id) {
+    public Result profile(Long id) {
         	NanoSecondStopWatch sw = new NanoSecondStopWatch();
     	    
         	User user = User.findById(id);
@@ -698,8 +698,8 @@ public class UserController extends Controller {
             if (logger.underlyingLogger().isDebugEnabled()) {
                 logger.underlyingLogger().debug("[u="+user.getId()+"] getProfile(). Took "+sw.getElapsedMS()+"ms");
             }
-            return ok(Json.toJson(ProfileVM.profile(user,localUser)));
-        	//return ok(views.html.babybox.web.profile.render(Json.stringify(Json.toJson(ProfileVM.profile(user,localUser))), Json.stringify(Json.toJson(new UserVM(localUser)))));
+            return ok(Json.toJson(ProfileVM.profile(user,localUser, jedisCache)));
+        	//return ok(views.html.babybox.web.profile.render(Json.stringify(Json.toJson(ProfileVM.profile(user,localUser))), Json.stringify(Json.toJson(new UserVM(localUser, jedisCache)))));
     }
     
 	@Transactional 
@@ -772,7 +772,7 @@ public class UserController extends Controller {
     }
     
     @Transactional
-    public static Result getFollowings(Long id, Long offset) {
+    public Result getFollowings(Long id, Long offset) {
     	final User localUser = Application.getLocalUser(session());
         if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
@@ -784,14 +784,14 @@ public class UserController extends Controller {
     	
     	for (SocialRelation socialRelation : followings) {
     		User user = User.findById(socialRelation.target);
-    		UserVMLite uservm = new UserVMLite(user, localUser);
+    		UserVMLite uservm = new UserVMLite(user, localUser, jedisCache);
     		userFollowings.add(uservm);
     	}
     	return ok(Json.toJson(userFollowings));
     }
     
     @Transactional
-    public static Result getFollowers(Long id, Long offset) {
+    public Result getFollowers(Long id, Long offset) {
     	final User localUser = Application.getLocalUser(session());
         if (!localUser.isLoggedIn()) {
             logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
@@ -803,7 +803,7 @@ public class UserController extends Controller {
     	
     	for(SocialRelation socialRelation : followings){
     		User user = User.findById(socialRelation.actor);
-    		UserVMLite uservm = new UserVMLite(user, localUser);
+    		UserVMLite uservm = new UserVMLite(user, localUser, jedisCache);
     		userFollowers.add(uservm);
     	}
     	return ok(Json.toJson(userFollowers));

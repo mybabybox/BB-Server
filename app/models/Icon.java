@@ -59,7 +59,6 @@ public class Icon {
         return loadIcons(IconType.CATEGORY);
     }
 
-    @SuppressWarnings("unchecked")
     public static List<Icon> loadIcons(IconType iconType) {
         Query q = JPA.em().createQuery("Select i from Icon i where iconType = ?1");
         q.setParameter(1, iconType);

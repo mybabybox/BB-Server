@@ -172,10 +172,8 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		return false;
 	}
 
-	@Override
-	public boolean isLikedBy(User user){
-		//return CalcServer.isLiked(user.id, this.id);
-		return false;
+	public boolean isLikedBy(User user, JedisCache jedisCache){
+		return CalcServer.isLiked(user.id, this.id, jedisCache);
 	}
 
 	@Override
@@ -245,14 +243,12 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public static List<Post> getEligiblePostsForFeeds() {
 		Query q = JPA.em().createQuery("SELECT p FROM Post p where deleted = false");
 		return (List<Post>) q.getResultList();
 		
 	}
 
-	@SuppressWarnings("unchecked")
 	public static List<Post> getUserPosts(Long id) {
 		try {
 			Query q = JPA.em().createQuery("SELECT p FROM Post p where owner = ?1 and deleted = false");
@@ -318,7 +314,6 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		return viewed;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static List<Post> getPostsByCategory(Category category) {
 		try {
 			Query q = JPA.em().createQuery("SELECT p FROM Post p where category = ?1 and deleted = false");
@@ -329,7 +324,6 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public static List<Post> getPosts(final List<Long> postIds) {
 		Query query = JPA.em().createQuery(
 				"select p from Post p where "+
@@ -338,7 +332,6 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		return (List<Post>) query.getResultList();
 	}
 
-	@SuppressWarnings("unchecked")
 	public static List<Post> getPosts(List<Long> postIds, int offset) {
 		try {
 			Query query = JPA.em().createQuery(
@@ -353,7 +346,6 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public static List<Post> getUnmarkedSoldPostsAfter(Date date) {
 		try {
 			Query query = JPA.em().createQuery("Select p from Post p where sold = ?1 and soldMarked = ?2 and soldDate < ?3");

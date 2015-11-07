@@ -1,6 +1,7 @@
 package viewmodel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import common.cache.JedisCache;
 
 import models.Post;
 import models.User;
@@ -31,7 +32,7 @@ public class PostVMLite {
 	@JsonProperty("baseScore") public Long baseScore = 0L;
 	@JsonProperty("timeScore") public Double timeScore = 0D;
 
-    public PostVMLite(Post post, User user) {
+    public PostVMLite(Post post, User user, JedisCache jedisCache) {
         this.id = post.id;
         this.ownerId = post.owner.id;
         this.ownerName = post.owner.displayName;
@@ -49,7 +50,7 @@ public class PostVMLite {
         this.numComments = post.numComments;
         this.numViews = post.numViews;
         
-        this.isLiked = post.isLikedBy(user);
+        this.isLiked = post.isLikedBy(user, jedisCache);
         
         Long[] images = post.getImages();
         if (images != null && images.length > 0) {

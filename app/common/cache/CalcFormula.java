@@ -49,7 +49,7 @@ public class CalcFormula {
         if (post.baseScoreAdjust != null) {
             post.baseScore += post.baseScoreAdjust;     // can be negative
         }
-        post.merge();
+        post.save();
         
         sw.stop();
         logger.underlyingLogger().debug("computeBaseScore completed with baseScore="+post.baseScore+". Took "+sw.getElapsedSecs()+"s");

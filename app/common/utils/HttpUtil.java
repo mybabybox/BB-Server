@@ -13,8 +13,7 @@ public class HttpUtil {
     public static String getHTML(String urlToRead) throws Exception {
         StringBuilder result = new StringBuilder();
 
-        @SuppressWarnings("deprecation")
-		HttpClient client = new DefaultHttpClient();
+        HttpClient client = new DefaultHttpClient();
         HttpGet request = new HttpGet(urlToRead);
         HttpResponse response = client.execute(request);
 

@@ -25,7 +25,6 @@ public class LikeSocialRelationManager {
      * @param user
      * @param objIds
      */
-    @SuppressWarnings("unchecked")
 	public static Set<LikeSocialResult> getSocialRelationBy(User user, List<Long> objIds) {
         if (objIds == null || objIds.size() == 0) {
             return Collections.EMPTY_SET;

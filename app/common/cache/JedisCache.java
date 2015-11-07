@@ -275,8 +275,4 @@ public class JedisCache{
     		jedisPool.returnResource(j);
     	}
     }
-
-	public static JedisCache cache() {
-		return null;
-	}
 }

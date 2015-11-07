@@ -44,8 +44,6 @@ public class CalcServer {
 	public static void warmUpActivity(final JedisCache jedisCache) {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
 		logger.underlyingLogger().debug("warmUpActivity starts");
-		System.out.println(JPA.em().isOpen());
-		System.out.println("warmUpActivity starts");
 		buildCategoryQueues(jedisCache);
 		buildUserQueues(jedisCache);
 		buildPostQueues(jedisCache);
@@ -148,7 +146,6 @@ public class CalcServer {
         logger.underlyingLogger().debug("buildCategoryQueues starts");
         
 		clearCategoryQueues(jedisCache);
-		System.out.println(JPA.em().isOpen());
 		for (Post post : Post.getEligiblePostsForFeeds()) {
 		    if (post.soldMarked) {
                 continue;
@@ -215,7 +212,6 @@ public class CalcServer {
 	}
 	
 	private static void addToCategoryPopularQueue(Post post, JedisCache jedisCache) {
-		System.out.println(JPA.em().isOpen());
 	    if (post.soldMarked) {
             return;
         }

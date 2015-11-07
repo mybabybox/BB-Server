@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import common.cache.JedisCache;
 
 import domain.DefaultValues;
 import models.Comment;
@@ -27,8 +28,8 @@ public class PostVM extends PostVMLite {
     
 	@JsonProperty("deviceType") public String deviceType;
 	
-    public PostVM(Post post, User user) {
-    	super(post, user);
+    public PostVM(Post post, User user, JedisCache jedisCache) {
+    	super(post, user, jedisCache);
     	
         this.ownerNumProducts = post.owner.numProducts;
         this.ownerNumFollowers = post.owner.numFollowers;

@@ -42,7 +42,6 @@ public class Collection extends SocialObject{
 		this.description = description;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static List<Collection> getUserProductCollections(Long id) {
 		try {
             Query q = JPA.em().createQuery("SELECT p FROM Collection p where owner = ?1 and deleted = false");

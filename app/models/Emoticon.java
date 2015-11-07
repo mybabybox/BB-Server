@@ -35,7 +35,6 @@ public class Emoticon {
         this.url = url;
     }
     
-    @SuppressWarnings("unchecked")
     public static List<Emoticon> loadEmoticons() {
         Query q = JPA.em().createQuery("Select i from Emoticon i order by seq");
         return (List<Emoticon>)q.getResultList();

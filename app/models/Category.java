@@ -62,7 +62,6 @@ public class Category extends SocialObject implements Likeable, Postable, Compar
 		this.system = true;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static List<Category> loadCategories() {
 		Query q = JPA.em().createQuery("SELECT c FROM Category c where deleted = 0 order by seq");
 		            return (List<Category>) q.getResultList();

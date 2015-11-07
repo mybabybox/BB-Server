@@ -1,6 +1,7 @@
 package viewmodel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import common.cache.JedisCache;
 
 import controllers.Application;
 import models.Setting;
@@ -27,12 +28,12 @@ public class UserVM extends UserVMLite {
     @JsonProperty("newUser") public boolean newUser = false;
     @JsonProperty("isAdmin") public boolean isAdmin = false;
 
-    public UserVM(User user) {
-    	this(user, user);
+    public UserVM(User user, JedisCache jedisCache) {
+    	this(user, user, jedisCache);
     }
     
-    public UserVM(User user, User localUser) {
-    	super(user, localUser);
+    public UserVM(User user, User localUser, JedisCache jedisCache) {
+    	super(user, localUser, jedisCache);
     	
         this.email = user.email;
         this.firstName = user.firstName;
