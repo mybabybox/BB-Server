@@ -12,7 +12,6 @@ import domain.DefaultValues;
 import java.util.Map;
 import java.util.Set;
 
-
 public class JedisCache {
     private static final play.api.Logger logger = play.api.Logger.apply(JedisCache.class);
     

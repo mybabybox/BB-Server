@@ -37,9 +37,9 @@ public class SoldEventListener {
     					StringUtil.shortMessage(post.title));
     	        activity.save();
     	        */
-    		} catch(Exception e) {
-                logger.underlyingLogger().error(e.getMessage(), e);
-            }
-		}
+    		}
+	    } catch(Exception e) {
+            logger.underlyingLogger().error(e.getMessage(), e);
+        }
     }
 }

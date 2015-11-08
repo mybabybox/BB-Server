@@ -21,7 +21,8 @@ public class ConversationOrderVM {
     @JsonProperty("declined") public boolean declined;
     @JsonProperty("declineDate") public Long declineDate;
     @JsonProperty("active") public boolean active;
-   
+    @JsonProperty("closed") public boolean closed;
+
 	public ConversationOrderVM(ConversationOrder order, User localUser) {
 		User otherUser = order.conversation.otherUser(localUser);
 		this.id = order.id;
@@ -37,5 +38,6 @@ public class ConversationOrderVM {
 		this.declined = order.declined;
 		this.declineDate = order.declineDate.getTime();
 		this.active = order.active;
+		this.closed = order.isOrderClosed();
 	}
 }
