@@ -15,7 +15,7 @@ object ApplicationBuild extends Build {
     javaJdbc,
     javaJpa,
     "mysql" % "mysql-connector-java" % "5.1.36",
-    "org.hibernate" % "hibernate-entitymanager" % "4.2.7.Final",
+    "org.hibernate" % "hibernate-entitymanager" % "4.3.11.Final",
     "org.hamcrest" % "hamcrest-all" % "1.3",
     "joda-time" % "joda-time" % "2.3",
     "com.google.guava" % "guava" % "12.0",
