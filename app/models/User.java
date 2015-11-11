@@ -382,8 +382,8 @@ public class User extends SocialObject implements Subject, Followable {
 	public void deleteProduct(Post post) {
         post.deleted = true;
         post.deletedBy = this;
+        post.owner.numProducts--;
         post.save();
-        this.numProducts--;
 	}
 	
 	/**
@@ -658,6 +658,10 @@ public class User extends SocialObject implements Subject, Followable {
 
 	@Transactional
 	public boolean isSuperAdmin() {
+	    if (roles == null) {
+	        return false;
+	    }
+	    
 		for (SecurityRole role : roles) {
 			if (SecurityRole.RoleType.SUPER_ADMIN.name().equals(role.roleName)) {
 				return true;
@@ -915,18 +919,6 @@ public class User extends SocialObject implements Subject, Followable {
 
 	public void setEmailValidated(boolean emailValidated) {
 		this.emailValidated = emailValidated;
-	}
-
-	public boolean isHomeTourCompleted() {
-		List<SiteTour> tours = SiteTour.getSiteTours(id);
-		if (tours != null) {
-			for (SiteTour tour : tours) {
-				if (SiteTour.TourType.HOME.equals(tour.tourType)) {
-					return true;        
-				}
-			}
-		}
-		return false;
 	}
 
 	public boolean isNewUser() {

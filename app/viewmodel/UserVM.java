@@ -34,6 +34,10 @@ public class UserVM extends UserVMLite {
     public UserVM(User user, User localUser) {
     	super(user, localUser);
     	
+    	if (!user.isLoggedIn()) {
+    	    return;
+    	}
+    	
         this.email = user.email;
         this.firstName = user.firstName;
         this.lastName = user.lastName;

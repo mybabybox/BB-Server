@@ -1,5 +1,7 @@
 package models;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -46,6 +48,7 @@ public class GcmToken extends domain.Entity {
         gcmToken.setUserId(userId);
         gcmToken.setRegId(key);
         gcmToken.setVersionCode(versionCode);
+        gcmToken.setCreatedDate(new Date());
         gcmToken.save();
     }
 
@@ -55,6 +58,11 @@ public class GcmToken extends domain.Entity {
 			Query q = JPA.em().createQuery("SELECT g FROM GcmToken g where userId = ?1 and deleted = false order by CREATED_DATE desc");
 			q.setParameter(1, userId);
 			q.setMaxResults(1);
+			
+			if (q.getMaxResults() > 1) {
+	            logger.underlyingLogger().error("[u="+userId+"] has "+q.getMaxResults()+" GCM tokens!!");
+	        }
+			
 			return (GcmToken) q.getSingleResult();
 		} catch (NoResultException e) {
 			return null;

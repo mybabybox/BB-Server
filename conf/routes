@@ -94,10 +94,10 @@ POST    /message/new                                controllers.UserController.n
 GET     /get-unread-message-count                   controllers.UserController.getUnreadMessageCount()
 
 # ConversationOrder
-GET     /conversation-order/new                     controllers.UserController.newConversationOrder(conversationId:Long)
-GET     /conversation-order/cancel                  controllers.UserController.cancelConversationOrder(id:Long)
-GET     /conversation-order/accept                  controllers.UserController.acceptConversationOrder(id:Long)
-GET     /conversation-order/decline                 controllers.UserController.declineConversationOrder(id:Long)
+GET     /conversation-order/new/:conversationId     controllers.UserController.newConversationOrder(conversationId:Long)
+GET     /conversation-order/cancel/:id              controllers.UserController.cancelConversationOrder(id:Long)
+GET     /conversation-order/accept/:id              controllers.UserController.acceptConversationOrder(id:Long)
+GET     /conversation-order/decline/:id             controllers.UserController.declineConversationOrder(id:Long)
 
 # Product
 GET		/get-category-popular-feed/:id/:postType/:offset		controllers.ProductController.getCategoryPopularFeed(id :Long, postType: String, offset: Long)

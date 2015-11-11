@@ -2,154 +2,259 @@
 <classpath>
 	<classpathentry kind="src" output=".target" path="app"/>
 	<classpathentry kind="src" output=".target" path="test"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/gcm-server-1.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/JJIL-J2SE.jar"/>
 	<classpathentry kind="lib" path="lib/JJILCore.jar"/>
+	<classpathentry kind="lib" path="lib/json-simple-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/play-plugins-redis_2.10-2.1.1.jar"/>
-	<classpathentry kind="lib" path="/Users/keithlei/_Sourcecode/BabyBox/BB-Server_master/target/scala-2.10/classes_managed"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play_2.10/2.1.1/jars/play_2.10.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/sbt-link/2.1.1/jars/sbt-link.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-exceptions/2.1.1/jars/play-exceptions.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/templates_2.10/2.1.1/jars/templates_2.10.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.github.scala-incubator.io/scala-io-file_2.10/0.4.2/jars/scala-io-file_2.10.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.github.scala-incubator.io/scala-io-core_2.10/0.4.2/jars/scala-io-core_2.10.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.jsuereth/scala-arm_2.10/1.3/jars/scala-arm_2.10.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-iteratees_2.10/2.1.1/jars/play-iteratees_2.10.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-stm/scala-stm_2.10.0/0.6/jars/scala-stm_2.10.0.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.typesafe/config/1.0.0/bundles/config.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/io.netty/netty/3.6.3.Final/bundles/netty.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.typesafe.netty/netty-http-pipelining/1.1.1/jars/netty-http-pipelining.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.slf4j/jul-to-slf4j/1.6.6/jars/jul-to-slf4j.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.slf4j/jcl-over-slf4j/1.6.6/jars/jcl-over-slf4j.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/ch.qos.logback/logback-core/1.0.7/jars/logback-core.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/ch.qos.logback/logback-classic/1.0.7/jars/logback-classic.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.typesafe.akka/akka-actor_2.10/2.1.0/bundles/akka-actor_2.10.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.typesafe.akka/akka-slf4j_2.10/2.1.0/bundles/akka-slf4j_2.10.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.slf4j/slf4j-api/1.7.2/jars/slf4j-api.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/joda-time/joda-time/jars/joda-time-2.3.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.joda/joda-convert/1.2/jars/joda-convert.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.apache.commons/commons-lang3/3.1/jars/commons-lang3.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.ning/async-http-client/1.7.6/jars/async-http-client.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/oauth.signpost/signpost-core/1.2.1.2/jars/signpost-core.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/oauth.signpost/signpost-commonshttp4/1.2.1.2/jars/signpost-commonshttp4.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.apache.httpcomponents/httpclient/jars/httpclient-4.2.5.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.apache.httpcomponents/httpcore/jars/httpcore-4.2.4.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/commons-logging/commons-logging/1.1.1/jars/commons-logging.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/commons-codec/commons-codec/1.6/jars/commons-codec.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.codehaus.jackson/jackson-core-asl/1.9.10/jars/jackson-core-asl.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.codehaus.jackson/jackson-mapper-asl/1.9.10/jars/jackson-mapper-asl.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/net.sf.ehcache/ehcache-core/2.6.0/jars/ehcache-core.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/javax.transaction/jta/1.1/jars/jta.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-lang/scala-reflect/2.10.0/jars/scala-reflect.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-java_2.10/2.1.1/jars/play-java_2.10.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.yaml/snakeyaml/1.10/bundles/snakeyaml.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.hibernate/hibernate-validator/4.3.0.Final/jars/hibernate-validator.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/javax.validation/validation-api/1.0.0.GA/jars/validation-api.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.springframework/spring-context/3.1.2.RELEASE/jars/spring-context.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.springframework/spring-core/3.1.2.RELEASE/jars/spring-core.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.springframework/spring-beans/3.1.2.RELEASE/jars/spring-beans.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.reflections/reflections/0.9.8/jars/reflections.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.google.guava/guava/13.0.1/jars/guava.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.google.code.findbugs/jsr305/2.0.1/jars/jsr305.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/javax.servlet/javax.servlet-api/3.0.1/jars/javax.servlet-api.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-java-jdbc_2.10/2.1.1/jars/play-java-jdbc_2.10.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-jdbc_2.10/2.1.1/jars/play-jdbc_2.10.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.jolbox/bonecp/0.7.1.RELEASE/bundles/bonecp.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.h2database/h2/1.3.168/jars/h2.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/tyrex/tyrex/1.0.1/jars/tyrex.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-java-jpa_2.10/2.1.1/jars/play-java-jpa_2.10.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.hibernate.javax.persistence/hibernate-jpa-2.0-api/1.0.1.Final/jars/hibernate-jpa-2.0-api.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/mysql/mysql-connector-java/jars/mysql-connector-java-5.1.18.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.hibernate/hibernate-entitymanager/jars/hibernate-entitymanager-4.2.7.Final.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.jboss.logging/jboss-logging/jars/jboss-logging-3.1.0.GA.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/dom4j/dom4j/jars/dom4j-1.6.1.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.javassist/javassist/bundles/javassist-3.18.1-GA.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.jboss.spec.javax.transaction/jboss-transaction-api_1.1_spec/jars/jboss-transaction-api_1.1_spec-1.0.1.Final.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.hibernate.common/hibernate-commons-annotations/jars/hibernate-commons-annotations-4.0.2.Final.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.hibernate/hibernate-core/jars/hibernate-core-4.2.7.Final.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/antlr/antlr/2.7.7/jars/antlr.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.hamcrest/hamcrest-all/jars/hamcrest-all-1.3.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/commons-io/commons-io/jars/commons-io-2.1.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/be.objectify/deadbolt-java_2.10/jars/deadbolt-java_2.10-2.1-RC2.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/be.objectify/deadbolt-core_2.10/jars/deadbolt-core_2.10-2.1-RC2.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/com.feth/play-easymail_2.10/jars/play-easymail_2.10-0.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/com.typesafe/play-plugins-mailer_2.10/jars/play-plugins-mailer_2.10-2.1.0.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.apache.commons/commons-email/jars/commons-email-1.2.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/javax.mail/mail/jars/mail-1.4.1.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/javax.activation/activation/jars/activation-1.1.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/com.typesafe/play-plugins-util_2.10/jars/play-plugins-util_2.10-2.1.0.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.ow2.spec.ee/ow2-atinject-1.0-spec/bundles/ow2-atinject-1.0-spec-1.0.10.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/com.cedarsoft/guice-annotations/jars/guice-annotations-2.0.1.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/com.intellij/annotations/jars/annotations-7.0.3.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.mindrot/jbcrypt/jars/jbcrypt-0.3m.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/net.coobird/thumbnailator/jars/thumbnailator-0.4.7.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/com.clever-age/play2-elasticsearch/jars/play2-elasticsearch-0.6-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.elasticsearch/elasticsearch/jars/elasticsearch-0.90.2.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.apache.lucene/lucene-core/jars/lucene-core-4.3.1.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.apache.lucene/lucene-analyzers-common/jars/lucene-analyzers-common-4.3.1.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.apache.lucene/lucene-codecs/jars/lucene-codecs-4.3.1.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.apache.lucene/lucene-queries/jars/lucene-queries-4.3.1.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.apache.lucene/lucene-memory/jars/lucene-memory-4.3.1.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.apache.lucene/lucene-highlighter/jars/lucene-highlighter-4.3.1.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.apache.lucene/lucene-queryparser/jars/lucene-queryparser-4.3.1.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.apache.lucene/lucene-sandbox/jars/lucene-sandbox-4.3.1.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.apache.lucene/lucene-suggest/jars/lucene-suggest-4.3.1.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.apache.lucene/lucene-join/jars/lucene-join-4.3.1.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.apache.lucene/lucene-grouping/jars/lucene-grouping-4.3.1.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.apache.lucene/lucene-spatial/jars/lucene-spatial-4.3.1.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/com.spatial4j/spatial4j/jars/spatial4j-0.3.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/commons-pool/commons-pool/jars/commons-pool-1.5.5.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/commons-lang/commons-lang/2.6/jars/commons-lang.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/commons-collections/commons-collections/3.2.1/jars/commons-collections.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/biz.source_code/base64coder/bundles/base64coder-2010-12-19.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/redis.clients/jedis/jars/jedis-2.0.0.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.sedis/sedis/jars/sedis-1.0.1.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.jsoup/jsoup/jars/jsoup-1.7.3.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/com.github.fedy2/yahoo-weather-java-api/jars/yahoo-weather-java-api-1.1.0.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/org.slf4j/slf4j-simple/jars/slf4j-simple-1.7.2.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-test_2.10/2.1.1/jars/play-test_2.10.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/junit/junit-dep/4.10/jars/junit-dep.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.hamcrest/hamcrest-core/1.1/jars/hamcrest-core.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.specs2/specs2_2.10/1.13/jars/specs2_2.10.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.specs2/scalaz-core_2.10/7.0.0/jars/scalaz-core_2.10.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.specs2/scalaz-concurrent_2.10/7.0.0/jars/scalaz-concurrent_2.10.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.specs2/scalaz-effect_2.10/7.0.0/jars/scalaz-effect_2.10.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.novocode/junit-interface/0.10/jars/junit-interface.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-tools.testing/test-interface/0.5/jars/test-interface.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.fluentlenium/fluentlenium-festassert/0.7.3/jars/fluentlenium-festassert.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.fluentlenium/fluentlenium-core/0.7.3/jars/fluentlenium-core.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.seleniumhq.selenium/selenium-java/2.25.0/jars/selenium-java.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.seleniumhq.selenium/selenium-android-driver/2.25.0/jars/selenium-android-driver.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.seleniumhq.selenium/selenium-remote-driver/2.25.0/jars/selenium-remote-driver.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/cglib/cglib-nodep/2.1_3/jars/cglib-nodep.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.json/json/20080701/jars/json.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.seleniumhq.selenium/selenium-api/2.25.0/jars/selenium-api.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.apache.commons/commons-exec/1.1/jars/commons-exec.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/net.java.dev.jna/jna/3.4.0/jars/jna.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/net.java.dev.jna/platform/3.4.0/jars/platform.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.seleniumhq.selenium/selenium-chrome-driver/2.25.0/jars/selenium-chrome-driver.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.seleniumhq.selenium/selenium-htmlunit-driver/2.25.0/jars/selenium-htmlunit-driver.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/net.sourceforge.htmlunit/htmlunit/2.9/jars/htmlunit.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/xalan/xalan/2.7.1/jars/xalan.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/xalan/serializer/2.7.1/jars/serializer.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/xml-apis/xml-apis/1.3.04/jars/xml-apis.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.apache.httpcomponents/httpmime/4.1.2/jars/httpmime.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/net.sourceforge.htmlunit/htmlunit-core-js/2.9/jars/htmlunit-core-js.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/xerces/xercesImpl/2.9.1/jars/xercesImpl.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/net.sourceforge.nekohtml/nekohtml/1.9.15/jars/nekohtml.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/net.sourceforge.cssparser/cssparser/0.9.5/jars/cssparser.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.w3c.css/sac/1.3/jars/sac.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.seleniumhq.selenium/selenium-firefox-driver/2.25.0/jars/selenium-firefox-driver.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.seleniumhq.selenium/selenium-ie-driver/2.25.0/jars/selenium-ie-driver.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.seleniumhq.selenium/selenium-iphone-driver/2.25.0/jars/selenium-iphone-driver.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.seleniumhq.selenium/selenium-safari-driver/2.25.0/jars/selenium-safari-driver.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.webbitserver/webbit/0.4.6/jars/webbit.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.seleniumhq.selenium/selenium-support/2.25.0/jars/selenium-support.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.easytesting/fest-assert/1.4/jars/fest-assert.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.easytesting/fest-util/1.1.6/jars/fest-util.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/framework/sbt/boot/scala-2.10.0/lib/scala-library.jar"/>
 	<classpathentry kind="lib" path="lib/sun.misc.BASE64Decoder.jar"/>
-	<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/cache/com.drewnoakes/metadata-extractor/jars/metadata-extractor-2.7.2.jar"/>
-	<classpathentry kind="lib" path="lib/gcm-server-1.0.2.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/antlr/antlr/2.7.7/jars/antlr.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/asm/asm/3.3/jars/asm.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/asm/asm/3.3.1/jars/asm.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/asm/asm-analysis/3.3.1/jars/asm-analysis.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/asm/asm-commons/3.3/jars/asm-commons.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/asm/asm-tree/3.3/jars/asm-tree.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/asm/asm-tree/3.3.1/jars/asm-tree.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/asm/asm-util/3.3/jars/asm-util.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/asm/asm-util/3.3.1/jars/asm-util.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/cglib/cglib-nodep/2.1_3/jars/cglib-nodep.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/ch.qos.logback/logback-classic/1.0.7/jars/logback-classic.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/ch.qos.logback/logback-core/1.0.7/jars/logback-core.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.github.jsuereth.scala-arm/scala-arm_2.9.1/1.1/jars/scala-arm_2.9.1.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.github.mpeltonen/sbt-idea/scala_2.9.2/sbt_0.12/1.2.0/jars/sbt-idea.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.github.scala-incubator.io/scala-io-core_2.10/0.4.2/jars/scala-io-core_2.10.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.github.scala-incubator.io/scala-io-core_2.9.1/0.4.0-seq/jars/scala-io-core_2.9.1.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.github.scala-incubator.io/scala-io-core_2.9.2/0.4.1/jars/scala-io-core_2.9.2.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.github.scala-incubator.io/scala-io-file_2.10/0.4.2/jars/scala-io-file_2.10.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.github.scala-incubator.io/scala-io-file_2.9.1/0.4.0-seq/jars/scala-io-file_2.9.1.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.github.scala-incubator.io/scala-io-file_2.9.2/0.4.1/jars/scala-io-file_2.9.2.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.google.code.findbugs/jsr305/1.3.9/jars/jsr305.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.google.code.findbugs/jsr305/2.0.1/jars/jsr305.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.google.guava/guava/10.0.1/jars/guava.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.google.guava/guava/12.0/jars/guava.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.google.guava/guava/13.0.1/jars/guava.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.google.javascript/closure-compiler/rr2079.1/jars/closure-compiler.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.h2database/h2/1.3.168/jars/h2.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.jcraft/jsch/0.1.44-1/jars/jsch.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.jcraft/jsch/0.1.46/jars/jsch.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.jolbox/bonecp/0.7.1.RELEASE/bundles/bonecp.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.jsuereth/scala-arm_2.10/1.3/jars/scala-arm_2.10.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.ning/async-http-client/1.7.6/jars/async-http-client.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.novocode/junit-interface/0.9/jars/junit-interface.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.typesafe/config/1.0.0/bundles/config.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.typesafe/mima-core_2.9.2/0.1.4/jars/mima-core_2.9.2.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.typesafe/mima-reporter_2.9.2/0.1.4/jars/mima-reporter_2.9.2.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.typesafe/sbt-mima-plugin/scala_2.9.2/sbt_0.12/0.1.4/jars/sbt-mima-plugin.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.typesafe.akka/akka-actor/2.0.1/jars/akka-actor.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.typesafe.akka/akka-actor_2.10/2.1.0/bundles/akka-actor_2.10.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.typesafe.akka/akka-slf4j_2.10/2.1.0/bundles/akka-slf4j_2.10.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.typesafe.sbteclipse/sbteclipse-core/scala_2.9.2/sbt_0.12/2.1.1/jars/sbteclipse-core.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.typesafe.sbteclipse/sbteclipse-plugin/scala_2.9.2/sbt_0.12/2.1.1/jars/sbteclipse-plugin.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.typesafe.sbtidea/sbt-idea/scala_2.9.2/sbt_0.12/1.1.1/jars/sbt-idea.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/com.typesafe.sbtscalariform/sbtscalariform/scala_2.9.2/sbt_0.12/0.5.1/jars/sbtscalariform.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/commons-codec/commons-codec/1.2/jars/commons-codec.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/commons-codec/commons-codec/1.3/jars/commons-codec.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/commons-codec/commons-codec/1.4/jars/commons-codec.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/commons-codec/commons-codec/1.6/jars/commons-codec.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/commons-collections/commons-collections/3.2.1/jars/commons-collections.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/commons-httpclient/commons-httpclient/3.1/jars/commons-httpclient.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/commons-io/commons-io/2.0.1/jars/commons-io.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/commons-lang/commons-lang/2.6/jars/commons-lang.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/commons-logging/commons-logging/1.0.4/jars/commons-logging.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/commons-logging/commons-logging/1.1.1/jars/commons-logging.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/io.netty/netty/3.6.3.Final/bundles/netty.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/javax.servlet/javax.servlet-api/3.0.1/jars/javax.servlet-api.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/javax.transaction/jta/1.1/jars/jta.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/javax.validation/validation-api/1.0.0.GA/jars/validation-api.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/jline/jline/0.9.94/jars/jline.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/jline/jline/1.0/jars/jline.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/joda-time/joda-time/2.1/jars/joda-time.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/junit/junit/3.8.1/jars/junit.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/junit/junit-dep/4.10/jars/junit-dep.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/junit/junit-dep/4.8.2/jars/junit-dep.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/me.lessis/ls_2.9.1/0.1.2-RC2/jars/ls_2.9.1.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/net.contentobjects.jnotify/jnotify/0.94/jars/jnotify.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/net.databinder/dispatch-core_2.9.1/0.8.6/jars/dispatch-core_2.9.1.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/net.databinder/dispatch-futures_2.9.1/0.8.6/jars/dispatch-futures_2.9.1.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/net.databinder/dispatch-http_2.9.1/0.8.6/jars/dispatch-http_2.9.1.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/net.databinder.giter8/giter8-lib_2.9.1/0.5.0/jars/giter8-lib_2.9.1.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/net.databinder.giter8/giter8_2.9.1/0.5.0/jars/giter8_2.9.1.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/net.java.dev.jna/jna/3.2.3/jars/jna.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/net.java.dev.jna/jna/3.4.0/jars/jna.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/net.java.dev.jna/platform/3.4.0/jars/platform.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/net.sf.ehcache/ehcache-core/2.6.0/jars/ehcache-core.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/net.sourceforge.cssparser/cssparser/0.9.5/jars/cssparser.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/net.sourceforge.htmlunit/htmlunit/2.9/jars/htmlunit.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/net.sourceforge.htmlunit/htmlunit-core-js/2.9/jars/htmlunit-core-js.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/net.sourceforge.nekohtml/nekohtml/1.9.15/jars/nekohtml.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/oauth.signpost/signpost-commonshttp4/1.2.1.2/jars/signpost-commonshttp4.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/oauth.signpost/signpost-core/1.2.1.2/jars/signpost-core.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.antlr/stringtemplate/3.2.1/jars/stringtemplate.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.apache.commons/commons-exec/1.1/jars/commons-exec.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.apache.commons/commons-lang3/3.1/jars/commons-lang3.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.apache.httpcomponents/httpclient/4.0.1/jars/httpclient.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.apache.httpcomponents/httpclient/4.1.2/jars/httpclient.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.apache.httpcomponents/httpcore/4.0.1/jars/httpcore.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.apache.httpcomponents/httpcore/4.1.2/jars/httpcore.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.apache.httpcomponents/httpcore/4.1.3/jars/httpcore.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.apache.httpcomponents/httpmime/4.1.2/jars/httpmime.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.apache.ivy/ivy/2.3.0-rc1/jars/ivy.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.avaje.ebeanorm/avaje-ebeanorm/3.1.2/jars/avaje-ebeanorm.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.avaje.ebeanorm/avaje-ebeanorm-agent/3.1.1/jars/avaje-ebeanorm-agent.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.avaje.ebeanorm/avaje-ebeanorm-api/3.1.1/jars/avaje-ebeanorm-api.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.avaje.ebeanorm/avaje-ebeanorm-server/3.1.2/jars/avaje-ebeanorm-server.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.clapper/classutil_2.9.1/0.4.2/jars/classutil_2.9.1.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.clapper/grizzled-scala_2.9.1/1.0.8/jars/grizzled-scala_2.9.1.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.clapper/grizzled-slf4j_2.9.1/0.6.5/jars/grizzled-slf4j_2.9.1.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.clapper/scalasti_2.9.1/0.5.5/jars/scalasti_2.9.1.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.codehaus.jackson/jackson-core-asl/1.9.10/jars/jackson-core-asl.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.codehaus.jackson/jackson-mapper-asl/1.9.10/jars/jackson-mapper-asl.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.easytesting/fest-assert/1.4/jars/fest-assert.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.easytesting/fest-util/1.1.6/jars/fest-util.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.eclipse.jgit/org.eclipse.jgit/1.3.0.201202151440-r/jars/org.eclipse.jgit.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.fluentlenium/fluentlenium-core/0.7.3/jars/fluentlenium-core.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.fluentlenium/fluentlenium-festassert/0.7.3/jars/fluentlenium-festassert.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.fusesource.jansi/jansi/1.4/jars/jansi.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.hamcrest/hamcrest-core/1.1/jars/hamcrest-core.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.hibernate/hibernate-validator/4.3.0.Final/jars/hibernate-validator.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.hibernate.javax.persistence/hibernate-jpa-2.0-api/1.0.1.Final/jars/hibernate-jpa-2.0-api.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.javassist/javassist/3.16.1-GA/jars/javassist.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.jboss.logging/jboss-logging/3.1.0.CR2/jars/jboss-logging.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.joda/joda-convert/1.2/jars/joda-convert.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.json/json/20080701/jars/json.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.mockito/mockito-all/1.9.0/jars/mockito-all.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.parboiled/parboiled-core/1.0.2/jars/parboiled-core.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.parboiled/parboiled-java/1.0.2/jars/parboiled-java.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.pegdown/pegdown/1.1.0/jars/pegdown.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.reflections/reflections/0.9.8/jars/reflections.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-lang/jline/2.10.0/jars/jline.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-lang/jline/2.9.2/jars/jline.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-lang/scala-compiler/2.10.0/jars/scala-compiler.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-lang/scala-compiler/2.9.2/jars/scala-compiler.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-lang/scala-library/2.10.0/jars/scala-library.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-lang/scala-library/2.9.2/jars/scala-library.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-lang/scala-reflect/2.10.0/jars/scala-reflect.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-lang/scala-swing/2.9.2/jars/scala-swing.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/actions/0.12.2/jars/actions.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/api/0.12.2/jars/api.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/cache/0.12.2/jars/cache.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/classfile/0.12.2/jars/classfile.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/classpath/0.12.2/jars/classpath.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/collections/0.12.2/jars/collections.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/command/0.12.2/jars/command.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/compile/0.12.2/jars/compile.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/compiler-integration/0.12.2/jars/compiler-integration.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/compiler-interface/0.12.2/jars/compiler-interface-bin.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/compiler-interface/0.12.2/jars/compiler-interface-src.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/compiler-ivy-integration/0.12.2/jars/compiler-ivy-integration.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/completion/0.12.2/jars/completion.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/control/0.12.2/jars/control.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/incremental-compiler/0.12.2/jars/incremental-compiler.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/interface/0.12.2/jars/interface.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/io/0.12.2/jars/io.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/ivy/0.12.2/jars/ivy.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/launcher-interface/0.12.2/jars/launcher-interface.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/logging/0.12.2/jars/logging.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/main/0.12.2/jars/main.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/persist/0.12.2/jars/persist.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/precompiled-2_10_0/0.12.2/jars/compiler-interface-bin.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/precompiled-2_8_2/0.12.2/jars/compiler-interface-bin.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/process/0.12.2/jars/process.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/run/0.12.2/jars/run.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/sbt/0.12.2/jars/sbt.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/task-system/0.12.2/jars/task-system.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/tasks/0.12.2/jars/tasks.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/test-agent/0.12.2/jars/test-agent.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/testing/0.12.2/jars/testing.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-sbt/tracking/0.12.2/jars/tracking.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-stm/scala-stm_2.10.0/0.6/jars/scala-stm_2.10.0.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-tools.sbinary/sbinary_2.9.0/0.4.0/jars/sbinary_2.9.0.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scala-tools.testing/test-interface/0.5/jars/test-interface.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scalariform/scalariform_2.9.2/0.1.2/jars/scalariform_2.9.2.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.scalaz/scalaz-core_2.9.2/6.0.4/jars/scalaz-core_2.9.2.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.seleniumhq.selenium/selenium-android-driver/2.25.0/jars/selenium-android-driver.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.seleniumhq.selenium/selenium-api/2.25.0/jars/selenium-api.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.seleniumhq.selenium/selenium-chrome-driver/2.25.0/jars/selenium-chrome-driver.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.seleniumhq.selenium/selenium-firefox-driver/2.25.0/jars/selenium-firefox-driver.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.seleniumhq.selenium/selenium-htmlunit-driver/2.25.0/jars/selenium-htmlunit-driver.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.seleniumhq.selenium/selenium-ie-driver/2.25.0/jars/selenium-ie-driver.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.seleniumhq.selenium/selenium-iphone-driver/2.25.0/jars/selenium-iphone-driver.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.seleniumhq.selenium/selenium-java/2.25.0/jars/selenium-java.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.seleniumhq.selenium/selenium-remote-driver/2.25.0/jars/selenium-remote-driver.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.seleniumhq.selenium/selenium-safari-driver/2.25.0/jars/selenium-safari-driver.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.seleniumhq.selenium/selenium-support/2.25.0/jars/selenium-support.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.slf4j/jcl-over-slf4j/1.6.6/jars/jcl-over-slf4j.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.slf4j/jul-to-slf4j/1.6.6/jars/jul-to-slf4j.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.slf4j/slf4j-api/1.6.2/jars/slf4j-api.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.slf4j/slf4j-api/1.7.2/jars/slf4j-api.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.specs2/scalaz-concurrent_2.10/7.0.0/jars/scalaz-concurrent_2.10.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.specs2/scalaz-core_2.10/7.0.0/jars/scalaz-core_2.10.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.specs2/scalaz-effect_2.10/7.0.0/jars/scalaz-effect_2.10.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.specs2/specs2-scalaz-core_2.9.2/6.0.1/jars/specs2-scalaz-core_2.9.2.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.specs2/specs2_2.10/1.13/jars/specs2_2.10.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.specs2/specs2_2.9.2/1.12.3/jars/specs2_2.9.2.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.springframework/spring-beans/3.1.2.RELEASE/jars/spring-beans.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.springframework/spring-context/3.1.2.RELEASE/jars/spring-context.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.springframework/spring-core/3.1.2.RELEASE/jars/spring-core.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.w3c.css/sac/1.3/jars/sac.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.webbitserver/webbit/0.4.6/jars/webbit.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/org.yaml/snakeyaml/1.10/bundles/snakeyaml.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/anorm_2.10/2.1.1/jars/anorm_2.10.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/anorm_2.10/2.1.1/srcs/anorm_2.10-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/anorm_2.10/2.1.1/srcs/anorm_2.10-test-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/console_2.9.2/2.1.1/jars/console_2.9.2.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/console_2.9.2/2.1.1/srcs/console_2.9.2-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/console_2.9.2/2.1.1/srcs/console_2.9.2-test-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/filters-helpers_2.10/2.1.1/jars/filters-helpers_2.10.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/filters-helpers_2.10/2.1.1/srcs/filters-helpers_2.10-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/filters-helpers_2.10/2.1.1/srcs/filters-helpers_2.10-test-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-exceptions/2.1.1/jars/play-exceptions.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-exceptions/2.1.1/srcs/play-exceptions-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-exceptions/2.1.1/srcs/play-exceptions-test-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-iteratees_2.10/2.1.1/jars/play-iteratees_2.10.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-iteratees_2.10/2.1.1/srcs/play-iteratees_2.10-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-iteratees_2.10/2.1.1/srcs/play-iteratees_2.10-test-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-java-ebean_2.10/2.1.1/jars/play-java-ebean_2.10.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-java-ebean_2.10/2.1.1/srcs/play-java-ebean_2.10-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-java-ebean_2.10/2.1.1/srcs/play-java-ebean_2.10-test-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-java-jdbc_2.10/2.1.1/jars/play-java-jdbc_2.10.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-java-jdbc_2.10/2.1.1/srcs/play-java-jdbc_2.10-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-java-jdbc_2.10/2.1.1/srcs/play-java-jdbc_2.10-test-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-java-jpa_2.10/2.1.1/jars/play-java-jpa_2.10.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-java-jpa_2.10/2.1.1/srcs/play-java-jpa_2.10-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-java-jpa_2.10/2.1.1/srcs/play-java-jpa_2.10-test-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-java_2.10/2.1.1/jars/play-java_2.10.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-java_2.10/2.1.1/srcs/play-java_2.10-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-java_2.10/2.1.1/srcs/play-java_2.10-test-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-jdbc_2.10/2.1.1/jars/play-jdbc_2.10.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-jdbc_2.10/2.1.1/srcs/play-jdbc_2.10-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-jdbc_2.10/2.1.1/srcs/play-jdbc_2.10-test-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-test_2.10/2.1.1/jars/play-test_2.10.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-test_2.10/2.1.1/srcs/play-test_2.10-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play-test_2.10/2.1.1/srcs/play-test_2.10-test-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play_2.10/2.1.1/jars/play_2.10.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play_2.10/2.1.1/srcs/play_2.10-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/play_2.10/2.1.1/srcs/play_2.10-test-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/root_2.10/2.1.1/docs/root_2.10-javadoc.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/root_2.10/2.1.1/jars/root_2.10.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/root_2.10/2.1.1/srcs/root_2.10-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/routes-compiler_2.9.2/2.1.1/jars/routes-compiler_2.9.2.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/sbt-link/2.1.1/jars/sbt-link.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/sbt-link/2.1.1/srcs/sbt-link-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/sbt-link/2.1.1/srcs/sbt-link-test-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/sbt-plugin/scala_2.9.2/sbt_0.12/2.1.1/jars/sbt-plugin.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/sbt-plugin/scala_2.9.2/sbt_0.12/2.1.1/srcs/sbt-plugin-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/sbt-plugin/scala_2.9.2/sbt_0.12/2.1.1/srcs/sbt-plugin-test-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/templates-compiler_2.9.2/2.1.1/jars/templates-compiler_2.9.2.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/templates_2.10/2.1.1/jars/templates_2.10.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/templates_2.10/2.1.1/srcs/templates_2.10-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/play/templates_2.10/2.1.1/srcs/templates_2.10-test-sources.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/rhino/js/1.7R2/jars/js.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/tyrex/tyrex/1.0.1/jars/tyrex.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/xalan/serializer/2.7.1/jars/serializer.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/xalan/xalan/2.7.1/jars/xalan.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/xerces/xercesImpl/2.9.1/jars/xercesImpl.jar"/>
+<classpathentry kind="lib" path="/Applications/play-2.1.1/repository/local/xml-apis/xml-apis/1.3.04/jars/xml-apis.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -53,6 +53,7 @@ import com.feth.play.module.pa.providers.password.UsernamePasswordAuthProvider;
 import com.feth.play.module.pa.providers.password.UsernamePasswordAuthUser;
 import com.feth.play.module.pa.user.AuthUser;
 
+import common.cache.CalcServer;
 import common.cache.LocationCache;
 import common.model.TargetGender;
 import common.utils.DateTimeUtil;
@@ -496,17 +497,18 @@ public class Application extends Controller {
     @Transactional
     public static Result initNewUser() {
     	final User user = getLocalUser(session());
+    	if (!User.isLoggedIn(user)) {
+    	    logger.underlyingLogger().error(String.format("[u=%d] User not logged in", user.id));
+            return notFound();
+        }
     	
     	//String promoCode = session().get(SESSION_PROMOCODE);
-    	
     	//GameAccountReferral.processAnyReferral(promoCode, user);
 
         //GameAccount.setPointsForSignUp(user);
 
-        //CommunityTargetingEngine.assignSystemCommunitiesToUser(user);
-        
-        //UserController.sendGreetingMessageToNewUser();
-        
+    	CalcServer.clearUserQueues(user);
+    	
         user.setNewUser(false);
         
         return ok();

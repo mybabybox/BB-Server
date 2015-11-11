@@ -55,6 +55,7 @@ public class Entity
   
   @Transactional
   public void save() {
+      preSave();
       JPA.em().persist(this);
       JPA.em().flush();
       postSave();
@@ -73,6 +74,10 @@ public class Entity
   @Transactional
   public void refresh() {
       JPA.em().refresh(this);
+  }
+  
+  public void preSave() {
+      
   }
   
   public void postSave() {
