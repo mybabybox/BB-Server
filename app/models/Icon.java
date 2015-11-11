@@ -76,8 +76,8 @@ public class Icon {
         }
     }
     
-    public static List<Icon> getCommunityIcons() {
-        return IconCache.getCommunityIcons();
+    public static List<Icon> getCategoryIcons() {
+        return IconCache.getCategoryIcons();
     }
     
     public static Icon getGameLevelIcon(int level) {

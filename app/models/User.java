@@ -658,6 +658,10 @@ public class User extends SocialObject implements Subject, Followable {
 
 	@Transactional
 	public boolean isSuperAdmin() {
+	    if (roles == null) {
+	        return false;
+	    }
+	    
 		for (SecurityRole role : roles) {
 			if (SecurityRole.RoleType.SUPER_ADMIN.name().equals(role.roleName)) {
 				return true;

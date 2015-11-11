@@ -56,9 +56,6 @@ public abstract class SocialObject extends domain.Entity implements Serializable
 	 * Folder
 	 *     System albums will not generate socialAction onCreate and should be always public 
 	 *     (the privacy is set on the single inner elements)
-	 *     
-	 * Community
-	 *     System communities will have special treatment e.g. targeting, privacy
      */
 	@Required
     public Boolean system = false;

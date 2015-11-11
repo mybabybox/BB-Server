@@ -14,12 +14,12 @@ public class IconCache {
     // Permanent cache loaded up on system startup.
 
     private static List<Emoticon> emoticons;
-    private static List<Icon> communityIcons;
+    private static List<Icon> categoryIcons;
     private static Map<Integer, Icon> gameLevelIconsMap;
 
     static {
         emoticons = Emoticon.loadEmoticons();
-        communityIcons = Icon.loadCategoryIcons();
+        categoryIcons = Icon.loadCategoryIcons();
         gameLevelIconsMap = new HashMap<Integer, Icon>();
     }
 
@@ -27,8 +27,8 @@ public class IconCache {
         return emoticons;
     }
     
-    public static List<Icon> getCommunityIcons() {
-		return communityIcons;
+    public static List<Icon> getCategoryIcons() {
+		return categoryIcons;
 	}
     
     public static Icon getGameLevelIcon(int level) {

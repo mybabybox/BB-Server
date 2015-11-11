@@ -20,7 +20,7 @@ import java.util.Map;
 public class PostsFileReader {
     private static final play.api.Logger logger = play.api.Logger.apply(PostsFileReader.class);
 
-    public static final String COMM_KEY = "Community Name";
+    public static final String CATEGORY_KEY = "Category Name";
     public static final String TITLE_KEY = "Post Title";
     public static final String BODY_KEY = "Post Body";
     public static final String DATETIME_KEY = "DateTime";
@@ -53,7 +53,7 @@ public class PostsFileReader {
             String[] row = line.split(DELIM);
 
             Long userId = null;
-            String commName = null, title = null, body = null;
+            String catName = null, title = null, body = null;
             DateTime dateTime = null;
 
             for (int i = 0; i < row.length; i++) {
@@ -66,8 +66,8 @@ public class PostsFileReader {
                     if (value != null && !"".equals(value)) {
                         value = value.trim();
 
-                        if (header.equals(COMM_KEY)) {
-                            commName = value;
+                        if (header.equals(CATEGORY_KEY)) {
+                            catName = value;
                         } else if (header.equals(TITLE_KEY)) {
                             title = value;
                         } else if (header.equals(BODY_KEY)) {
@@ -107,7 +107,7 @@ public class PostsFileReader {
             // new post
             else {
                 lastPost = new PostEntry();
-                lastPost.commName = commName;
+                lastPost.catName = catName;
                 lastPost.title = title;
                 lastPost.body = body;
                 lastPost.userId = userId;
@@ -136,7 +136,7 @@ public class PostsFileReader {
 
 
     public static class PostEntry {
-        public String commName;
+        public String catName;
         public String title;
         public String body;
         public DateTime dateTime;
@@ -144,14 +144,14 @@ public class PostsFileReader {
         public List<Comment> comments = new ArrayList<>();
 
         public boolean isCompleted() {
-            return commName != null && title != null &&
+            return catName != null && title != null &&
                     body != null && dateTime != null && userId != null;
         }
 
         @Override
         public String toString() {
             return "PostEntry{" +
-                    "commName='" + commName + '\'' +
+                    "catName='" + catName + '\'' +
                     ", title='" + title + '\'' +
                     ", body='" + body + '\'' +
                     ", dateTime=" + dateTime +
