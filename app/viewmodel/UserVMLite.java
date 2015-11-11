@@ -17,6 +17,11 @@ public class UserVMLite {
 
     public UserVMLite(User user, User localUser) {
         this.id = user.id;
+        
+        if (!user.isLoggedIn()) {
+            return;
+        }
+        
         this.displayName = user.displayName;
         this.numProducts = user.numProducts;
         this.numStories = user.numStories;

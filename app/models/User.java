@@ -917,18 +917,6 @@ public class User extends SocialObject implements Subject, Followable {
 		this.emailValidated = emailValidated;
 	}
 
-	public boolean isHomeTourCompleted() {
-		List<SiteTour> tours = SiteTour.getSiteTours(id);
-		if (tours != null) {
-			for (SiteTour tour : tours) {
-				if (SiteTour.TourType.HOME.equals(tour.tourType)) {
-					return true;        
-				}
-			}
-		}
-		return false;
-	}
-
 	public boolean isNewUser() {
 		return newUser;
 	}

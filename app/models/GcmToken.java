@@ -1,5 +1,7 @@
 package models;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -46,6 +48,7 @@ public class GcmToken extends domain.Entity {
         gcmToken.setUserId(userId);
         gcmToken.setRegId(key);
         gcmToken.setVersionCode(versionCode);
+        gcmToken.setCreatedDate(new Date());
         gcmToken.save();
     }
 

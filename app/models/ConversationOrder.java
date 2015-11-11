@@ -109,7 +109,7 @@ public class ConversationOrder extends domain.Entity implements Serializable, Cr
 		    Query q = JPA.em().createQuery(
 	                "SELECT o from ConversationOrder o where id = ?1 and deleted = false");
 	        q.setParameter(1, id);
-			return (ConversationOrder) q.getResultList();
+			return (ConversationOrder) q.getSingleResult();
 		} catch (NoResultException e) {
 			return null;
 		}
