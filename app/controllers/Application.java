@@ -14,7 +14,6 @@ import javax.inject.Inject;
 import models.Category;
 import models.Location;
 import models.SecurityRole;
-import models.Setting;
 import models.TermsAndConditions;
 import models.User;
 import models.UserChild;
@@ -28,8 +27,6 @@ import play.Routes;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.data.validation.ValidationError;
-import play.db.jpa.JPA;
-import play.db.jpa.JPAApi;
 import play.db.jpa.Transactional;
 import play.i18n.Messages;
 import play.libs.Json;
@@ -42,12 +39,11 @@ import providers.MyLoginUsernamePasswordAuthUser;
 import providers.MyUsernamePasswordAuthProvider;
 import providers.MyUsernamePasswordAuthProvider.MyLogin;
 import providers.MyUsernamePasswordAuthProvider.MySignup;
-import redis.clients.jedis.JedisPool;
 import viewmodel.ApplicationInfoVM;
 import viewmodel.CategoryVM;
 import viewmodel.UserVM;
-import Decoder.BASE64Encoder;
 import Decoder.BASE64Decoder;
+import Decoder.BASE64Encoder;
 import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
 
@@ -56,7 +52,6 @@ import com.feth.play.module.pa.exceptions.AuthException;
 import com.feth.play.module.pa.providers.password.UsernamePasswordAuthProvider;
 import com.feth.play.module.pa.providers.password.UsernamePasswordAuthUser;
 import com.feth.play.module.pa.user.AuthUser;
-
 import common.cache.CalcServer;
 import common.cache.JedisCache;
 import common.cache.LocationCache;
@@ -70,10 +65,10 @@ public class Application extends Controller {
 	UserController userController;
 	
 	@Inject
-	public JedisPool jedisPool;
+	JedisCache jedisCache;
 	
-	@Inject
-	public JedisCache jedisCache;
+	@Inject 
+	CalcServer calcServer;
 	
     private static final play.api.Logger logger = play.api.Logger.apply(Application.class);
 
@@ -206,7 +201,7 @@ public class Application extends Controller {
 	}
 
 	public Result home(User user) {
-	    return ok(views.html.babybox.web.home.render( Json.stringify(Json.toJson(new UserVM(user, jedisCache)))));
+	    return ok(views.html.babybox.web.home.render( Json.stringify(Json.toJson(new UserVM(user)))));
 	}
 	
 	@Transactional
@@ -705,13 +700,13 @@ public class Application extends Controller {
 	@Transactional
 	public Result addProduct() {
 		User user = Application.getLocalUser(session());
-		return ok(views.html.babybox.web.add_product.render( Json.stringify(Json.toJson(new UserVM(user, jedisCache)))));
+		return ok(views.html.babybox.web.add_product.render( Json.stringify(Json.toJson(new UserVM(user)))));
 	}
 	
 	@Transactional
 	public Result addStory() {
 		User user = Application.getLocalUser(session());
-		return ok(views.html.babybox.web.add_story.render( Json.stringify(Json.toJson(new UserVM(user, jedisCache)))));
+		return ok(views.html.babybox.web.add_story.render( Json.stringify(Json.toJson(new UserVM(user)))));
 	}
 	
 	@Transactional
@@ -733,7 +728,7 @@ public class Application extends Controller {
 	
 	@Transactional
 	public Result warmUpActivity(){
-		CalcServer.warmUpActivity(jedisCache);
+		calcServer.warmUpActivity();
 		return ok();
 	}
 	

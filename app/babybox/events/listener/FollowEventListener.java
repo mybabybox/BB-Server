@@ -14,6 +14,8 @@ import common.cache.CalcServer;
 
 public class FollowEventListener {
 	
+	CalcServer calcServer = play.Play.application().injector().instanceOf(CalcServer.class);
+	
 	@Subscribe
     public void recordFollowEventInDB(FollowEvent map){
 		User localUser = (User) map.get("localUser");
@@ -22,8 +24,8 @@ public class FollowEventListener {
        	// why we require this, if we are renewing HOME_FOLLOWING feed after every 2 mins 
 		if (localUser.onFollow(user)) {
 			Long score = new Date().getTime();		// ideally use FollowSocialRelation.CREATED_DATE
-			CalcServer.addToFollowQueue(localUser.id, user.id, score.doubleValue());
-			
+			calcServer.addToFollowQueue(localUser.id, user.id, score.doubleValue());
+			calcServer.isFollowed(user.id, localUser.id);
 			if (user.id != localUser.id) {
     			Activity activity = new Activity(
     					ActivityType.FOLLOWED, 
@@ -45,7 +47,7 @@ public class FollowEventListener {
 		User localUser = (User) map.get("localUser");
 		User user = (User) map.get("user");
 		if (localUser.onUnFollow(user)) {
-			CalcServer.removeFromFollowQueue(localUser.id, user.id);
+			calcServer.removeFromFollowQueue(localUser.id, user.id);
 		}
     }
 }

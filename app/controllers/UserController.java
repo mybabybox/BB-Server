@@ -50,7 +50,6 @@ import viewmodel.PostVMLite;
 import viewmodel.ProfileVM;
 import viewmodel.UserVM;
 import viewmodel.UserVMLite;
-import common.cache.JedisCache;
 import common.model.FeedFilter.FeedType;
 import common.utils.ImageFileUtil;
 import common.utils.NanoSecondStopWatch;
@@ -58,8 +57,8 @@ import domain.DefaultValues;
 
 public class UserController extends Controller {
 	
-	@Inject 
-	JedisCache jedisCache;
+	@Inject
+	FeedHandler feedHandler;
 	
     private static final play.api.Logger logger = play.api.Logger.apply(UserController.class);
     
@@ -97,7 +96,7 @@ public class UserController extends Controller {
 			return notFound();
 		}
 		
-		UserVM userInfo = new UserVM(localUser, jedisCache);
+		UserVM userInfo = new UserVM(localUser);
 		
 		sw.stop();
         if (logger.underlyingLogger().isDebugEnabled()) {
@@ -116,7 +115,7 @@ public class UserController extends Controller {
 			return notFound();
 		}
 		
-		UserVM userVM = new UserVM(user, localUser, jedisCache);
+		UserVM userVM = new UserVM(user, localUser);
 		
 		sw.stop();
         if (logger.underlyingLogger().isDebugEnabled()) {
@@ -366,7 +365,7 @@ public class UserController extends Controller {
             logger.underlyingLogger().debug("[u="+user.getId()+"] getProfile(). Took "+sw.getElapsedMS()+"ms");
         }
 
-    	return ok(Json.toJson(ProfileVM.profile(user,localUser, jedisCache)));
+    	return ok(Json.toJson(ProfileVM.profile(user,localUser)));
     }
     
     @Transactional
@@ -698,8 +697,8 @@ public class UserController extends Controller {
             if (logger.underlyingLogger().isDebugEnabled()) {
                 logger.underlyingLogger().debug("[u="+user.getId()+"] getProfile(). Took "+sw.getElapsedMS()+"ms");
             }
-            return ok(Json.toJson(ProfileVM.profile(user,localUser, jedisCache)));
-        	//return ok(views.html.babybox.web.profile.render(Json.stringify(Json.toJson(ProfileVM.profile(user,localUser))), Json.stringify(Json.toJson(new UserVM(localUser, jedisCache)))));
+            return ok(Json.toJson(ProfileVM.profile(user,localUser)));
+        	//return ok(views.html.babybox.web.profile.render(Json.stringify(Json.toJson(ProfileVM.profile(user,localUser))), Json.stringify(Json.toJson(new UserVM(localUser)))));
     }
     
 	@Transactional 
@@ -710,7 +709,7 @@ public class UserController extends Controller {
 			return notFound();
 		}
 		
-		List<PostVMLite> vms = FeedHandler.getPostVM(localUser.id, offset, localUser, FeedType.HOME_EXPLORE, jedisCache);
+		List<PostVMLite> vms = feedHandler.getPostVM(localUser.id, offset, localUser, FeedType.HOME_EXPLORE);
 		return ok(Json.toJson(vms));
 	}
 	
@@ -721,7 +720,7 @@ public class UserController extends Controller {
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
 			return notFound();
 		}
-		List<PostVMLite> vms = FeedHandler.getPostVM(localUser.id, offset, localUser, FeedType.HOME_FOLLOWING, jedisCache);
+		List<PostVMLite> vms = feedHandler.getPostVM(localUser.id, offset, localUser, FeedType.HOME_FOLLOWING);
 		return ok(Json.toJson(vms));
 	}
 	
@@ -733,7 +732,7 @@ public class UserController extends Controller {
             return notFound();
         }
 
-        List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.USER_POSTED, jedisCache);
+        List<PostVMLite> vms = feedHandler.getPostVM(id, offset, localUser, FeedType.USER_POSTED);
 		return ok(Json.toJson(vms));
     }
     
@@ -784,7 +783,7 @@ public class UserController extends Controller {
     	
     	for (SocialRelation socialRelation : followings) {
     		User user = User.findById(socialRelation.target);
-    		UserVMLite uservm = new UserVMLite(user, localUser, jedisCache);
+    		UserVMLite uservm = new UserVMLite(user, localUser);
     		userFollowings.add(uservm);
     	}
     	return ok(Json.toJson(userFollowings));
@@ -803,7 +802,7 @@ public class UserController extends Controller {
     	
     	for(SocialRelation socialRelation : followings){
     		User user = User.findById(socialRelation.actor);
-    		UserVMLite uservm = new UserVMLite(user, localUser, jedisCache);
+    		UserVMLite uservm = new UserVMLite(user, localUser);
     		userFollowers.add(uservm);
     	}
     	return ok(Json.toJson(userFollowers));
@@ -817,7 +816,7 @@ public class UserController extends Controller {
             return notFound();
         }
         
-        List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.USER_LIKED, jedisCache);
+        List<PostVMLite> vms = feedHandler.getPostVM(id, offset, localUser, FeedType.USER_LIKED);
 		return ok(Json.toJson(vms));
     }
     

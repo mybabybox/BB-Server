@@ -172,10 +172,6 @@ public class Post extends SocialObject implements Likeable, Commentable {
 		return false;
 	}
 
-	public boolean isLikedBy(User user, JedisCache jedisCache){
-		return CalcServer.isLiked(user.id, this.id, jedisCache);
-	}
-
 	@Override
 	public void save() {
 		super.save();

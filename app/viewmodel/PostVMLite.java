@@ -32,7 +32,7 @@ public class PostVMLite {
 	@JsonProperty("baseScore") public Long baseScore = 0L;
 	@JsonProperty("timeScore") public Double timeScore = 0D;
 
-    public PostVMLite(Post post, User user, JedisCache jedisCache) {
+    public PostVMLite(Post post, User user) {
         this.id = post.id;
         this.ownerId = post.owner.id;
         this.ownerName = post.owner.displayName;
@@ -50,7 +50,7 @@ public class PostVMLite {
         this.numComments = post.numComments;
         this.numViews = post.numViews;
         
-        this.isLiked = post.isLikedBy(user, jedisCache);
+        this.isLiked = post.isLikedBy(user);
         
         Long[] images = post.getImages();
         if (images != null && images.length > 0) {

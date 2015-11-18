@@ -1085,8 +1085,8 @@ public class User extends SocialObject implements Subject, Followable {
 	}
 
 	@JsonIgnore
-	public boolean isFollowedBy(User user, JedisCache jedisCache) {
-		CalcServer.isFollowed(user.id, this.id, jedisCache);
+	public boolean isFollowedBy(User user) {
+		//calcServer.isFollowed(user.id, this.id, jedisCache);
 		return FollowSocialRelation.isFollowing(user.id, SocialObjectType.USER, this.id, SocialObjectType.USER);
 	}
 

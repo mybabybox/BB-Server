@@ -1,19 +1,15 @@
 package common.cache;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
 
-import models.Category;
-
-import com.google.inject.Singleton;
-
 import play.Play;
-import play.mvc.Controller;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+
+import com.google.inject.Singleton;
 import common.serialize.JsonSerializer;
 
 @Singleton

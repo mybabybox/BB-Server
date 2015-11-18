@@ -28,8 +28,8 @@ public class PostVM extends PostVMLite {
     
 	@JsonProperty("deviceType") public String deviceType;
 	
-    public PostVM(Post post, User user, JedisCache jedisCache) {
-    	super(post, user, jedisCache);
+    public PostVM(Post post, User user) {
+    	super(post, user);
     	
         this.ownerNumProducts = post.owner.numProducts;
         this.ownerNumFollowers = post.owner.numFollowers;

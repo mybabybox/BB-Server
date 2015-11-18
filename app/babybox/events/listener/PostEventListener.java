@@ -16,12 +16,14 @@ import common.utils.StringUtil;
 
 public class PostEventListener {
 	
+	CalcServer calcServer = play.Play.application().injector().instanceOf(CalcServer.class);
+	
 	@Subscribe
     public void recordPostEventOnCalcServer(PostEvent map){
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
-		CalcServer.addToCategoryQueues(post);
-		CalcServer.addToUserPostedQueue(post, user);
+		calcServer.addToCategoryQueues(post);
+		calcServer.addToUserPostedQueue(post, user);
 		
 		/*
 		// Need to query followers as recipients
@@ -43,16 +45,16 @@ public class PostEventListener {
     public void recordEditPostEventOnCalcServer(EditPostEvent map){
         Post post = (Post) map.get("post");
         Category category = (Category) map.get("category");
-        CalcServer.removeFromCategoryQueues(post, category);
-        CalcServer.addToCategoryQueues(post);
+        calcServer.removeFromCategoryQueues(post, category);
+        calcServer.addToCategoryQueues(post);
     }
 	
 	@Subscribe
     public void recordDeletePostEventOnCalcServer(DeletePostEvent map){
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
-		CalcServer.removeFromCategoryQueues(post);
-		CalcServer.removeFromUserPostedQueue(post, post.owner);
-		CalcServer.removeFromAllUsersLikedQueues(post);
+		calcServer.removeFromCategoryQueues(post);
+		calcServer.removeFromUserPostedQueue(post, post.owner);
+		calcServer.removeFromAllUsersLikedQueues(post);
     }
 }

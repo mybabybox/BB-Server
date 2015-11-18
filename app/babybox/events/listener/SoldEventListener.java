@@ -1,17 +1,16 @@
 package babybox.events.listener;
 
-import models.Activity;
 import models.Post;
 import models.User;
-import models.Activity.ActivityType;
 import babybox.events.map.SoldEvent;
 
 import com.google.common.eventbus.Subscribe;
-
+import com.google.inject.Inject;
 import common.cache.CalcServer;
-import common.utils.StringUtil;
 
 public class SoldEventListener {
+	
+	CalcServer calcServer = play.Play.application().injector().instanceOf(CalcServer.class);
 	
 	@Subscribe
     public void recordSoldEventInDB(SoldEvent map){

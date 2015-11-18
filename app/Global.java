@@ -42,13 +42,13 @@ public class Global extends GlobalSettings {
     // Configurations
     private static final String STARTUP_BOOTSTRAP_PROP = "startup.data.bootstrap";
     private static final String RUN_BACKGROUND_TASKS_PROP = "run.backgroundtasks";
-
+    
     /**
      * @param app
      */
     public void onStart(Application app) {
 		//jedisPool.getResource();
-    	EventHandler.getInstance();
+    	//EventHandler.getInstance();
 		
         final boolean runBackgroundTasks = Play.application().configuration().getBoolean(RUN_BACKGROUND_TASKS_PROP, false);
         if (runBackgroundTasks) {
@@ -160,7 +160,9 @@ public class Global extends GlobalSettings {
                     try {
                        JPA.withTransaction(new play.libs.F.Callback0() {
                             public void invoke() {
-                                CalcServer.cleanupSoldPosts();
+                            	// TODO not tested
+                            	CalcServer calcServer = play.Play.application().injector().instanceOf(CalcServer.class);
+                                calcServer.cleanupSoldPosts();
                             }
                         });
                     } catch (Exception e) {

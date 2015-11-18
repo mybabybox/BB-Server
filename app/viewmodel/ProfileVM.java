@@ -38,7 +38,7 @@ public class ProfileVM {
     public Long ac;
     public Long lc;
     
-    public static ProfileVM profile(User user, User localUser, JedisCache jedisCache) {
+    public static ProfileVM profile(User user, User localUser) {
         ProfileVM vm = new ProfileVM();
         vm.displayName = user.displayName;
         
@@ -61,7 +61,7 @@ public class ProfileVM {
         vm.numCollections = user.numCollections;
         vm.numFollowers = user.numFollowers;
         vm.numFollowings = user.numFollowings;
-        vm.isFollowdByUser = user.isFollowedBy(localUser, jedisCache);
+        vm.isFollowdByUser = user.isFollowedBy(localUser);
         return vm;
     }
 }

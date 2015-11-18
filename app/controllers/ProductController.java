@@ -8,9 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
-import babybox.shopping.social.exception.SocialObjectNotCommentableException;
 import models.Category;
 import models.Collection;
 import models.Comment;
@@ -33,11 +30,17 @@ import viewmodel.PostVM;
 import viewmodel.PostVMLite;
 import viewmodel.ResponseStatusVM;
 import viewmodel.UserVM;
+import babybox.shopping.social.exception.SocialObjectNotCommentableException;
+
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+import common.cache.CalcServer;
 import common.cache.JedisCache;
 import common.model.FeedFilter.FeedType;
 import common.utils.HtmlUtil;
 import common.utils.ImageFileUtil;
 import common.utils.NanoSecondStopWatch;
+
 import controllers.Application.DeviceType;
 import domain.DefaultValues;
 import domain.SocialObjectType;
@@ -46,6 +49,9 @@ public class ProductController extends Controller{
 	
 	@Inject
 	JedisCache jedisCache;
+	
+	@Inject
+	FeedHandler feedHandler;
 	
 	private static play.api.Logger logger = play.api.Logger.apply(ProductController.class);
 	
@@ -245,10 +251,10 @@ public class ProductController extends Controller{
 
 	@Transactional
 	public Result getAllFeedProducts() {
-		return ok(Json.toJson(getPostVMsFromPosts(Post.getEligiblePostsForFeeds(), jedisCache)));
+		return ok(Json.toJson(getPostVMsFromPosts(Post.getEligiblePostsForFeeds())));
 	}
 
-	private static List<PostVMLite> getPostVMsFromPosts(List<Post> posts, JedisCache jedisCache) {
+	private static List<PostVMLite> getPostVMsFromPosts(List<Post> posts) {
 		final User localUser = Application.getLocalUser(session());
 		if (!localUser.isLoggedIn()) {
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
@@ -257,7 +263,7 @@ public class ProductController extends Controller{
 		
 		List<PostVMLite> vms = new ArrayList<>();
 		for (Post product : posts) {
-			PostVMLite vm = new PostVMLite(product, localUser, jedisCache);
+			PostVMLite vm = new PostVMLite(product, localUser);
 			vms.add(vm);
 		}
 		return vms;
@@ -301,7 +307,7 @@ public class ProductController extends Controller{
 	@Transactional
 	public Result product(Long id) {
 		final User localUser = Application.getLocalUser(session());
-		return ok(views.html.babybox.web.product.render(Json.stringify(Json.toJson(getProductInfoVM(id))), Json.stringify(Json.toJson(new UserVM(localUser, jedisCache)))));
+		return ok(views.html.babybox.web.product.render(Json.stringify(Json.toJson(getProductInfoVM(id))), Json.stringify(Json.toJson(new UserVM(localUser)))));
 	}
 	
 	@Transactional
@@ -320,7 +326,7 @@ public class ProductController extends Controller{
 			return null;
 		}
 		onView(id);
-		PostVM vm = new PostVM(post, localUser, jedisCache);
+		PostVM vm = new PostVM(post, localUser);
 		return vm;
 	}
 
@@ -462,7 +468,7 @@ public class ProductController extends Controller{
 			return notFound();
 		}
 		
-		List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.CATEGORY_POPULAR, jedisCache);
+		List<PostVMLite> vms = feedHandler.getPostVM(id, offset, localUser, FeedType.CATEGORY_POPULAR);
 		return ok(Json.toJson(vms));
 
 	}
@@ -474,7 +480,7 @@ public class ProductController extends Controller{
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
 			return notFound();
 		}
-		List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.CATEGORY_NEWEST, jedisCache);
+		List<PostVMLite> vms = feedHandler.getPostVM(id, offset, localUser, FeedType.CATEGORY_NEWEST);
 		return ok(Json.toJson(vms));
 	}
 	
@@ -485,7 +491,7 @@ public class ProductController extends Controller{
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
 			return notFound();
 		}
-		List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.CATEGORY_PRICE_LOW_HIGH, jedisCache);
+		List<PostVMLite> vms = feedHandler.getPostVM(id, offset, localUser, FeedType.CATEGORY_PRICE_LOW_HIGH);
 		return ok(Json.toJson(vms));
 	}
 	
@@ -496,7 +502,7 @@ public class ProductController extends Controller{
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
 			return notFound();
 		}
-		List<PostVMLite> vms = FeedHandler.getPostVM(id, offset, localUser, FeedType.CATEGORY_PRICE_HIGH_LOW, jedisCache);
+		List<PostVMLite> vms = feedHandler.getPostVM(id, offset, localUser, FeedType.CATEGORY_PRICE_HIGH_LOW);
 		return ok(Json.toJson(vms));
 	}
 	
@@ -507,7 +513,7 @@ public class ProductController extends Controller{
 			logger.underlyingLogger().error(String.format("[u=%d] User not logged in", localUser.id));
 			return notFound();
 		}
-		List<PostVMLite> vms = FeedHandler.getPostVM(id, 0l, localUser, FeedType.PRODUCT_SUGGEST, jedisCache);
+		List<PostVMLite> vms = feedHandler.getPostVM(id, 0l, localUser, FeedType.PRODUCT_SUGGEST);
 		return ok(Json.toJson(vms));
 	}
 	
