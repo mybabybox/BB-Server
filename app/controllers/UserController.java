@@ -82,6 +82,8 @@ public class UserController extends Controller {
 		
 		UserVM userInfo = new UserVM(localUser);
 		
+		localUser.lastLogin = new Date();
+		
 		sw.stop();
         if (logger.underlyingLogger().isDebugEnabled()) {
             logger.underlyingLogger().debug("[u="+localUser.getId()+"] getUserInfo(). Took "+sw.getElapsedMS()+"ms");

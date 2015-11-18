@@ -155,11 +155,13 @@ public class Global extends GlobalSettings {
                     try {
                        JPA.withTransaction(new play.libs.F.Callback0() {
                             public void invoke() {
+                                logger.underlyingLogger().info("[JobScheduler] cleanupSoldPosts starts...");
                                 CalcServer.cleanupSoldPosts();
+                                logger.underlyingLogger().info("[JobScheduler] cleanupSoldPosts completed !");
                             }
                         });
                     } catch (Exception e) {
-                        logger.underlyingLogger().error("Error in cleanupSoldPosts", e);
+                        logger.underlyingLogger().error("[JobScheduler] cleanupSoldPosts failed...", e);
                     }
                 }
             }
@@ -172,11 +174,13 @@ public class Global extends GlobalSettings {
                     try {
                        JPA.withTransaction(new play.libs.F.Callback0() {
                             public void invoke() {
+                                logger.underlyingLogger().info("[JobScheduler] purgeActivity starts...");
                             	Activity.purgeActivity();
+                            	logger.underlyingLogger().info("[JobScheduler] purgeActivity completed !");
                             }
                         });
                     } catch (Exception e) {
-                        logger.underlyingLogger().error("Error in purgeActivity", e);
+                        logger.underlyingLogger().error("[JobScheduler] purgeActivity failed...");
                     }
                 }
             }
@@ -189,11 +193,13 @@ public class Global extends GlobalSettings {
                     try {
                        JPA.withTransaction(new play.libs.F.Callback0() {
                             public void invoke() {
+                                logger.underlyingLogger().info("[JobScheduler] commandCheck starts...");
                                 CommandChecker.checkCommandFiles();
+                                logger.underlyingLogger().info("[JobScheduler] commandCheck completed !");
                             }
                         });
                     } catch (Exception e) {
-                        logger.underlyingLogger().error("Error in CommandChecker", e);
+                        logger.underlyingLogger().error("[JobScheduler] commandCheck failed...", e);
                     }
                 }
             }

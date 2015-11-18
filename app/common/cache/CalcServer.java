@@ -571,13 +571,17 @@ public class CalcServer {
 	}
 	
 	public static void cleanupSoldPosts() {
-        DateTime daysBefore = (new DateTime()).minusDays(FEED_SOLD_CLEANUP_DAYS);
+	    DateTime daysBefore = (new DateTime()).minusDays(FEED_SOLD_CLEANUP_DAYS);
         List<Post> soldPosts = Post.getUnmarkedSoldPostsAfter(daysBefore.toDate());
         if (soldPosts != null) {
+            logger.underlyingLogger().info("cleanupSoldPosts - There are "+soldPosts.size()+" sold posts before "+daysBefore.toString());
             for (Post soldPost : soldPosts) {
                 CalcServer.removeFromCategoryQueues(soldPost);
                 soldPost.soldMarked = true;
+                logger.underlyingLogger().info("[id="+soldPost.id+"] removeFromCategoryQueues: "+soldPost.title);
             }
+        } else {
+            logger.underlyingLogger().info("cleanupSoldPosts - There is no sold post before "+daysBefore.toString());
         }
     }
 }

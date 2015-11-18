@@ -131,12 +131,14 @@ public class Activity  extends domain.Entity implements Serializable, Creatable,
 		Query query = JPA.em().createQuery("DELETE Activity a where a.viewed = ?1 and CREATED_DATE < ?2");
 		query.setParameter(1, true);
 		query.setParameter(2, ninetyDaysBefore.toDate());
-		query.executeUpdate();
+		int deleted = query.executeUpdate();
+		logger.underlyingLogger().info("purgeActivity - Deleted "+deleted+" activities before "+ninetyDaysBefore.toString());
 
 		DateTime oneEightyDaysBefore = (new DateTime()).minusDays(ACTIVITY_ALL_CLEANUP_DAYS);
 		query = JPA.em().createQuery("DELETE Activity a where CREATED_DATE < ?1");
 		query.setParameter(1, oneEightyDaysBefore);
-		query.executeUpdate();
+		deleted = query.executeUpdate();
+		logger.underlyingLogger().info("purgeActivity - Deleted "+deleted+" activities before "+oneEightyDaysBefore.toString());
 	}
 
 	@Transactional
