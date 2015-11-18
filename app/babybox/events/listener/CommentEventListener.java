@@ -22,13 +22,11 @@ import domain.DefaultValues;
 
 public class CommentEventListener {
 	
-	CalcServer calcServer = play.Play.application().injector().instanceOf(CalcServer.class);
-
 	@Subscribe
 	public void recordCommentEventInDB(CommentEvent map){
 		Comment comment = (Comment) map.get("comment");
 		Post post = (Post) map.get("post");
-		calcServer.recalcScoreAndAddToCategoryPopularQueue(post);
+		CalcServer.getInstanceForDI().recalcScoreAndAddToCategoryPopularQueue(post);
 		
 		// first of all, send to post owner
         if (comment.owner.id != post.owner.id) {
@@ -91,6 +89,6 @@ public class CommentEventListener {
 	public void recordDeleteCommentEventInDB(DeleteCommentEvent map) {
 		Comment comment = (Comment) map.get("comment");
 		Post post = (Post) map.get("post");
-		calcServer.recalcScoreAndAddToCategoryPopularQueue(post);
+		CalcServer.getInstanceForDI().recalcScoreAndAddToCategoryPopularQueue(post);
 	}
 }

@@ -10,14 +10,12 @@ import common.cache.CalcServer;
 
 public class ViewEventListener {
 	
-	CalcServer calcServer = play.Play.application().injector().instanceOf(CalcServer.class);
-	
 	@Subscribe
     public void recordViewEventInDB(ViewEvent map){
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
 		if (post.onView(user)) {
-		    //CalcServer.recalcScoreAndAddToCategoryPopularQueue(post);
+		    //CalcServer.getInstanceForDI().recalcScoreAndAddToCategoryPopularQueue(post);
 		}
     }
 }

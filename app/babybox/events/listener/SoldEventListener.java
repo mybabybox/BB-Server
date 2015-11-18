@@ -10,15 +10,13 @@ import common.cache.CalcServer;
 
 public class SoldEventListener {
 	
-	CalcServer calcServer = play.Play.application().injector().instanceOf(CalcServer.class);
-	
 	@Subscribe
     public void recordSoldEventInDB(SoldEvent map){
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
 		if (post.onSold(user)) {
 		    // NOTE: sold posts purged by daily scheduler at 5am HKT !!
-			//CalcServer.removeFromCategoryQueues(post);
+			//CalcServer.getInstanceForDI().removeFromCategoryQueues(post);
 			
 			/*
 			// Need to query chat users as recipients

@@ -160,9 +160,7 @@ public class Global extends GlobalSettings {
                     try {
                        JPA.withTransaction(new play.libs.F.Callback0() {
                             public void invoke() {
-                            	// TODO not tested
-                            	CalcServer calcServer = play.Play.application().injector().instanceOf(CalcServer.class);
-                                calcServer.cleanupSoldPosts();
+                            	CalcServer.getInstanceForDI().cleanupSoldPosts();
                             }
                         });
                     } catch (Exception e) {

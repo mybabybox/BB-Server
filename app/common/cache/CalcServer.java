@@ -51,6 +51,10 @@ public class CalcServer {
 	private static CalcFormula formula = new CalcFormula();
 	private static Random random = new Random();
 	
+	public static CalcServer getInstanceForDI(){
+		return play.Play.application().injector().instanceOf(CalcServer.class);
+	}
+	
 	public  void warmUpActivity() {
 		NanoSecondStopWatch sw = new NanoSecondStopWatch();
 		logger.underlyingLogger().debug("warmUpActivity starts");

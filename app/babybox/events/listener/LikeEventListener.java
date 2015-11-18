@@ -13,15 +13,13 @@ import common.utils.StringUtil;
 
 public class LikeEventListener {
 
-	CalcServer calcServer = play.Play.application().injector().instanceOf(CalcServer.class);
-
 	@Subscribe
 	public void recordLikeEventInDB(LikeEvent map){
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
 		if (post.onLikedBy(user)) {
-			calcServer.recalcScoreAndAddToCategoryPopularQueue(post);
-			calcServer.addToLikeQueue(post, user);
+			CalcServer.getInstanceForDI().recalcScoreAndAddToCategoryPopularQueue(post);
+			CalcServer.getInstanceForDI().addToLikeQueue(post, user);
 
 			if (user.id != post.owner.id) {
 				Activity activity = new Activity(
@@ -44,8 +42,8 @@ public class LikeEventListener {
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
 		if (post.onUnlikedBy(user)) {
-			calcServer.recalcScoreAndAddToCategoryPopularQueue(post);
-			calcServer.removeFromLikeQueue(post, user);
+			CalcServer.getInstanceForDI().recalcScoreAndAddToCategoryPopularQueue(post);
+			CalcServer.getInstanceForDI().removeFromLikeQueue(post, user);
 		}
 	}
 }

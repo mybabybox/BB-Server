@@ -16,14 +16,12 @@ import common.utils.StringUtil;
 
 public class PostEventListener {
 	
-	CalcServer calcServer = play.Play.application().injector().instanceOf(CalcServer.class);
-	
 	@Subscribe
     public void recordPostEventOnCalcServer(PostEvent map){
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
-		calcServer.addToCategoryQueues(post);
-		calcServer.addToUserPostedQueue(post, user);
+		CalcServer.getInstanceForDI().addToCategoryQueues(post);
+		CalcServer.getInstanceForDI().addToUserPostedQueue(post, user);
 		
 		/*
 		// Need to query followers as recipients
@@ -45,16 +43,16 @@ public class PostEventListener {
     public void recordEditPostEventOnCalcServer(EditPostEvent map){
         Post post = (Post) map.get("post");
         Category category = (Category) map.get("category");
-        calcServer.removeFromCategoryQueues(post, category);
-        calcServer.addToCategoryQueues(post);
+        CalcServer.getInstanceForDI().removeFromCategoryQueues(post, category);
+        CalcServer.getInstanceForDI().addToCategoryQueues(post);
     }
 	
 	@Subscribe
     public void recordDeletePostEventOnCalcServer(DeletePostEvent map){
 		Post post = (Post) map.get("post");
 		User user = (User) map.get("user");
-		calcServer.removeFromCategoryQueues(post);
-		calcServer.removeFromUserPostedQueue(post, post.owner);
-		calcServer.removeFromAllUsersLikedQueues(post);
+		CalcServer.getInstanceForDI().removeFromCategoryQueues(post);
+		CalcServer.getInstanceForDI().removeFromUserPostedQueue(post, post.owner);
+		CalcServer.getInstanceForDI().removeFromAllUsersLikedQueues(post);
     }
 }
